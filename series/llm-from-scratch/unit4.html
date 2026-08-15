@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Causal Masking, Dropout &amp; Multi-Head — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:18ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:58ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;display:grid;grid-template-columns:200px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.derive{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 var(--r) var(--r) 0;padding:16px 20px;max-width:66ch}
+.derive .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.derive p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.derive .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.shape{font-family:var(--mono);font-size:var(--fs-xs);background:var(--teal-wash);color:#1d5654;border:1px solid #bcd8d6;border-radius:6px;padding:2px 9px;display:inline-block;white-space:nowrap}
+.term{font-weight:600;color:var(--accent-deep);border-bottom:1px dotted var(--accent);cursor:help}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.vtrack{display:flex;gap:6px;flex-wrap:wrap}
+.vt{flex:1 1 150px;border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;background:var(--panel);position:relative}
+.vt .k{font-family:var(--mono);font-size:var(--fs-xs);color:var(--muted);font-weight:700}
+.vt .t{font-family:var(--serif);font-size:var(--fs-cap);font-weight:600;margin-top:2px}
+.vt .d{font-size:var(--fs-xs);color:var(--muted);margin-top:3px}
+.vt.on{border-color:var(--accent);background:var(--accent-wash)}
+.vt.on .k{color:var(--accent-deep)}
+.vt.dim{opacity:.55}
+.vt .tag{position:absolute;top:8px;right:10px;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+.listing{max-width:1000px}
+.listing .lh{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;color:var(--accent-deep);font-weight:700;background:var(--accent-wash);border:1px solid #d5cfeb;border-bottom:none;border-radius:var(--r) var(--r) 0 0;padding:8px 14px}
+.listing pre{border-radius:0 0 var(--r) var(--r)}
+.lh a{float:right;font-weight:700;letter-spacing:.02em;text-transform:none;color:var(--accent)}
+pre.out{background:#eef4f3;border-color:#cfe2e0;color:#1d5654}
+.lab{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden}
+.lab-head{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;background:linear-gradient(var(--panel),var(--subtle))}
+.lab-head h4{font-size:var(--fs-lg);font-family:var(--serif);font-weight:600}
+.lab-kicker{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.lab-body{padding:22px}
+.lab-note{padding:13px 22px;border-top:1px solid var(--line);background:var(--subtle);font-size:var(--fs-sm);color:var(--muted)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.stack{display:flex;flex-direction:column;gap:16px}
+.lbl-sm{font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.detail{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.detail h5{margin:0 0 8px;font-family:var(--serif);font-size:var(--fs-lg);font-weight:600}
+.detail p{font-size:var(--fs-cap);color:var(--slate)}
+.detail .spam{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);font-size:var(--fs-sm)}
+.detail .spam b{display:block;color:var(--accent-deep);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--accent);color:#fff;border:1px solid var(--accent);padding:8px 16px;border-radius:8px;font-size:var(--fs-cap);font-weight:600}
+.btn:hover{background:var(--accent-deep)}
+.btn.ghost{background:var(--panel);color:var(--accent-deep);border-color:var(--line)}
+.btn.ghost:hover{background:var(--accent-wash)}
+.seg{display:inline-flex;background:var(--subtle);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px;flex-wrap:wrap}
+.seg button{border:none;background:transparent;color:var(--muted);padding:6px 14px;border-radius:6px;font-size:var(--fs-cap);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--accent-deep);box-shadow:0 1px 2px rgba(31,39,51,.1)}
+input[type=range]{accent-color:var(--accent);width:100%}
+.slider-row{display:grid;grid-template-columns:150px minmax(0,1fr) 62px;gap:13px;align-items:center}
+.slider-row .v{font-family:var(--mono);font-size:var(--fs-cap);font-weight:700;color:var(--accent-deep);text-align:right;font-variant-numeric:tabular-nums}
+.scroll-x{overflow-x:auto}
+pre{margin:0;background:#f4f4f9;border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:var(--fs-sm);line-height:1.6;color:#2c3444}
+pre .cm{color:#8a93a5;font-style:italic}
+pre .kw{color:var(--accent);font-weight:600}
+.toks{display:flex;flex-wrap:wrap;gap:6px}
+.tk{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border:1px solid var(--line);border-radius:6px;padding:5px 10px}
+.tk.q{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.mx{border-collapse:separate;border-spacing:0;font-family:var(--mono);font-size:var(--fs-sm)}
+.mx td,.mx th{border:1px solid var(--line);padding:5px 9px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mx th{background:var(--subtle);color:var(--muted);font-family:var(--sans);font-size:var(--fs-xs);text-align:center;font-weight:700}
+.mx th.rh{text-align:right;padding-right:10px}
+.mx tr.hl td{background:var(--accent-wash);border-color:var(--accent);color:var(--accent-deep);font-weight:700}
+.mx td.masked{background:repeating-linear-gradient(45deg,#f2f3f8,#f2f3f8 4px,#e8eaf2 4px,#e8eaf2 8px);color:#b3b9c6}
+.mx td.drop{background:var(--clay-wash);color:#b58a70;text-decoration:line-through}
+.headwrap{display:flex;gap:8px;flex-wrap:wrap}
+.head{border:1px solid var(--line);border-radius:var(--r);padding:10px 13px;background:var(--subtle);flex:1 1 130px}
+.head .hn{font-family:var(--mono);font-size:var(--fs-xs);font-weight:700;margin-bottom:5px}
+.head.h0{border-color:var(--accent);background:var(--accent-wash);color:var(--accent-deep)}
+.head.h1{border-color:var(--teal);background:var(--teal-wash);color:#1d5654}
+.head.h2{border-color:var(--gold);background:var(--gold-wash);color:#6d5514}
+.head.h3{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.lwa-refs ol{max-width:900px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+p{text-wrap:pretty}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+  .slider-row{grid-template-columns:112px minmax(0,1fr) 52px}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="llm-from-scratch" data-lwa-chapter="ch03b" data-lwa-title="Unit 4 · Causal Masking, Dropout & Multi-Head">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 01 · Build an LLM from Scratch</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Build an LLM from Scratch · Unit 4</div>
+      <h1>Causal Masking, Dropout &amp; Multi-Head</h1>
+      <p class="standfirst">In <a href="unit3.html">Unit 3</a> you built scaled dot-product attention. It has one fatal habit for text generation — it can see the future — and one limitation — it has only one way of looking. This unit fixes both, and ends with the exact <code>MultiHeadAttention</code> class that Unit 5 plugs into the GPT.</p>
+      <div class="facts">
+        <div><b>One session</b>~40 min</div>
+        <div><b>Sequel to Unit 3</b>Builds directly on it</div>
+        <div><b>3 labs</b>Masks, dropout, heads</div>
+        <div><b>3 classes built</b>Causal, Wrapper, MHA</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#recap" class="on">Where we are</a>
+    <a href="#s5">3.5 Hiding the future</a>
+    <a href="#s5b">Two masking routes</a>
+    <a href="#s5c">Dropout</a>
+    <a href="#s5d">The CausalAttention class</a>
+    <a href="#s6">3.6 Multi-head</a>
+    <a href="#s6b">Weight splits</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+    <a href="#refs">References</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ recap ============ -->
+  <section id="recap">
+    <div class="prose">
+      <h2>Where we are on the route</h2>
+      <p>Unit 3 ended at stop 3: <code>SelfAttention_v2</code>, real scaled dot-product attention with trainable W<sub>q</sub>, W<sub>k</sub>, W<sub>v</sub> built on <code>nn.Linear</code>. Two stops remain, and they're the two that make attention usable inside a GPT.</p>
+    </div>
+    <div class="vtrack" aria-label="Versions of attention built in this unit">
+      <div class="vt dim"><span class="k">STOP 1</span><div class="t">Simplified</div><div class="d">no trainable weights</div><span class="tag">Unit 3</span></div>
+      <div class="vt dim"><span class="k">STOP 2</span><div class="t">SelfAttention_v1</div><div class="d">+ W<sub>q</sub>, W<sub>k</sub>, W<sub>v</sub></div><span class="tag">Unit 3</span></div>
+      <div class="vt dim"><span class="k">STOP 3</span><div class="t">SelfAttention_v2</div><div class="d">nn.Linear version</div><span class="tag">Unit 3</span></div>
+      <div class="vt on"><span class="k">STOP 4</span><div class="t">CausalAttention</div><div class="d">+ mask + dropout + batches</div></div>
+      <div class="vt on"><span class="k">STOP 5</span><div class="t">MultiHeadAttention</div><div class="d">+ heads, efficiently</div></div>
+    </div>
+    <div class="aside">
+      <div class="lbl">Numbers on this page</div>
+      <p>We keep working with the same six-token sentence, but from here every number comes from <b><code>SelfAttention_v2</code></b> (seed 789) — not the simple weights from Unit 3’s Lab 4. Every matrix below is reproducible in the unit’s Colab notebook.</p>
+    </div>
+  </section>
+
+  <!-- ============ 3.5 ============ -->
+  <section id="s5">
+    <div class="prose">
+      <h2>Hiding the future with causal attention</h2>
+      <p><b>The problem.</b> A GPT's one job is predicting the <em>next</em> token. Now recall what attention just built: when computing the context vector for “journey”, softmax spread weight over <em>all six tokens</em> — including “starts with one step”, the very words that come after. During training, the model sees complete sentences, so nothing stops position 2 from peeking at positions 3–6. A model allowed to peek learns to copy the future instead of predicting it — and at generation time, when there is no future to copy, it's helpless.</p>
+      <p><b>The idea.</b> Make the rule structural: <em>position i may attend only to positions 1…i</em>. In matrix terms — remembering from Unit 3 that rows are queries and columns are the tokens being looked at — that means every cell <b>above the diagonal is forbidden</b>. Attention with this restriction is called <b>causal attention</b> (or masked attention).</p>
+    </div>
+
+    <div class="fig" role="img" aria-label="Diagram of the causal mask: a six-by-six grid with the upper triangle blocked out">
+      <svg viewBox="0 0 740 260">
+        <g font-family="Consolas,monospace" font-size="11">
+        <!-- column labels -->
+        <g fill="#6b7585" text-anchor="middle">
+          <text x="205" y="30">Your</text><text x="285" y="30">journey</text><text x="365" y="30">starts</text><text x="445" y="30">with</text><text x="525" y="30">one</text><text x="605" y="30">step</text>
+        </g>
+        <!-- row labels -->
+        <g fill="#6b7585" text-anchor="end">
+          <text x="158" y="60">Your</text><text x="158" y="96">journey</text><text x="158" y="132">starts</text><text x="158" y="168">with</text><text x="158" y="204">one</text><text x="158" y="240">step</text>
+        </g>
+        <!-- cells: rows i 0..5, cols j 0..5; allowed j<=i -->
+        <g>
+        <!-- generated grid -->
+        <!-- row 0 -->
+        <rect x="170" y="44" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="250" y="44" width="70" height="26" rx="4" fill="#f4d9c8" stroke="#a35a33" stroke-dasharray="3 2"/>
+        <rect x="330" y="44" width="70" height="26" rx="4" fill="#f4d9c8" stroke="#a35a33" stroke-dasharray="3 2"/>
+        <rect x="410" y="44" width="70" height="26" rx="4" fill="#f4d9c8" stroke="#a35a33" stroke-dasharray="3 2"/>
+        <rect x="490" y="44" width="70" height="26" rx="4" fill="#f4d9c8" stroke="#a35a33" stroke-dasharray="3 2"/>
+        <rect x="570" y="44" width="70" height="26" rx="4" fill="#f4d9c8" stroke="#a35a33" stroke-dasharray="3 2"/>
+        <!-- row 1 -->
+        <rect x="170" y="80" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="250" y="80" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="330" y="80" width="70" height="26" rx="4" fill="#f4d9c8" stroke="#a35a33" stroke-dasharray="3 2"/>
+        <rect x="410" y="80" width="70" height="26" rx="4" fill="#f4d9c8" stroke="#a35a33" stroke-dasharray="3 2"/>
+        <rect x="490" y="80" width="70" height="26" rx="4" fill="#f4d9c8" stroke="#a35a33" stroke-dasharray="3 2"/>
+        <rect x="570" y="80" width="70" height="26" rx="4" fill="#f4d9c8" stroke="#a35a33" stroke-dasharray="3 2"/>
+        <!-- row 2 -->
+        <rect x="170" y="116" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="250" y="116" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="330" y="116" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="410" y="116" width="70" height="26" rx="4" fill="#f4d9c8" stroke="#a35a33" stroke-dasharray="3 2"/>
+        <rect x="490" y="116" width="70" height="26" rx="4" fill="#f4d9c8" stroke="#a35a33" stroke-dasharray="3 2"/>
+        <rect x="570" y="116" width="70" height="26" rx="4" fill="#f4d9c8" stroke="#a35a33" stroke-dasharray="3 2"/>
+        <!-- row 3 -->
+        <rect x="170" y="152" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="250" y="152" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="330" y="152" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="410" y="152" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="490" y="152" width="70" height="26" rx="4" fill="#f4d9c8" stroke="#a35a33" stroke-dasharray="3 2"/>
+        <rect x="570" y="152" width="70" height="26" rx="4" fill="#f4d9c8" stroke="#a35a33" stroke-dasharray="3 2"/>
+        <!-- row 4 -->
+        <rect x="170" y="188" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="250" y="188" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="330" y="188" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="410" y="188" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="490" y="188" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="570" y="188" width="70" height="26" rx="4" fill="#f4d9c8" stroke="#a35a33" stroke-dasharray="3 2"/>
+        <!-- row 5 -->
+        <rect x="170" y="224" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="250" y="224" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="330" y="224" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="410" y="224" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="490" y="224" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        <rect x="570" y="224" width="70" height="26" rx="4" fill="#ecebf6" stroke="#5b4b9e"/>
+        </g>
+        <text x="60" y="150" fill="#3d3170" font-size="12" font-weight="700" transform="rotate(-90 60 150)" text-anchor="middle" font-family="Segoe UI,sans-serif">queries (rows)</text>
+        <text x="405" y="14" fill="#3d3170" font-size="12" font-weight="700" text-anchor="middle" font-family="Segoe UI,sans-serif">attending to (columns)</text>
+        </g>
+      </svg>
+      <div class="figcap">The causal mask. Purple cells are allowed; hatched clay cells — everything above the diagonal — are the future, and get erased. Row “journey” keeps only “Your” and itself. Row “step”, the last token, keeps everything.</div>
+    </div>
+  </section>
+
+  <!-- ============ two routes ============ -->
+  <section id="s5b">
+    <div class="prose">
+      <h2>Two routes to the same mask</h2>
+      <p>We implement the mask twice — first the obvious way, then the efficient way — and proving to yourself that they agree is half the understanding. Both start from the same attention weights that <code>SelfAttention_v2</code> produced for our sentence.</p>
+
+      <h3>Route 1 — softmax, zero, renormalise</h3>
+      <p>Take the finished attention weights, multiply by a lower-triangular matrix of ones (<code>torch.tril</code>) to zero out the future, then divide each row by its new sum so it totals 1 again:</p>
+    </div>
+
+    <div class="derive">
+      <div class="dl">Worked on row 2 — “journey”</div>
+      <p>Row 2 of the v2 attention weights (all six tokens visible):</p>
+      <div class="m">[0.2041, 0.1659, 0.1662, 0.1496, 0.1665, 0.1477]</div>
+      <p>Zero the future (positions 3–6):</p>
+      <div class="m">[0.2041, 0.1659, 0, 0, 0, 0]     sum = 0.3700</div>
+      <p>Divide the survivors by 0.3700:</p>
+      <div class="m">[<b>0.5517, 0.4483</b>, 0, 0, 0, 0]   <span class="cm">(✓ PyTorch agrees)</span></div>
+      <p>“journey” now splits all of its attention between “Your” (55%) and itself (45%). The future contributes nothing.</p>
+    </div>
+
+    <div class="listing">
+      <div class="lh">Route 1 in code <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit4.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <pre>mask_simple   = torch.tril(torch.ones(6, 6))          <span class="cm"># 1s on/below diagonal, 0s above</span>
+masked_simple = attn_weights * mask_simple            <span class="cm"># erase the future</span>
+row_sums      = masked_simple.sum(dim=-1, keepdim=True)
+masked_norm   = masked_simple / row_sums              <span class="cm"># rows sum to 1 again</span></pre>
+    </div>
+
+    <div class="aside">
+      <div class="lbl">“But the masked tokens were inside the softmax — isn't that leakage?”</div>
+      <p>A sharp question, worth meeting head on. It <em>looks</em> like future tokens influenced the result, since they sat in softmax's denominator before being zeroed. But renormalising afterwards is mathematically identical to having run softmax over only the visible positions in the first place — the masked positions' contribution cancels out exactly. No information leaks. (You can verify this on the numbers above: softmax over just [0.4656, 0.1723]/√2 gives [0.5517, 0.4483].)</p>
+    </div>
+
+    <div class="prose">
+      <h3>Route 2 — mask first with −∞, softmax once</h3>
+      <p>Route 1 does three operations. A property of softmax collapses them into one: <b>e<sup>−∞</sup> = 0</b>. So if you set the <em>scores</em> above the diagonal to negative infinity <em>before</em> softmax, those positions get exactly zero weight, and — because softmax always normalises what remains — the surviving weights already sum to 1. No renormalisation step exists to forget.</p>
+    </div>
+
+    <div class="listing">
+      <div class="lh">Route 2 in code — the version every real implementation uses <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit4.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <pre>mask   = torch.triu(torch.ones(6, 6), diagonal=1)     <span class="cm"># 1s strictly ABOVE the diagonal</span>
+masked = attn_scores.masked_fill(mask.bool(), -torch.inf)
+attn_weights = torch.softmax(masked / keys.shape[-1]**0.5, dim=-1)</pre>
+      <pre class="out">masked (row 2):  [0.4656, 0.1723,  -inf,  -inf,  -inf,  -inf]
+after softmax:   [0.5517, 0.4483, 0.0000, 0.0000, 0.0000, 0.0000]   # identical to route 1 ✓</pre>
+    </div>
+
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><b>“Why compute scores for cells we're about to erase?”</b> Because on a GPU, computing the full (6×6) — or (1024×1024) — score matrix in one dense matrix multiplication and then masking half of it is <em>faster</em> than computing only the cells you need. Dense, regular work is what the hardware is built for; irregular, shape-varying work is not. The mask costs almost nothing; the uniformity buys everything. (Note also <code>tril</code> vs <code>triu</code>: route 1 keeps the lower triangle with <code>tril</code>; route 2 marks the upper triangle for destruction with <code>triu(…, diagonal=1)</code>.)</p>
+    </div>
+
+    <div class="lab">
+      <div class="lab-head">
+        <h4>Lab 7 · Two routes to the same mask</h4>
+        <span class="lab-kicker">Compare the methods</span>
+      </div>
+      <div class="lab-body stack">
+        <div class="row" style="justify-content:space-between">
+          <div class="seg" role="group" aria-label="Masking method">
+            <button data-mask="naive" aria-pressed="true">Softmax → zero → renormalise</button>
+            <button data-mask="inf" aria-pressed="false">−∞ → softmax</button>
+          </div>
+          <button class="btn ghost" id="mask-watch">▶ Watch both routes</button>
+        </div>
+        <div id="mask-stages"></div>
+        <div class="detail" id="mask-detail" aria-live="polite"></div>
+      </div>
+      <div class="lab-note">Both routes produce row 2 = <code>[0.5517, 0.4483, 0, 0, 0, 0]</code>, matching the notebook output. These are the true <code>SelfAttention_v2</code> matrices (seed 789).</div>
+    </div>
+  </section>
+
+  <!-- ============ dropout ============ -->
+  <section id="s5c">
+    <div class="prose">
+      <h2>Dropout: randomly forgetting, on purpose</h2>
+      <p><b>The problem.</b> A network trained long enough starts leaning on a few specific pathways — memorising its training data's quirks rather than learning general structure. This is overfitting.</p>
+      <p><b>The idea.</b> During training, randomly zero out a fraction of the attention weights on every pass, so the model can never depend on any single connection always being there. Two details make it principled rather than destructive:</p>
+      <ul class="plain">
+        <li><b>Compensation.</b> If you keep only half the weights, the survivors are scaled up by 1/(1−rate) — at rate 0.5, doubled — so the total signal magnitude stays roughly constant between training (dropout on) and inference (dropout off).</li>
+        <li><b>Training only.</b> Dropout is switched off entirely at inference. It's a training regulariser, not part of the model's behaviour.</li>
+      </ul>
+    </div>
+
+    <div class="derive">
+      <div class="dl">Watch it happen — dropout on a matrix of ones</div>
+      <div class="m">torch.manual_seed(123)<br>dropout = torch.nn.Dropout(0.5)<br>print(dropout(torch.ones(6, 6)))</div>
+      <div class="m">tensor([[2., 2., 0., 2., 2., 0.],<br>        [0., 0., 0., 2., 0., 2.],<br>        [2., 2., 2., 2., 0., 2.],<br>        [0., 2., 2., 0., 0., 2.],<br>        [0., 2., 0., 2., 0., 2.],<br>        [0., 2., 2., 2., 2., 0.]])</div>
+      <p>Roughly half the ones became 0; every survivor became 2 — that's the 1/(1−0.5) compensation, visible in the raw numbers. (The exact zero pattern can differ by operating system — PyTorch seeds randomness per platform.)</p>
+    </div>
+
+    <div class="lab">
+      <div class="lab-head">
+        <h4>Lab 8 · Dropout on the causal weights</h4>
+        <span class="lab-kicker">Reroll the mask</span>
+      </div>
+      <div class="lab-body stack">
+        <div class="slider-row">
+          <span class="lbl-sm">Dropout rate</span>
+          <input type="range" id="drop-rate" min="0" max="0.8" step="0.1" value="0.5">
+          <span class="v" id="drop-rate-v">0.5</span>
+        </div>
+        <div class="row"><button class="btn" id="drop-roll">Reroll</button>
+          <span style="font-size:var(--fs-sm);color:var(--muted)">surviving weights scale by <span id="drop-scale" style="font-family:var(--mono);font-weight:700"></span></span></div>
+        <div class="scroll-x"><table class="mx" id="drop-mx"></table></div>
+        <div class="detail" id="drop-detail" aria-live="polite"></div>
+      </div>
+      <div class="lab-note">We use rate 0.5 here purely for visibility; the actual GPT training in Unit 6 uses a gentle 0.1. Hatched cells = the causal mask (fixed). Struck-through cells = dropout (random, changes every reroll). Keep the two masks separate in your head — they exist for completely different reasons.</div>
+    </div>
+  </section>
+
+  <!-- ============ CausalAttention class ============ -->
+  <section id="s5d">
+    <div class="prose">
+      <h2>Stop 4: the CausalAttention class</h2>
+      <p>Now everything so far — trainable projections, √d<sub>k</sub> scaling, the −∞ mask, dropout — gets folded into one class. Two genuinely new things appear, both practical rather than conceptual:</p>
+      <ul class="plain">
+        <li><b>Batches.</b> Unit 2's data loader delivers <em>batches</em> of sequences, not one sentence. Every tensor gains a leading batch dimension: our input becomes <span class="shape">(2, 6, 3) — 2 texts, 6 tokens, 3 dims</span>. We simulate this by stacking the same sentence twice: <code>batch = torch.stack((inputs, inputs), dim=0)</code>.</li>
+        <li><b><code>register_buffer</code>.</b> The mask is a tensor the class needs but must <em>not</em> train. Registering it as a buffer stores it inside the module so it automatically travels with the model — crucially, onto the GPU when the model moves there — without ever being touched by the optimiser.</li>
+      </ul>
+    </div>
+
+    <div class="listing">
+      <div class="lh">The CausalAttention class — annotated line by line <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit4.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <pre>class CausalAttention(nn.Module):
+    def __init__(self, d_in, d_out, context_length, dropout, qkv_bias=False):
+        super().__init__()
+        self.d_out   = d_out
+        self.W_query = nn.Linear(d_in, d_out, bias=qkv_bias)
+        self.W_key   = nn.Linear(d_in, d_out, bias=qkv_bias)
+        self.W_value = nn.Linear(d_in, d_out, bias=qkv_bias)
+        self.dropout = nn.Dropout(dropout)                <span class="cm"># NEW: dropout layer</span>
+        self.register_buffer(                             <span class="cm"># NEW: mask stored, not trained,</span>
+            'mask',                                       <span class="cm"># moves to GPU with the model</span>
+            torch.triu(torch.ones(context_length, context_length), diagonal=1)
+        )
+
+    def forward(self, x):                                 <span class="cm"># x: (b, num_tokens, d_in)</span>
+        b, num_tokens, d_in = x.shape
+        keys    = self.W_key(x)                           <span class="cm"># (b, 6, 3) → (b, 6, 2)</span>
+        queries = self.W_query(x)
+        values  = self.W_value(x)
+        attn_scores = queries @ keys.transpose(1, 2)      <span class="cm"># transpose TOKEN and DIM axes —</span>
+                                                          <span class="cm"># NOT the batch axis 0 —</span>
+                                                          <span class="cm"># (b,6,2)@(b,2,6) → (b,6,6)</span>
+        attn_scores.masked_fill_(                         <span class="cm"># trailing _ = in place, no copy</span>
+            self.mask.bool()[:num_tokens, :num_tokens], -torch.inf)
+                                                          <span class="cm"># [:n,:n] crops the stored mask</span>
+                                                          <span class="cm"># for shorter inputs</span>
+        attn_weights = torch.softmax(
+            attn_scores / keys.shape[-1]**0.5, dim=-1)    <span class="cm"># scale, softmax rows</span>
+        attn_weights = self.dropout(attn_weights)         <span class="cm"># dropout ON THE WEIGHTS</span>
+        context_vec  = attn_weights @ values              <span class="cm"># (b,6,6)@(b,6,2) → (b,6,2)</span>
+        return context_vec</pre>
+      <pre class="out">torch.manual_seed(123)
+ca = CausalAttention(d_in, d_out, context_length=6, dropout=0.0)
+context_vecs = ca(batch)
+print("context_vecs.shape:", context_vecs.shape)
+
+context_vecs.shape: torch.Size([2, 6, 2])   # 2 texts, 6 tokens, each a 2-dim context vector</pre>
+    </div>
+
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><b>“Why <code>transpose(1, 2)</code> when Unit 3 used <code>.T</code>?”</b> Plain <code>.T</code> flips <em>all</em> dimensions — with a batch it would also swap the batch axis into the middle, scrambling everything. <code>transpose(1, 2)</code> says precisely: swap axis 1 (tokens) with axis 2 (dims), and leave axis 0 (batch) alone. Every batched operation in the rest of the series names its axes explicitly like this. When reading transformer code, the axis numbers are never decoration — pause on each one.</p>
+    </div>
+  </section>
+
+  <!-- ============ 3.6 multi-head ============ -->
+  <section id="s6">
+    <div class="prose">
+      <h2>Multi-head attention: several ways of looking</h2>
+      <p><b>The problem.</b> One attention module learns <em>one</em> pattern of relating tokens. But language runs many relationship systems simultaneously — syntax (“was” ↔ its subject), reference (“it” ↔ what “it” names), locality (neighbouring words), topic. A single softmax over the sentence must average all of these into one blurry compromise.</p>
+      <p><b>The idea.</b> Run several attention mechanisms — <b>heads</b> — in parallel, each with its <em>own</em> W<sub>q</sub>, W<sub>k</sub>, W<sub>v</sub>. Each head is free to specialise in a different kind of relationship. Concatenate their context vectors side by side and you get one wider, richer representation.</p>
+
+      <h3>The honest implementation first: a wrapper</h3>
+      <p>The simplest multi-head module is embarrassingly direct — a list of <code>CausalAttention</code> modules, run one after another, outputs glued together:</p>
+    </div>
+
+    <div class="listing">
+      <div class="lh">The MultiHeadAttentionWrapper class <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit4.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <pre>class MultiHeadAttentionWrapper(nn.Module):
+    def __init__(self, d_in, d_out, context_length, dropout, num_heads, qkv_bias=False):
+        super().__init__()
+        self.heads = nn.ModuleList(
+            [CausalAttention(d_in, d_out, context_length, dropout, qkv_bias)
+             for _ in range(num_heads)]                   <span class="cm"># num_heads separate modules</span>
+        )
+    def forward(self, x):
+        return torch.cat([head(x) for head in self.heads], dim=-1)
+                                                          <span class="cm"># run each, glue along last dim</span></pre>
+      <pre class="out">torch.manual_seed(123)
+mha = MultiHeadAttentionWrapper(d_in=3, d_out=2, context_length=6, dropout=0.0, num_heads=2)
+context_vecs = mha(batch)
+
+tensor([[[-0.4519,  0.2216,  0.4772,  0.1063],     # ← head 1's 2 dims | head 2's 2 dims
+         [-0.5874,  0.0058,  0.5891,  0.3257],
+         [-0.6300, -0.0632,  0.6202,  0.3860],
+         [-0.5675, -0.0843,  0.5478,  0.3589],
+         [-0.5526, -0.0981,  0.5321,  0.3428],
+         [-0.5299, -0.1081,  0.5077,  0.3493]],
+        [[...second text — identical, since the batch duplicated one sentence...]]])
+context_vecs.shape: torch.Size([2, 6, 4])          # d_out × num_heads = 2 × 2 = 4</pre>
+    </div>
+
+    <div class="prose">
+      <p>Notice the output width: each head produced 2 dimensions, and two heads concatenated give <b>4</b>. (A puzzle worth pausing on: how would you get 2-dimensional final outputs while keeping two heads? Reason it out before reading on: make each head half as wide — <code>d_out=1</code>.)</p>
+      <p>The wrapper is correct but wasteful: it computes the expensive query/key/value projections <em>once per head</em>, and runs heads sequentially in a Python loop. Real implementations do something cleverer.</p>
+    </div>
+  </section>
+
+  <!-- ============ weight splits ============ -->
+  <section id="s6b">
+    <div class="prose">
+      <h2>Stop 5: one big projection, split into heads</h2>
+      <p><b>The trick:</b> instead of two heads each owning a (3×2) query matrix, make <em>one</em> (3×4) query matrix, project once, and then <em>reinterpret</em> the 4-wide result as two 2-wide heads. Same mathematics — a block-diagonal reshuffle of the same numbers — but one matrix multiplication instead of two, and the per-head attention runs as one batched operation on the GPU.</p>
+      <p>All the apparent complexity of <code>MultiHeadAttention</code> is this reinterpretation, done with two tensor operations. This is the cliff edge of the whole unit, so here it is drawn rather than described:</p>
+    </div>
+
+    <div class="fig" role="img" aria-label="Shape-flow diagram of the view and transpose operations in multi-head attention">
+      <svg viewBox="0 0 740 300">
+        <defs><marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6b7585"/></marker></defs>
+        <g font-family="Consolas,monospace">
+        <rect x="10" y="20" width="212" height="58" rx="9" fill="#f0f1f7" stroke="#6b7585" stroke-width="1.5"/>
+        <text x="116" y="44" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f2733">W_query(x)</text>
+        <text x="116" y="63" text-anchor="middle" font-size="12" fill="#3d3170">(b, 6, 4)</text>
+        <line x1="226" y1="49" x2="268" y2="49" stroke="#6b7585" stroke-width="1.5" marker-end="url(#arr3)"/>
+        <text x="247" y="38" text-anchor="middle" font-size="10" fill="#6b7585" font-family="Segoe UI,sans-serif">.view()</text>
+        <rect x="272" y="20" width="212" height="58" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.6"/>
+        <text x="378" y="44" text-anchor="middle" font-size="12.5" font-weight="700" fill="#3d3170">split the last dim</text>
+        <text x="378" y="63" text-anchor="middle" font-size="12" fill="#3d3170">(b, 6, 2, 2) = (b, tokens, heads, head_dim)</text>
+        <line x1="488" y1="49" x2="530" y2="49" stroke="#6b7585" stroke-width="1.5" marker-end="url(#arr3)"/>
+        <text x="509" y="38" text-anchor="middle" font-size="10" fill="#6b7585" font-family="Segoe UI,sans-serif">.transpose(1,2)</text>
+        <rect x="534" y="20" width="196" height="58" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.6"/>
+        <text x="632" y="44" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1d5654">heads become batches</text>
+        <text x="632" y="63" text-anchor="middle" font-size="12" fill="#1d5654">(b, 2, 6, 2)</text>
+        <text x="370" y="112" text-anchor="middle" font-size="11.5" fill="#6b7585" font-family="Segoe UI,sans-serif">…now each head attends independently: scores (b, heads, 6, 6), weighted values (b, heads, 6, head_dim)…</text>
+        <rect x="534" y="140" width="196" height="58" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.6"/>
+        <text x="632" y="164" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1d5654">attention output</text>
+        <text x="632" y="183" text-anchor="middle" font-size="12" fill="#1d5654">(b, 2, 6, 2)</text>
+        <line x1="530" y1="169" x2="488" y2="169" stroke="#6b7585" stroke-width="1.5" marker-end="url(#arr3)"/>
+        <text x="509" y="158" text-anchor="middle" font-size="10" fill="#6b7585" font-family="Segoe UI,sans-serif">.transpose(1,2)</text>
+        <rect x="272" y="140" width="212" height="58" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.6"/>
+        <text x="378" y="164" text-anchor="middle" font-size="12.5" font-weight="700" fill="#3d3170">tokens back in front</text>
+        <text x="378" y="183" text-anchor="middle" font-size="12" fill="#3d3170">(b, 6, 2, 2)</text>
+        <line x1="268" y1="169" x2="226" y2="169" stroke="#6b7585" stroke-width="1.5" marker-end="url(#arr3)"/>
+        <text x="247" y="158" text-anchor="middle" font-size="10" fill="#6b7585" font-family="Segoe UI,sans-serif">.contiguous().view()</text>
+        <rect x="10" y="140" width="212" height="58" rx="9" fill="#5b4b9e" stroke="#3d3170" stroke-width="1.6"/>
+        <text x="116" y="164" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ffffff">heads flattened together</text>
+        <text x="116" y="183" text-anchor="middle" font-size="12" fill="#d8d3ee">(b, 6, 4)</text>
+        <line x1="116" y1="202" x2="116" y2="238" stroke="#6b7585" stroke-width="1.5" marker-end="url(#arr3)"/>
+        <text x="168" y="224" text-anchor="middle" font-size="10" fill="#6b7585" font-family="Segoe UI,sans-serif">out_proj (linear)</text>
+        <rect x="10" y="242" width="212" height="46" rx="9" fill="#f5f0df" stroke="#8a6d1c" stroke-width="1.6"/>
+        <text x="116" y="262" text-anchor="middle" font-size="12.5" font-weight="700" fill="#6d5514">final output</text>
+        <text x="116" y="279" text-anchor="middle" font-size="12" fill="#6d5514">(b, 6, 4)</text>
+        </g>
+      </svg>
+      <div class="figcap">The full shape journey for b texts, 6 tokens, d_out = 4, 2 heads. Top row: split and bring heads forward. Middle: attention runs per head “for free” because PyTorch's matrix multiply batches over every leading dimension. Bottom row: undo the journey and mix heads with a final linear layer. <b>No data is copied by .view or .transpose — they are reinterpretations of the same memory.</b></div>
+    </div>
+
+    <div class="derive">
+      <div class="dl">Why the transpose is not optional</div>
+      <p>PyTorch's <code>@</code> multiplies the <em>last two</em> dimensions and treats everything before them as batch dimensions. Take a (1, 2, 3, 4) tensor <code>a</code>: <code>a @ a.transpose(2, 3)</code> multiplies (3, 4) by (4, 3) separately for each of the 2 “heads”, giving (1, 2, 3, 3) — the notebook verifies this against multiplying each head by hand.</p>
+      <div class="m">shape (b, <b>heads</b>, tokens, head_dim)  →  @ works per head ✓<br>shape (b, <b>tokens</b>, heads, head_dim)  →  @ would mix across heads ✗</div>
+      <p>That is the entire reason for <code>.transpose(1, 2)</code>: it moves <code>heads</code> into the batch position so every head's attention happens independently and simultaneously.</p>
+    </div>
+
+    <div class="listing">
+      <div class="lh">MultiHeadAttention — the class Unit 5 will import <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit4.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <pre>class MultiHeadAttention(nn.Module):
+    def __init__(self, d_in, d_out, context_length, dropout, num_heads, qkv_bias=False):
+        super().__init__()
+        assert (d_out % num_heads == 0), \
+            "d_out must be divisible by num_heads"        <span class="cm"># head_dim must be whole</span>
+        self.d_out     = d_out
+        self.num_heads = num_heads
+        self.head_dim  = d_out // num_heads               <span class="cm"># e.g. 4 // 2 = 2</span>
+        self.W_query = nn.Linear(d_in, d_out, bias=qkv_bias)   <span class="cm"># ONE wide matrix each</span>
+        self.W_key   = nn.Linear(d_in, d_out, bias=qkv_bias)
+        self.W_value = nn.Linear(d_in, d_out, bias=qkv_bias)
+        self.out_proj = nn.Linear(d_out, d_out)           <span class="cm"># mixes heads at the end</span>
+        self.dropout  = nn.Dropout(dropout)
+        self.register_buffer("mask",
+            torch.triu(torch.ones(context_length, context_length), diagonal=1))
+
+    def forward(self, x):
+        b, num_tokens, d_in = x.shape                     <span class="cm"># (b, 6, 3)</span>
+        keys    = self.W_key(x)                           <span class="cm"># (b, 6, d_out) — once, full width</span>
+        queries = self.W_query(x)
+        values  = self.W_value(x)
+        <span class="cm"># --- the split: (b, 6, d_out) → (b, 6, heads, head_dim) → (b, heads, 6, head_dim)</span>
+        keys    = keys.view(b, num_tokens, self.num_heads, self.head_dim).transpose(1, 2)
+        queries = queries.view(b, num_tokens, self.num_heads, self.head_dim).transpose(1, 2)
+        values  = values.view(b, num_tokens, self.num_heads, self.head_dim).transpose(1, 2)
+        <span class="cm"># --- per-head causal attention, all heads at once</span>
+        attn_scores = queries @ keys.transpose(2, 3)      <span class="cm"># (b, heads, 6, 6)</span>
+        mask_bool = self.mask.bool()[:num_tokens, :num_tokens]
+        attn_scores.masked_fill_(mask_bool, -torch.inf)
+        attn_weights = torch.softmax(attn_scores / keys.shape[-1]**0.5, dim=-1)
+        attn_weights = self.dropout(attn_weights)
+        <span class="cm"># --- undo the journey: (b, heads, 6, head_dim) → (b, 6, heads, head_dim) → (b, 6, d_out)</span>
+        context_vec = (attn_weights @ values).transpose(1, 2)
+        context_vec = context_vec.contiguous().view(b, num_tokens, self.d_out)
+        context_vec = self.out_proj(context_vec)          <span class="cm"># optional but standard</span>
+        return context_vec</pre>
+      <pre class="out">torch.manual_seed(123)
+mha = MultiHeadAttention(d_in=3, d_out=2, context_length=6, dropout=0.0, num_heads=2)
+context_vecs = mha(batch)
+
+tensor([[[0.3190, 0.4858],
+         [0.2943, 0.3897],
+         [0.2856, 0.3593],
+         [0.2693, 0.3873],
+         [0.2639, 0.3928],
+         [0.2575, 0.4028]],
+        [[...second text, identical...]]], grad_fn=&lt;ViewBackward0&gt;)
+context_vecs.shape: torch.Size([2, 6, 2])   # here d_out=2 with 2 heads → head_dim=1</pre>
+    </div>
+
+    <div class="aside">
+      <div class="lbl">Two small print notes</div>
+      <p><b>out_proj:</b> a final linear layer mixing the concatenated heads. Not strictly necessary, but standard in real LLMs, so it's included. <b>Real scale:</b> GPT-2 small runs 12 heads at d_out = 768 (head_dim 64); GPT-2 XL runs 25 heads at 1,600. Try configuring this class to GPT-2 small's numbers yourself — you now know all three arguments that takes.</p>
+    </div>
+
+    <div class="lab">
+      <div class="lab-head">
+        <h4>Lab 9 · Splitting into heads</h4>
+        <span class="lab-kicker">Change the head count</span>
+      </div>
+      <div class="lab-body stack">
+        <div class="slider-row">
+          <span class="lbl-sm">d_out</span>
+          <input type="range" id="mh-dout" min="2" max="12" step="2" value="4">
+          <span class="v" id="mh-dout-v">4</span>
+        </div>
+        <div class="slider-row">
+          <span class="lbl-sm">Number of heads</span>
+          <input type="range" id="mh-heads" min="1" max="4" value="2">
+          <span class="v" id="mh-heads-v">2</span>
+        </div>
+        <div class="seg" role="group" aria-label="Implementation">
+          <button id="mh-wrap" aria-pressed="true">Wrapper (stacked)</button>
+          <button id="mh-split" aria-pressed="false">Weight splits (efficient)</button>
+        </div>
+        <div class="headwrap" id="mh-heads-view"></div>
+        <div id="mh-shapes"></div>
+        <div class="detail" id="mh-detail" aria-live="polite"></div>
+      </div>
+      <div class="lab-note">Set heads to 3 with d_out 4 and watch the <code>assert</code> fire — head_dim must divide evenly. Then toggle wrapper vs weight-splits with the same settings and compare the shape traces: same result, one projection instead of one per head.</div>
+    </div>
+
+    <div class="keyidea">
+      <div class="lbl">The unit in one line</div>
+      <p><b>score = q·k → scale by √d<sub>k</sub> → mask the future with −∞ → softmax → dropout → blend the values — repeated across heads, concatenated, mixed.</b> That sequence is the entire engine of a GPT. Unit 5 builds the car around it: normalisation, feed-forward layers, shortcut connections — and stacks the result twelve times.</p>
+    </div>
+  </section>
+
+  <!-- ============ quiz ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on this unit. Together with Unit 3's quiz, this is the stretch worth being sure about.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ glossary ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary — this unit's terms</h2>
+      <p>Unit 3's glossary covers the core attention vocabulary.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ references ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>The book below is the reference material this series is a guided companion to — the reference material for the whole series. The rest is supporting material worth your time.</p>
+    </div>
+    <ol>
+      <li class="hero"><b>Raschka, S.</b> — <i>Build a Large Language Model (From Scratch), Manning, 2024</i>. <span class="why">The reference material for this series — this unit covers the same ground as the second half of its chapter 3 (pages 146–175).</span> <a href="https://www.manning.com/books/build-a-large-language-model-from-scratch" rel="noopener">book</a> · <a href="https://github.com/rasbt/LLMs-from-scratch" rel="noopener">code</a></li>
+      <li><b>Vaswani, A. et al.</b> — <i>Attention Is All You Need, NeurIPS 2017</i>. <span class="why">Multi-head attention (their section 3.2.2) exactly as built here.</span> <a href="https://arxiv.org/abs/1706.03762" rel="noopener">arXiv</a></li>
+      <li><b>Srivastava, N. et al.</b> — <i>Dropout: A Simple Way to Prevent Neural Networks from Overfitting, JMLR 2014</i>. <span class="why">The dropout paper behind section 3.5.2.</span> <a href="https://jmlr.org/papers/v15/srivastava14a.html" rel="noopener">paper</a></li>
+      <li><b>Alammar, J.</b> — <i>The Illustrated GPT-2</i>. <span class="why">Beautiful pictures of exactly the masked multi-head attention you just built, at GPT-2 scale.</span> <a href="https://jalammar.github.io/illustrated-gpt2/" rel="noopener">article</a></li>
+      <li><b>Karpathy, A.</b> — <i>Let's build GPT: from scratch, in code</i>. <span class="why">A two-hour video traversing this same ground — superb reinforcement after these two pages.</span> <a href="https://www.youtube.com/watch?v=kCc8FmEb1nY" rel="noopener">video</a></li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 5 · Assembling a GPT</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">You now have the engine — the exact <code>MultiHeadAttention</code> class the GPT uses. Unit 5 builds the car around it: layer normalisation, GELU feed-forward networks, shortcut connections, and the transformer block that wraps attention. Stack that block twelve times and you have a 124-million-parameter GPT-2 that generates text.</p>
+    </div>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit3.html"><span class="k">← Previous</span><span class="t">Unit 3 · How Attention Actually Works</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit5.html"><span class="k">Next →</span><span class="t">Unit 5 · Assembling a GPT</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 4 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const f4=v=>v.toFixed(4), f2=v=>v.toFixed(2);
+const TOKENS=["Your","journey","starts","with","one","step"];
+const softmax=a=>{const m=Math.max(...a.filter(v=>v!==-Infinity));const e=a.map(v=>v===-Infinity?0:Math.exp(v-m));const s=e.reduce((p,q)=>p+q,0);return e.map(v=>v/s);};
+
+/* SelfAttention_v2 (seed 789) — full attention scores and weights, verified in PyTorch */
+const SA2_SCORES=[
+ [0.2899,0.0716,0.0760,-0.0138,0.1344,-0.0511],
+ [0.4656,0.1723,0.1751,0.0259,0.1771,0.0085],
+ [0.4594,0.1703,0.1731,0.0259,0.1745,0.0090],
+ [0.2642,0.1024,0.1036,0.0186,0.0973,0.0122],
+ [0.2183,0.0874,0.0882,0.0177,0.0786,0.0144],
+ [0.3408,0.1270,0.1290,0.0198,0.1290,0.0078]
+];
+const SA2_WEIGHTS=[
+ [0.1921,0.1646,0.1652,0.1550,0.1721,0.1510],
+ [0.2041,0.1659,0.1662,0.1496,0.1665,0.1477],
+ [0.2036,0.1659,0.1662,0.1498,0.1664,0.1480],
+ [0.1869,0.1667,0.1668,0.1571,0.1661,0.1564],
+ [0.1830,0.1669,0.1670,0.1588,0.1658,0.1585],
+ [0.1935,0.1663,0.1666,0.1542,0.1666,0.1529]
+];
+
+/* ============ Lab 7 — causal mask ============ */
+let maskMode="naive";
+function renderMask(){
+  const W6=SA2_WEIGHTS;
+  const zeroed=W6.map((r,i)=>r.map((v,j)=>j<=i?v:0));
+  const renorm=zeroed.map(r=>{const s=r.reduce((p,q)=>p+q,0);return r.map(v=>s?v/s:0);});
+  const negScores=SA2_SCORES.map((r,i)=>r.map((v,j)=>j<=i?v:-Infinity));
+  const infW=negScores.map(r=>softmax(r.map(v=>v===-Infinity?-Infinity:v/Math.SQRT2)));
+
+  const tbl=(M,title,maskAbove)=>"<div style='margin-bottom:14px'><div class='lbl-sm' style='margin-bottom:6px'>"+title+"</div>"+
+    "<div class='scroll-x'><table class='mx'><tr><th></th>"+TOKENS.map(t=>"<th>"+t+"</th>").join("")+"</tr>"+
+    M.map((row,i)=>"<tr><th class='rh'>"+TOKENS[i]+"</th>"+row.map((v,j)=>
+      (maskAbove&&j>i) ? "<td class='masked'>"+(v===-Infinity?"−inf":f4(0))+"</td>" : "<td>"+f4(v)+"</td>"
+    ).join("")+"</tr>").join("")+"</table></div></div>";
+
+  document.getElementById("mask-stages").innerHTML = maskMode==="naive"
+    ? tbl(W6,"1 · softmax over all positions (the v2 weights)",false)+tbl(zeroed,"2 · zero everything above the diagonal (tril)",true)+tbl(renorm,"3 · renormalise each row to sum to 1",true)
+    : tbl(negScores,"1 · set scores above the diagonal to −infinity (triu)",true)+tbl(infW,"2 · scale by √d_k and softmax — done",true);
+
+  const r2=(maskMode==="naive"?renorm:infW)[1];
+  document.getElementById("mask-detail").innerHTML=
+    "<h5>"+(maskMode==="naive"?"Three steps":"One step")+" — row 2 = ["+r2.map(f4).join(", ")+"]</h5>"+
+    "<p>"+(maskMode==="naive"
+      ? "Softmax first, zero the upper triangle, then divide each row by its own sum to restore totals of 1."
+      : "Because e<sup>−∞</sup> = 0, softmax assigns those positions exactly zero probability and the remaining weights already sum to 1. No renormalisation needed.")+"</p>"+
+    "<div class='spam'><b>Both routes agree</b>Row 2 comes out as <code>[0.5517, 0.4483, 0, 0, 0, 0]</code>, matching the notebook. Tiny ±0.0001 differences can appear because this page starts from 4-decimal rounded values rather than full float precision — in PyTorch the two routes are bit-identical.</div>";
+  document.querySelectorAll("[data-mask]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mask===maskMode)));
+}
+let maskTimer=null;
+function stopMaskWatch(){ if(maskTimer){clearInterval(maskTimer);maskTimer=null;
+  document.getElementById("mask-watch").textContent="▶ Watch both routes";} }
+document.querySelectorAll("[data-mask]").forEach(b=>b.addEventListener("click",()=>{stopMaskWatch();maskMode=b.dataset.mask;renderMask();}));
+document.getElementById("mask-watch").addEventListener("click",()=>{
+  if(maskTimer){ stopMaskWatch(); return; }
+  document.getElementById("mask-watch").textContent="⏸ Stop";
+  maskTimer=setInterval(()=>{ maskMode = maskMode==="naive" ? "inf" : "naive"; renderMask(); },3600);
+  maskMode="naive"; renderMask();
+});
+renderMask();
+
+/* ============ Lab 8 — dropout ============ */
+let dropSeed=1;
+function rnd(){ dropSeed=(dropSeed*1103515245+12345)&0x7fffffff; return dropSeed/0x7fffffff; }
+function renderDrop(){
+  const rate=+document.getElementById("drop-rate").value;
+  document.getElementById("drop-rate-v").textContent=rate.toFixed(1);
+  const scale=rate<1?1/(1-rate):0;
+  document.getElementById("drop-scale").textContent=rate===0?"1.00×":scale.toFixed(2)+"×";
+  const causal=SA2_WEIGHTS.map((r,i)=>{
+    const z=r.map((v,j)=>j<=i?v:0), s=z.reduce((p,q)=>p+q,0);
+    return z.map(v=>s?v/s:0);
+  });
+  let kept=0,total=0;
+  const cells=causal.map((row,i)=>row.map((v,j)=>{
+    if(j>i) return {v:0,state:"masked"};
+    total++;
+    if(rnd()<rate) return {v:0,state:"drop"};
+    kept++; return {v:v*scale,state:"keep"};
+  }));
+  document.getElementById("drop-mx").innerHTML=
+    "<tr><th></th>"+TOKENS.map(t=>"<th>"+t+"</th>").join("")+"</tr>"+
+    cells.map((row,i)=>"<tr><th class='rh'>"+TOKENS[i]+"</th>"+row.map(c=>
+      c.state==="masked" ? "<td class='masked'>—</td>"
+      : c.state==="drop" ? "<td class='drop'>0.0000</td>"
+      : "<td>"+f4(c.v)+"</td>").join("")+"</tr>").join("");
+  document.getElementById("drop-detail").innerHTML=
+    "<h5>"+(total-kept)+" of "+total+" unmasked weights dropped</h5>"+
+    "<p>Rate "+rate.toFixed(1)+" zeroes roughly that fraction at random, and survivors are multiplied by "+
+    (rate===0?"1.00":scale.toFixed(2))+" so the total magnitude stays about the same.</p>"+
+    "<div class='spam'><b>Two different masks</b>The hatched cells are the <em>causal</em> mask — fixed, structural, always the upper triangle. The struck-through cells are <em>dropout</em> — random, different every batch, and switched off entirely at inference time.</div>";
+}
+document.getElementById("drop-rate").addEventListener("input",renderDrop);
+document.getElementById("drop-roll").addEventListener("click",()=>{dropSeed=(dropSeed*7919+13)&0x7fffffff;renderDrop();});
+renderDrop();
+
+/* ============ Lab 9 — multi-head ============ */
+let mhMode="wrap";
+function renderMH(){
+  let dout=+document.getElementById("mh-dout").value;
+  let heads=+document.getElementById("mh-heads").value;
+  document.getElementById("mh-dout-v").textContent=dout;
+  document.getElementById("mh-heads-v").textContent=heads;
+  const ok = dout%heads===0;
+  const hd = ok ? dout/heads : null;
+
+  document.getElementById("mh-heads-view").innerHTML = ok
+    ? Array.from({length:heads},(_,i)=>
+        "<div class='head h"+(i%4)+"'><div class='hn'>head "+i+"</div>"+
+        "<div style='font-size:var(--fs-xs)'>head_dim = "+hd+"</div>"+
+        "<div style='font-size:var(--fs-xs);opacity:.8'>"+(mhMode==="wrap"?"own W<sub>q</sub>, W<sub>k</sub>, W<sub>v</sub>":"a slice of the shared W")+"</div></div>").join("")
+    : "<div class='detail' style='flex:1'><b style='color:var(--clay)'>assert failed:</b> d_out ("+dout+") is not divisible by num_heads ("+heads+"). PyTorch raises here — head_dim must be a whole number.</div>";
+
+  document.getElementById("mh-shapes").innerHTML = ok
+    ? "<div class='lbl-sm' style='margin-bottom:8px'>Tensor shapes through the forward pass</div>"+
+      (mhMode==="wrap"
+      ? "<pre>x                     (2, 6, 3)      <span class='cm'># batch, tokens, d_in</span>\n"+
+        Array.from({length:heads},(_,i)=>"head_"+i+"(x)            (2, 6, "+dout/heads*0+dout+")"+" ".repeat(Math.max(1,6-String(dout).length))+"<span class='cm'># full CausalAttention, separately</span>").join("\n")+"\n"+
+        "torch.cat(..., -1)    (2, 6, "+dout*heads+")"+" ".repeat(Math.max(1,6-String(dout*heads).length))+"<span class='cm'># widths add up: "+heads+" × "+dout+"</span></pre>"
+      : "<pre>x                     (2, 6, 3)      <span class='cm'># batch, tokens, d_in</span>\n"+
+        "W_key(x)              (2, 6, "+dout+")"+" ".repeat(Math.max(1,6-String(dout).length))+"<span class='cm'># ONE projection, full width</span>\n"+
+        ".view(...)            (2, 6, "+heads+", "+hd+")   <span class='cm'># split into heads</span>\n"+
+        ".transpose(1, 2)      (2, "+heads+", 6, "+hd+")   <span class='cm'># heads before tokens</span>\n"+
+        "attn @ values         (2, "+heads+", 6, "+hd+")   <span class='cm'># attention per head</span>\n"+
+        ".transpose(1,2).view  (2, 6, "+dout+")"+" ".repeat(Math.max(1,6-String(dout).length))+"<span class='cm'># heads recombined</span>\n"+
+        "out_proj(...)         (2, 6, "+dout+")"+" ".repeat(Math.max(1,6-String(dout).length))+"<span class='cm'># final linear layer</span></pre>")
+    : "";
+
+  document.getElementById("mh-detail").innerHTML = !ok ? "<h5>Invalid configuration</h5><p>Pick a d_out that divides evenly by the head count.</p>" :
+    mhMode==="wrap"
+    ? "<h5>Wrapper: "+heads+" separate modules</h5><p>Each head is its own <code>CausalAttention</code> object with its own weight matrices of width "+dout+", run one after another; the outputs are concatenated to width "+(dout*heads)+". Note the wrapper's output width is d_out × num_heads.</p>"+
+      "<div class='spam'><b>The cost</b>"+heads+" separate matrix multiplications for the keys, "+heads+" for the queries, "+heads+" for the values. Simple to read, wasteful to run.</div>"
+    : "<h5>Weight splits: one module, "+heads+" views</h5><p>One <code>W_key</code> of width "+dout+" is applied <em>once</em>, then <code>.view()</code> reshapes the result into "+heads+" heads of "+hd+" dimensions each — total width stays "+dout+". No data is copied; it's a reinterpretation of the same memory.</p>"+
+      "<div class='spam'><b>Why it's faster</b>One matrix multiplication instead of "+heads+", and PyTorch batches the per-head attention automatically across the head dimension. Mathematically equivalent; substantially cheaper.</div>";
+  document.getElementById("mh-wrap").setAttribute("aria-pressed",String(mhMode==="wrap"));
+  document.getElementById("mh-split").setAttribute("aria-pressed",String(mhMode==="split"));
+}
+["mh-dout","mh-heads"].forEach(id=>document.getElementById(id).addEventListener("input",renderMH));
+document.getElementById("mh-wrap").addEventListener("click",()=>{mhMode="wrap";renderMH();});
+document.getElementById("mh-split").addEventListener("click",()=>{mhMode="split";renderMH();});
+renderMH();
+
+/* ============ quiz ============ */
+const QUIZ=[
+ {q:"In causal attention, which part of the attention matrix is masked, and why?",
+  o:["The diagonal — self-attention is redundant","Everything below the diagonal — the past is already processed","Everything above the diagonal — those cells are the future, and a next-token predictor must not see it","Randomly selected cells"],
+  a:2,
+  e:"Rows are queries; columns are what they attend to. Cells above the diagonal let position i see positions after i — the future. A model allowed to peek learns to copy instead of predict, and fails at generation time when there is no future to copy."},
+ {q:"Why does the −∞ trick work?",
+  o:["Negative infinity underflows to a small number","e^−∞ = 0, so softmax gives those positions exactly zero weight and the survivors already sum to 1","PyTorch special-cases −inf in matmul","It doesn't — it's an approximation"],
+  a:1,
+  e:"Softmax exponentiates before normalising, and e^−∞ = 0. The masked positions vanish from both numerator and denominator, so no renormalisation step is needed — one operation instead of three."},
+ {q:"Doesn't route 1 (softmax, then zero, then renormalise) leak future information?",
+  o:["Yes, slightly — but it's tolerated","No — renormalising after masking is mathematically identical to running softmax over only the visible positions","Yes, which is why route 2 exists","Only for long sequences"],
+  a:1,
+  e:"The masked positions' contributions cancel exactly when each row is re-divided by its new sum. The result is as if softmax had only ever seen the visible positions. Route 2 is preferred for efficiency, not correctness."},
+ {q:"How do the causal mask and dropout differ?",
+  o:["They are two names for the same thing","The causal mask is fixed and structural; dropout is random, exists to fight overfitting, and is disabled at inference","Dropout runs first","The causal mask only applies to the first layer"],
+  a:1,
+  e:"The causal mask is always the same upper triangle, applied at training and inference alike. Dropout zeroes different random cells every batch, scales survivors by 1/(1−rate), and is switched off entirely at inference."},
+ {q:"What does register_buffer accomplish for the mask?",
+  o:["It makes the mask trainable","It stores the mask in the module so it moves to the GPU with the model, without the optimiser ever updating it","It compresses the mask to save memory","It shares one mask across all layers"],
+  a:1,
+  e:"The mask is data the module needs but must never train. A buffer travels with the model — .to(device) moves it automatically, avoiding device-mismatch errors — while staying invisible to the optimiser."},
+ {q:"In MultiHeadAttention, why transpose to (b, num_heads, num_tokens, head_dim) before the score computation?",
+  o:["To save memory","Because @ multiplies the last two dims and batches over the rest — heads must sit in a batch position for each head's attention to run independently","Because softmax requires it","To match the mask's shape"],
+  a:1,
+  e:"PyTorch's matrix multiply treats all leading dimensions as batches and multiplies the final two. With heads moved before tokens, every head gets its own independent (tokens × head_dim) attention — computed simultaneously in one call. Left where it was, heads would blend together."}
+];
+const quizBox=document.getElementById("quiz-box"), scoreEl=document.getElementById("quiz-score");
+let answered=0,correct=0;
+QUIZ.forEach((item,qi)=>{
+  const card=document.createElement("div"); card.className="q-card";
+  card.innerHTML="<div class='qq'>"+(qi+1)+". "+esc(item.q)+"</div>";
+  const opts=document.createElement("div"); opts.className="opts";
+  item.o.forEach((text,oi)=>{
+    const b=document.createElement("button"); b.type="button"; b.className="opt"; b.textContent=text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return; card.dataset.done="1"; answered++;
+      if(oi===item.a) correct++;
+      [...opts.children].forEach((el,j)=>{el.disabled=true;
+        if(j===item.a) el.classList.add("right"); else if(j===oi) el.classList.add("wrong");});
+      const ex=document.createElement("div"); ex.className="explain";
+      ex.innerHTML=(oi===item.a?"<b>Correct.</b> ":"<b>Not quite.</b> ")+item.e;
+      card.appendChild(ex);
+      if(answered===QUIZ.length){scoreEl.hidden=false;
+        scoreEl.textContent="You scored "+correct+" out of "+QUIZ.length+
+          (correct===QUIZ.length?" — the hardest stretch of the journey is yours.":
+           correct>=4?" — good. Revisit the labs for the ones you missed.":
+           " — this material rewards a second pass. Work through labs 7 and 9 again.");}
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts); quizBox.appendChild(card);
+});
+
+/* ============ glossary ============ */
+const GLOSSARY=[
+ ["Causal attention","Attention masked so each position sees only itself and earlier positions. Also called masked attention. What makes left-to-right generation possible."],
+ ["Causal mask","The fixed upper-triangular mask hiding future tokens. Structural, identical for every input, active at training and inference."],
+ ["−inf masking","Setting future scores to negative infinity before softmax so they get exactly zero weight — one step instead of zero-then-renormalise."],
+ ["tril / triu","torch.tril keeps the lower triangle (route 1's multiply-mask); torch.triu with diagonal=1 marks the strict upper triangle (route 2's −∞ mask)."],
+ ["Dropout","Randomly zeroing weights during training to reduce overfitting; survivors are scaled by 1/(1−rate). Disabled at inference."],
+ ["Batch dimension","The leading tensor axis holding multiple sequences at once: (b, num_tokens, d). Every real input has one."],
+ ["register_buffer","PyTorch mechanism for storing a non-trainable tensor (the mask) inside a module so it moves to the GPU with the model."],
+ ["masked_fill_","In-place fill of masked positions (the trailing underscore means in-place — no memory copy)."],
+ ["Multi-head attention","Several attention mechanisms run in parallel, each with its own weights, outputs concatenated then mixed by out_proj."],
+ ["head_dim","d_out divided by num_heads — each head's slice of the width. Must divide evenly, hence the assert."],
+ [".view / .transpose","Reshape and axis-swap operations that split one wide projection into heads and back — reinterpretations of memory, not copies."],
+ ["out_proj","The final linear layer applied after concatenating heads. Optional in principle, standard in real architectures."],
+ ["MultiHeadAttentionWrapper","The pedagogical version: a list of complete CausalAttention modules run sequentially. Correct but repeats every projection per head."],
+ ["Weight splits","The efficient version: one wide W per projection, applied once, then reshaped into heads — the form used in real LLMs."]
+];
+document.getElementById("gloss-list").innerHTML=GLOSSARY.map(([t,d])=>
+ "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ scrollspy ============ */
+const links=[...document.querySelectorAll(".rail a")];
+const targets=links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line=window.innerHeight*0.28; let active=targets[0];
+  for(const t of targets){ if(t.getBoundingClientRect().top<=line) active=t; }
+  if(window.innerHeight+window.scrollY>=document.body.scrollHeight-4) active=targets[targets.length-1];
+  links.forEach(a=>a.classList.toggle("on",a.getAttribute("href")==="#"+active.id));
+}
+let ticking=false;
+addEventListener("scroll",()=>{if(ticking)return;ticking=true;requestAnimationFrame(()=>{syncRail();ticking=false;});},{passive:true});
+addEventListener("resize",syncRail); syncRail();
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>
