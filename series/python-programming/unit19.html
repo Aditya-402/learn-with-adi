@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Functions as Values — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u19" data-lwa-title="Unit 19 · Functions as values">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Advanced — The subtle machinery · Unit 19</div>
+      <h1>Functions as Values</h1>
+      <p class="standfirst">Since Unit 7 a function has been something you <i>do</i>. This session says the quieter, stranger thing: a function is something you <i>have</i> — a value that fits in a box, rides inside a list, sits in a dict, gets handed to another function. That one shift buys you <code style="font-size:.85em">key=</code>, closures, and the wrapper shape the next unit is built on.</p>
+      <div class="facts">
+        <div><b>One session</b>~50 min</div>
+        <div><b>5 concepts</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Unit 7 functions · Unit 6 dicts · Unit 12 comprehensions</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">19.1 The function IS a value</a>
+    <a href="#s2">19.2 lambda &amp; key=</a>
+    <a href="#s3">19.3 Closures</a>
+    <a href="#s4">19.4 *args / **kwargs</a>
+    <a href="#s5">19.5 Build: leaderboard &amp; events</a>
+    <a href="#s6">19.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 19.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Unit 7</b>def, parameters, and return vs print. The canon line from that unit — <i>def is writing the recipe card, calling is cooking</i> — carries this entire session.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm: a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit19.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>Also in play</b>Unit 6's lists of dicts, Unit 12's comprehensions, Unit 17's <code>enumerate</code> and Unit 9's <code>.get</code>. This is the unit where four earlier units get paid back at once.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">19.1</span>
+      <h2>The function IS a value</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> You want a helper that applies <i>any</i> operation twice — double it twice, shout it twice, round it twice. You can write <code>apply_twice_to_double</code>, then <code>apply_twice_to_shout</code>, then… no. What you actually want is to hand the operation itself to the helper, the way you hand it a number. Can you put a function in a box?</p>
+      <p><b>The idea, in plain words.</b> You can, and you already have — you just didn't notice. When Python reads <code>def greet(): ...</code> it builds a recipe card and then does something very familiar: it puts that card in a labeled box called <code>greet</code>. The <code>def</code> line is an assignment in disguise. Which means everything you know about boxes applies:</p>
+      <ul class="plain">
+        <li><b><code>greet</code> is the card. <code>greet()</code> is the cooking.</b> The name alone hands over the recipe; the parentheses are the instruction "make this now".</li>
+        <li><b>A second label can point at the same card.</b> <code>shout = greet</code> doesn't copy the recipe or run it — it ties a second label to the one function that already exists. <code>shout()</code> cooks the very same dish.</li>
+        <li><b>Cards travel.</b> A function can go into a list, into a dict as a value, into another function as an argument, and can come back out of a function as a return value. Sections 19.2–19.5 are four consequences of that one sentence.</li>
+      </ul>
+      <p>A function you hand to another function has a name: it's an <b>argument</b> like any other. And a function that <i>takes</i> a function (or hands one back) is called a <b>higher-order function</b> — a grand phrase for a plain idea, so let's earn it by tracing one.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — one card, two labels</div>
+      <div class="m">def greet():
+    print("Hello!")
+
+shout = greet
+greet()
+shout()</div>
+      <p><b>Lines 1–2:</b> a recipe card is built and stored in the box <code>greet</code>. Nothing is printed — nobody has cooked anything.</p>
+      <p><b>Line 4:</b> right side first, as always: <code>greet</code> reads the box and finds the card. No parentheses, so no cooking. That card is stored into a second box, <code>shout</code>. Two boxes, <i>one</i> card — this is the first time in these notes two labels point at the same thing, and the figure below is worth thirty seconds.</p>
+      <p><b>Lines 5–6:</b> both calls cook the same recipe:</p>
+      <div class="m">Hello!
+Hello!</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 260" role="img" aria-label="Two labels, greet and shout, both pointing at one function object">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">THE STATE OF MEMORY AFTER  shout = greet</text>
+        <rect x="40" y="66" width="170" height="56" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="125" y="89" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">greet</text>
+        <text x="125" y="110" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">holds a card</text>
+        <rect x="40" y="160" width="170" height="56" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="125" y="183" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">shout</text>
+        <text x="125" y="204" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">holds the same card</text>
+        <path d="M210 94 L 356 128" stroke="#5b4b9e" stroke-width="1.6" fill="none" marker-end="url(#a19)"/>
+        <path d="M210 188 L 356 152" stroke="#2b7a78" stroke-width="1.6" fill="none" marker-end="url(#a19t)"/>
+        <defs>
+          <marker id="a19" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#5b4b9e"/></marker>
+          <marker id="a19t" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#2b7a78"/></marker>
+        </defs>
+        <rect x="366" y="86" width="330" height="108" rx="12" fill="#23262e" stroke="#3d3170" stroke-width="1.5"/>
+        <text x="386" y="112" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#c8c2e8">def greet():</text>
+        <text x="386" y="134" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#e6e4f0">    print("Hello!")</text>
+        <text x="386" y="170" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#9aa3b8">ONE function object — the recipe card itself</text>
+        <text x="712" y="126" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">no copy</text>
+        <text x="712" y="146" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">was made</text>
+        <text x="366" y="232" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">greet()  and  shout()  both cook this one recipe.</text>
+      </svg>
+      <div class="figcap">Fig. 1 — Two labels, one card. Every box picture so far had one label per box; this is the first time two names sit on the same thing, and it is exactly why <code>shout = greet</code> costs nothing and changes nothing.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>greet</code> versus <code>greet()</code> — the card versus the cooked dish. <code>x = greet</code> puts the recipe in a box; <code>x = greet()</code> runs the recipe and puts <i>what it returned</i> in the box (often <code>None</code>). And never <code>print(greet)</code>: Python answers with something like <code>&lt;function greet at 0x7f2b1c&gt;</code> — a machine address, useful to nobody. If you see that in your output, you forgot a pair of parentheses somewhere.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> one helper, <code>apply_twice(func, value)</code>, that works for numbers and for text. <b>Thinking:</b> the first parameter is an ordinary parameter that happens to receive a card. Inside, <code>func(value)</code> cooks it once; wrapping that in <code>func(...)</code> again cooks it twice. Note the call sites: <code>add_five</code> with no parentheses — we're handing over the card, not the dish.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">def apply_twice(func, value):
+    return func(func(value))
+
+def add_five(n):
+    return n + 5
+
+def shout(text):
+    return text.upper() + "!"
+
+print(apply_twice(add_five, 10))
+print(apply_twice(shout, "hi"))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">19.1 · P1</span><span class="pt">A second name for one recipe</span></div>
+        <p class="pd">Write <code>cheer(name)</code> that prints <code>Go &lt;name&gt;!</code>. Then tie a second label, <code>applaud</code>, to the same function and call the two names once each — <code>cheer</code> with <code>Ada</code>, <code>applaud</code> with <code>Ravi</code>.</p>
+        <div class="want">Go Ada!
+Go Ravi!</div>
+        <div class="pyrun" data-id="s1p1" data-expect="Go Ada!\nGo Ravi!">
+          <textarea spellcheck="false">def cheer(name):
+    print(f"Go {name}!")
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def cheer(name):
+    print(f"Go {name}!")
+
+applaud = cheer
+cheer("Ada")
+applaud("Ravi")</pre><p>No parentheses on line 4 — that's the whole trick. One card, two labels, identical behaviour.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">19.1 · P2</span><span class="pt">Predict: card or dish?</span></div>
+        <p class="pd">Two boxes get filled from the same function — one with parentheses, one without. Predict all three lines on paper before running. (<code>type(b).__name__</code> asks Python what kind of thing <code>b</code> holds, in one polite word.)</p>
+        <div class="pyrun" data-id="s1p2">
+          <textarea spellcheck="false">def double(n):
+    return n * 2
+
+a = double(4)
+b = double
+print(a)
+print(b(4))
+print(type(b).__name__)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>8
+8
+function</pre><p><code>a</code> holds the <i>dish</i> — the number 8, cooked once, at line 4. <code>b</code> holds the <i>card</i>, so <code>b(4)</code> cooks it fresh and gets 8 too. And Python confirms what's in the box: a function. Same answers, completely different contents.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">19.1 · P3</span><span class="pt">Your own higher-order helper</span></div>
+        <p class="pd">Write <code>apply_twice(func, value)</code> yourself — it returns <code>func</code> applied to <code>value</code> twice. Then feed it two different cards: <code>add_exclaim</code> (glues a <code>!</code> on the end) with <code>"Wow"</code>, and <code>halve</code> (integer-divides by 2) with <code>100</code>.</p>
+        <div class="want">Wow!!
+25</div>
+        <div class="pyrun" data-id="s1p3" data-expect="Wow!!\n25">
+          <textarea spellcheck="false">def apply_twice(func, value):
+    # return func applied twice
+
+def add_exclaim(text):
+    return text + "!"
+
+def halve(n):
+    return n // 2
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def apply_twice(func, value):
+    return func(func(value))
+
+def add_exclaim(text):
+    return text + "!"
+
+def halve(n):
+    return n // 2
+
+print(apply_twice(add_exclaim, "Wow"))
+print(apply_twice(halve, 100))</pre><p>Read the inner-to-outer order: <code>func(value)</code> first, then that result back through <code>func</code>. One helper, any operation — that's the payoff for treating the card as a value.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 19.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">19.2</span>
+      <h2>lambda — and the <code>key=</code> trick that makes it worth learning</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~11 min</span></span>
+      <p><b>The problem.</b> You have a list of student dicts and you want them ordered by marks, highest first. <code>sorted()</code> doesn't know what "marks" means — it sorts whole values, and a dict isn't something it can rank. You need to tell it: <i>for each student, this is the thing to compare</i>. That instruction is a function. Writing a three-line <code>def</code> for it feels absurd.</p>
+      <p><b>The idea, in plain words.</b> A <b>lambda</b> is a nameless one-line function you write on the spot, at the moment you need to hand one over. <code>lambda x: x * 2</code> means exactly what <code>def f(x): return x * 2</code> means — parameters before the colon, one expression after it, and that expression is automatically returned. No <code>def</code>, no name, no <code>return</code> keyword.</p>
+      <p>It earns its keep in one place above all others: the <code>key=</code> parameter of <code>sorted()</code>, <code>max()</code> and <code>min()</code>. You hand over a card; Python cooks it once per item and sorts by whatever comes back:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">sorted(words, key=len)
+sorted(students, key=lambda s: s["marks"], reverse=True)</p>
+      <p>The first line hands over a card you didn't even write — <code>len</code> is a function, so <code>key=len</code> means "rank each word by its length". The second writes the card inline: <i>given a student, the thing to compare is their marks</i>, and <code>reverse=True</code> flips the order to biggest-first. That second line is the single most common lambda you will ever see in real code.</p>
+      <div class="aside">
+        <div class="lbl">The honest rule</div>
+        If a lambda wants to be two lines, it wants to be a <code>def</code> with a name. Lambdas are for expressions so small that naming them would be noise. Anything with a condition worth explaining, a loop, or a comment deserves a real name — a name is free documentation.
+      </div>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — what <code>key=</code> actually does</div>
+      <div class="m">words = ["pear", "fig", "banana"]
+print(sorted(words, key=len))</div>
+      <p><b>Step 1:</b> <code>sorted</code> takes each item and cooks the card once: <code>len("pear")</code> → 4, <code>len("fig")</code> → 3, <code>len("banana")</code> → 6. Three tags: 4, 3, 6.</p>
+      <p><b>Step 2:</b> it sorts the <i>items</i> by their tags — 3, 4, 6 — and hands back a brand-new list. The tags are then thrown away; you never see them.</p>
+      <div class="m">['fig', 'pear', 'banana']</div>
+      <p>Two things worth pinning down. <code>sorted()</code> returns a new list and leaves <code>words</code> untouched. And <code>key=</code> never changes the items — it only decides their order.</p>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>key=len</code>, never <code>key=len()</code>. You are handing <code>sorted</code> the recipe card so it can cook it once per item; <code>len()</code> would try to cook it immediately, with no ingredients, and die with a <code>TypeError</code>. Same for your own: <code>key=lambda s: s["marks"]</code> is a card. The rule from 19.1 has not changed — parentheses mean "now".</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a list of student dicts (Unit 6's shape), ranked by marks, highest first — plus the topper by name. <b>Thinking:</b> one lambda, reused. <code>max</code> takes the very same <code>key=</code> and returns the whole winning dict, not just the number, so we pull the name back out of it. And we print through a loop with an f-string — a raw list of dicts on screen is unreadable and always was.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">students = [
+    {"name": "Ada", "marks": 78},
+    {"name": "Ravi", "marks": 91},
+    {"name": "Mira", "marks": 84},
+]
+
+for s in sorted(students, key=lambda s: s["marks"], reverse=True):
+    print(f"{s['name']}: {s['marks']}")
+
+top = max(students, key=lambda s: s["marks"])
+print(f"Top: {top['name']}")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">19.2 · P1</span><span class="pt">Shortest first</span></div>
+        <p class="pd">Print these words one per line, shortest first, using <code>sorted</code> with <code>key=len</code>. Watch what happens to the two six-letter words: Python's sort is <b>stable</b>, so ties keep their original order.</p>
+        <div class="want">fig
+kiwi
+banana
+cherry</div>
+        <div class="pyrun" data-id="s2p1" data-expect="fig\nkiwi\nbanana\ncherry">
+          <textarea spellcheck="false">words = ["banana", "fig", "cherry", "kiwi"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>words = ["banana", "fig", "cherry", "kiwi"]
+for w in sorted(words, key=len):
+    print(w)</pre><p>No lambda needed — <code>len</code> was already a function sitting in a box, waiting to be handed over. <code>banana</code> comes before <code>cherry</code> because it came first in the original list.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">19.2 · P2</span><span class="pt">Books by length</span></div>
+        <p class="pd">A list of dicts (Unit 6, back again). Print every title with its page count, thinnest book first, in the exact shape below.</p>
+        <div class="want">Siddhartha: 152
+Dune: 412
+Emma: 474</div>
+        <div class="pyrun" data-id="s2p2" data-expect="Siddhartha: 152\nDune: 412\nEmma: 474">
+          <textarea spellcheck="false">books = [
+    {"title": "Dune", "pages": 412},
+    {"title": "Emma", "pages": 474},
+    {"title": "Siddhartha", "pages": 152},
+]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>books = [
+    {"title": "Dune", "pages": 412},
+    {"title": "Emma", "pages": 474},
+    {"title": "Siddhartha", "pages": 152},
+]
+for b in sorted(books, key=lambda b: b["pages"]):
+    print(f"{b['title']}: {b['pages']}")</pre><p>The lambda's parameter is one book; what it returns is the number to rank by. Ascending is the default — no <code>reverse=</code> needed.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">19.2 · P3</span><span class="pt">max and min take key= too</span></div>
+        <p class="pd">From the same list, print the highest scorer's name and the shortest name in the group. <code>max</code> and <code>min</code> hand back the whole winning item — so read the field you want off it afterwards.</p>
+        <div class="want">Top scorer: Ravi
+Shortest name: Ada</div>
+        <div class="pyrun" data-id="s2p3" data-expect="Top scorer: Ravi\nShortest name: Ada">
+          <textarea spellcheck="false">students = [
+    {"name": "Ada", "marks": 78},
+    {"name": "Ravi", "marks": 91},
+    {"name": "Mira", "marks": 84},
+    {"name": "Bhavana", "marks": 66},
+]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>students = [
+    {"name": "Ada", "marks": 78},
+    {"name": "Ravi", "marks": 91},
+    {"name": "Mira", "marks": 84},
+    {"name": "Bhavana", "marks": 66},
+]
+top = max(students, key=lambda s: s["marks"])
+short = min(students, key=lambda s: len(s["name"]))
+print(f"Top scorer: {top['name']}")
+print(f"Shortest name: {short['name']}")</pre><p>Two different cards, same mechanism: rank by marks, rank by name length. Without <code>key=</code>, <code>max</code> on dicts simply refuses — it has no idea what "biggest dict" would mean.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">19.2 · P4</span><span class="pt">Stretch — fix the broken sort</span></div>
+        <p class="pd">This is the mistake everyone makes once: the author passed the <i>data</i> where a <i>card</i> belongs. Run it, read the last line of the report, then fix the <code>key=</code> so it ranks by marks, highest first.</p>
+        <div class="want">Ravi 91
+Mira 84
+Ada 78</div>
+        <div class="pyrun" data-id="s2p4" data-expect="Ravi 91\nMira 84\nAda 78">
+          <textarea spellcheck="false">students = [
+    {"name": "Ada", "marks": 78},
+    {"name": "Ravi", "marks": 91},
+    {"name": "Mira", "marks": 84},
+]
+for s in sorted(students, key=students["marks"], reverse=True):
+    print(s["name"], s["marks"])</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>for s in sorted(students, key=lambda s: s["marks"], reverse=True):
+    print(s["name"], s["marks"])</pre><p><code>key=</code> wants a card that Python will cook once per item — not a value you looked up yourself. The lambda says "when you get to a student, <i>then</i> read their marks".</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 19.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">19.3</span>
+      <h2>Closures — a function that packs a lunchbox</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> You need a doubler, a tripler and a ten-timer. Three nearly identical functions, differing by one number. You could write one <code>multiply(n, x)</code> — but <code>sorted</code>'s <code>key=</code> wants a card that takes <i>one</i> argument. What you really want is a machine that stamps out ready-made one-argument functions on demand.</p>
+      <p><b>The idea, in plain words.</b> Since 19.1, a function can be returned like any other value — so write a <b>factory</b>: a function whose job is to build and hand back another function.</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">def make_multiplier(n):
+    return lambda x: x * n
+
+double = make_multiplier(2)</p>
+      <p>Now the strange and wonderful part. When <code>make_multiplier(2)</code> finishes, its <code>n</code> box should vanish — that's what happens to every parameter when a function returns (Unit 7). But the little function it produced still mentions <code>n</code>. So Python does the sensible thing: it lets the inner function <b>take the box with it</b>. The returned function walks out of the factory carrying a packed lunchbox containing <code>n = 2</code>, and it eats from that lunchbox for the rest of its life. A function plus the boxes it carried out is called a <b>closure</b>.</p>
+      <p>Every call to the factory packs a <i>fresh</i> lunchbox. <code>make_multiplier(3)</code> hands you a different function carrying <code>n = 3</code>, and the two never interfere.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the lunchbox leaves the kitchen</div>
+      <div class="m">def make_multiplier(n):
+    return lambda x: x * n
+
+double = make_multiplier(2)
+triple = make_multiplier(3)
+print(double(5))
+print(triple(5))</div>
+      <p><b>Line 4:</b> the factory runs with <code>n</code> holding <b>2</b>. It builds a small nameless card that says <code>x * n</code> and returns it. The factory ends — but <code>n = 2</code> is packed into that card's lunchbox. The box <code>double</code> now holds that card.</p>
+      <p><b>Line 5:</b> the factory runs again, from scratch, with a brand-new <code>n</code> holding <b>3</b>. A second card, a second lunchbox. <code>triple</code> holds it.</p>
+      <p><b>Lines 6–7:</b> <code>double(5)</code> cooks its card with <code>x = 5</code> and reads <code>n</code> from its own lunchbox → 10. <code>triple(5)</code> reads a different lunchbox → 15.</p>
+      <div class="m">10
+15</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 250" role="img" aria-label="Two functions from one factory, each carrying its own packed n box">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">AFTER THE FACTORY HAS RETURNED — TWICE</text>
+        <rect x="30" y="52" width="220" height="150" rx="12" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <text x="140" y="78" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#6b7585">make_multiplier(n)</text>
+        <text x="140" y="126" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">the kitchen is closed —</text>
+        <text x="140" y="146" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">the call is over, its</text>
+        <text x="140" y="166" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">frame is gone</text>
+        <path d="M254 100 L 320 100" stroke="#5b4b9e" stroke-width="1.6" fill="none" marker-end="url(#b19)"/>
+        <path d="M254 160 L 320 160" stroke="#2b7a78" stroke-width="1.6" fill="none" marker-end="url(#b19t)"/>
+        <defs>
+          <marker id="b19" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#5b4b9e"/></marker>
+          <marker id="b19t" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#2b7a78"/></marker>
+        </defs>
+        <rect x="330" y="66" width="240" height="68" rx="10" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="348" y="90" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">double</text>
+        <text x="348" y="112" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">lambda x: x * n</text>
+        <rect x="588" y="76" width="86" height="48" rx="8" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="631" y="96" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#6b7585">lunchbox</text>
+        <text x="631" y="114" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">n = 2</text>
+        <rect x="330" y="150" width="240" height="68" rx="10" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="348" y="174" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">triple</text>
+        <text x="348" y="196" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">lambda x: x * n</text>
+        <rect x="588" y="160" width="86" height="48" rx="8" fill="#ffffff" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="631" y="180" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#6b7585">lunchbox</text>
+        <text x="631" y="198" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">n = 3</text>
+        <text x="692" y="102" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">same code,</text>
+        <text x="692" y="122" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">different lunch —</text>
+        <text x="692" y="142" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">that's a closure</text>
+      </svg>
+      <div class="figcap">Fig. 2 — The factory's frame is long gone, yet each returned function still has its own <code>n</code>. Adopt this picture: <b>a closure is a function carrying a packed lunchbox</b>. It explains every "how does it still remember that?" you will meet from here on.</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      A factory is a function that returns a function. The returned function keeps the boxes it needed from the factory's call — one fresh lunchbox per call — so one factory can stamp out an unlimited family of ready-made, one-argument functions.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> build two multipliers from one factory and prove they're independent. <b>Thinking:</b> two calls to the factory, two lunchboxes. The last line nests them — <code>triple(2)</code> cooks first and gives 6, then <code>double</code> takes that to 12 — which only works because each carries its own <code>n</code>.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">def make_multiplier(n):
+    return lambda x: x * n
+
+double = make_multiplier(2)
+triple = make_multiplier(3)
+
+print(double(5))
+print(triple(5))
+print(double(triple(2)))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">19.3 · P1</span><span class="pt">times3 and times10</span></div>
+        <p class="pd">Using the factory below, build <code>times3</code> and <code>times10</code>, then print <code>times3(7)</code>, <code>times10(7)</code>, and <code>times3(times10(1))</code>. Predict the third one before you run it.</p>
+        <div class="want">21
+70
+30</div>
+        <div class="pyrun" data-id="s3p1" data-expect="21\n70\n30">
+          <textarea spellcheck="false">def make_multiplier(n):
+    return lambda x: x * n
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def make_multiplier(n):
+    return lambda x: x * n
+
+times3 = make_multiplier(3)
+times10 = make_multiplier(10)
+print(times3(7))
+print(times10(7))
+print(times3(times10(1)))</pre><p>One factory, two lunchboxes, zero interference. The last line: <code>times10(1)</code> → 10, then <code>times3(10)</code> → 30.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">19.3 · P2</span><span class="pt">A greeter factory</span></div>
+        <p class="pd">Write <code>make_greeter(greeting)</code> that returns a function taking a name and returning <code>&lt;greeting&gt;, &lt;name&gt;!</code>. Build two greeters — <code>hello</code> and <code>namaste</code> — and print one greeting from each. (Here the inner function deserves a proper <code>def</code>: it's a real sentence-builder, not a scrap.)</p>
+        <div class="want">Hello, Ada!
+Namaste, Ravi!</div>
+        <div class="pyrun" data-id="s3p2" data-expect="Hello, Ada!\nNamaste, Ravi!">
+          <textarea spellcheck="false">def make_greeter(greeting):
+    def greet(name):
+        # build and return the sentence
+    return greet
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def make_greeter(greeting):
+    def greet(name):
+        return f"{greeting}, {name}!"
+    return greet
+
+hello = make_greeter("Hello")
+namaste = make_greeter("Namaste")
+print(hello("Ada"))
+print(namaste("Ravi"))</pre><p>Note <code>return greet</code> with no parentheses — hand back the card, don't cook it. The inner function's lunchbox holds <code>greeting</code>, and each factory call packs a different one.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">19.3 · P3</span><span class="pt">Stretch — predict: whose box is it?</span></div>
+        <p class="pd">A tagger is built with <code>"WARN"</code>. Then a completely separate box named <code>tag</code> is created outside. Does the tagger notice? Predict the output, then run — and be ready to explain your answer to yourself.</p>
+        <div class="pyrun" data-id="s3p3">
+          <textarea spellcheck="false">def make_tagger(tag):
+    return lambda text: f"[{tag}] {text}"
+
+warn = make_tagger("WARN")
+tag = "CHANGED"
+print(warn("disk almost full"))</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>[WARN] disk almost full</pre><p>The lambda eats from <i>its own lunchbox</i> — the <code>tag</code> box that belonged to that factory call. The <code>tag</code> created on line 5 is a different box that happens to share a label, exactly like a parameter shadowing an outer name in Unit 7. Closures carry their boxes, not their names.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 19.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">19.4</span>
+      <h2><code>*args</code> and <code>**kwargs</code> — functions that accept anything</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> <code>print</code> takes one argument, or five, or none. Your functions can't do that — <code>def total(a, b)</code> insists on exactly two. And there's a sharper version coming: to write a function that <i>wraps</i> another one, you must be able to accept whatever arguments the wrapped function wanted, without knowing what they are.</p>
+      <p><b>The idea, in plain words.</b> A star in the parameter list means "and everything else". Two spellings, two containers:</p>
+      <ul class="plain">
+        <li><b><code>*args</code></b> — collects every extra <i>positional</i> argument into a <b>tuple</b> (Unit 6's read-only list). <code>summary(3, 5, 9)</code> arrives inside as <code>args = (3, 5, 9)</code>.</li>
+        <li><b><code>**kwargs</code></b> — collects every extra <i>named</i> argument into a <b>dict</b>. <code>profile(name="Ada", city="Chennai")</code> arrives as <code>kwargs = {"name": "Ada", "city": "Chennai"}</code>.</li>
+      </ul>
+      <p>The names are pure convention — <code>*things</code> works identically — but <code>args</code> and <code>kwargs</code> are what every Python programmer expects to read, so use them.</p>
+      <p>Now the honest purpose, because collecting numbers is a toy. The reason this pair exists is <b>writing wrappers that pass everything through</b>. A star on the <i>calling</i> side does the opposite job: it unpacks. So a function can take anything and forward it, untouched, to somebody else:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">def log_call(func, *args, **kwargs):
+    print("about to call", func.__name__)
+    return func(*args, **kwargs)</p>
+      <p>Read it slowly: <code>log_call</code> accepts a card plus <i>whatever else</i>, announces something, then cooks that card with exactly the ingredients it was handed. Remember this shape. The next unit is built on it, line for line.</p>
+      <div class="aside">
+        <div class="lbl">While we're here — map and filter</div>
+        You will meet <code>map(func, items)</code> and <code>filter(func, items)</code> in other people's code: they cook a card over every item, or keep the items where the card returns True. Both take a card, so both attract lambdas. Wrap them in <code>list(...)</code> to see the results. Honestly, though — <code>[n * 2 for n in nums]</code> reads better than <code>list(map(lambda n: n * 2, nums))</code>, and Unit 12 already gave you the comprehension. Recognise <code>map</code> and <code>filter</code>; reach for a comprehension.
+      </div>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — what the star collects</div>
+      <div class="m">def summary(*args):
+    print(args)
+    print(sum(args))
+
+summary(3, 5, 9)</div>
+      <p><b>The call:</b> three positional arguments arrive with no named parameters waiting for them. The star sweeps them all into one tuple and puts it in the box <code>args</code>.</p>
+      <p><b>Line 2:</b> printing the box shows the tuple itself — round brackets, commas. <b>Line 3:</b> <code>sum</code> works on a tuple exactly as on a list.</p>
+      <div class="m">(3, 5, 9)
+17</div>
+      <p>Call it as <code>summary()</code> and <code>args</code> is the empty tuple <code>()</code> — no error. That's the point: any number, including none.</p>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>The same star means opposite things on the two sides. In a <code>def</code> line, <code>*args</code> <b>packs</b> loose arguments into a tuple. In a call, <code>func(*args)</code> <b>unpacks</b> that tuple back into loose arguments. Forget the star in the forwarding call and the whole tuple arrives as a single argument — one suitcase where three items were expected.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> one function that accepts any number of scores, one that accepts any set of named fields, and the wrapper shape that is the real reason both exist. <b>Thinking:</b> <code>len(args)</code> and <code>sum(args)</code> treat the tuple like a list; <code>kwargs.items()</code> treats the dict like a dict (Unit 6). Then watch <code>shout</code> get called <i>through</i> <code>log_call</code> without <code>log_call</code> knowing anything about it.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">def summary(*args):
+    print(f"got {len(args)} numbers, total {sum(args)}")
+
+summary(3, 5, 9)
+summary(10)
+summary()
+
+def profile(**kwargs):
+    for key, value in kwargs.items():
+        print(f"{key}: {value}")
+
+profile(name="Ada", city="Chennai", marks=91)
+
+def shout(text, times=1):
+    return (text.upper() + "! ") * times
+
+def log_call(func, *args, **kwargs):
+    print("calling", func.__name__)
+    return func(*args, **kwargs)
+
+print(log_call(shout, "ready", times=2))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">19.4 · P1</span><span class="pt">An average of anything</span></div>
+        <p class="pd">Write <code>average(*args)</code> that returns the mean of however many numbers it's given — and returns <code>0</code> for no numbers at all, rather than crashing on a division by zero.</p>
+        <div class="want">20.0
+5.0
+0</div>
+        <div class="pyrun" data-id="s4p1" data-expect="20.0\n5.0\n0">
+          <textarea spellcheck="false">def average(*args):
+    # 0 when there is nothing to average
+
+print(average(10, 20, 30))
+print(average(5))
+print(average())</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def average(*args):
+    if not args:
+        return 0
+    return sum(args) / len(args)
+
+print(average(10, 20, 30))
+print(average(5))
+print(average())</pre><p>An empty tuple is falsy, so <code>if not args</code> is the idiomatic guard. And <code>/</code> always gives a float (Unit 2) — hence <code>20.0</code>, not <code>20</code>.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">19.4 · P2</span><span class="pt">A profile of whatever you're given</span></div>
+        <p class="pd">Write <code>profile(**kwargs)</code> that prints one <code>key -&gt; value</code> line per named argument, in the order given, then a count line. Dicts keep insertion order, so the order is yours to rely on.</p>
+        <div class="want">name -> Mira
+city -> Pune
+2 fields</div>
+        <div class="pyrun" data-id="s4p2" data-expect="name -> Mira\ncity -> Pune\n2 fields">
+          <textarea spellcheck="false">def profile(**kwargs):
+    # one line per field, then the count
+
+profile(name="Mira", city="Pune")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def profile(**kwargs):
+    for key, value in kwargs.items():
+        print(f"{key} -> {value}")
+    print(f"{len(kwargs)} fields")
+
+profile(name="Mira", city="Pune")</pre><p>Inside the function <code>kwargs</code> is an ordinary dict — <code>.items()</code>, <code>.get()</code>, <code>len()</code>, everything from Unit 6 works on it.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">19.4 · P3</span><span class="pt">Stretch — map out, comprehension in</span></div>
+        <p class="pd">Here is the same job written the <code>map</code>/<code>filter</code> way. Rewrite <b>both</b> lines as comprehensions (Unit 12) so the output is byte-for-byte identical — then decide for yourself which version you'd rather meet at midnight.</p>
+        <div class="want">[2, 4, 6, 8]
+[2, 4]</div>
+        <div class="pyrun" data-id="s4p3" data-expect="[2, 4, 6, 8]\n[2, 4]">
+          <textarea spellcheck="false">nums = [1, 2, 3, 4]
+doubled = list(map(lambda n: n * 2, nums))
+evens = list(filter(lambda n: n % 2 == 0, nums))
+print(doubled)
+print(evens)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>nums = [1, 2, 3, 4]
+doubled = [n * 2 for n in nums]
+evens = [n for n in nums if n % 2 == 0]
+print(doubled)
+print(evens)</pre><p><code>map</code> becomes the expression at the front; <code>filter</code> becomes the <code>if</code> at the back. Shorter, no <code>lambda</code>, no <code>list(...)</code> wrapper — and it says what it does in English word order.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 19.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">19.5</span>
+      <h2>Your build — a leaderboard and an event system</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>Two programs, both of which were impossible an hour ago. The first sorts by <i>two</i> criteria at once; the second keeps functions in a dict and calls whichever one an event asks for.</p>
+      <p><b>The tuple-key trick.</b> A leaderboard needs highest score first, and ties broken alphabetically by name. One <code>key=</code> can do both: return a <b>tuple</b>, and Python compares the first item, then — only for ties — the second.</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">key=lambda p: (-p["score"], p["name"])</p>
+      <p>Read the minus sign as "flip this one". Scores go descending because negating turns biggest into smallest; names stay ascending. <code>reverse=True</code> couldn't do this — it would flip both.</p>
+      <p><b>Functions in a dict.</b> The second build is the pattern behind every button, every menu, every plugin system you have ever used: a dict whose keys are event names and whose values are <i>cards</i>. Looking one up gives you a function; a pair of parentheses cooks it. And Unit 9's <code>.get</code> handles the event nobody wrote a handler for — politely, without a crash.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">19.5 · P1</span><span class="pt">The leaderboard</span></div>
+        <p class="pd">Sort the players by score descending, ties broken by name ascending, and print the ranking with <code>enumerate(..., start=1)</code> (Unit 17) in exactly the shape below. Mira and Ravi are tied on 90 — that's the whole point.</p>
+        <div class="want">1. Bhavana (145)
+2. Ada (120)
+3. Mira (90)
+4. Ravi (90)</div>
+        <div class="pyrun" data-id="s5p1" data-expect="1. Bhavana (145)\n2. Ada (120)\n3. Mira (90)\n4. Ravi (90)">
+          <textarea spellcheck="false">players = [
+    {"name": "Mira", "score": 90},
+    {"name": "Ada", "score": 120},
+    {"name": "Ravi", "score": 90},
+    {"name": "Bhavana", "score": 145},
+]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>players = [
+    {"name": "Mira", "score": 90},
+    {"name": "Ada", "score": 120},
+    {"name": "Ravi", "score": 90},
+    {"name": "Bhavana", "score": 145},
+]
+ranked = sorted(players, key=lambda p: (-p["score"], p["name"]))
+for rank, p in enumerate(ranked, start=1):
+    print(f"{rank}. {p['name']} ({p['score']})")</pre><p>One lambda returning a two-item tuple does the work of two sorts. And the printing is a loop with an f-string — never dump the list of dicts itself; nobody can read that.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">19.5 · P2</span><span class="pt">The event system</span></div>
+        <p class="pd">Build <code>handlers</code>: a dict mapping <code>"start"</code> and <code>"stop"</code> to two <code>def</code>'d functions, and <code>"beep"</code> to a lambda that prints <code>Beep!</code>. Then write <code>fire(event)</code> — look the name up with <code>.get</code>, call it if it's there, and print the polite refusal if it isn't. Fire the four events in the list, in order.</p>
+        <div class="want">Engine started.
+Beep!
+No handler for 'fly' (ignored).
+Engine stopped.</div>
+        <div class="pyrun" data-id="s5p2" data-expect="Engine started.\nBeep!\nNo handler for 'fly' (ignored).\nEngine stopped.">
+          <textarea spellcheck="false">def on_start():
+    print("Engine started.")
+
+def on_stop():
+    print("Engine stopped.")
+
+handlers = {
+    # "start" -> the card, not the dish
+}
+
+def fire(event):
+    # look up with .get, then cook if found
+
+for e in ["start", "beep", "fly", "stop"]:
+    fire(e)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def on_start():
+    print("Engine started.")
+
+def on_stop():
+    print("Engine stopped.")
+
+handlers = {
+    "start": on_start,
+    "stop": on_stop,
+    "beep": lambda: print("Beep!"),
+}
+
+def fire(event):
+    handler = handlers.get(event)
+    if handler is None:
+        print(f"No handler for '{event}' (ignored).")
+    else:
+        handler()
+
+for e in ["start", "beep", "fly", "stop"]:
+    fire(e)</pre><p>Three things at once: cards stored as dict values (no parentheses — parentheses there would run all three the moment the dict was built), <code>.get</code> returning <code>None</code> instead of exploding on <code>"fly"</code>, and <code>handler()</code> cooking whichever card came back. Adding a new event now means adding one dict entry — no <code>if/elif</code> chain to grow.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 19.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">19.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~14 min</span></span>
+      <p>The mixed set: cards passed in, cards handed back, stars, tuple keys. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">Length, then alphabet</span></div>
+        <p class="pd">Print these words one per line, shortest first, and among words of equal length, alphabetically. One <code>sorted</code>, one tuple key — no second pass.</p>
+        <div class="want">fig
+date
+kiwi
+plum
+apple
+banana</div>
+        <div class="pyrun" data-id="b1" data-expect="fig\ndate\nkiwi\nplum\napple\nbanana">
+          <textarea spellcheck="false">words = ["kiwi", "fig", "banana", "date", "apple", "plum"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>words = ["kiwi", "fig", "banana", "date", "apple", "plum"]
+for w in sorted(words, key=lambda w: (len(w), w)):
+    print(w)</pre><p>The tuple is compared left to right: length decides, and only when lengths tie does the word itself break it. Both ascending here, so no minus sign is needed.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">apply_to_all — with a lambda and with a def</span></div>
+        <p class="pd">Write <code>apply_to_all(func, items)</code> that returns a new list with <code>func</code> applied to every item. Call it twice: once with a lambda that squares a number, once with a <code>def</code>'d <code>shout</code> that upper-cases text. Then read the note underneath.</p>
+        <div class="want">[1, 4, 9]
+['HI', 'THERE']</div>
+        <div class="pyrun" data-id="b2" data-expect="[1, 4, 9]\n['HI', 'THERE']">
+          <textarea spellcheck="false">def apply_to_all(func, items):
+    # return a new list
+
+def shout(text):
+    return text.upper()
+
+print(apply_to_all(lambda n: n * n, [1, 2, 3]))
+print(apply_to_all(shout, ["hi", "there"]))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def apply_to_all(func, items):
+    return [func(item) for item in items]
+
+def shout(text):
+    return text.upper()
+
+print(apply_to_all(lambda n: n * n, [1, 2, 3]))
+print(apply_to_all(shout, ["hi", "there"]))</pre><p>The honest comparison: the body <i>is</i> a comprehension, so when the operation is known at the spot, <code>[n * n for n in nums]</code> beats calling a helper. <code>apply_to_all</code> earns its keep only when the operation arrives from elsewhere — which is precisely when a function has to be a value. (Note the printed list of strings keeps its quotes: <code>['HI', 'THERE']</code>.)</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">The discount factory</span></div>
+        <p class="pd">Write <code>make_discount(rate)</code>, a factory returning a function that takes a price and returns the discounted price. Build <code>ten_off</code> and <code>half_off</code> from it, ask <code>Price? </code>, convert at the door, and print both results to two decimals. Input fixed to 250.</p>
+        <div class="want">Price? 250
+10% off: 225.00
+50% off: 125.00</div>
+        <div class="pyrun" data-id="b3" data-stdin="250" data-stdin-lock data-expect="Price? 250\n10% off: 225.00\n50% off: 125.00">
+          <textarea spellcheck="false">def make_discount(rate):
+    # return a function that discounts a price
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def make_discount(rate):
+    return lambda price: price - price * rate
+
+ten_off = make_discount(0.1)
+half_off = make_discount(0.5)
+
+price = int(input("Price? "))
+print(f"10% off: {ten_off(price):.2f}")
+print(f"50% off: {half_off(price):.2f}")</pre><p>Each returned function carries its own <code>rate</code> in its lunchbox. Real shops build these from a config file at startup — one factory, a dozen rules, none of them written by hand.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — two ways to sort descending</span></div>
+        <p class="pd">These records are <code>(name, marks)</code> tuples, so <code>t[0]</code> is the name and <code>t[1]</code> the marks. Produce the same highest-first ranking twice — once with <code>key=lambda t: -t[1]</code>, once with <code>key=lambda t: t[1], reverse=True</code> — tagging the lines <code>A</code> and <code>B</code>. Then read the discussion; the difference matters.</p>
+        <div class="want">A Ravi 91
+A Mira 84
+A Ada 78
+B Ravi 91
+B Mira 84
+B Ada 78</div>
+        <div class="pyrun" data-id="b4" data-expect="A Ravi 91\nA Mira 84\nA Ada 78\nB Ravi 91\nB Mira 84\nB Ada 78">
+          <textarea spellcheck="false">records = [("Ada", 78), ("Ravi", 91), ("Mira", 84)]
+</textarea>
+        </div>
+        <details><summary>Show solution &amp; the discussion</summary><pre>records = [("Ada", 78), ("Ravi", 91), ("Mira", 84)]
+
+for name, marks in sorted(records, key=lambda t: -t[1]):
+    print(f"A {name} {marks}")
+
+for name, marks in sorted(records, key=lambda t: t[1], reverse=True):
+    print(f"B {name} {marks}")</pre><p>Same output, different tools. <code>reverse=True</code> is clearer and works for <i>any</i> comparable value — you cannot negate a name. The minus trick only works on numbers, but it has one power <code>reverse=</code> lacks: inside a tuple key it flips <b>one</b> field while leaving the others ascending — which is exactly why 19.5's leaderboard needed <code>(-score, name)</code>. Rule of thumb: <code>reverse=True</code> for a single criterion, the minus sign when you're mixing directions.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later — and Unit 20 needs most of them by tomorrow.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 20 · Decorators &amp; context managers</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">The finale of the subtle machinery. With functions-as-values in one hand and <code>*args</code> / <code>**kwargs</code> in the other, you can now write functions that <b>wrap</b> other functions — take a card in, hand a better card back, and put an <code>@</code> on top of a <code>def</code> to make it official. That's a decorator, and <code>log_call</code> from 19.4 was already one in disguise. Then we finally open the other half of the mystery: what <code>with</code> has quietly been doing for you since Unit 10.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>The Python Tutorial</b> — <i>§4.9 Lambda Expressions</i>. <span class="why">The official half-page on lambdas, including the same "pass a small function as an argument" framing as 19.2.</span> <a href="https://docs.python.org/3/tutorial/controlflow.html#lambda-expressions" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>Sorting HOW TO</i>. <span class="why">The definitive guide to <code>key=</code>, tuple keys, stability and <code>reverse=</code> — read it once and B1 and B4 will feel obvious forever.</span> <a href="https://docs.python.org/3/howto/sorting.html" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>Built-in Functions: sorted()</i>. <span class="why">The exact signature, plus its neighbours <code>max</code>, <code>min</code>, <code>map</code> and <code>filter</code> on the same page.</span> <a href="https://docs.python.org/3/library/functions.html#sorted" rel="noopener">docs.python.org</a></li>
+      <li><b>Sweigart, A.</b> — <i>Automate the Boring Stuff with Python, ch. 3 (Functions)</i>. <span class="why">Functions from the ground up, including keyword arguments and scope — the foundation 19.3's lunchbox sits on.</span> <a href="https://automatetheboringstuff.com/2e/chapter3/" rel="noopener">book</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit18.html"><span class="k">← Previous</span><span class="t">Unit 18 · Generators &amp; laziness</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit20.html"><span class="k">Next →</span><span class="t">Unit 20 · Decorators &amp; context managers</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 19 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"After  def greet(): print(\"Hi\")  what is the difference between  x = greet  and  x = greet()  ?",
+   o:["Nothing — both store the function","x = greet stores the function itself; x = greet() runs it and stores what it returned","x = greet is a syntax error","x = greet() stores a copy of the function"],
+   a:1,
+   e:"The name alone is the recipe card; the parentheses mean 'cook it now'. x = greet() runs the function immediately and stores its return value — here None, since greet only prints."},
+  {q:"In  sorted(students, key=lambda s: s[\"marks\"])  what does Python hand to that lambda?",
+   o:["The whole list, once","One student dict at a time, and it sorts by whatever comes back","The marks, already extracted","Nothing — key= is just a label"],
+   a:1,
+   e:"key= receives one ITEM per call and returns the value to rank that item by. The items themselves are never changed — only their order."},
+  {q:"Which of these is a genuinely bad use of a lambda?",
+   o:["key=lambda s: s[\"marks\"] inside sorted()","A lambda with a loop and three conditions, assigned to a name","lambda: print(\"Beep!\") stored as a dict value","key=lambda p: (-p[\"score\"], p[\"name\"])"],
+   a:1,
+   e:"A lambda holds one expression, and if it wants two lines it wants a def and a name — a name is free documentation. Lambdas are for scraps you hand over on the spot."},
+  {q:"def make_multiplier(n): return lambda x: x * n  — after  double = make_multiplier(2)  runs, what does double carry?",
+   o:["Nothing — n disappeared when the factory returned","A copy of the whole factory function","Its own n box, holding 2 — packed like a lunchbox","A link to whatever n happens to mean later"],
+   a:2,
+   e:"That's a closure: the returned function keeps the boxes it needed from the factory's call. Every call to the factory packs a fresh lunchbox, so make_multiplier(3) is completely independent."},
+  {q:"def summary(*args) is called as  summary(3, 5, 9). What is args inside?",
+   o:["The list [3, 5, 9]","The tuple (3, 5, 9)","The dict {0: 3, 1: 5, 2: 9}","Just 3 — the rest are discarded"],
+   a:1,
+   e:"A single star collects extra POSITIONAL arguments into a tuple; a double star (**kwargs) collects named ones into a dict. Call summary() with nothing and args is the empty tuple ()."},
+  {q:"You need scores highest-first with ties broken by name A→Z. Which key works?",
+   o:["key=lambda p: p[\"score\"], reverse=True","key=lambda p: (-p[\"score\"], p[\"name\"])","key=lambda p: (p[\"score\"], p[\"name\"]), reverse=True","Two separate sorted() calls — one key can't do both"],
+   a:1,
+   e:"A tuple key is compared left to right, so the second item only decides ties. reverse=True would flip BOTH fields, putting names Z→A; negating the score flips just that one."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. Functions are values to you now; Unit 20 is going to feel inevitable."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 19.1 and 19.3 carry the load."
+           : " — worth another pass through 19.1 and 19.3 before Unit 20; decorators stand entirely on this ground.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["First-class function","A function that can be stored in a box, put in a list or dict, passed as an argument and returned — like any other value. Python's are."],
+  ["Function object","The recipe card itself: what the name greet holds. greet is the card, greet() is the cooking."],
+  ["Higher-order function","A function that takes a function as an argument, returns one, or both. sorted(), max() and your own apply_twice all qualify."],
+  ["lambda","A nameless one-line function written where it's needed: lambda x: x * 2. One expression, returned automatically. If it wants two lines, it wants a def."],
+  ["key=","The parameter of sorted/max/min that takes a function. It is cooked once per item, and the returned value decides the ranking — the items themselves never change."],
+  ["Stable sort","Python's guarantee that items with equal keys keep their original relative order. Why banana stayed ahead of cherry in 19.2 · P1."],
+  ["Tuple key","A key= function returning a tuple, compared left to right: (-score, name) sorts by score descending, then name ascending. The way to mix directions."],
+  ["Closure","A function that carries boxes out of the call that created it — the packed lunchbox. It keeps working long after the factory returned."],
+  ["Factory function","A function whose job is to build and return another function. One factory call = one fresh lunchbox = one independent new function."],
+  ["*args","In a def line, collects any number of extra positional arguments into a tuple. In a call, unpacks a tuple back into loose arguments."],
+  ["**kwargs","In a def line, collects any number of extra named arguments into a dict. In a call, unpacks a dict back into named arguments."],
+  ["map() / filter()","Older cousins of the comprehension: apply a function to every item, or keep the items where it returns True. Recognise them; reach for a comprehension."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

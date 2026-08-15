@@ -1,0 +1,1391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classes IV — Properties &amp; Encapsulation — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u16" data-lwa-title="Unit 16 · Classes IV — properties &amp; encapsulation">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Intermediate — Object-oriented Python · Unit 16</div>
+      <h1>Classes IV — Properties &amp; Encapsulation</h1>
+      <p class="standfirst">Your <code style="font-size:.85em">BankAccount</code> has a hole in it: anyone can write <code style="font-size:.85em">account.balance = -999</code> and the object cheerfully accepts it. This session closes that hole — a leading underscore that means "hands off", a <code style="font-size:.85em">@property</code> that turns reading into a guarded window, and a setter that can simply say no. By the end, the Intermediate level is done.</p>
+      <div class="facts">
+        <div><b>One session</b>~50 min</div>
+        <div><b>5 concepts</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 13–15 (classes) + Unit 9 (raise)</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">16.1 The open door</a>
+    <a href="#s2">16.2 @property</a>
+    <a href="#s3">16.3 Setters that say no</a>
+    <a href="#s4">16.4 Class vs instance</a>
+    <a href="#s5">16.5 Build: BankAccount, final</a>
+    <a href="#s6">16.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 16.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Units 13–15</b><code>class</code>, <code>__init__</code>, <code>self</code>, methods, the dunders that made objects print and compare, and inheritance. This unit is the fourth and last movement of that story.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm: a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit16.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>And Unit 9's raise</b>We're about to make objects refuse bad data. Refusing means <code>raise ValueError(...)</code> inside the class and <code>try/except</code> at the call site — exactly the pair from Unit 9, finally at home.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">16.1</span>
+      <h2>The open-door problem — and the underscore handshake</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p><b>The problem.</b> Unit 13 gave <code>BankAccount</code> a careful <code>withdraw</code> that checks the balance before taking money out. Very responsible. Then anyone, anywhere, can write one line — <code>account.balance = -999</code> — and walk straight past every check you wrote. The front door is guarded and the wall has a hole in it.</p>
+      <p><b>The idea, in plain words.</b> Most languages solve this with a lock: mark the box <i>private</i> and the compiler refuses to let outsiders touch it. Python does not have that lock. What Python has instead is a <b>handshake</b>: name the box with a leading underscore — <code>self._balance</code> — and every Python programmer alive reads that as <i>"internal. Mine. Touch it at your own risk."</i></p>
+      <p>Be clear about what that means, because it surprises people: nothing is enforced. <code>a._balance = -999</code> still works. The underscore is a convention, not a wall — a sign on the door, not a lock. And yet it works, reliably, everywhere, because the culture around it is genuine: code that reaches past an underscore is code that other programmers will not defend when it breaks. Python's bet is that a clear agreement between adults beats a lock that people spend their careers picking. It's a good bet.</p>
+      <p>So the shape of the fix has two halves, and this unit builds both:</p>
+      <ul class="plain">
+        <li><b>Hide the real box.</b> Rename <code>self.balance</code> to <code>self._balance</code> — that's the "internal" sign.</li>
+        <li><b>Offer a guarded way in.</b> Give the outside world a <code>balance</code> it can read — and, if you allow writing at all, a way in that runs <i>your</i> checks first. That's 16.2 and 16.3.</li>
+      </ul>
+      <p>The word for this — hiding the raw insides, exposing a checked surface — is <b>encapsulation</b>. It's the last of the four ideas that make a class a class, and it's the one that turns a bag of data into something you can trust.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the hole in the wall</div>
+      <div class="m">class Account:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+a = Account("Ada", 500)
+a.balance = -999
+print(a.balance)</div>
+      <p><b>Line 6:</b> a new object is built. Inside it, two labeled boxes: <code>owner</code> holding <code>"Ada"</code>, <code>balance</code> holding <b>500</b>.</p>
+      <p><b>Line 7:</b> this is plain assignment into a box that happens to live inside an object. Python does not consult the class, does not run any method, does not check anything. It just stores. <code>balance</code> now holds <b>-999</b>.</p>
+      <p><b>Line 8:</b> reads the box back out:</p>
+      <div class="m">-999</div>
+      <p>No error, no warning, and a bank account holding minus nine hundred and ninety-nine rupees. Every check <code>withdraw</code> ever performed was optional.</p>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>"So <code>_balance</code> is private?" No — and it matters that you know it. <code>a._balance</code> reads and writes perfectly well; Python will never stop you. The underscore is a message to <i>people</i>, not an instruction to the interpreter. (There is a two-underscore form, <code>self.__balance</code>, which makes Python quietly rename the box so it's harder to reach by accident — but it's rarely worth the noise. One underscore is the everyday convention, and the one you'll see in real code.)</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> take a tiny class with a wide-open attribute and perform the first half of the fix — rename the store to an underscore name, and hand out a method that reads it. <b>Thinking:</b> nothing is <i>protected</i> yet. All we've done is move the box behind a sign and offer a polite way to look at it. That's still progress: there is now one named place through which the outside world is <i>meant</i> to arrive.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">class Jar:
+    def __init__(self, cookies=0):
+        self._cookies = cookies      # the sign: internal
+
+    def count(self):                 # the polite way in
+        return self._cookies
+
+j = Jar(12)
+print("Cookies:", j.count())
+
+j._cookies = 999                     # allowed! nothing stops you
+print("Cookies:", j.count())         # ...and the sign was ignored</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">16.1 · P1</span><span class="pt">Predict: the open door</span></div>
+        <p class="pd">Predict all three lines on paper first. The class has a <code>deposit</code> that guards against negative amounts — does that guard hold?</p>
+        <div class="pyrun" data-id="s1p1">
+          <textarea spellcheck="false">class Account:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        if amount &gt; 0:
+            self.balance = self.balance + amount
+
+a = Account("Ada", 500)
+a.deposit(-100)
+print(a.balance)
+a.balance = -999
+print(a.balance)
+print(a.balance &lt; 0)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>500
+-999
+True</pre><p>The guard inside <code>deposit</code> works — the -100 is ignored. Then line 13 walks around the guard entirely, because plain attribute assignment runs no code of yours. A door with a lock is not a wall.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">16.1 · P2</span><span class="pt">Move it behind the sign</span></div>
+        <p class="pd">Rewrite this class so the temperature is stored as <code>self._temp</code>, and add a method <code>read()</code> that hands it back. Then print it to match the goal.</p>
+        <div class="want">Sensor reading: 21</div>
+        <div class="pyrun" data-id="s1p2" data-expect="Sensor reading: 21">
+          <textarea spellcheck="false">class Thermostat:
+    def __init__(self, temp):
+        self.temp = temp
+
+t = Thermostat(21)
+print("Sensor reading:", t.temp)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Thermostat:
+    def __init__(self, temp):
+        self._temp = temp
+
+    def read(self):
+        return self._temp
+
+t = Thermostat(21)
+print("Sensor reading:", t.read())</pre><p>The parameter keeps its plain name — <code>temp</code> is just a value arriving. It's the <i>box inside the object</i> that gets the underscore, because that's the thing outsiders might reach for.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">16.1 · P3</span><span class="pt">Predict: the handshake is not a lock</span></div>
+        <p class="pd">You've just moved the box behind a sign. Predict what these lines do — in particular, whether line 9 raises anything at all.</p>
+        <div class="pyrun" data-id="s1p3">
+          <textarea spellcheck="false">class Thermostat:
+    def __init__(self, temp):
+        self._temp = temp
+
+    def read(self):
+        return self._temp
+
+t = Thermostat(21)
+t._temp = 999      # rude. also: completely legal.
+print(t.read())</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>999</pre><p>No error. The underscore is a social contract, and this line broke it without Python noticing. What we need is not a stronger name — it's a way to make <i>reading and writing run our code</i>. That's the next section.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 16.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">16.2</span>
+      <h2>@property — a guarded window</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Hiding the box behind <code>_balance</code> and offering <code>account.get_balance()</code> works, but look what it costs: every reader now has to remember the parentheses, and every piece of code that used the friendly <code>account.balance</code> has to be rewritten. Surely you can have both — the guard <i>and</i> the plain, pleasant spelling.</p>
+      <p><b>The idea, in plain words.</b> You can. Write a method that returns the value, then put <code>@property</code> on the line above it:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">@property
+def balance(self):
+    return self._balance</p>
+      <p>Now <code>account.balance</code> — no parentheses, looks exactly like an attribute — quietly <i>runs that method</i> and hands back what it returns. It's a window cut into the wall: the outside sees a value, and your code decides what shows through. The old spelling is back, and the raw box stays behind the sign.</p>
+      <p>Two gifts come with it, free.</p>
+      <p><b>The first: read-only.</b> Define a property with no way to write it, and assignment is refused — for real this time. <code>account.balance = 999</code> raises an <code>AttributeError</code>, because Python looked for a setter and there isn't one. That's the first genuine "no" in this unit; it comes from the language, not from good manners.</p>
+      <p><b>The second: computed values.</b> A property doesn't have to hand back a stored box. It can work the answer out, fresh, every single time it's read:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">@property
+def area(self):
+    return 3.14159 * self.radius ** 2</p>
+      <p>Change the radius and the area is right on the very next read — because there is no stored area to go stale. Compare that with computing the area once in <code>__init__</code> and storing it: change the radius later and you're carrying a number that used to be true. <b>A computed property cannot lie about a value it never kept.</b> That is the whole reason people reach for them.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the value that stays fresh</div>
+      <div class="m">class Circle:
+    def __init__(self, radius):
+        self.radius = radius
+
+    @property
+    def area(self):
+        return 3.14159 * self.radius ** 2
+
+c = Circle(2)
+print(f"{c.area:.2f}")
+c.radius = 3
+print(f"{c.area:.2f}")</div>
+      <p><b>Line 9:</b> the object holds exactly one box: <code>radius</code> = 2. There is <i>no</i> box called <code>area</code>. There never will be.</p>
+      <p><b>Line 10:</b> Python sees <code>c.area</code>, finds no box of that name, finds a property on the class — and runs the method. 3.14159 × 2² → 12.56636, formatted to <code>12.57</code>.</p>
+      <p><b>Line 11:</b> the radius box now holds 3. Nothing else changed, because nothing else was ever stored.</p>
+      <p><b>Line 12:</b> the method runs again, from scratch: 3.14159 × 3² → 28.27431 → <code>28.27</code>.</p>
+      <div class="m">12.57
+28.27</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 280" role="img" aria-label="A plain attribute lets reads and writes reach the box directly; a property puts your code in the path and can refuse writes">
+        <text x="16" y="24" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">TWO WAYS TO REACH A VALUE</text>
+
+        <text x="30" y="60" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#a35a33">plain attribute — the hole in the wall</text>
+        <rect x="30" y="74" width="120" height="40" rx="8" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="90" y="99" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">a.balance</text>
+        <line x1="152" y1="94" x2="238" y2="94" stroke="#a35a33" stroke-width="1.6" marker-end="url(#ar1)"/>
+        <text x="195" y="86" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#a35a33">read</text>
+        <line x1="238" y1="126" x2="152" y2="126" stroke="#a35a33" stroke-width="1.6" marker-end="url(#ar1)"/>
+        <text x="195" y="145" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#a35a33">write — unchecked</text>
+        <rect x="240" y="74" width="140" height="66" rx="9" fill="#f7ebe4" stroke="#a35a33" stroke-width="1.5"/>
+        <text x="310" y="99" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#7c4324">balance</text>
+        <text x="310" y="122" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">-999</text>
+        <text x="310" y="166" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">nothing of yours ever runs</text>
+
+        <line x1="430" y1="50" x2="430" y2="250" stroke="#e3e6ee" stroke-width="1.5" stroke-dasharray="5 5"/>
+
+        <text x="460" y="60" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#3d3170">@property — the guarded window</text>
+        <rect x="460" y="74" width="120" height="40" rx="8" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="520" y="99" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">a.balance</text>
+        <line x1="582" y1="94" x2="622" y2="94" stroke="#5b4b9e" stroke-width="1.6" marker-end="url(#ar2)"/>
+        <rect x="624" y="70" width="96" height="48" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="672" y="90" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11" font-weight="700" fill="#3d3170">your code</text>
+        <text x="672" y="107" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="10.5" fill="#3d3170">runs on every read</text>
+        <line x1="722" y1="94" x2="758" y2="94" stroke="#5b4b9e" stroke-width="1.6" marker-end="url(#ar2)"/>
+        <rect x="760" y="70" width="80" height="48" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="800" y="90" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" font-weight="700" fill="#1d5654">_balance</text>
+        <text x="800" y="108" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">1200</text>
+
+        <line x1="622" y1="150" x2="582" y2="150" stroke="#a35a33" stroke-width="1.6" marker-end="url(#ar1)"/>
+        <text x="524" y="154" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#a35a33">refused</text>
+        <g stroke="#a35a33" stroke-width="2.4" stroke-linecap="round">
+          <line x1="666" y1="142" x2="682" y2="158"/><line x1="682" y1="142" x2="666" y2="158"/>
+        </g>
+        <text x="700" y="154" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#a35a33">no setter →</text>
+        <text x="700" y="170" font-family="Cascadia Mono,Consolas,monospace" font-size="10.5" fill="#7c4324">AttributeError</text>
+
+        <rect x="30" y="196" width="810" height="58" rx="10" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="46" y="220" font-family="Segoe UI,system-ui,sans-serif" font-size="12" fill="#4a5a72">Both sides are spelled identically at the call site — <tspan font-family="Cascadia Mono,Consolas,monospace" fill="#1f2733">a.balance</tspan>, no parentheses. That is the point:</text>
+        <text x="46" y="240" font-family="Segoe UI,system-ui,sans-serif" font-size="12" fill="#4a5a72">a property lets you add a guard later without changing a single line of code that already reads the value.</text>
+
+        <defs>
+          <marker id="ar1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,1 L7,4 L0,7 z" fill="#a35a33"/></marker>
+          <marker id="ar2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,1 L7,4 L0,7 z" fill="#5b4b9e"/></marker>
+        </defs>
+      </svg>
+      <div class="figcap">Fig. 1 — Left: the plain attribute of Units 13–15, reachable by anyone in either direction. Right: the same spelling, but every read passes through code you wrote, and a write with no setter is turned away by the language itself.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>A property is read <b>without parentheses</b>. <code>c.area</code> gives you the number; <code>c.area()</code> tries to <i>call</i> that number and dies with <code>TypeError: 'float' object is not callable</code>. And the reverse trap is worse because it's silent: forget the parentheses on a real method and <code>a.count</code> hands back the method object itself, so you print something like <code>&lt;bound method Jar.count of ...&gt;</code>. The rule is simple — <b>if it's decorated with <code>@property</code>, drop the parentheses; otherwise keep them.</b></p>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      A property makes a method wear an attribute's clothes. Reading looks free and simple; underneath, your code runs — so it can guard, convert, or compute. And a value that is computed on every read can never be stale.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> both flavours in one program — a read-only window onto a hidden box, and a value that is worked out fresh each time. <b>Thinking:</b> notice that <code>a.balance</code> and <code>c.area</code> are spelled exactly like ordinary attributes. Nobody using this class needs to know or care that a method is running.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">class Account:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self._balance = balance      # the real box, behind the sign
+
+    @property
+    def balance(self):               # the window
+        return self._balance
+
+class Circle:
+    def __init__(self, radius):
+        self.radius = radius
+
+    @property
+    def area(self):                  # computed, never stored
+        return 3.14159 * self.radius ** 2
+
+a = Account("Ada", 500)
+print("Balance:", a.balance)         # no parentheses!
+
+c = Circle(2)
+print(f"Area at r=2: {c.area:.2f}")
+c.radius = 3
+print(f"Area at r=3: {c.area:.2f}")  # fresh, automatically</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">16.2 · P1</span><span class="pt">Cut the window</span></div>
+        <p class="pd">Store the page count as <code>self._pages</code> and expose a read-only <code>pages</code> property. The last line must stay exactly as it is — that's the whole selling point.</p>
+        <div class="want">Pages: 320</div>
+        <div class="pyrun" data-id="s2p1" data-expect="Pages: 320">
+          <textarea spellcheck="false">class Book:
+    def __init__(self, pages):
+        self.pages = pages
+
+b = Book(320)
+print("Pages:", b.pages)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Book:
+    def __init__(self, pages):
+        self._pages = pages
+
+    @property
+    def pages(self):
+        return self._pages
+
+b = Book(320)
+print("Pages:", b.pages)</pre><p>Two names, two jobs: <code>_pages</code> is where the value lives, <code>pages</code> is how the world is allowed to see it. Getting these two confused — writing <code>return self.pages</code> inside the property — makes the property call itself forever; Python stops it with a <code>RecursionError</code>.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">16.2 · P2</span><span class="pt">Run it: the door that's genuinely shut</span></div>
+        <p class="pd">Run this as-is and read the report's last line carefully — then say, in your own words, what Python went looking for and failed to find. (Nothing to fix; this failure is the feature.)</p>
+        <div class="pyrun" data-id="s2p2">
+          <textarea spellcheck="false">class Book:
+    def __init__(self, pages):
+        self._pages = pages
+
+    @property
+    def pages(self):
+        return self._pages
+
+b = Book(320)
+print(b.pages)
+b.pages = 500      # the window doesn't open
+print(b.pages)     # this line never runs</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>320
+AttributeError: property 'pages' of 'Book' object has no setter</pre><p>Decode it: Python found that <code>pages</code> is a property, went looking for its <i>setter</i> — the piece that handles writing — and there wasn't one, so it refused. Read-only is the default for a property, and it's enforced by the language, not by convention. (On older Pythons the same failure reads <code>AttributeError: can't set attribute</code> — same meaning, terser wording.)</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">16.2 · P3</span><span class="pt">Computed, never stale</span></div>
+        <p class="pd">Give <code>Person</code> a <code>full_name</code> property that builds the name from <code>first</code> and <code>last</code> each time it's read. Then watch it follow a change without being told.</p>
+        <div class="want">Ada Lovelace
+Ada Byron</div>
+        <div class="pyrun" data-id="s2p3" data-expect="Ada Lovelace\nAda Byron">
+          <textarea spellcheck="false">class Person:
+    def __init__(self, first, last):
+        self.first = first
+        self.last = last
+
+p = Person("Ada", "Lovelace")
+print(p.full_name)
+p.last = "Byron"
+print(p.full_name)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Person:
+    def __init__(self, first, last):
+        self.first = first
+        self.last = last
+
+    @property
+    def full_name(self):
+        return f"{self.first} {self.last}"
+
+p = Person("Ada", "Lovelace")
+print(p.full_name)
+p.last = "Byron"
+print(p.full_name)</pre><p>Now try the alternative in your head: <code>self.full_name = first + " " + last</code> in <code>__init__</code>. Line 8 changes the surname and the stored full name quietly becomes a lie. Derived values want to be computed, not remembered.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 16.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">16.3</span>
+      <h2>Setters that say no</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Read-only is a fine answer when a value should never be written from outside. But plenty of values <i>should</i> be writable — a volume level, a student's marks, an account balance the bank itself adjusts. You want the assignment to work, and you want it to be inspected on the way in.</p>
+      <p><b>The idea, in plain words.</b> Add a second method with the same name, decorated with <code>@&lt;name&gt;.setter</code>. It receives the value someone is trying to store, and it can do anything it likes before storing it — including refusing:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">@balance.setter
+def balance(self, value):
+    if value &lt; 0:
+        raise ValueError("balance cannot be negative")
+    self._balance = value</p>
+      <p>Read the decorator literally: <code>@balance.setter</code> means "attach this as the setter half of the property already called <code>balance</code>". So the getter must come first — the name has to exist before you can hang a setter on it. Both methods are called <code>balance</code>, and that is not a mistake: they're two halves of one thing.</p>
+      <p>Now <code>a.balance = 800</code> quietly runs your check and stores. And <code>a.balance = -999</code> — the line that started this unit — reaches your <code>raise</code> and stops the program dead. Unit 9 taught that <code>raise</code> is how a piece of code announces "I was asked for something impossible"; this is the moment it pays for itself, because the impossible request is now caught the instant it's made rather than three functions later when the numbers stop adding up.</p>
+      <p>At the call site, Unit 9's other half handles it politely:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">try:
+    a.balance = -999
+except ValueError as e:
+    print("Refused:", e)</p>
+      <p>This split has a name worth learning, because you will use it for the rest of your programming life: <b>validate at the boundary, trust the inside.</b> The setter is the boundary — the one place data enters the object. Check it there, once, thoroughly, and every method inside the class is then free to assume <code>self._balance</code> is a sensible number. No defensive re-checking, no "but what if it's negative" scattered through twenty methods. Guard the door and the house is safe.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the assignment that runs code</div>
+      <div class="m">a = Account("Ada", 500)      # _balance = 500
+a.balance = 800
+a.balance = -999
+print(a.balance)</div>
+      <p><b>Line 2:</b> Python sees an assignment to <code>balance</code>, finds a property, finds its setter, and <i>calls it</i> with <code>value = 800</code>. Inside: 800 is not less than 0, so <code>self._balance = 800</code>. The box now holds <b>800</b>.</p>
+      <p><b>Line 3:</b> the setter runs again with <code>value = -999</code>. This time the <code>if</code> is true, so <code>raise</code> fires. The assignment never happens — <code>_balance</code> is still <b>800</b> — and, with nothing catching it, the program stops right here:</p>
+      <div class="m">ValueError: balance cannot be negative</div>
+      <p><b>Line 4:</b> never reached. That's the point: bad data didn't get in, and it didn't get to travel.</p>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Inside a setter, write <code>self._balance = value</code> — the underscore name. Writing <code>self.balance = value</code> calls the setter again, which calls it again, forever, until Python gives up with <code>RecursionError: maximum recursion depth exceeded</code>. It's the single most common property bug, and the traceback is a mile long, so recognise it early: <b>the property is the door; <code>_name</code> is the room.</b> A door that opens onto itself is not a door.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> the full getter/setter pair on <code>Account</code>, with a good write, a bad write caught politely, and proof the object survived unharmed. <b>Thinking:</b> the object is now genuinely responsible for its own state. Not because outsiders are careful — because they can't get in any other way.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">class Account:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self._balance = balance
+
+    @property
+    def balance(self):               # the getter — must come first
+        return self._balance
+
+    @balance.setter
+    def balance(self, value):        # the setter — same name, on purpose
+        if value &lt; 0:
+            raise ValueError("balance cannot be negative")
+        self._balance = value
+
+a = Account("Ada", 500)
+a.balance = 800                      # runs the setter, passes the check
+print(a.balance)
+
+try:
+    a.balance = -999                 # runs the setter, hits the raise
+except ValueError as e:
+    print("Refused:", e)
+
+print(a.balance)                     # untouched — the guard held</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">16.3 · P1</span><span class="pt">A sensible age</span></div>
+        <p class="pd">Turn <code>age</code> into a property with a setter that refuses anything outside 0–120, raising <code>ValueError("age must be between 0 and 120")</code>. The code below the class must not change.</p>
+        <div class="want">30
+Refused: age must be between 0 and 120
+30</div>
+        <div class="pyrun" data-id="s3p1" data-expect="30\nRefused: age must be between 0 and 120\n30">
+          <textarea spellcheck="false">class Person:
+    def __init__(self, age):
+        self._age = age
+
+    # your property + setter here
+
+p = Person(25)
+p.age = 30
+print(p.age)
+try:
+    p.age = 500
+except ValueError as e:
+    print("Refused:", e)
+print(p.age)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Person:
+    def __init__(self, age):
+        self._age = age
+
+    @property
+    def age(self):
+        return self._age
+
+    @age.setter
+    def age(self, value):
+        if value &lt; 0 or value &gt; 120:
+            raise ValueError("age must be between 0 and 120")
+        self._age = value</pre><p>The third line of output is the important one: the refused write left the old value completely alone. A rejected change is a change that never happened.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">16.3 · P2</span><span class="pt">Catch it politely</span></div>
+        <p class="pd">The class is written for you. Your job is the call site: loop over the three wanted levels, try each one, print <code>Set to N</code> when it works and <code>Ignored: &lt;message&gt;</code> when the setter refuses — then the final level.</p>
+        <div class="want">Set to 7
+Ignored: volume must be 0-10
+Set to 3
+Final: 3</div>
+        <div class="pyrun" data-id="s3p2" data-expect="Set to 7\nIgnored: volume must be 0-10\nSet to 3\nFinal: 3">
+          <textarea spellcheck="false">class Volume:
+    def __init__(self, level=5):
+        self._level = level
+
+    @property
+    def level(self):
+        return self._level
+
+    @level.setter
+    def level(self, value):
+        if value &lt; 0 or value &gt; 10:
+            raise ValueError("volume must be 0-10")
+        self._level = value
+
+v = Volume()
+for wanted in [7, 15, 3]:
+    # try to set v.level, report success or refusal
+    pass
+
+print("Final:", v.level)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>v = Volume()
+for wanted in [7, 15, 3]:
+    try:
+        v.level = wanted
+        print("Set to", v.level)
+    except ValueError as e:
+        print("Ignored:", e)
+
+print("Final:", v.level)</pre><p>The class refuses; the caller decides what refusal <i>means</i> here — a printed note, and carry on. A different program might log it or ask the user again. That division of labour is exactly why the setter raises instead of printing.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">16.3 · P3</span><span class="pt">Stretch — a setter that also tidies</span></div>
+        <p class="pd">Setters can clean as well as refuse. Write a <code>name</code> property whose setter strips surrounding spaces, refuses an empty result with <code>ValueError("name cannot be empty")</code>, and stores the tidied name in Title Case (<code>.strip()</code> and <code>.title()</code> from Unit 6). Note <code>__init__</code> assigns <code>self.name</code> — so the setter runs even at birth.</p>
+        <div class="want">Ada Lovelace
+Refused: name cannot be empty
+Ada Lovelace</div>
+        <div class="pyrun" data-id="s3p3" data-expect="Ada Lovelace\nRefused: name cannot be empty\nAda Lovelace">
+          <textarea spellcheck="false">class Student:
+    def __init__(self, name):
+        self.name = name        # deliberately the property, not _name
+
+    # your property + setter here
+
+s = Student("  ada lovelace  ")
+print(s.name)
+try:
+    s.name = "   "
+except ValueError as e:
+    print("Refused:", e)
+print(s.name)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Student:
+    def __init__(self, name):
+        self.name = name
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        value = value.strip()
+        if value == "":
+            raise ValueError("name cannot be empty")
+        self._name = value.title()</pre><p>Two things worth pocketing. First, <code>__init__</code> going through the property means the very first value is validated too — otherwise <code>Student("")</code> would slip past every guard you wrote. Second, the box <code>_name</code> is created by the setter on that first assignment; you never had to write it in <code>__init__</code> at all.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 16.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">16.4</span>
+      <h2>Class attributes vs instance attributes</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~9 min</span></span>
+      <p><b>The problem.</b> Every account at your bank prints the bank's name on its statement. The name is the same for all ten thousand of them. Storing <code>self.bank_name = "Learn Bank"</code> in <code>__init__</code> means ten thousand identical copies — and if the bank is renamed, ten thousand objects are now wrong.</p>
+      <p><b>The idea, in plain words.</b> Some facts belong to the <i>cookie cutter</i>, not to each cookie. Write them straight in the class body, outside any method:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">class BankAccount:
+    bank_name = "Learn Bank"     # one box, on the class itself
+
+    def __init__(self, owner):
+        self.owner = owner       # a box per object</p>
+      <p>That's a <b>class attribute</b>: one box, living on the class, shared by every instance ever made. <code>self.owner</code> is an <b>instance attribute</b>: a fresh box inside each object.</p>
+      <p>The magic is in how Python looks things up. When you write <code>self.bank_name</code>, Python checks <i>this object</i> first. No box of that name in there? It goes up to the class and looks again — and finds it. So <code>self.bank_name</code> works inside any method, even though no object ever stored it. Change <code>BankAccount.bank_name</code> once and all ten thousand statements say the new name on the next read, because they were all reading the same box the whole time.</p>
+      <p>Class attributes are where the <i>shared, rarely-changing</i> facts of a type go: a GST rate, a species name, a maximum size, a count of how many objects have been made.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — lookup goes up, assignment doesn't</div>
+      <div class="m">class Account:
+    bank_name = "Learn Bank"
+
+a = Account()
+b = Account()
+print(a.bank_name)
+a.bank_name = "Ada's Vault"
+print(a.bank_name, b.bank_name)</div>
+      <p><b>Lines 4–5:</b> two objects, both completely empty — not one box inside either of them.</p>
+      <p><b>Line 6:</b> Python looks inside <code>a</code> for <code>bank_name</code>. Nothing. It looks up at the class. Found: <code>"Learn Bank"</code>.</p>
+      <p><b>Line 7:</b> here's the twist. <b>Assignment never goes up.</b> This does not change the class's box — it creates a brand-new box called <code>bank_name</code> <i>inside <code>a</code></i>, holding <code>"Ada's Vault"</code>.</p>
+      <p><b>Line 8:</b> <code>a.bank_name</code> now finds its own box first and stops there. <code>b</code> still has nothing of its own, so it goes up and finds the class's untouched value:</p>
+      <div class="m">Learn Bank
+Ada's Vault Learn Bank</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 300" role="img" aria-label="The class box sits on a shelf above the instance boxes; attribute lookup goes up, and an instance assignment creates a shadowing box">
+        <text x="16" y="24" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">THE SHELF: LOOKUP GOES UP, ASSIGNMENT STAYS PUT</text>
+
+        <rect x="250" y="44" width="360" height="70" rx="10" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.8"/>
+        <text x="430" y="68" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">class BankAccount</text>
+        <text x="430" y="94" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">bank_name = "Learn Bank"</text>
+        <line x1="120" y1="126" x2="740" y2="126" stroke="#5b4b9e" stroke-width="2"/>
+        <text x="130" y="144" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">the shelf — one box, shared by every instance</text>
+
+        <rect x="120" y="176" width="190" height="86" rx="10" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.6"/>
+        <text x="215" y="199" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#1d5654">a  (instance)</text>
+        <text x="215" y="221" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">owner = "Ada"</text>
+        <text x="215" y="241" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">_balance = 1200</text>
+        <line x1="215" y1="174" x2="215" y2="130" stroke="#2b7a78" stroke-width="1.8" marker-end="url(#up)"/>
+        <text x="215" y="284" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#1d5654">a.bank_name → not here → look up → "Learn Bank"</text>
+
+        <rect x="360" y="176" width="170" height="86" rx="10" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.6"/>
+        <text x="445" y="199" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#1d5654">b  (instance)</text>
+        <text x="445" y="221" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">owner = "Grace"</text>
+        <text x="445" y="241" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">_balance = 40</text>
+        <line x1="445" y1="174" x2="445" y2="130" stroke="#2b7a78" stroke-width="1.8" marker-end="url(#up)"/>
+        <text x="445" y="284" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#1d5654">same box, same answer</text>
+
+        <rect x="580" y="176" width="200" height="86" rx="10" fill="#f7ebe4" stroke="#a35a33" stroke-width="1.6"/>
+        <text x="680" y="199" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#7c4324">c  (after c.bank_name = …)</text>
+        <text x="680" y="221" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">owner = "Alan"</text>
+        <text x="680" y="241" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" font-weight="700" fill="#7c4324">bank_name = "Alan's Vault"</text>
+        <line x1="680" y1="174" x2="680" y2="134" stroke="#a35a33" stroke-width="1.8" stroke-dasharray="4 4"/>
+        <g stroke="#a35a33" stroke-width="2.4" stroke-linecap="round">
+          <line x1="672" y1="146" x2="688" y2="162"/><line x1="688" y1="146" x2="672" y2="162"/>
+        </g>
+        <text x="680" y="284" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#a35a33">its own box shadows the shelf — for c alone</text>
+
+        <defs>
+          <marker id="up" markerWidth="9" markerHeight="9" refX="4.5" refY="8" orient="auto"><path d="M0.5,8 L4.5,1 L8.5,8 z" fill="#2b7a78"/></marker>
+        </defs>
+      </svg>
+      <div class="figcap">Fig. 2 — Reading walks upward from the object to the class; writing always lands in the object. That asymmetry explains every class-attribute surprise you will ever meet.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><b>Shadowing.</b> <code>self.bank_name = "Something"</code> inside a method looks like it edits the shared value. It does not. It creates a private box in <i>that one object</i> that hides — shadows — the class's box from then on, for that object only. Everyone else carries on reading the shelf. To change the shared value you must name the class: <code>BankAccount.bank_name = "Something"</code>. Same trap, sharper edge, when the class attribute is a <b>list</b>: <code>self.items.append(x)</code> doesn't create anything, so it mutates the one shared list and every object sees it. Class attributes want to hold plain, unchanging values — numbers, strings — and nothing else.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a class attribute read by two instances, then renamed once at the class — watch both follow. <b>Thinking:</b> nobody stored the name; both objects were reading the same box on the shelf all along.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">class Account:
+    bank_name = "Learn Bank"     # shared by every instance
+
+    def __init__(self, owner):
+        self.owner = owner       # one per instance
+
+a = Account("Ada")
+b = Account("Grace")
+print(a.bank_name, "|", b.bank_name)
+print(Account.bank_name)         # reachable on the class too
+
+Account.bank_name = "Learn Bank Ltd"   # one edit, on the shelf
+print(a.bank_name, "|", b.bank_name)   # both objects follow</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">16.4 · P1</span><span class="pt">Count the objects</span></div>
+        <p class="pd">Give <code>Robot</code> a class attribute <code>count</code> starting at 0, and make <code>__init__</code> raise it by one every time a robot is built. Careful: the increment must name the <i>class</i>, not <code>self</code>.</p>
+        <div class="want">Robots made: 3</div>
+        <div class="pyrun" data-id="s4p1" data-expect="Robots made: 3">
+          <textarea spellcheck="false">class Robot:
+    def __init__(self, name):
+        self.name = name
+
+r1 = Robot("Tin")
+r2 = Robot("Can")
+r3 = Robot("Bot")
+print("Robots made:", Robot.count)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Robot:
+    count = 0
+
+    def __init__(self, name):
+        self.name = name
+        Robot.count = Robot.count + 1
+
+r1 = Robot("Tin")
+r2 = Robot("Can")
+r3 = Robot("Bot")
+print("Robots made:", Robot.count)</pre><p>Try <code>self.count = self.count + 1</code> instead and every robot ends up with its own private box holding 1, while the class's counter sits at 0 forever. Reading goes up; writing stays put.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">16.4 · P2</span><span class="pt">Predict: who sees what</span></div>
+        <p class="pd">Three prints, three predictions on paper before you run. Then check every one against the shelf picture above.</p>
+        <div class="pyrun" data-id="s4p2">
+          <textarea spellcheck="false">class Account:
+    bank_name = "Learn Bank"
+
+a = Account()
+b = Account()
+a.bank_name = "Ada's Private Vault"
+print(a.bank_name)
+print(b.bank_name)
+print(Account.bank_name)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>Ada's Private Vault
+Learn Bank
+Learn Bank</pre><p>Line 6 didn't rename the bank — it gave <code>a</code> a personal box that shadows the shared one. <code>b</code> and the class never noticed. If you predicted three identical lines, you're in excellent company; this is the single most-missed idea in the whole unit.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">16.4 · P3</span><span class="pt">A shared fact in a method</span></div>
+        <p class="pd">Add a class attribute <code>company = "Learn Labs"</code> and a method <code>badge()</code> that returns the employee's name, the word <code>of</code>, and the company — read through <code>self</code>, without storing it anywhere per employee.</p>
+        <div class="want">Ada of Learn Labs
+Grace of Learn Labs</div>
+        <div class="pyrun" data-id="s4p3" data-expect="Ada of Learn Labs\nGrace of Learn Labs">
+          <textarea spellcheck="false">class Employee:
+    def __init__(self, name):
+        self.name = name
+
+print(Employee("Ada").badge())
+print(Employee("Grace").badge())</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Employee:
+    company = "Learn Labs"
+
+    def __init__(self, name):
+        self.name = name
+
+    def badge(self):
+        return f"{self.name} of {self.company}"
+
+print(Employee("Ada").badge())
+print(Employee("Grace").badge())</pre><p><code>self.company</code> finds nothing in the object and walks up to the class — which is exactly what you want, because tomorrow the company can be renamed in one place.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 16.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">16.5</span>
+      <h2>Your build — BankAccount, final form</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~14 min</span></span>
+      <p>This is the checkpoint. Four units ago, <code>BankAccount</code> was a name, a number, and two methods that trusted everybody. Unit 14 taught it to print itself. Unit 15 taught it to have children. Now it learns to defend itself — and the result is the class you honestly could not have read on your first day of Unit 13.</p>
+      <p>The final specification, all of it:</p>
+      <ul class="plain">
+        <li>The money lives in <code>self._balance</code> — behind the sign.</li>
+        <li><code>balance</code> is a <b>read-only property</b>. The outside world can look; it cannot set.</li>
+        <li><code>deposit(amount)</code> and <code>withdraw(amount)</code> are the <i>only</i> ways money moves. Both refuse a non-positive amount with <code>ValueError</code>; <code>withdraw</code> also refuses to overdraw.</li>
+        <li>A class attribute <code>bank_name</code>, used by <code>report()</code>.</li>
+        <li><code>__str__</code> from Unit 14, so <code>print(account)</code> reads like English.</li>
+      </ul>
+      <p>Three stages: the shell, the guards, then a scripted afternoon at the bank that walks straight into every single guard and bounces off all of them.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">16.5 · P1</span><span class="pt">Stage 1 — the shell</span></div>
+        <p class="pd">Build the class with the class attribute <code>bank_name</code>, the hidden <code>_balance</code>, a read-only <code>balance</code> property, and Unit 14's <code>__str__</code> returning <code>owner: balance</code>.</p>
+        <div class="want">Ada: 500
+500</div>
+        <div class="pyrun" data-id="s5p1" data-expect="Ada: 500\n500">
+          <textarea spellcheck="false">class BankAccount:
+    bank_name = "Learn Bank"
+
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        # store the money behind the sign
+
+    # a read-only balance property
+
+    # __str__ returning  "Ada: 500"
+
+a = BankAccount("Ada", 500)
+print(a)
+print(a.balance)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class BankAccount:
+    bank_name = "Learn Bank"
+
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self._balance = balance
+
+    @property
+    def balance(self):
+        return self._balance
+
+    def __str__(self):
+        return f"{self.owner}: {self._balance}"
+
+a = BankAccount("Ada", 500)
+print(a)
+print(a.balance)</pre><p>Inside the class, use <code>self._balance</code> — the real box. Outside, <code>a.balance</code> — the window. Get in the habit now and the recursion trap can never bite you.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">16.5 · P2</span><span class="pt">Stage 2 — the guards</span></div>
+        <p class="pd">Add <code>deposit</code> and <code>withdraw</code>. Both raise <code>ValueError</code> on an amount that isn't positive (<code>"deposit must be positive"</code> / <code>"withdrawal must be positive"</code>); <code>withdraw</code> also raises <code>ValueError("insufficient funds")</code> when the amount exceeds the balance. Paste Stage 1 in and grow it.</p>
+        <div class="want">700
+Refused: insufficient funds
+700</div>
+        <div class="pyrun" data-id="s5p2" data-expect="700\nRefused: insufficient funds\n700">
+          <textarea spellcheck="false">class BankAccount:
+    bank_name = "Learn Bank"
+
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self._balance = balance
+
+    @property
+    def balance(self):
+        return self._balance
+
+    # deposit(self, amount) — refuse amounts that aren't positive
+
+    # withdraw(self, amount) — refuse non-positive AND overdrawing
+
+a = BankAccount("Ada", 500)
+a.deposit(200)
+print(a.balance)
+try:
+    a.withdraw(5000)
+except ValueError as e:
+    print("Refused:", e)
+print(a.balance)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>    def deposit(self, amount):
+        if amount &lt;= 0:
+            raise ValueError("deposit must be positive")
+        self._balance = self._balance + amount
+
+    def withdraw(self, amount):
+        if amount &lt;= 0:
+            raise ValueError("withdrawal must be positive")
+        if amount &gt; self._balance:
+            raise ValueError("insufficient funds")
+        self._balance = self._balance - amount</pre><p>Check the cheapest, most obvious thing first (is the amount even a real amount?), then the one that needs the object's state. Each guard raises immediately, so by the time you reach the last line of a method, everything above it is known to be true.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">16.5 · P3</span><span class="pt">Stage 3 — an afternoon at the bank</span></div>
+        <p class="pd">The whole class, plus <code>report()</code> using the class attribute and formatting the money with <code>:.2f</code>, and a <code>__str__</code> reading <code>BankAccount(Ada, 1000)</code>. Then the scripted scenario below runs into every guard in turn. Fill in the class; the scenario is written for you.</p>
+        <div class="want">BankAccount(Ada, 1000)
+Deposited 500
+Refused: deposit must be positive
+Withdrew 300
+Refused: insufficient funds
+Refused: balance is read-only
+Learn Bank | Ada: 1200.00</div>
+        <div class="pyrun" data-id="s5p3" data-expect="BankAccount(Ada, 1000)\nDeposited 500\nRefused: deposit must be positive\nWithdrew 300\nRefused: insufficient funds\nRefused: balance is read-only\nLearn Bank | Ada: 1200.00">
+          <textarea spellcheck="false">class BankAccount:
+    bank_name = "Learn Bank"
+
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self._balance = balance
+
+    # balance property (read-only)
+    # deposit / withdraw with their guards
+    # report()  ->  "Learn Bank | Ada: 1200.00"
+    # __str__   ->  "BankAccount(Ada, 1000)"
+
+
+a = BankAccount("Ada", 1000)
+print(a)
+
+for amount in [500, -50]:
+    try:
+        a.deposit(amount)
+        print("Deposited", amount)
+    except ValueError as e:
+        print("Refused:", e)
+
+for amount in [300, 9000]:
+    try:
+        a.withdraw(amount)
+        print("Withdrew", amount)
+    except ValueError as e:
+        print("Refused:", e)
+
+try:
+    a.balance = 999999
+except AttributeError:
+    print("Refused: balance is read-only")
+
+print(a.report())</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class BankAccount:
+    bank_name = "Learn Bank"
+
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self._balance = balance
+
+    @property
+    def balance(self):
+        return self._balance
+
+    def deposit(self, amount):
+        if amount &lt;= 0:
+            raise ValueError("deposit must be positive")
+        self._balance = self._balance + amount
+
+    def withdraw(self, amount):
+        if amount &lt;= 0:
+            raise ValueError("withdrawal must be positive")
+        if amount &gt; self._balance:
+            raise ValueError("insufficient funds")
+        self._balance = self._balance - amount
+
+    def report(self):
+        return f"{self.bank_name} | {self.owner}: {self._balance:.2f}"
+
+    def __str__(self):
+        return f"BankAccount({self.owner}, {self._balance})"</pre><p>Read that scenario once more and notice what it proves. Three different attacks — a negative deposit, an impossible withdrawal, a direct write to the balance — and the object turned all three away without a single line of checking at the call site. Every guard lives inside the class, where it belongs. That is encapsulation, and that is the Intermediate level, complete.</p></details>
+      </div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Checkpoint</div>
+      Four units, one class. It builds itself (<code>__init__</code>), prints itself (<code>__str__</code>), can be specialised (inheritance), and now defends itself (properties + validation). Scroll back to Unit 13's first <code>BankAccount</code> and read it again — it will look like something a stranger wrote.
+    </div>
+  </section>
+
+  <!-- ============ 16.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">16.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~15 min</span></span>
+      <p>The mixed set: hidden boxes, guarded windows, computed values, shared facts. In order; they get meaner, and the last one asks you to compute an answer that can never go stale.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">Temperature, two ways</span></div>
+        <p class="pd">Store the temperature once as <code>self._celsius</code>. Expose a read-only <code>celsius</code> property and a computed <code>fahrenheit</code> property (<code>c × 9 / 5 + 32</code>). Neither stores anything new.</p>
+        <div class="want">0 C is 32.0 F
+37 C is 98.6 F
+100 C is 212.0 F</div>
+        <div class="pyrun" data-id="b1" data-expect="0 C is 32.0 F\n37 C is 98.6 F\n100 C is 212.0 F">
+          <textarea spellcheck="false">class Temperature:
+    def __init__(self, celsius):
+        self._celsius = celsius
+
+    # celsius property (read-only)
+    # fahrenheit property (computed)
+
+for c in [0, 37, 100]:
+    t = Temperature(c)
+    print(f"{t.celsius} C is {t.fahrenheit:.1f} F")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Temperature:
+    def __init__(self, celsius):
+        self._celsius = celsius
+
+    @property
+    def celsius(self):
+        return self._celsius
+
+    @property
+    def fahrenheit(self):
+        return self._celsius * 9 / 5 + 32</pre><p>One stored fact, two ways of reading it. Storing both would mean keeping them in step forever — and the first time you forgot, the object would be quietly lying.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">Marks out of a hundred</span></div>
+        <p class="pd">Give <code>Student</code> a <code>marks</code> property whose setter refuses anything outside 0–100 with <code>ValueError("marks must be between 0 and 100")</code>. The loop below tries three values; report each and then the final mark.</p>
+        <div class="want">Recorded 88
+Rejected: marks must be between 0 and 100
+Recorded 92
+Ada final marks: 92</div>
+        <div class="pyrun" data-id="b2" data-expect="Recorded 88\nRejected: marks must be between 0 and 100\nRecorded 92\nAda final marks: 92">
+          <textarea spellcheck="false">class Student:
+    def __init__(self, name, marks=0):
+        self.name = name
+        self.marks = marks      # goes through the setter
+
+    # marks property + validating setter
+
+s = Student("Ada")
+for m in [88, 150, 92]:
+    try:
+        s.marks = m
+        print("Recorded", m)
+    except ValueError as e:
+        print("Rejected:", e)
+
+print(f"{s.name} final marks: {s.marks}")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>    @property
+    def marks(self):
+        return self._marks
+
+    @marks.setter
+    def marks(self, value):
+        if value &lt; 0 or value &gt; 100:
+            raise ValueError("marks must be between 0 and 100")
+        self._marks = value</pre><p>The 150 never reaches <code>_marks</code>, so the 88 survives until 92 replaces it. Raise inside, catch outside — the class states the rule, the caller chooses the reaction.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">GST on the shelf</span></div>
+        <p class="pd">Give <code>Product</code> a class attribute <code>gst_rate = 0.18</code> — one rate for every product in the shop — and a method <code>price_with_tax()</code> that uses it. Ask for the product and its price. Inputs are fixed to <code>Notebook</code> and <code>250</code>.</p>
+        <div class="want">Product? Notebook
+Price? 250
+Notebook costs 295.00 including GST</div>
+        <div class="pyrun" data-id="b3" data-stdin="Notebook\n250" data-stdin-lock data-expect="Product? Notebook\nPrice? 250\nNotebook costs 295.00 including GST">
+          <textarea spellcheck="false">class Product:
+    # gst_rate on the class
+
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+
+    # price_with_tax(self)
+
+name = input("Product? ")
+price = float(input("Price? "))
+p = Product(name, price)
+print(f"{p.name} costs {p.price_with_tax():.2f} including GST")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Product:
+    gst_rate = 0.18
+
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+
+    def price_with_tax(self):
+        return self.price + self.price * self.gst_rate</pre><p>When the rate changes in next year's budget, you edit one line and every product in the shop is correct. That's the whole argument for class attributes in eleven words. (Note <code>price_with_tax()</code> keeps its parentheses — it's a method, not a property. Either design is defensible; a property would read nicer, a method makes the computation obvious.)</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — the club's oldest member</span></div>
+        <p class="pd">A <code>Club</code> keeps its members in <code>self._members</code>, a list of <code>(name, age)</code> tuples. Add <code>add(name, age)</code> and a read-only computed property <code>oldest_member</code> that returns the <i>name</i> of the oldest — or <code>None</code> when the club is empty. It must be right after every single addition, without anyone updating it.</p>
+        <div class="want">None
+Grace
+Edith</div>
+        <div class="pyrun" data-id="b4" data-expect="None\nGrace\nEdith">
+          <textarea spellcheck="false">class Club:
+    def __init__(self, title):
+        self.title = title
+        self._members = []
+
+    # add(self, name, age)
+    # oldest_member — a computed, read-only property
+
+c = Club("Chess")
+print(c.oldest_member)
+c.add("Ada", 28)
+c.add("Grace", 41)
+c.add("Alan", 35)
+print(c.oldest_member)
+c.add("Edith", 52)
+print(c.oldest_member)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Club:
+    def __init__(self, title):
+        self.title = title
+        self._members = []
+
+    def add(self, name, age):
+        self._members.append((name, age))
+
+    @property
+    def oldest_member(self):
+        if len(self._members) == 0:
+            return None
+        oldest = self._members[0]
+        for member in self._members:
+            if member[1] &gt; oldest[1]:
+                oldest = member
+        return oldest[0]</pre><p>Nobody ever "updates the oldest member", because there is nothing to update — the answer is derived from the list at the moment you ask. Every stored summary in a program is a promise to keep it in step with reality; a computed property is the same answer with no promise to break.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">The Intermediate level is complete</div>
+      <h3>Unit 17 · Iterators &amp; the iteration protocol</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">Stop and take this in. Four units ago a class was a strange word with a colon after it. Now your objects build themselves, print themselves in plain English, compare by what they <i>mean</i> rather than where they sit in memory, inherit from a parent, hold other objects inside them, and refuse bad data at the door. That's the Intermediate level, finished — and it's the hardest conceptual climb in this series.</p>
+      <p style="font-size:var(--fs-cap);color:var(--slate);margin-top:12px">Now the door to <b>Advanced</b>. Everything so far has been about writing your own things. From here on you'll be reaching into Python's own machinery — and you already hold the keys, because that machinery is made of exactly the dunder methods you've been writing. First question, and it's a better one than it sounds: what does a <code>for</code> loop <i>actually do</i>? You've written hundreds of them since Unit 4 and never once been told. The answer is a protocol — a small, precise agreement — and any class of yours can join it. Once it does, your objects work in <code>for</code> loops as if Python had shipped them itself.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>The Python Tutorial</b> — <i>§9.6 Private Variables</i>. <span class="why">The official word on the leading underscore, why it isn't enforced, and the name-mangling that <code>__</code> triggers.</span> <a href="https://docs.python.org/3/tutorial/classes.html#private-variables" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>Built-in Functions: property()</i>. <span class="why">Getter, setter and deleter in full, including the older non-decorator spelling you'll meet in existing code.</span> <a href="https://docs.python.org/3/library/functions.html#property" rel="noopener">docs.python.org</a></li>
+      <li><b>The Python Tutorial</b> — <i>§9.3.5 Class and Instance Variables</i>. <span class="why">The shelf, officially — including the shared-mutable-list trap from 16.4's confusion box.</span> <a href="https://docs.python.org/3/tutorial/classes.html#class-and-instance-variables" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>Built-in Exceptions</i>. <span class="why">Which exception to raise when: <code>ValueError</code> for a bad value, <code>TypeError</code> for a bad type, <code>AttributeError</code> for a door that doesn't open.</span> <a href="https://docs.python.org/3/library/exceptions.html" rel="noopener">docs.python.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit15.html"><span class="k">← Previous</span><span class="t">Unit 15 · Classes III — inheritance &amp; composition</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit17.html"><span class="k">Next →</span><span class="t">Unit 17 · Iterators &amp; the iteration protocol</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 16 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"What does the leading underscore in  self._balance  actually do?",
+   o:["Makes the attribute private — Python blocks outside access","Nothing to the interpreter; it's a convention meaning 'internal, touch at your own risk'","Turns the attribute into a property automatically","Hides the attribute from print() and from other methods"],
+   a:1,
+   e:"Python has no locked boxes. a._balance still reads and writes perfectly well. The underscore is a handshake between programmers — a sign on the door, not a lock — and it works because the culture around it is real."},
+  {q:"A class has  @property  above  def area(self). How do you read the area of circle c?",
+   o:["c.area()","c.area","c.get_area()","area(c)"],
+   a:1,
+   e:"A property is read with NO parentheses — it wears an attribute's clothes. c.area() would try to call the number that came back, giving TypeError: 'float' object is not callable."},
+  {q:"Inside  @balance.setter, which line stores the value correctly?",
+   o:["self.balance = value","self._balance = value","balance = value","return value"],
+   a:1,
+   e:"Store into the underscore box. self.balance = value calls the setter again, and again, until Python stops it with RecursionError. The property is the door; _balance is the room."},
+  {q:"Why is a COMPUTED property (like full_name built from first and last) safer than storing the result in __init__?",
+   o:["It uses less memory","It runs faster","It is worked out fresh on every read, so it can never be stale when the parts change","Python refuses to store computed values"],
+   a:2,
+   e:"A stored summary is a promise to keep it in step with reality. Change last and a stored full_name is quietly wrong; a computed one has nothing to go stale, because it kept nothing."},
+  {q:"class Account has  bank_name = \"Learn Bank\"  in its body, and no object ever assigns it. What does  self.bank_name  find inside a method?",
+   o:["Nothing — it raises AttributeError","The class attribute, because lookup checks the object first, then goes up to the class","A fresh copy made for each object when it was built","Only if you write Account.bank_name instead"],
+   a:1,
+   e:"Reading walks upward: object first, then the class. That's why one shared box serves every instance — and why renaming it on the class updates them all at once."},
+  {q:"a and b are both Accounts. You run  a.bank_name = \"Ada's Vault\". What does  b.bank_name  give now?",
+   o:["\"Ada's Vault\" — the class attribute changed","\"Learn Bank\" — a's assignment made a new box inside a that shadows the class's","An AttributeError, because the class value was replaced","Nothing — assigning to a class attribute through an instance is an error"],
+   a:1,
+   e:"Assignment never goes up. It created a private box inside a, hiding the shared one for a alone; b and the class are untouched. To change the shared value you must name the class: Account.bank_name = ..."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — flawless. Your objects guard themselves, and the Intermediate level is behind you."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 16.3 and 16.4 carry the load."
+           : " — worth another pass through 16.2 and 16.4 before the Advanced level opens.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Encapsulation","Hiding an object's raw insides and exposing a checked surface instead. The idea that turns a bag of data into something you can trust."],
+  ["Leading underscore (_name)","A handshake, not a lock: 'internal — touch at your own risk'. Python never enforces it; every Python programmer honours it."],
+  ["Name mangling (__name)","Two leading underscores make Python quietly rename the box so it's harder to reach by accident. Rarely worth the noise; one underscore is the everyday convention."],
+  ["Property","A method wearing an attribute's clothes. Decorate it with @property and reading obj.thing — no parentheses — runs your code."],
+  ["Getter","The @property half that answers a read. Must be defined before its setter, because the setter is attached to its name."],
+  ["Setter","The @thing.setter half that handles a write. It receives the value and may validate, convert, or refuse it before storing."],
+  ["Read-only property","A property with a getter and no setter. Assigning to it raises AttributeError — enforced by the language, not by convention."],
+  ["Computed property","A property that works its answer out on every read instead of storing it. Cannot go stale, because it kept nothing."],
+  ["Validate at the boundary","Check data once, at the one place it enters the object — then every method inside is free to trust it."],
+  ["Class attribute","A box on the class itself, shared by every instance: bank_name, gst_rate, a counter. Written in the class body, outside any method."],
+  ["Instance attribute","A box inside one object, made by self.name = ... — one per object, nobody else's business."],
+  ["Shadowing","self.thing = x on a class attribute doesn't edit the shared box; it makes a new one inside that object which hides the shared one, for that object only."],
+  ["AttributeError","Python saying 'that door doesn't open' — no such attribute, or a property with no setter."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

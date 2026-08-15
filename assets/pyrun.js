@@ -111,7 +111,8 @@
     '    py.setStdout({batched:function(s){ buf.push(s); }});\n' +
     '    py.setStderr({batched:function(s){ buf.push(s); }});\n' +
     '    var err = null;\n' +
-    '    try { py.runPython(msg.code, {globals: py.globals.get("dict")()}); }\n' +
+    // fresh namespace per run so one problem never leaks boxes into the next
+    '    try { py.runPython(msg.code, {globals: py.toPy({})}); }\n' +
     '    catch (e) { err = String(e && e.message || e); }\n' +
     '    py.setStdout(); py.setStderr();\n' +
     '    postMessage({type:"result", id: msg.id, ok: !err, text: buf.join("\\n"), err: err});\n' +
@@ -175,16 +176,27 @@
     });
   }
 
-  /* keep only the traceback lines a beginner can act on */
+  /* Keep only the traceback lines a beginner can act on: their own frames and
+     the final diagnosis. Interpreter-internal frames are dropped together with
+     the source and caret lines that belong to them, so no orphaned ^^^^ marks
+     are left behind. */
+  var FRAME = /^\s*File "/;
+  var FINAL = /^[A-Za-z_][\w.]*(Error|Exception|Warning|Exit|Interrupt)\b/;
+  var INTERNAL = /File "\/lib\/|_pyodide|pyodide\.|importlib|^\s*exec\(|<frozen /;
+
   function cleanTraceback(msg) {
-    var lines = String(msg).split("\n");
+    var lines = String(msg).replace(/\r/g, "").split("\n");
     var out = [];
     for (var i = 0; i < lines.length; i++) {
       var L = lines[i];
-      if (L.indexOf('File "/lib/') >= 0 || L.indexOf("_pyodide") >= 0 || L.indexOf("pyodide.") === 0) { i++; continue; }
-      out.push(L.replace(/File "<exec>", /g, ""));
+      if (INTERNAL.test(L)) {
+        // skip this frame and everything under it until the next frame/diagnosis
+        while (i + 1 < lines.length && !FRAME.test(lines[i + 1]) && !FINAL.test(lines[i + 1])) i++;
+        continue;
+      }
+      out.push(L.replace(/File "<exec>", /g, "").replace(/File "<string>", /g, ""));
     }
-    return out.join("\n").trim();
+    return out.join("\n").replace(/\n{3,}/g, "\n\n").trim();
   }
 
   function normalize(s) {

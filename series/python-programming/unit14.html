@@ -1,0 +1,1205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classes II — Objects That Feel Native — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u14" data-lwa-title="Unit 14 · Classes II — objects that feel native">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Intermediate — Object-oriented Python · Unit 14</div>
+      <h1>Classes II — Objects That Feel Native</h1>
+      <p class="standfirst">Unit 13's objects worked, but they were tourists — <code style="font-size:.85em">print</code> couldn't describe them, <code style="font-size:.85em">==</code> couldn't compare them, <code style="font-size:.85em">len()</code> wouldn't count them. This session hands your classes the keys to Python's own machinery, using a small set of double-underscore names Python is already looking for.</p>
+      <div class="facts">
+        <div><b>One session</b>~50 min</div>
+        <div><b>5 concepts</b>each: short read + practice</div>
+        <div><b>18 problems</b>solved right here</div>
+        <div><b>Builds on</b>Unit 13 — classes &amp; objects</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">14.1 The ugly print</a>
+    <a href="#s2">14.2 The equality surprise</a>
+    <a href="#s3">14.3 The protocol reveal</a>
+    <a href="#s4">14.4 Making + mean something</a>
+    <a href="#s5">14.5 Build: Money &amp; Playlist</a>
+    <a href="#s6">14.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 14.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Unit 13</b><code>class</code>, <code>__init__</code>, <code>self</code>, attributes and methods — plus the cookie cutter and its cookies. Everything here is a new method on classes you already know.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm: each concept is a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit14.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>The promise being kept</b>Back in Beginner, <code>len()</code> worked on strings, lists <i>and</i> dictionaries and we called it "polite". This unit finally explains why — and lets your own classes join in.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">14.1</span>
+      <h2>The ugly print problem — <code>__str__</code></h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~9 min</span></span>
+      <p><b>The problem.</b> You build a <code>Money</code> object holding 250 rupees, you print it to check your work, and Python answers with <code>&lt;__main__.Money object at 0x7f3a1c0d5e50&gt;</code>. Technically true. Completely useless. Every object you make from here on will print like this until you do something about it.</p>
+      <p><b>The idea, in plain words.</b> That gibberish is Python's fallback: "it's a Money, it lives at this address in memory, and nobody told me how to describe it." Nobody told it — so tell it. Add a method called <code>__str__</code> to your class that <b>returns</b> a string, and <code>print</code> will use your sentence instead of its own.</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">def __str__(self):
+    return f"{self.amount} rupees"</p>
+      <p>Those two underscores on each side make it a <b>dunder</b> method — "double underscore", and Python programmers really do say it out loud. Dunder names are not decoration and not magic: they are the names Python itself goes looking for. You will never call <code>__str__</code> by hand. You write it once; <code>print</code>, <code>str()</code> and every f-string call it for you, forever.</p>
+      <p>One honest footnote while we're here. Python has a sibling method, <code>__repr__</code>. The split is: <b><code>__str__</code> is for humans</b> — the friendly sentence a user should read — and <b><code>__repr__</code> is for developers</b> — the precise, unambiguous version you'd want in a debugger. When only <code>__str__</code> exists, printing works and that's what we need today. Learn <code>__repr__</code> the day you're staring at a list of objects and want detail; <code>__str__</code> is enough for now.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — where the sentence comes from</div>
+      <div class="m">class Money:
+    def __init__(self, amount):
+        self.amount = amount
+    def __str__(self):
+        return f"{self.amount} rupees"
+
+wallet = Money(250)
+print(wallet)</div>
+      <p><b>The class lines:</b> nothing runs yet — the cutter is being shaped, no cookies exist.</p>
+      <p><b><code>wallet = Money(250)</code>:</b> a new object; <code>__init__</code> runs and puts <b>250</b> into its <code>amount</code> attribute.</p>
+      <p><b><code>print(wallet)</code>:</b> print needs text, so it asks the object: <i>do you have a <code>__str__</code>?</i> It does. Python runs <code>wallet.__str__()</code> — with <code>self</code> being <code>wallet</code> — which returns the string <code>"250 rupees"</code>. Print prints that.</p>
+      <div class="m">250 rupees</div>
+      <p>Delete the <code>__str__</code> method and the last line becomes the memory-address gibberish again. Nothing else changes.</p>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>__str__</code> must <b>return</b> a string, not print one. Writing <code>print(f"{self.amount} rupees")</code> inside it looks like it works — the text appears! — but the method hands back <code>None</code>, and Python complains: <code>TypeError: __str__ returned non-string (type NoneType)</code>. Same rule as every function in Unit 10: <i>a method that prints gives you nothing to use; a method that returns gives you everything.</i></p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> see the ugly print with your own eyes, then fix it. <b>Thinking:</b> run this exactly as written first — the second half of the output is the useless version. (No check button on this one: the memory address is different every single run, on every machine. That's the whole point.)</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">class Money:
+    def __init__(self, amount):
+        self.amount = amount
+
+class Cash:
+    def __init__(self, amount):
+        self.amount = amount
+    def __str__(self):
+        return f"{self.amount} rupees"
+
+print(Cash(250))     # your sentence
+print(Money(250))    # Python's fallback — address varies every run</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">14.1 · P1</span><span class="pt">Teach the dog to introduce itself</span></div>
+        <p class="pd">Give <code>Dog</code> a <code>__str__</code> that returns the name, the word <code>the</code>, and the breed. Then <code>print(d)</code> should read like a caption, not like a hex address.</p>
+        <div class="want">Bruno the beagle</div>
+        <div class="pyrun" data-id="s1p1" data-expect="Bruno the beagle">
+          <textarea spellcheck="false">class Dog:
+    def __init__(self, name, breed):
+        self.name = name
+        self.breed = breed
+    # add __str__ here
+
+d = Dog("Bruno", "beagle")
+print(d)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Dog:
+    def __init__(self, name, breed):
+        self.name = name
+        self.breed = breed
+    def __str__(self):
+        return f"{self.name} the {self.breed}"
+
+d = Dog("Bruno", "beagle")
+print(d)</pre><p>An f-string built from the object's own attributes, <b>returned</b>. Note the indentation: <code>__str__</code> sits inside the class, level with <code>__init__</code>.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">14.1 · P2</span><span class="pt">Predict: three doors, one method</span></div>
+        <p class="pd">Write down all three output lines before running. The question worth asking: how many of these three lines actually call <code>__str__</code>?</p>
+        <div class="pyrun" data-id="s1p2" data-expect="Chennai (600001)\nPosting to Chennai (600001)\nCHENNAI (600001)">
+          <textarea spellcheck="false">class City:
+    def __init__(self, name, pin):
+        self.name = name
+        self.pin = pin
+    def __str__(self):
+        return f"{self.name} ({self.pin})"
+
+c = City("Chennai", 600001)
+print(c)
+print(f"Posting to {c}")
+label = str(c)
+print(label.upper())</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>Chennai (600001)
+Posting to Chennai (600001)
+CHENNAI (600001)</pre><p>All three. <code>print</code>, an f-string's <code>{c}</code> slot, and <code>str()</code> are three doors into the same method — which is why writing it once is such a good deal. And once <code>str(c)</code> hands back a real string, every string method you own (<code>.upper()</code> here) works on it.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">14.1 · P3</span><span class="pt">Stretch — the bank statement</span></div>
+        <p class="pd">Unit 13's <code>BankAccount</code>, one method richer. Give it a <code>__str__</code> reading <code>owner: balance</code> and print both accounts. Remember <code>balance</code> defaults to <code>0</code> when nobody passes one.</p>
+        <div class="want">Ada: 500
+Ravi: 0</div>
+        <div class="pyrun" data-id="s1p3" data-expect="Ada: 500\nRavi: 0">
+          <textarea spellcheck="false">class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+    # add __str__ here
+
+a = BankAccount("Ada", 500)
+b = BankAccount("Ravi")
+print(a)
+print(b)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+    def __str__(self):
+        return f"{self.owner}: {self.balance}"
+
+a = BankAccount("Ada", 500)
+b = BankAccount("Ravi")
+print(a)
+print(b)</pre><p>The default <code>balance=0</code> from Unit 13 still does its job — Ravi's account exists, empty, and prints honestly. A <code>__str__</code> is often the fastest debugging tool you can add to a class: one method, and every print becomes informative.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 14.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">14.2</span>
+      <h2>The equality surprise — <code>__eq__</code></h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> You make <code>Point(3, 4)</code>. Your friend makes <code>Point(3, 4)</code>. Same class, same numbers, same everything. You ask Python whether they're equal and it says <code>False</code>. It is not being difficult; it genuinely doesn't know that you consider them the same.</p>
+      <p><b>The idea, in plain words.</b> Remember the house picture: an object is a <i>box of boxes with abilities attached</i>. When you write <code>p == q</code> and nobody has said otherwise, Python compares the <b>boxes themselves</b>, not their contents — it asks "are these two names pointing at the one same box?" Two separately-built Points are two separate boxes, so the answer is honestly <code>False</code>. Identical twins are not the same person.</p>
+      <p>To make <code>==</code> mean what you mean, write <code>__eq__</code>. It takes a second parameter — traditionally called <code>other</code> — which is whatever sits on the right of the <code>==</code>. Compare the attributes you care about, and return the True/False answer:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">def __eq__(self, other):
+    return self.x == other.x and self.y == other.y</p>
+      <p>Note what this does <i>not</i> do: it doesn't compare every attribute automatically, and it doesn't decide anything on its own. <b>You</b> declare what "the same" means for your class. Two bank accounts with equal balances — same, or not? Two songs with the same title but different artists? Only you know. That's the job <code>__eq__</code> hands you.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — three names, two boxes</div>
+      <div class="m">p = Point(3, 4)
+q = Point(3, 4)
+r = p
+print(p == q)
+print(p == r)</div>
+      <p><b>Line 1:</b> a box is built, filled with x=3 and y=4, labeled <code>p</code>.</p>
+      <p><b>Line 2:</b> a <i>second</i>, brand-new box is built, filled identically, labeled <code>q</code>. Same contents. Different box.</p>
+      <p><b>Line 3:</b> no box is built. <code>r</code> is a second label stuck on the box that <code>p</code> already names.</p>
+      <p><b>Line 4:</b> with no <code>__eq__</code>, Python asks "same box?" — p's box and q's box are different objects →</p>
+      <div class="m">False</div>
+      <p><b>Line 5:</b> same question, and this time it's literally the same box →</p>
+      <div class="m">True</div>
+      <p>Now add <code>__eq__</code> comparing x and y, and line 4 flips to <code>True</code> — because you changed the question being asked.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 230" role="img" aria-label="Two Point objects with identical contents living in two different boxes">
+        <text x="16" y="24" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">SAME CONTENTS, DIFFERENT BOXES</text>
+        <rect x="40" y="46" width="230" height="118" rx="12" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="155" y="70" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">p  →  a Point box</text>
+        <rect x="62" y="82" width="86" height="40" rx="7" fill="#ffffff" stroke="#e3e6ee"/>
+        <text x="105" y="98" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11" fill="#6b7585">x</text>
+        <text x="105" y="114" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">3</text>
+        <rect x="162" y="82" width="86" height="40" rx="7" fill="#ffffff" stroke="#e3e6ee"/>
+        <text x="205" y="98" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11" fill="#6b7585">y</text>
+        <text x="205" y="114" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">4</text>
+        <text x="155" y="150" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">built on line 1</text>
+        <rect x="310" y="46" width="230" height="118" rx="12" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="425" y="70" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">q  →  a Point box</text>
+        <rect x="332" y="82" width="86" height="40" rx="7" fill="#ffffff" stroke="#e3e6ee"/>
+        <text x="375" y="98" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11" fill="#6b7585">x</text>
+        <text x="375" y="114" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">3</text>
+        <rect x="432" y="82" width="86" height="40" rx="7" fill="#ffffff" stroke="#e3e6ee"/>
+        <text x="475" y="98" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11" fill="#6b7585">y</text>
+        <text x="475" y="114" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">4</text>
+        <text x="425" y="150" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">built on line 2</text>
+        <rect x="586" y="46" width="250" height="118" rx="12" fill="#23262e"/>
+        <text x="604" y="72" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#e8e6f2">p == q</text>
+        <text x="604" y="96" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#9aa4b8">no __eq__  →  same box?</text>
+        <text x="604" y="114" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#e39a72">False</text>
+        <text x="604" y="136" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#9aa4b8">with __eq__  →  same x, y?</text>
+        <text x="604" y="154" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#7fc9a6">True</text>
+        <text x="16" y="200" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#4a5a72">Writing <tspan font-family="Cascadia Mono,Consolas,monospace" fill="#3d3170">__eq__</tspan> does not change the objects. It changes the QUESTION that <tspan font-family="Cascadia Mono,Consolas,monospace" fill="#3d3170">==</tspan> asks about them.</text>
+      </svg>
+      <div class="figcap">Fig. 1 — By default <code>==</code> asks "which box?" — an identity question. <code>__eq__</code> replaces it with a contents question of your own design.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>"But <code>"abc" == "abc"</code> is <code>True</code> and I never wrote an <code>__eq__</code>!" Correct — because the people who built <code>str</code>, <code>int</code>, <code>list</code> and <code>dict</code> wrote one for you, long ago. Every built-in type you've compared since Unit 3 has been running somebody's <code>__eq__</code>. The default "same box?" behaviour only shows up for classes nobody has taught yet — which, from Unit 13 onward, means <i>yours</i>.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> watch <code>==</code> change its mind. <b>Thinking:</b> the same two comparisons run twice — once on a bare class, once on a class with three extra lines. Nothing about the data differs; only the question does.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">class Plain:
+    def __init__(self, x):
+        self.x = x
+
+class Taught:
+    def __init__(self, x):
+        self.x = x
+    def __eq__(self, other):
+        return self.x == other.x
+
+print(Plain(7) == Plain(7))
+print(Taught(7) == Taught(7))
+print(Taught(7) == Taught(8))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">14.2 · P1</span><span class="pt">Predict: the disappointment</span></div>
+        <p class="pd">Two lines, two predictions, on paper first. One of these is the surprise everyone meets exactly once. (True and False print with a capital letter — Unit 3's rule still holds.)</p>
+        <div class="pyrun" data-id="s2p1" data-expect="False\nTrue">
+          <textarea spellcheck="false">class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+p = Point(3, 4)
+q = Point(3, 4)
+r = p
+print(p == q)
+print(p == r)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>False
+True</pre><p><code>p</code> and <code>q</code> label two separately-built boxes, so the default identity question answers <code>False</code>. <code>r</code> is just a second label on <code>p</code>'s box, so the same question answers <code>True</code>. Identical is not the same as identical-twin.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">14.2 · P2</span><span class="pt">Teach Point what "equal" means</span></div>
+        <p class="pd">Add an <code>__eq__</code> to <code>Point</code> so two points count as equal when <b>both</b> coordinates match. Then the first comparison should turn <code>True</code> and the second — coordinates swapped — must stay <code>False</code>.</p>
+        <div class="want">True
+False</div>
+        <div class="pyrun" data-id="s2p2" data-expect="True\nFalse">
+          <textarea spellcheck="false">class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    # add __eq__ here
+
+print(Point(3, 4) == Point(3, 4))
+print(Point(3, 4) == Point(4, 3))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+print(Point(3, 4) == Point(3, 4))
+print(Point(3, 4) == Point(4, 3))</pre><p><code>other</code> is whatever stands on the right of the <code>==</code>. The <code>and</code> from Unit 3 does the real work: both coordinates or nothing. Notice you <code>return</code> the comparison itself — no <code>if</code> needed, because <code>self.x == other.x</code> is already True or False.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">14.2 · P3</span><span class="pt">Stretch — <code>in</code> is secretly asking too</span></div>
+        <p class="pd">Give <code>Card</code> an <code>__eq__</code> (same rank <b>and</b> same suit). Then don't touch the last two lines — they use <code>in</code> to search a list of cards. If your <code>__eq__</code> is right, the search works; if it's missing, both answers come back <code>False</code>. Ask yourself why before you run.</p>
+        <div class="want">True
+False</div>
+        <div class="pyrun" data-id="s2p3" data-expect="True\nFalse">
+          <textarea spellcheck="false">class Card:
+    def __init__(self, rank, suit):
+        self.rank = rank
+        self.suit = suit
+    # add __eq__ here
+
+hand = [Card("Ace", "spades"), Card("Two", "hearts")]
+print(Card("Two", "hearts") in hand)
+print(Card("Two", "spades") in hand)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Card:
+    def __init__(self, rank, suit):
+        self.rank = rank
+        self.suit = suit
+    def __eq__(self, other):
+        return self.rank == other.rank and self.suit == other.suit
+
+hand = [Card("Ace", "spades"), Card("Two", "hearts")]
+print(Card("Two", "hearts") in hand)
+print(Card("Two", "spades") in hand)</pre><p>Here's the reveal one section early: <code>in</code> walks the list and asks <code>==</code> about every item. Teach a class <code>__eq__</code> and you have silently also taught it <code>in</code>, <code>.count()</code>, <code>.remove()</code> and <code>.index()</code>. One method, four features — this is the pattern 14.3 is about to name.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 14.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">14.3</span>
+      <h2>The protocol reveal — how <code>len()</code> finds <code>__len__</code></h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> There's a question you should have asked back in Beginner and probably didn't: how on earth does <code>len()</code> work on a string, a list <i>and</i> a dictionary? Three completely different things. One function. Does <code>len()</code> contain a giant list of every type it knows about? And if it does — your <code>Playlist</code> isn't on that list, so <code>len(playlist)</code> is hopeless, right?</p>
+      <p><b>The idea, in plain words.</b> No giant list. <b>Built-in functions are polite knockers.</b> <code>len(x)</code> doesn't know anything about <code>x</code>; it walks up to the object, knocks, and asks a single question — <i>"do you have a <code>__len__</code>?"</i> If the object answers, <code>len()</code> returns whatever it says and leaves. Strings answer. Lists answer. Dictionaries answer. That's the entire mystery: three different classes, each with its own <code>__len__</code>, one polite knocker at the door.</p>
+      <p>The same is true of everything you've met today. <code>print</code> knocks with <code>__str__</code>. <code>==</code> knocks with <code>__eq__</code>. <code>+</code> knocks with <code>__add__</code> (next section). This arrangement — "if you implement these names, this feature works on you" — is called a <b>protocol</b>. Nobody has to register anything, nobody inherits anything. You just answer the knock.</p>
+      <table>
+        <tr><th>you write</th><th>Python knocks with</th><th>you get, free</th></tr>
+        <tr><td><code>print(x)</code>, <code>f"{x}"</code>, <code>str(x)</code></td><td><code>x.__str__()</code></td><td>readable output everywhere</td></tr>
+        <tr><td><code>x == y</code></td><td><code>x.__eq__(y)</code></td><td><code>!=</code>, <code>in</code>, <code>.count()</code>, <code>.remove()</code></td></tr>
+        <tr><td><code>len(x)</code></td><td><code>x.__len__()</code></td><td>counting — and truth (see P3)</td></tr>
+        <tr><td><code>x + y</code></td><td><code>x.__add__(y)</code></td><td>arithmetic in your own domain</td></tr>
+      </table>
+      <p>So the answer to "is my Playlist hopeless?" is: only until you write four lines. Add <code>__len__</code> returning the length of the inner list, and <code>len(playlist)</code> works — not by permission, but because that was always how <code>len()</code> worked.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 300" role="img" aria-label="Built-in functions knocking on an object to find its dunder methods">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#5b4b9e"/>
+          </marker>
+        </defs>
+        <text x="16" y="24" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">BUILT-INS ARE POLITE KNOCKERS</text>
+        <text x="46" y="52" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#a35a33" letter-spacing="1">WHAT YOU WRITE</text>
+        <text x="428" y="52" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#3d3170" letter-spacing="1">WHAT PYTHON ASKS YOUR OBJECT</text>
+        <rect x="40" y="62" width="230" height="38" rx="8" fill="#23262e"/>
+        <text x="58" y="86" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#e8e6f2">len(playlist)</text>
+        <line x1="278" y1="81" x2="412" y2="81" stroke="#5b4b9e" stroke-width="1.6" marker-end="url(#ah)"/>
+        <text x="345" y="74" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="10.5" fill="#6b7585">knock</text>
+        <rect x="422" y="62" width="270" height="38" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="440" y="86" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#3d3170">playlist.__len__()</text>
+        <rect x="40" y="112" width="230" height="38" rx="8" fill="#23262e"/>
+        <text x="58" y="136" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#e8e6f2">print(money)</text>
+        <line x1="278" y1="131" x2="412" y2="131" stroke="#5b4b9e" stroke-width="1.6" marker-end="url(#ah)"/>
+        <rect x="422" y="112" width="270" height="38" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="440" y="136" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#3d3170">money.__str__()</text>
+        <rect x="40" y="162" width="230" height="38" rx="8" fill="#23262e"/>
+        <text x="58" y="186" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#e8e6f2">p == q</text>
+        <line x1="278" y1="181" x2="412" y2="181" stroke="#5b4b9e" stroke-width="1.6" marker-end="url(#ah)"/>
+        <rect x="422" y="162" width="270" height="38" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="440" y="186" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#3d3170">p.__eq__(q)</text>
+        <rect x="40" y="212" width="230" height="38" rx="8" fill="#23262e"/>
+        <text x="58" y="236" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#e8e6f2">a + b</text>
+        <line x1="278" y1="231" x2="412" y2="231" stroke="#5b4b9e" stroke-width="1.6" marker-end="url(#ah)"/>
+        <rect x="422" y="212" width="270" height="38" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="440" y="236" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#3d3170">a.__add__(b)</text>
+        <rect x="706" y="62" width="130" height="188" rx="10" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="771" y="132" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12" font-weight="700" fill="#1d5654">your class</text>
+        <text x="771" y="152" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12" fill="#1d5654">answers</text>
+        <text x="771" y="172" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12" fill="#1d5654">the door</text>
+        <text x="16" y="282" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#4a5a72">No registration, no permission. Implement the name and the feature switches on.</text>
+      </svg>
+      <div class="figcap">Fig. 2 — The protocol. The left column is the code you and every other Python programmer write; the right is the question Python turns it into. Your classes get to answer.</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      Python's own machinery is open to your classes. Built-ins don't have a private list of blessed types — they knock, using dunder names, and anything that answers is treated as a first-class citizen. This is why <code>len()</code> worked on strings, lists <b>and</b> dictionaries back in Beginner: not three special cases, one protocol.
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>You write dunder methods; you don't <i>call</i> them. <code>playlist.__len__()</code> runs, but writing it is like ringing your own doorbell — <code>len(playlist)</code> is the sentence Python programmers read. Same for <code>__str__</code> (use <code>print</code> or <code>str()</code>) and <code>__eq__</code> (use <code>==</code>). Dunders are the wiring behind the switch, and you don't reach into the wall to turn on a light.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> make <code>len()</code> work on Unit 13's <code>Playlist</code>. <b>Thinking:</b> the playlist already keeps its songs in a list, and lists already answer <code>len()</code> — so <code>__len__</code> has nothing clever to do. It just passes the question along to the list inside. Most dunder methods are this short.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">class Playlist:
+    def __init__(self, name):
+        self.name = name
+        self.songs = []
+    def add(self, song):
+        self.songs.append(song)
+    def __len__(self):
+        return len(self.songs)
+
+p = Playlist("Road trip")
+p.add("Highway Star")
+p.add("Kaatru Veliyidai")
+print(len(p))
+p.add("Sultans of Swing")
+print(len(p))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">14.3 · P1</span><span class="pt">Predict: the knock nobody answers</span></div>
+        <p class="pd">This <code>Team</code> obviously has a size — three members are sitting right there. Predict what <code>len(t)</code> does anyway, and predict the exact wording of the complaint. Then run and read the last line first, as always.</p>
+        <div class="pyrun" data-id="s3p1">
+          <textarea spellcheck="false">class Team:
+    def __init__(self, name):
+        self.name = name
+        self.members = []
+    def add(self, person):
+        self.members.append(person)
+
+t = Team("Wolves")
+t.add("Ada")
+t.add("Ravi")
+t.add("Meera")
+print(len(t))</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>TypeError: object of type 'Team' has no len()</pre><p>Read it as the knocker's report: <i>I asked, nobody answered.</i> Python isn't confused about the members list — it never looked at it. It looked for a <code>__len__</code> on <code>Team</code>, found none, and stopped. The fix is one method, and it's the next problem.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">14.3 · P2</span><span class="pt">Answer the knock</span></div>
+        <p class="pd">Give <code>Team</code> a <code>__len__</code> that reports how many members it has, so both prints work. (The inner list already knows its own length — let it do the counting.)</p>
+        <div class="want">0
+3</div>
+        <div class="pyrun" data-id="s3p2" data-expect="0\n3">
+          <textarea spellcheck="false">class Team:
+    def __init__(self, name):
+        self.name = name
+        self.members = []
+    def add(self, person):
+        self.members.append(person)
+    # add __len__ here
+
+t = Team("Wolves")
+print(len(t))
+t.add("Ada")
+t.add("Ravi")
+t.add("Meera")
+print(len(t))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Team:
+    def __init__(self, name):
+        self.name = name
+        self.members = []
+    def add(self, person):
+        self.members.append(person)
+    def __len__(self):
+        return len(self.members)
+
+t = Team("Wolves")
+print(len(t))
+t.add("Ada")
+t.add("Ravi")
+t.add("Meera")
+print(len(t))</pre><p>A brand-new team is honestly empty, so the first answer is <code>0</code>. And yes — <code>len()</code> inside <code>__len__</code> is not circular: the outer knock lands on your <code>Team</code>, the inner one lands on a plain list, which has answered that knock since long before you arrived.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">14.3 · P3</span><span class="pt">Stretch — one method, two features</span></div>
+        <p class="pd">This <code>Basket</code> already has a <code>__len__</code>, and the code below never calls <code>len()</code> — it just says <code>if b:</code>. Predict both lines. Then work out what question <code>if</code> must be asking, and who's answering it.</p>
+        <div class="pyrun" data-id="s3p3" data-expect="Basket is empty\nBasket has things">
+          <textarea spellcheck="false">class Basket:
+    def __init__(self):
+        self.items = []
+    def add(self, item):
+        self.items.append(item)
+    def __len__(self):
+        return len(self.items)
+
+b = Basket()
+if b:
+    print("Basket has things")
+else:
+    print("Basket is empty")
+
+b.add("apple")
+if b:
+    print("Basket has things")
+else:
+    print("Basket is empty")</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>Basket is empty
+Basket has things</pre><p>When <code>if</code> needs a True/False out of an object, it knocks for <code>__len__</code> and treats a length of <b>0 as False</b>, anything else as True. That's the same rule that made empty strings and empty lists falsy back in Beginner — one protocol, showing up in a place you'd never have guessed. Write <code>__len__</code> and you get "is it empty?" thrown in for free.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 14.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">14.4</span>
+      <h2>Making <code>+</code> mean something — <code>__add__</code></h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~9 min</span></span>
+      <p><b>The problem.</b> Two <code>Money</code> objects, 40 rupees and 35 rupees. The natural thing to write is <code>Money(40) + Money(35)</code>. Python refuses: <code>TypeError: unsupported operand type(s) for +: 'Money' and 'Money'</code>. It's the Unit 2 refusal all over again — <code>+</code> means "add" for numbers and "glue" for strings, and for your class it means nothing at all until you say.</p>
+      <p><b>The idea, in plain words.</b> Same knock, new name. <code>a + b</code> makes Python ask <code>a.__add__(b)</code>. Write that method and <code>+</code> means whatever you decide — combining money, stacking distances, adding vectors. This is called <b>operator overloading</b>: the operator is old, the meaning is yours.</p>
+      <p>There's a rule of good manners attached, and it's the important half of this section. <code>__add__</code> should <b>build and return a brand-new object</b> — it must not quietly change either of the ones being added:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">def __add__(self, other):
+    return Money(self.amount + other.amount)</p>
+      <p>Why? Because that's what <code>+</code> has always meant. <code>3 + 4</code> doesn't turn the 3 into a 7, and <code>"a" + "b"</code> leaves both strings exactly as they were — Unit 8's immutability wisdom, stated as a promise: <i>an expression produces a new value; it doesn't vandalise its inputs.</i> If your <code>__add__</code> did <code>self.amount = self.amount + other.amount</code>, then <code>total = a + b</code> would silently corrupt <code>a</code>, and the bug it caused would be found three files away, at midnight. Build new. Return it.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — three objects, not two</div>
+      <div class="m">tea = Money(40)
+snack = Money(35)
+bill = tea + snack
+print(tea.amount, snack.amount, bill.amount)</div>
+      <p><b>Lines 1–2:</b> two boxes, holding 40 and 35.</p>
+      <p><b>Line 3:</b> Python turns <code>tea + snack</code> into <code>tea.__add__(snack)</code>. Inside, <code>self</code> is <code>tea</code> and <code>other</code> is <code>snack</code>. The method computes 40 + 35 → 75 and hands that to <code>Money(...)</code>, which builds a <b>third</b> box. The <code>return</code> passes it out, and <code>bill</code> labels it.</p>
+      <p><b>Line 4:</b> all three are still standing, untouched:</p>
+      <div class="m">40 35 75</div>
+      <p>Three objects exist at the end. That's the signature of a well-behaved <code>+</code>.</p>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Forgetting the <code>return</code> is the classic. A <code>__add__</code> that computes the sum and stops gives you <code>total = a + b</code> where <code>total</code> is <code>None</code> — no error at the scene of the crime, just a baffling <code>AttributeError: 'NoneType' object has no attribute 'amount'</code> on some later line. Unit 10's law, restated for dunders: <b>if you didn't return it, you didn't produce it.</b></p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> add <code>__add__</code> to <code>Money</code> and prove it built something new. <b>Thinking:</b> the method has exactly one job — compute the combined amount and pass it to the class to build a fresh object. Watch the two originals survive.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">class Money:
+    def __init__(self, amount):
+        self.amount = amount
+    def __add__(self, other):
+        return Money(self.amount + other.amount)
+
+tea = Money(40)
+snack = Money(35)
+bill = tea + snack
+print(bill.amount)
+print(tea.amount, snack.amount)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">14.4 · P1</span><span class="pt">Predict: the refusal</span></div>
+        <p class="pd">Both objects are Money. Both hold numbers. Predict whether this runs, and if it doesn't, predict the wording. (You've seen this shape of message before — Unit 2's <code>"7" + 7</code>.)</p>
+        <div class="pyrun" data-id="s4p1">
+          <textarea spellcheck="false">class Money:
+    def __init__(self, amount):
+        self.amount = amount
+
+print(Money(40) + Money(35))</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>TypeError: unsupported operand type(s) for +: 'Money' and 'Money'</pre><p>"Unsupported operand" means: <i>I knocked with <code>__add__</code> and nobody was home.</i> Python will not guess that you meant to add the <code>amount</code> attributes — it can't know whether you'd want the amounts added, the labels glued, or something else entirely. Guessing is how other languages ruin afternoons.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">14.4 · P2</span><span class="pt">Give + a meaning</span></div>
+        <p class="pd">Add an <code>__add__</code> to <code>Money</code> that returns a <b>new</b> <code>Money</code> holding the combined amount, so the total prints correctly.</p>
+        <div class="want">75</div>
+        <div class="pyrun" data-id="s4p2" data-expect="75">
+          <textarea spellcheck="false">class Money:
+    def __init__(self, amount):
+        self.amount = amount
+    # add __add__ here
+
+total = Money(40) + Money(35)
+print(total.amount)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Money:
+    def __init__(self, amount):
+        self.amount = amount
+    def __add__(self, other):
+        return Money(self.amount + other.amount)
+
+total = Money(40) + Money(35)
+print(total.amount)</pre><p><code>Money(...)</code> inside the class is perfectly legal — the class is just a name, and calling it builds another cookie from the same cutter. The <code>return</code> is what makes the result land in <code>total</code>.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">14.4 · P3</span><span class="pt">Stretch — the vandal test</span></div>
+        <p class="pd">The <code>__add__</code> below is written the wrong way: it mutates instead of building. Run it, watch <code>a</code> get quietly corrupted, then fix the method so all three lines print honestly.</p>
+        <div class="want">100
+50
+150</div>
+        <div class="pyrun" data-id="s4p3" data-expect="100\n50\n150">
+          <textarea spellcheck="false">class Money:
+    def __init__(self, amount):
+        self.amount = amount
+    def __add__(self, other):
+        self.amount = self.amount + other.amount
+        return self
+
+a = Money(100)
+b = Money(50)
+c = a + b
+print(a.amount)
+print(b.amount)
+print(c.amount)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Money:
+    def __init__(self, amount):
+        self.amount = amount
+    def __add__(self, other):
+        return Money(self.amount + other.amount)
+
+a = Money(100)
+b = Money(50)
+c = a + b
+print(a.amount)
+print(b.amount)
+print(c.amount)</pre><p>The broken version prints <code>150 / 50 / 150</code> — because <code>a</code> and <code>c</code> ended up as two labels on one vandalised box. The fixed version builds a third box and leaves the originals alone. Every hour you spend hunting a bug like this later is an hour this one paragraph could have saved.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 14.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">14.5</span>
+      <h2>Your build — Money, and a Playlist that prints itself</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>Everything from this session in two classes. First <code>Money</code>, complete: <code>__init__</code> to hold the amount, <code>__str__</code> so it prints like currency, <code>__eq__</code> so equal amounts compare equal, <code>__add__</code> so bills add up. Four dunders and the class stops feeling like something you bolted together — it feels like a type Python shipped with.</p>
+      <p>Then <code>Playlist</code>, where <code>__str__</code> gets ambitious: a multi-line, numbered listing. A returned string may contain <code>\n</code> newline characters, and <code>print</code> will honour every one of them — so a single <code>print(p)</code> can produce a whole formatted report.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">14.5 · P1</span><span class="pt">Stage 1 — the complete Money class</span></div>
+        <p class="pd">Write all four methods. <code>__str__</code> must return the amount to <b>two decimal places</b> followed by <code>&nbsp;rupees</code> (Unit 2's <code>:.2f</code>, still the money formatter). <code>__eq__</code> compares amounts; <code>__add__</code> returns a new <code>Money</code>. The script below is fixed — don't change it, make it work.</p>
+        <div class="want">12.50 rupees
+45.50 rupees
+58.00 rupees
+True
+False</div>
+        <div class="pyrun" data-id="s5p1" data-expect="12.50 rupees\n45.50 rupees\n58.00 rupees\nTrue\nFalse">
+          <textarea spellcheck="false">class Money:
+    def __init__(self, amount):
+        self.amount = amount
+    # __str__ here  ->  f"{self.amount:.2f} rupees"
+    # __eq__ here
+    # __add__ here
+
+tea = Money(12.5)
+cake = Money(45.5)
+bill = tea + cake
+print(tea)
+print(cake)
+print(bill)
+print(bill == Money(58))
+print(tea == cake)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Money:
+    def __init__(self, amount):
+        self.amount = amount
+    def __str__(self):
+        return f"{self.amount:.2f} rupees"
+    def __eq__(self, other):
+        return self.amount == other.amount
+    def __add__(self, other):
+        return Money(self.amount + other.amount)
+
+tea = Money(12.5)
+cake = Money(45.5)
+bill = tea + cake
+print(tea)
+print(cake)
+print(bill)
+print(bill == Money(58))
+print(tea == cake)</pre><p>Read the last two lines again — <code>bill</code> was never told about the number 58, yet <code>bill == Money(58)</code> is <code>True</code>, because <code>__add__</code> produced a real <code>Money</code> holding 58.0 and <code>__eq__</code> knows how to look inside it. Four small methods, and the class now behaves in the arithmetic, the printing and the comparing. That's what "feels native" means.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">14.5 · P2</span><span class="pt">Stage 2 — a Playlist that prints itself</span></div>
+        <p class="pd">Give <code>Playlist</code> its <code>__len__</code> and a <code>__str__</code> that returns a heading line (<code>name (count songs)</code>) followed by one numbered line per song. Build the string with a counter and <code>\n</code>, and return it once at the end — <b>one</b> <code>print(p)</code> must produce all four lines.</p>
+        <div class="want">3
+Monsoon (3 songs)
+1. Rain Song
+2. Cloudburst
+3. Petrichor</div>
+        <div class="pyrun" data-id="s5p2" data-expect="3\nMonsoon (3 songs)\n1. Rain Song\n2. Cloudburst\n3. Petrichor">
+          <textarea spellcheck="false">class Playlist:
+    def __init__(self, name):
+        self.name = name
+        self.songs = []
+    def add(self, song):
+        self.songs.append(song)
+    # __len__ here
+    # __str__ here — heading, then numbered lines joined with \n
+
+p = Playlist("Monsoon")
+p.add("Rain Song")
+p.add("Cloudburst")
+p.add("Petrichor")
+print(len(p))
+print(p)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Playlist:
+    def __init__(self, name):
+        self.name = name
+        self.songs = []
+    def add(self, song):
+        self.songs.append(song)
+    def __len__(self):
+        return len(self.songs)
+    def __str__(self):
+        text = f"{self.name} ({len(self.songs)} songs)"
+        number = 1
+        for song in self.songs:
+            text = text + f"\n{number}. {song}"
+            number = number + 1
+        return text
+
+p = Playlist("Monsoon")
+p.add("Rain Song")
+p.add("Cloudburst")
+p.add("Petrichor")
+print(len(p))
+print(p)</pre><p>The loop grows one string, adding a <code>\n</code> before each new line so the heading keeps its place. Note <code>__str__</code> calling <code>len(self.songs)</code> for the count — dunders are ordinary methods and may use anything a method can. (If you reached for <code>"\n".join(...)</code> instead, that's the same idea written shorter, and it's perfectly good.)</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 14.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">14.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~14 min</span></span>
+      <p>The mixed set. Four classes, four different dunders, one recurring question: what does this object owe the rest of Python? In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">The library catalogue</span></div>
+        <p class="pd">Unit 13's <code>Book</code> deserves a caption. Add a <code>__str__</code> giving <code>title — by author</code>. The long dash is already sitting in the comment inside the editor — copy it from there rather than hunting for it on your keyboard.</p>
+        <div class="want">Hind Swaraj — by Gandhi
+Ponniyin Selvan — by Kalki</div>
+        <div class="pyrun" data-id="b1" data-expect="Hind Swaraj — by Gandhi\nPonniyin Selvan — by Kalki">
+          <textarea spellcheck="false">class Book:
+    def __init__(self, title, author):
+        self.title = title
+        self.author = author
+    # add __str__ returning:  title — by author
+
+print(Book("Hind Swaraj", "Gandhi"))
+print(Book("Ponniyin Selvan", "Kalki"))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Book:
+    def __init__(self, title, author):
+        self.title = title
+        self.author = author
+    def __str__(self):
+        return f"{self.title} — by {self.author}"
+
+print(Book("Hind Swaraj", "Gandhi"))
+print(Book("Ponniyin Selvan", "Kalki"))</pre><p><code>print(Book(...))</code> with no variable in sight: an object is built, printed through your <code>__str__</code>, and thrown away. Perfectly normal — objects don't need names to be useful.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">Distances that add up</span></div>
+        <p class="pd">A <code>Distance</code> holding kilometres. Give it <code>__str__</code> (<code>8 km</code> — no decimals, just the number and the unit), <code>__eq__</code> and <code>__add__</code>. The script is fixed; make it produce the goal.</p>
+        <div class="want">8 km
+True
+False</div>
+        <div class="pyrun" data-id="b2" data-expect="8 km\nTrue\nFalse">
+          <textarea spellcheck="false">class Distance:
+    def __init__(self, km):
+        self.km = km
+    # __str__, __eq__ and __add__ here
+
+morning = Distance(5)
+evening = Distance(3)
+day = morning + evening
+print(day)
+print(day == Distance(8))
+print(morning == evening)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Distance:
+    def __init__(self, km):
+        self.km = km
+    def __str__(self):
+        return f"{self.km} km"
+    def __eq__(self, other):
+        return self.km == other.km
+    def __add__(self, other):
+        return Distance(self.km + other.km)
+
+morning = Distance(5)
+evening = Distance(3)
+day = morning + evening
+print(day)
+print(day == Distance(8))
+print(morning == evening)</pre><p>Structurally identical to <code>Money</code> — which is the lesson. Once you've seen the shape (<code>__str__</code> to show, <code>__eq__</code> to compare, <code>__add__</code> to combine), you can hand it to any "a quantity with a unit" class in ten lines.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">The shopping cart</span></div>
+        <p class="pd">A <code>Cart</code> that collects prices. It needs <code>add(price)</code>, a <code>__len__</code> for how many items, and an ordinary method <code>total()</code> returning the sum. Three prices come from <code>input()</code>; the fixed inputs here are 40, 25 and 15. Note the deliberate mix: counting is a protocol, but "total" isn't a Python built-in — so it stays a plain method with a plain name.</p>
+        <div class="want">Price 1? 40
+Price 2? 25
+Price 3? 15
+3 items
+Total: 80</div>
+        <div class="pyrun" data-id="b3" data-stdin="40\n25\n15" data-stdin-lock data-expect="Price 1? 40\nPrice 2? 25\nPrice 3? 15\n3 items\nTotal: 80">
+          <textarea spellcheck="false">class Cart:
+    def __init__(self):
+        self.prices = []
+    # add(), __len__ and total() here
+
+cart = Cart()
+cart.add(int(input("Price 1? ")))
+cart.add(int(input("Price 2? ")))
+cart.add(int(input("Price 3? ")))
+print(f"{len(cart)} items")
+print(f"Total: {cart.total()}")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Cart:
+    def __init__(self):
+        self.prices = []
+    def add(self, price):
+        self.prices.append(price)
+    def __len__(self):
+        return len(self.prices)
+    def total(self):
+        running = 0
+        for price in self.prices:
+            running = running + price
+        return running
+
+cart = Cart()
+cart.add(int(input("Price 1? ")))
+cart.add(int(input("Price 2? ")))
+cart.add(int(input("Price 3? ")))
+print(f"{len(cart)} items")
+print(f"Total: {cart.total()}")</pre><p>Convert at the door — <code>int(input(...))</code> — so the cart never holds text pretending to be a price. And the naming rule worth carrying forward: give a method a dunder name <b>only</b> when Python already has a syntax knocking for it. Everything else gets an honest English name.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — Vector, and a promise about later</span></div>
+        <p class="pd">A <code>Vector</code> has an <code>x</code> and a <code>y</code>. Adding two vectors adds the x's and the y's separately, and a vector prints as <code>(x, y)</code> — parentheses, comma, one space. Write <code>__add__</code> and <code>__str__</code>.</p>
+        <div class="want">(1, 2)
+(2, 5)
+(3, 7)</div>
+        <div class="pyrun" data-id="b4" data-expect="(1, 2)\n(2, 5)\n(3, 7)">
+          <textarea spellcheck="false">class Vector:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    # __add__ and __str__ here
+
+a = Vector(1, 2)
+b = Vector(2, 5)
+print(a)
+print(b)
+print(a + b)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Vector:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    def __add__(self, other):
+        return Vector(self.x + other.x, self.y + other.y)
+    def __str__(self):
+        return f"({self.x}, {self.y})"
+
+a = Vector(1, 2)
+b = Vector(2, 5)
+print(a)
+print(b)
+print(a + b)</pre><p>Keep this class. It comes back twice: in the bridge unit where NumPy does exactly this to whole arrays of numbers at once — and again in the LLM series, where "a vector with an x and a y" becomes "a vector with 4096 numbers", and adding them is a thing computers do a billion times a second. You have just written, by hand, the smallest honest version of the object that machine learning is built on.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 15 · Classes III — inheritance &amp; composition</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">So far every class has stood alone. Unit 15 lets classes build on other classes — a <code>SavingsAccount</code> that <i>is a</i> <code>BankAccount</code> and inherits every method you already wrote, and a <code>Library</code> that <i>has a</i> shelf of <code>Book</code> objects living inside it. Two ways to make something out of something else, and the judgment call between them: when is a thing a special kind of another thing, and when does it merely contain one? Get that judgment right and large programs stay small in your head.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>Python documentation</b> — <i>Data model: special method names</i>. <span class="why">The full catalogue of dunders — <code>__str__</code>, <code>__eq__</code>, <code>__len__</code>, <code>__add__</code> and the several dozen siblings you haven't met. Skim the headings; the shape of the list is the lesson.</span> <a href="https://docs.python.org/3/reference/datamodel.html#special-method-names" rel="noopener">docs.python.org</a></li>
+      <li><b>The Python Tutorial</b> — <i>§9 Classes</i>. <span class="why">The official walk through classes and instances, and the ground Unit 15's inheritance will stand on.</span> <a href="https://docs.python.org/3/tutorial/classes.html" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>Glossary</i>. <span class="why">Look up "magic method", "special method" and "duck typing" — three names for what 14.3 called the protocol.</span> <a href="https://docs.python.org/3/glossary.html" rel="noopener">docs.python.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit13.html"><span class="k">← Previous</span><span class="t">Unit 13 · Classes I — why objects</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit15.html"><span class="k">Next →</span><span class="t">Unit 15 · Classes III — inheritance &amp; composition</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 14 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"You print your own object and get  <__main__.Money object at 0x7f3a1c0d5e50>. What fixes it?",
+   o:["Nothing — that's just how objects print","Adding a __str__ method that RETURNS a describing string","Adding a print_me() method and calling it instead","Storing the object in a variable before printing"],
+   a:1,
+   e:"That output is Python's fallback for an object nobody taught to describe itself. Write __str__ returning a string and print, str() and every f-string will use your sentence instead. It must return the string, not print it."},
+  {q:"__str__ and __repr__ — what's the honest difference?",
+   o:["__str__ is for humans, __repr__ is for developers","__repr__ is the old name for __str__","__str__ works on classes, __repr__ works on functions","__repr__ is faster"],
+   a:0,
+   e:"__str__ gives the friendly sentence a user should read; __repr__ gives the precise, unambiguous version you want while debugging. Having only __str__ is fine for now — it's what print reaches for."},
+  {q:"Two separately-built Point(3, 4) objects compare == and the answer is False. Why?",
+   o:["Because 3 and 4 are stored as floats internally","Because Python compares WHICH box the two names point at, not what is inside them","Because Point needs a __init__ that copies its arguments","Because == never works on objects at all"],
+   a:1,
+   e:"With no __eq__ of your own, == asks an identity question: are these two names on the same box? Two separately-built objects are two boxes, so the honest answer is False. Write __eq__ to compare attributes and you change the question being asked."},
+  {q:"How does len() manage to work on strings, lists AND dictionaries?",
+   o:["len() contains a list of every type Python supports","Each of them was special-cased by the Python developers","len(x) knocks on the object and calls its __len__ method — whatever object it is","len() counts memory bytes and divides"],
+   a:2,
+   e:"Built-ins are polite knockers. len(x) knows nothing about x; it asks for x.__len__() and reports the answer. That's why your own class joins in the moment you write __len__ — this is the protocol."},
+  {q:"Why should __add__ return a NEW object rather than change self?",
+   o:["Because returning is faster than assigning","Because Python forbids assigning to self inside a method","Because + has always produced a new value without vandalising its inputs — 3 + 4 doesn't turn the 3 into a 7","Because self is read-only inside dunder methods"],
+   a:2,
+   e:"Unit 8's immutability wisdom, restated: an expression produces a new value, it doesn't damage its inputs. If __add__ mutated self, then total = a + b would silently corrupt a — a bug you'd find three files away at midnight."},
+  {q:"Which dunder does  print(playlist)  end up calling?",
+   o:["__print__","__str__","__len__","__init__"],
+   a:1,
+   e:"print needs text, so it knocks with __str__. (__init__ ran earlier, when the object was built; __len__ answers len(); and __print__ doesn't exist — print isn't an operator, it's a function that asks for a string.)"}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. Your classes are citizens of Python now, not guests."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 14.2 and 14.3 carry the load."
+           : " — worth another pass through the practice above before Unit 15.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Dunder method","A method whose name has double underscores on both sides, like __str__. Said aloud as 'dunder str'. You write them; Python calls them."],
+  ["__str__","Returns the human-readable string for an object. Used by print(), str() and every f-string. Must return the string, never print it."],
+  ["__repr__","The developer-facing twin of __str__ — precise and unambiguous, for debugging. Optional while you're learning; __str__ is enough."],
+  ["__eq__","Defines what == means for your class. Takes self and other, compares the attributes you care about, returns True or False."],
+  ["__len__","Defines what len() reports for your class. Also decides truthiness: length 0 counts as False in an if."],
+  ["__add__","Defines what + means for your class. Should build and RETURN a new object, leaving both operands untouched."],
+  ["Protocol","The arrangement where a built-in feature works on any object that implements the right dunder name. No registration, no permission — implement the name, get the feature."],
+  ["Operator overloading","Giving an existing operator (+, ==, and friends) a meaning for your own class, via its dunder method."],
+  ["other","The conventional parameter name for the object on the right-hand side of an operator: def __eq__(self, other)."],
+  ["Identity vs equality","Identity asks 'the same box?' — the default for ==. Equality asks 'the same contents?' — what __eq__ lets you define."],
+  ["Truthiness","Whether an object counts as True in an if. Objects with __len__ are False when their length is 0, True otherwise."],
+  ["TypeError (unsupported operand)","Python's report that it knocked with a dunder — __add__, __len__ — and nobody answered. The fix is to write the method."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>
