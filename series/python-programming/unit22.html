@@ -1,0 +1,1164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pandas — Tables of Data — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<link rel="stylesheet" href="../../assets/unit.css">
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u22" data-lwa-title="Unit 22 · pandas — tables of data">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Bridge — Python for ML &amp; DL · Unit 22</div>
+      <h1>pandas — Tables of Data</h1>
+      <p class="standfirst">Unit 21 gave you a grid of numbers that computes at speed. Real data is rarely just numbers: it has column names, text, and holes where nobody wrote anything down. This session hands you the table — a thing you can name, select from, filter, clean, and ask questions of — and by the end you'll turn a gappy CSV into a class report in eleven lines.</p>
+      <div class="facts">
+        <div><b>One session</b>~50 min</div>
+        <div><b>5 concepts</b>each: short read + practice</div>
+        <div><b>21 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 6, 10, 12 &amp; 21</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">22.1 The DataFrame</a>
+    <a href="#s2">22.2 Selecting</a>
+    <a href="#s3">22.3 Loading real data</a>
+    <a href="#s4">22.4 Missing values</a>
+    <a href="#s5">22.5 Sort, add, group</a>
+    <a href="#s6">22.6 Build: class report</a>
+    <a href="#s7">22.7 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 22.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Units 6, 10, 12 &amp; 21</b>Dicts (keys and values), reading and writing text files, comprehensions and <code>zip</code>, and — most of all — Unit 21's arrays, shapes and boolean masks. Everything here is those four ideas wearing a nicer coat.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm: a 3–4 minute read, then ~10 minutes of practice. The first runnable box below takes about fifteen seconds while pandas downloads — after that it's instant. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit22.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>Every box is its own program</b>The runner starts fresh each time you press Run, so each box re-imports pandas and rebuilds its table at the top. That repetition is deliberate — copy any box out and it works on its own.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">22.1</span>
+      <h2>The DataFrame — a table with names</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Six students, each with a name, a class and a score. In Unit 21 you could hold the scores in an array and compute their mean in one stroke — but the names had to live in a separate list, the classes in another, and nothing stopped the three from drifting out of step. Sort the scores and the names no longer match them. Real data comes in <i>rows that belong together</i>, and an array has no idea which value belongs to which row.</p>
+      <p><b>The idea, in plain words.</b> A <b>DataFrame</b> is a spreadsheet that lives in a variable. It has named columns across the top and numbered rows down the side, and — the part that matters — <b>a DataFrame is a dict of NumPy arrays that all agree on their row labels</b>. Say that once and mean it: each column is its own array, of its own type; the shared row labels (the <b>index</b>) are the glue that turns three arrays into one table. Sort by score and the names come along, because they were never separate in the first place.</p>
+      <p>You build one from a dict of lists, and Unit 6 pays out immediately: <b>the keys become the column names</b>, the lists become the columns.</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">import pandas as pd<br>df = pd.DataFrame({"name": ["Asha", "Ben"], "score": [72, 45]})</p>
+      <p>The <code>pd</code> nickname is universal — every pandas program on Earth starts with that line, the way every NumPy program starts with <code>import numpy as np</code>. And <code>df</code> is the near-universal name for "the table I'm working on". Four questions you ask a new table, every time:</p>
+      <ul class="plain">
+        <li><code>df.head()</code> — the first five rows. Look before you leap.</li>
+        <li><code>df.shape</code> — <code>(rows, columns)</code>. The same <code>.shape</code> as Unit 21, now with a name for each column.</li>
+        <li><code>df.columns</code> — what the columns are called.</li>
+        <li><code>df.dtypes</code> — what type each column holds: <code>int64</code>, <code>float64</code>, or <code>object</code> (which is pandas' word for "text lives here").</li>
+      </ul>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — from dict to table</div>
+      <div class="m">import pandas as pd
+data = {"name": ["Asha", "Ben"], "score": [72, 45]}
+df = pd.DataFrame(data)
+print(df.shape)</div>
+      <p><b>Line 1:</b> pandas arrives under the nickname <code>pd</code>. Nothing else happens.</p>
+      <p><b>Line 2:</b> an ordinary Unit 6 dict — two keys, each holding a list. No table yet, just a labeled box holding a dict.</p>
+      <p><b>Line 3:</b> <code>pd.DataFrame</code> reads the dict and builds the table. Key <code>"name"</code> becomes a column of two strings; key <code>"score"</code> becomes a column of two whole numbers. Both columns are handed the same row labels, <code>0</code> and <code>1</code> — that shared labelling is what makes them one table instead of two lists.</p>
+      <p><b>Line 4:</b> two rows, two columns, printed as a plain tuple:</p>
+      <div class="m">(2, 2)</div>
+      <p>Read <code>.shape</code> the same way every time: rows first, columns second. It never changes its mind.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 250" role="img" aria-label="A DataFrame drawn as three columns of values sharing one set of row labels">
+        <text x="16" y="24" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">ONE TABLE = SEVERAL ARRAYS + ONE SHARED SET OF ROW LABELS</text>
+
+        <rect x="40" y="46" width="70" height="28" rx="6" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="75" y="65" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">index</text>
+        <rect x="122" y="46" width="150" height="28" rx="6" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.4"/>
+        <text x="197" y="65" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#3d3170">name</text>
+        <rect x="284" y="46" width="100" height="28" rx="6" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.4"/>
+        <text x="334" y="65" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#3d3170">class</text>
+        <rect x="396" y="46" width="100" height="28" rx="6" fill="#e3efee" stroke="#2b7a78" stroke-width="1.4"/>
+        <text x="446" y="65" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#1d5654">score</text>
+
+        <rect x="40" y="78" width="70" height="28" rx="6" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="75" y="97" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#6b7585">0</text>
+        <rect x="122" y="78" width="150" height="28" rx="6" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="197" y="97" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">Asha</text>
+        <rect x="284" y="78" width="100" height="28" rx="6" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="334" y="97" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">A</text>
+        <rect x="396" y="78" width="100" height="28" rx="6" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="446" y="97" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">72</text>
+
+        <rect x="40" y="110" width="70" height="28" rx="6" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="75" y="129" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#6b7585">1</text>
+        <rect x="122" y="110" width="150" height="28" rx="6" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="197" y="129" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">Ben</text>
+        <rect x="284" y="110" width="100" height="28" rx="6" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="334" y="129" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">B</text>
+        <rect x="396" y="110" width="100" height="28" rx="6" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="446" y="129" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">45</text>
+
+        <rect x="40" y="142" width="70" height="28" rx="6" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="75" y="161" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#6b7585">2</text>
+        <rect x="122" y="142" width="150" height="28" rx="6" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="197" y="161" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">Chitra</text>
+        <rect x="284" y="142" width="100" height="28" rx="6" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="334" y="161" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">A</text>
+        <rect x="396" y="142" width="100" height="28" rx="6" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="446" y="161" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">88</text>
+
+        <rect x="34" y="40" width="82" height="136" rx="10" fill="none" stroke="#a35a33" stroke-width="1.6" stroke-dasharray="5 4"/>
+        <text x="75" y="196" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#a35a33">the glue</text>
+
+        <text x="540" y="66" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#1f2733">Each column is one array, of one type —</text>
+        <text x="540" y="86" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#1f2733">text here, whole numbers there.</text>
+        <text x="540" y="116" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#1f2733">The index (0, 1, 2) is what makes them</text>
+        <text x="540" y="136" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#1f2733">a <tspan font-weight="700">table</tspan> and not three unrelated lists.</text>
+        <text x="540" y="166" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#3d3170">Sort by score and the names travel with</text>
+        <text x="540" y="186" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#3d3170">them — that's the whole point.</text>
+      </svg>
+      <div class="figcap">Fig. 1 — The picture to keep: a dict of arrays that all agree on their row labels. Everything else in this unit is a way of asking that picture a question.</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      A DataFrame is a dict of NumPy arrays that all agree on their row labels. Columns keep their own type; the shared index keeps the rows honest.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> build the table these notes will use all session, and interview it with the four standard questions. <b>Thinking:</b> dict of lists in, table out; then <code>.shape</code>, <code>.columns</code>, <code>.dtypes</code>, <code>.head()</code>. This is the box that downloads pandas — give it about fifteen seconds the first time, then everything after is instant.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">import pandas as pd
+
+data = {
+    "name":  ["Asha", "Ben", "Chitra", "Dev", "Esha", "Farid"],
+    "class": ["A", "B", "A", "B", "A", "B"],
+    "score": [72, 45, 88, 61, 54, 90],
+}
+df = pd.DataFrame(data)
+
+print("shape:", df.shape)
+print("columns:", list(df.columns))
+print()
+print(df.dtypes)
+print()
+print(df.head())</textarea>
+      </div>
+      <p>Study the last block. <code>df.head()</code> prints a leftmost column with no header — those are the row labels, the index, invented for you as 0, 1, 2, … And <code>object</code> in the dtypes is pandas saying "this column holds Python text".</p>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">22.1 · P1</span><span class="pt">Your first table</span></div>
+        <p class="pd">Build a DataFrame from the dict of lists already in the box (three cities, three temperatures), then report its size and its column names. Read the row count out of <code>df.shape</code>, not by counting on your fingers.</p>
+        <div class="want">Rows: 3
+Columns: 2
+['city', 'temp']</div>
+        <div class="pyrun" data-id="s1p1" data-expect="Rows: 3\nColumns: 2\n['city', 'temp']">
+          <textarea spellcheck="false">import pandas as pd
+
+cities = {"city": ["Chennai", "Pune", "Delhi"], "temp": [34, 29, 41]}
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import pandas as pd
+
+cities = {"city": ["Chennai", "Pune", "Delhi"], "temp": [34, 29, 41]}
+df = pd.DataFrame(cities)
+print(f"Rows: {df.shape[0]}")
+print(f"Columns: {df.shape[1]}")
+print(list(df.columns))</pre><p><code>df.shape</code> is a tuple: <code>[0]</code> is rows, <code>[1]</code> is columns. <code>df.columns</code> isn't a plain list, so <code>list(...)</code> around it gives the tidy printed form.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">22.1 · P2</span><span class="pt">Predict: what type is each column?</span></div>
+        <p class="pd">Three columns, three different kinds of value. On paper, predict what <code>df.dtypes</code> will say about each — then run it. One of the three answers will look odd; the solution explains it.</p>
+        <div class="pyrun" data-id="s1p2">
+          <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({
+    "name":  ["Asha", "Ben"],
+    "score": [72, 45],
+    "ratio": [0.5, 0.75],
+})
+print(df.dtypes)
+print(df.shape)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>name      object
+score      int64
+ratio    float64
+dtype: object
+(2, 3)</pre><p><code>int64</code> and <code>float64</code> are Unit 21's number types, unchanged. <code>object</code> is the odd one: pandas has no special text array, so a column of strings is stored as a column of ordinary Python objects. Whenever you see <code>object</code>, read it as "text (or something pandas couldn't make numeric)".</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">22.1 · P3</span><span class="pt">Stretch — prove the analogy</span></div>
+        <p class="pd">These notes claim a DataFrame is a dict of NumPy arrays. Prove it: pull the <code>score</code> column out with <code>.to_numpy()</code>, print what <code>type()</code> says it is, and then add it up with the array's own <code>.sum()</code> from Unit 21.</p>
+        <div class="want">&lt;class 'numpy.ndarray'&gt;
+117</div>
+        <div class="pyrun" data-id="s1p3" data-expect="&lt;class 'numpy.ndarray'&gt;\n117">
+          <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({"name": ["Asha", "Ben"], "score": [72, 45]})
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import pandas as pd
+
+df = pd.DataFrame({"name": ["Asha", "Ben"], "score": [72, 45]})
+arr = df["score"].to_numpy()
+print(type(arr))
+print(arr.sum())</pre><p>There it is in black and white: a real <code>numpy.ndarray</code>, with every Unit 21 method still on it. pandas didn't replace NumPy — it wrapped it in names and row labels.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 22.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">22.2</span>
+      <h2>Selecting — one column, several columns, some rows</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> You have the whole table. You almost never want the whole table. You want <i>the score column</i>, or <i>the name and score columns</i>, or <i>only the rows where somebody passed</i>. Three different wants, and they turn out to need three slightly different shapes of bracket.</p>
+      <p><b>The idea, in plain words.</b> Square brackets on a DataFrame answer the question "which part?" — and what you put inside them decides which of the three questions you're asking.</p>
+      <ul class="plain">
+        <li><b>One column, by name:</b> <code>df["score"]</code>. You get back a single column with its row labels attached. pandas calls that a <b>Series</b> — one array plus one index. A DataFrame is a bundle of Series that share an index.</li>
+        <li><b>Several columns, by a list of names:</b> <code>df[["name", "score"]]</code>. Note the double brackets: the outer pair means "select", the inner pair is an ordinary Unit 5 list of the names you want. You get back a smaller DataFrame.</li>
+        <li><b>Some rows, by a condition:</b> <code>df[df["score"] &gt;= 50]</code>. This is Unit 21's boolean mask, unchanged. <code>df["score"] &gt;= 50</code> produces a column of True/False, one per row, and handing that column back to <code>df[...]</code> keeps the True rows and drops the rest.</li>
+      </ul>
+      <p>That last one is worth a second look, because it's the single most-used line in all of data work. The mask is computed from one column but applied to the <i>whole row</i> — names, classes and all — precisely because the columns agree on their row labels. Filter by score and the names come with.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — a mask, then the rows it keeps</div>
+      <div class="m">mask = df["score"] >= 70
+rows = df[mask]
+print(len(rows))</div>
+      <p><b>Line 1:</b> pandas walks down the <code>score</code> column — 72, 45, 88, 61, 54, 90 — and tests each against 70. Out comes a column of six True/False values: <b>True, False, True, False, False, True</b>. Row labels 0–5 ride along, untouched.</p>
+      <p><b>Line 2:</b> <code>df[mask]</code> keeps rows 0, 2 and 5 whole — name, class and score together — and discards the other three. The kept rows keep their original labels (0, 2, 5), which is your first clue that this really is a slice of the original.</p>
+      <p><b>Line 3:</b> <code>len()</code> of a DataFrame is its row count:</p>
+      <div class="m">3</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>df["score"]</code> and <code>df[["score"]]</code> are not the same thing and never were. One pair of brackets asks for <i>the column</i> and hands back a Series — a bare column of numbers you can average. Two pairs asks for <i>a table containing that column</i> and hands back a one-column DataFrame. The inner brackets are just a list; you can always read <code>df[["name", "score"]]</code> as "select the list <code>["name", "score"]</code>". If a method complains that a DataFrame doesn't have <code>.mean()</code> the way you expected, count your brackets.</p>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Combining two conditions uses <code>&amp;</code> (and) and <code>|</code> (or) — <b>not</b> the words <code>and</code> and <code>or</code> from Unit 3. The words work on one True/False at a time; these symbols work on a whole column of them at once, exactly as in Unit 21. And each condition needs its own parentheses, because <code>&amp;</code> binds tighter than <code>&gt;=</code>: write <code>df[(df["score"] &gt;= 50) &amp; (df["class"] == "A")]</code>, never without the inner brackets. Forget them and the error message will be memorably unhelpful.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> the same table, three ways of taking a piece of it. <b>Thinking:</b> watch the shapes — a Series has no column header of its own, a sub-table does, and a filtered table keeps the original row labels.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({
+    "name":  ["Asha", "Ben", "Chitra", "Dev", "Esha", "Farid"],
+    "class": ["A", "B", "A", "B", "A", "B"],
+    "score": [72, 45, 88, 61, 54, 90],
+})
+
+print("--- one column (a Series) ---")
+print(df["score"])
+print()
+print("--- two columns (a DataFrame) ---")
+print(df[["name", "score"]])
+print()
+print("--- the rows that passed ---")
+print(df[df["score"] >= 50])</textarea>
+      </div>
+      <p>Look at the row labels on that last block: 0, 2, 3, 4, 5. Row 1 (Ben) is gone, and pandas didn't renumber to hide it. Filtering takes rows out; it doesn't rebuild the table.</p>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">22.2 · P1</span><span class="pt">One column, one number</span></div>
+        <p class="pd">Pull out the <code>score</code> column and print the class average to two decimal places. One pair of brackets — you want the numbers, not a table containing the numbers.</p>
+        <div class="want">Average score: 68.33</div>
+        <div class="pyrun" data-id="s2p1" data-expect="Average score: 68.33">
+          <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({
+    "name":  ["Asha", "Ben", "Chitra", "Dev", "Esha", "Farid"],
+    "class": ["A", "B", "A", "B", "A", "B"],
+    "score": [72, 45, 88, 61, 54, 90],
+})
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print(f"Average score: {df['score'].mean():.2f}")</pre><p>410 across six students. Note the single quotes inside the f-string's double quotes — the braces hold real Python, and it still has to be valid.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">22.2 · P2</span><span class="pt">Count your brackets</span></div>
+        <p class="pd">Make a smaller table holding only the <code>name</code> and <code>score</code> columns, then prove it worked by printing its shape and its column names. Get the brackets wrong and pandas will tell you loudly.</p>
+        <div class="want">(6, 2)
+['name', 'score']</div>
+        <div class="pyrun" data-id="s2p2" data-expect="(6, 2)\n['name', 'score']">
+          <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({
+    "name":  ["Asha", "Ben", "Chitra", "Dev", "Esha", "Farid"],
+    "class": ["A", "B", "A", "B", "A", "B"],
+    "score": [72, 45, 88, 61, 54, 90],
+})
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>two = df[["name", "score"]]
+print(two.shape)
+print(list(two.columns))</pre><p>Six rows survive, three columns become two. The order inside the inner list is the order of the new columns — ask for <code>["score", "name"]</code> and you get them that way round.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">22.2 · P3</span><span class="pt">Stretch — two conditions at once</span></div>
+        <p class="pd">Who is in class A <i>and</i> scored 70 or more? Build the mask with <code>&amp;</code>, remember the inner parentheses, and print the names as a list. (Esha is in class A with 54 — if she shows up, one of your conditions isn't doing its job.)</p>
+        <div class="want">['Asha', 'Chitra']</div>
+        <div class="pyrun" data-id="s2p3" data-expect="['Asha', 'Chitra']">
+          <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({
+    "name":  ["Asha", "Ben", "Chitra", "Dev", "Esha", "Farid"],
+    "class": ["A", "B", "A", "B", "A", "B"],
+    "score": [72, 45, 88, 61, 54, 90],
+})
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>top_a = df[(df["class"] == "A") &amp; (df["score"] >= 70)]
+print(list(top_a["name"]))</pre><p>Two masks, combined element by element, then applied to the whole table at once. Farid outscores both but sits in class B, so the first condition drops him.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 22.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">22.3</span>
+      <h2>Loading real data — read_csv and the first look</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Typing a dict of lists is fine for six students. Nobody types six thousand. Real data arrives as a file — nearly always a <b>CSV</b>: plain text, one row per line, values separated by commas, first line the column names. Unit 10 taught you to open such a file and pick it apart line by line. That was honest work, and pandas does it in one line.</p>
+      <p><b>The idea, in plain words.</b> <code>pd.read_csv("marks.csv")</code> opens the file, treats the first line as the column names, splits every other line on commas, works out for itself which columns are numbers and which are text, and hands you a DataFrame. That single function is how the overwhelming majority of real data enters Python.</p>
+      <p>There's no file on this page's disk to read, so we'll do what Unit 10 did: <b>write the file and read it back in the same program</b>. The runner's disk starts completely empty every time you press Run, so the write has to happen first, every time. In Colab or on your own machine you'd skip straight to the read.</p>
+      <p>And once a table is loaded, form a habit before you do anything clever with it — the <b>first look</b>:</p>
+      <ul class="plain">
+        <li><code>df.head()</code> — do the rows look like rows?</li>
+        <li><code>df.info()</code> — how many rows, what type is each column, and how many non-empty values does each have? That last number is where missing data confesses.</li>
+        <li><code>df.describe()</code> — count, mean, min, max and the quartiles of every numeric column, in one block. Not statistics for their own sake; a smell test. A minimum age of −3 or a maximum score of 4000 tells you something is wrong with the <i>data</i>, before you waste an afternoon blaming your code.</li>
+      </ul>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — write, then read</div>
+      <div class="m">text = "name,score\nAsha,72\nBen,45\n"
+with open("marks.csv", "w") as f:
+    f.write(text)
+df = pd.read_csv("marks.csv")
+print(df.shape)</div>
+      <p><b>Line 1:</b> three lines of plain text in one string. The first, <code>name,score</code>, is the header.</p>
+      <p><b>Lines 2–3:</b> Unit 10's write-then-close, exactly as you left it. A file called <code>marks.csv</code> now exists.</p>
+      <p><b>Line 4:</b> pandas reads it. The header line becomes two column names; the two remaining lines become two rows. It notices that everything in the second column is a whole number and makes that column <code>int64</code>; the first column stays text.</p>
+      <p><b>Line 5:</b> two data rows — the header is <i>not</i> a row:</p>
+      <div class="m">(2, 2)</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      Header line in, column names out. <code>read_csv</code> is the front door of practically every data project — and <code>head</code>, <code>info</code>, <code>describe</code> are the three things you do the moment you walk through it.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> write a small CSV, read it back, and give it the full first look. <b>Thinking:</b> a triple-quoted string holds the file contents as they'd appear on disk — which makes it easy to see that the first line is the header and the rest are rows.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">import pandas as pd
+
+csv_text = """name,class,score
+Asha,A,72
+Ben,B,45
+Chitra,A,88
+Dev,B,61
+Esha,A,54
+Farid,B,90
+"""
+with open("marks.csv", "w") as f:
+    f.write(csv_text)
+
+df = pd.read_csv("marks.csv")
+
+print(df.head())
+print()
+df.info()
+print()
+print(df.describe())</textarea>
+      </div>
+      <p>Three things to notice in that output. <code>info()</code> reports "6 non-null" for every column — nothing is missing, which we'll break on purpose in 22.4. <code>describe()</code> covers only <code>score</code>, because it's the only numeric column. And the mean it reports, 68.33, is the same number you computed by hand in 22.2 — the table hasn't changed, only how it arrived.</p>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">22.3 · P1</span><span class="pt">Write it, read it, size it</span></div>
+        <p class="pd">The CSV text is already in the box. Write it to <code>marks.csv</code>, read it back with <code>read_csv</code>, then report how many rows loaded, what the columns are called, and the highest score in the file.</p>
+        <div class="want">Loaded 6 rows
+['name', 'class', 'score']
+Top score: 90</div>
+        <div class="pyrun" data-id="s3p1" data-expect="Loaded 6 rows\n['name', 'class', 'score']\nTop score: 90">
+          <textarea spellcheck="false">import pandas as pd
+
+csv_text = """name,class,score
+Asha,A,72
+Ben,B,45
+Chitra,A,88
+Dev,B,61
+Esha,A,54
+Farid,B,90
+"""
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>with open("marks.csv", "w") as f:
+    f.write(csv_text)
+
+df = pd.read_csv("marks.csv")
+print(f"Loaded {len(df)} rows")
+print(list(df.columns))
+print(f"Top score: {df['score'].max()}")</pre><p>Six rows, not seven — the header became the column names rather than a row of data. That off-by-one is the classic first bug when people parse CSVs by hand; <code>read_csv</code> simply doesn't make it.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">22.3 · P2</span><span class="pt">Stretch — an order, totalled</span></div>
+        <p class="pd">A different CSV: items, prices and quantities. Load it, add a <code>line_total</code> column that multiplies price by quantity for every row at once (Unit 21's vectorised arithmetic, on a column), then print how many items were ordered and what the whole thing costs to two decimals.</p>
+        <div class="want">Items: 6
+Order total: 621.49</div>
+        <div class="pyrun" data-id="s3p2" data-expect="Items: 6\nOrder total: 621.49">
+          <textarea spellcheck="false">import pandas as pd
+
+csv_text = """item,price,qty
+Pen,10.5,3
+Notebook,45.0,2
+Bag,499.99,1
+"""
+with open("order.csv", "w") as f:
+    f.write(csv_text)
+
+df = pd.read_csv("order.csv")
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>df["line_total"] = df["price"] * df["qty"]
+print(f"Items: {df['qty'].sum()}")
+print(f"Order total: {df['line_total'].sum():.2f}")</pre><p><code>df["price"] * df["qty"]</code> multiplies row by row without a loop in sight — and storing the result under a new name creates a whole new column. That trick gets its own billing in 22.5.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 22.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">22.4</span>
+      <h2>Missing values — the thing that makes real data real</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Dev was ill on test day. His row exists — he has a name and a class — but the score field in the CSV is empty: <code>Dev,B,</code>. Not a zero. Not a bad mark. Simply no information. What does the table do with that, and what should <i>you</i> do with it?</p>
+      <p><b>The idea, in plain words.</b> pandas puts a special marker there: <b>NaN</b>, short for "not a number". Read it as <i>we don't know</i>. It has two immediate consequences worth knowing before you're surprised by them:</p>
+      <ul class="plain">
+        <li><b>The column becomes float.</b> A column of whole numbers with a hole in it can't stay <code>int64</code>, because there's no whole number that means "unknown". pandas quietly promotes it to <code>float64</code>, and your scores print as <code>72.0</code> instead of <code>72</code>. Nothing is broken; the type just widened to make room for the hole.</li>
+        <li><b>Most calculations step around it.</b> <code>df["score"].mean()</code> averages the values that <i>are</i> there and ignores the gap. Convenient — and quietly dangerous, because the number you get is the average of five students, not six, and nothing on screen says so.</li>
+      </ul>
+      <p>So the first thing you do with a new table is count the holes: <code>df.isna()</code> turns the whole table into True/False — True wherever a value is missing — and <code>df.isna().sum()</code> adds those up per column, giving you a tidy missing-value tally. (True counts as 1 when you add it up; that's Unit 3's booleans, still earning their keep.)</p>
+      <p>Then you choose, and it is a genuine choice with no automatic right answer:</p>
+      <ul class="plain">
+        <li><code>df.dropna()</code> — <b>delete the rows with holes.</b> Honest, simple, and it throws away everything else those rows knew. Fine when a handful of rows out of thousands are affected. Ruinous when a fifth of your data has one gappy column.</li>
+        <li><code>df.fillna(value)</code> — <b>put something in the hole.</b> Zero, the column's mean, the word "unknown" — whatever you can defend. You keep the row, but you have invented a number, and every calculation downstream now partly rests on your invention.</li>
+      </ul>
+      <p>The judgment is: <i>which lie is smaller?</i> Dropping Dev loses a real student from your class average. Filling him with 0 says he scored nothing, which drags the average down and is arguably worse. Filling him with the class mean says "assume he's typical", which flatters him and hides the gap. There is no move that costs nothing — which is exactly why this decision belongs to you and not to a default setting.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — one hole, three answers</div>
+      <div class="m">scores = [72, NaN, 88, 61]   # as read from a gappy CSV
+print(len(scores), scores.count(), scores.mean())</div>
+      <p><b>The column:</b> four rows, one of them unknown. Its dtype is <code>float64</code> — the hole forced it.</p>
+      <p><b><code>len()</code>:</b> 4. There really are four rows; one of them just doesn't know its score.</p>
+      <p><b><code>.count()</code>:</b> 3. <code>count()</code> counts the values it actually has. The gap between <code>len()</code> and <code>count()</code> <i>is</i> your missing-data problem, measured.</p>
+      <p><b><code>.mean()</code>:</b> (72 + 88 + 61) ÷ <b>3</b> = 73.67 — not ÷ 4. If you wanted the "everyone counts, blanks are zero" number you'd have to ask for it deliberately: <code>.sum() / len(df)</code> gives 55.25 instead. Two defensible numbers, wildly apart, from the same column.</p>
+      <div class="m">4 3 73.666666...</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 240" role="img" aria-label="A table with one missing score, and the two different tables produced by dropna and fillna">
+        <text x="16" y="24" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">ONE HOLE, TWO HONEST ANSWERS — NEITHER IS FREE</text>
+
+        <text x="30" y="48" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">as read from the CSV</text>
+        <rect x="30" y="58" width="230" height="26" rx="5" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="46" y="76" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">Asha</text>
+        <text x="230" y="76" text-anchor="end" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">72.0</text>
+        <rect x="30" y="86" width="230" height="26" rx="5" fill="#fbf1ea" stroke="#a35a33" stroke-width="1.5"/>
+        <text x="46" y="104" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">Ben</text>
+        <text x="230" y="104" text-anchor="end" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#a35a33">NaN</text>
+        <rect x="30" y="114" width="230" height="26" rx="5" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="46" y="132" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">Chitra</text>
+        <text x="230" y="132" text-anchor="end" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">88.0</text>
+        <rect x="30" y="142" width="230" height="26" rx="5" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="46" y="160" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">Dev</text>
+        <text x="230" y="160" text-anchor="end" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">61.0</text>
+        <text x="30" y="190" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">NaN is not 0 and not "" —</text>
+        <text x="30" y="207" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">it means "we don't know".</text>
+
+        <text x="330" y="48" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">dropna()</text>
+        <rect x="330" y="58" width="200" height="26" rx="5" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="346" y="76" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">Asha</text>
+        <text x="510" y="76" text-anchor="end" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">72.0</text>
+        <rect x="330" y="86" width="200" height="26" rx="5" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="346" y="104" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">Chitra</text>
+        <text x="510" y="104" text-anchor="end" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">88.0</text>
+        <rect x="330" y="114" width="200" height="26" rx="5" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="346" y="132" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">Dev</text>
+        <text x="510" y="132" text-anchor="end" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">61.0</text>
+        <text x="330" y="190" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">3 rows. Ben's name and class</text>
+        <text x="330" y="207" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">were fine — and left with him.</text>
+
+        <text x="600" y="48" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">fillna(0)</text>
+        <rect x="600" y="58" width="200" height="26" rx="5" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="616" y="76" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">Asha</text>
+        <text x="780" y="76" text-anchor="end" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">72.0</text>
+        <rect x="600" y="86" width="200" height="26" rx="5" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="616" y="104" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">Ben</text>
+        <text x="780" y="104" text-anchor="end" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#1d5654">0.0</text>
+        <rect x="600" y="114" width="200" height="26" rx="5" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="616" y="132" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">Chitra</text>
+        <text x="780" y="132" text-anchor="end" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">88.0</text>
+        <rect x="600" y="142" width="200" height="26" rx="5" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="616" y="160" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">Dev</text>
+        <text x="780" y="160" text-anchor="end" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">61.0</text>
+        <text x="600" y="190" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">4 rows. But one score is now</text>
+        <text x="600" y="207" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">a claim you have to defend.</text>
+      </svg>
+      <div class="figcap">Fig. 2 — The same hole, two repairs, three different class averages (73.67, 73.67, 55.25). Choosing between them is not a coding decision; it's a decision about what you're willing to say is true.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><b>NaN is not zero and it is not the empty string.</b> Zero is a measurement — the student sat the test and scored nothing. <code>""</code> is a piece of text that happens to be empty. NaN is the absence of a measurement: <i>we don't know</i>. Treat them as the same and you'll compute averages over students who never sat the paper. Two more oddities follow from this: <code>NaN == NaN</code> is <code>False</code> (two unknowns aren't equal — you don't know that), which is exactly why <code>isna()</code> exists instead of comparing to something; and any arithmetic touching a NaN produces a NaN, because unknown plus five is still unknown.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> read a CSV with two blanks in it, count the damage, then compare what dropping and filling do to the class average. <b>Thinking:</b> notice that the score column arrives as <code>float64</code> without being asked, and that three perfectly reasonable methods give three different answers.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">import pandas as pd
+
+csv_text = """name,class,score
+Asha,A,72
+Ben,B,
+Chitra,A,88
+Dev,B,61
+Esha,A,
+Farid,B,90
+"""
+with open("gappy.csv", "w") as f:
+    f.write(csv_text)
+
+df = pd.read_csv("gappy.csv")
+
+print(df)
+print()
+print("--- where are the holes? ---")
+print(df.isna().sum())
+print()
+print("score column dtype:", df["score"].dtype)
+print(f"rows: {len(df)}   real scores: {df['score'].count()}")
+print(f"mean, ignoring gaps : {df['score'].mean():.2f}")
+print(f"mean, gaps as zero  : {df['score'].sum() / len(df):.2f}")
+print(f"mean, gaps dropped  : {df.dropna()['score'].mean():.2f}")</textarea>
+      </div>
+      <p>The last two lines of that output are the whole lesson. Same file, same column, 51.83 or 77.75 depending on one decision you made about six characters of missing text.</p>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">22.4 · P1</span><span class="pt">Count the holes</span></div>
+        <p class="pd">The gappy CSV is written for you. Load it and report how many rows it has and how many of them are missing a score. Use <code>isna()</code> and add the True values up — don't count by eye.</p>
+        <div class="want">Rows: 6
+Missing scores: 2</div>
+        <div class="pyrun" data-id="s4p1" data-expect="Rows: 6\nMissing scores: 2">
+          <textarea spellcheck="false">import pandas as pd
+
+csv_text = """name,class,score
+Asha,A,72
+Ben,B,
+Chitra,A,88
+Dev,B,61
+Esha,A,
+Farid,B,90
+"""
+with open("gappy.csv", "w") as f:
+    f.write(csv_text)
+
+df = pd.read_csv("gappy.csv")
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print(f"Rows: {len(df)}")
+print(f"Missing scores: {df['score'].isna().sum()}")</pre><p><code>isna()</code> gives a column of True/False; <code>sum()</code> adds them as 1s and 0s. On a whole table, <code>df.isna().sum()</code> gives you the same tally for every column at once — the first thing to print about any new dataset.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">22.4 · P2</span><span class="pt">Drop them and see what it cost</span></div>
+        <p class="pd">Use <code>dropna()</code> on the same gappy table. Report how many rows you started with, how many survived, and the average of the survivors — so the cost of the decision is visible rather than assumed.</p>
+        <div class="want">Before: 6 rows, after: 4 rows
+Average of what's left: 77.75</div>
+        <div class="pyrun" data-id="s4p2" data-expect="Before: 6 rows, after: 4 rows\nAverage of what's left: 77.75">
+          <textarea spellcheck="false">import pandas as pd
+
+csv_text = """name,class,score
+Asha,A,72
+Ben,B,
+Chitra,A,88
+Dev,B,61
+Esha,A,
+Farid,B,90
+"""
+with open("gappy.csv", "w") as f:
+    f.write(csv_text)
+
+df = pd.read_csv("gappy.csv")
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>clean = df.dropna()
+print(f"Before: {len(df)} rows, after: {len(clean)} rows")
+print(f"Average of what's left: {clean['score'].mean():.2f}")</pre><p>Two students gone, and the average jumped — because the survivors happen to be the stronger four. Dropping rows is never neutral; it silently reshapes who your data is about. Note too that <code>dropna()</code> returns a <i>new</i> table and leaves <code>df</code> untouched, which is why we gave it a new name.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">22.4 · P3</span><span class="pt">Stretch — three numbers, one column</span></div>
+        <p class="pd">Prove the confusion box with arithmetic. On the same gappy table print (a) the mean pandas gives you by default, (b) how many real scores it was actually based on, and (c) the mean you'd get if you insisted every one of the six rows counted, blanks as zero. Three lines, three answers, all correct — for different questions.</p>
+        <div class="want">mean() over 6 rows: 77.75
+count() of real scores: 4
+sum / len(df): 51.83</div>
+        <div class="pyrun" data-id="s4p3" data-expect="mean() over 6 rows: 77.75\ncount() of real scores: 4\nsum / len(df): 51.83">
+          <textarea spellcheck="false">import pandas as pd
+
+csv_text = """name,class,score
+Asha,A,72
+Ben,B,
+Chitra,A,88
+Dev,B,61
+Esha,A,
+Farid,B,90
+"""
+with open("gappy.csv", "w") as f:
+    f.write(csv_text)
+
+df = pd.read_csv("gappy.csv")
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print(f"mean() over 6 rows: {df['score'].mean():.2f}")
+print(f"count() of real scores: {df['score'].count()}")
+print(f"sum / len(df): {df['score'].sum() / len(df):.2f}")</pre><p>The first line calls itself a mean "over 6 rows" and is nothing of the sort — it divided by 4. That mismatch between what a number is called and what it was computed from is the most common way real analyses go quietly wrong. Print <code>count()</code> next to every average you report and it can't happen to you.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 22.5 ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">22.5</span>
+      <h2>Sorting, new columns &amp; groupby</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Three questions a real table gets asked constantly. Who did best? (Sort it.) Who passed? (That's a fact about each row that isn't written down yet.) And what's the average score <i>per class</i>? That third one is the interesting one — hold the thought.</p>
+      <p><b>The idea, in plain words.</b> Three tools, one per question.</p>
+      <ul class="plain">
+        <li><b>Sort:</b> <code>df.sort_values("score", ascending=False)</code> — reorder the rows by one column, biggest first. Whole rows move; names stay glued to their scores, because the index is doing its job.</li>
+        <li><b>New column:</b> <code>df["passed"] = df["score"] &gt;= 50</code> — compute a value for every row at once and store it under a new name. If the name doesn't exist yet, the column is created; if it does, it's overwritten. It's Unit 2's <code>=</code> with a whole column on each side.</li>
+        <li><b>Group:</b> <code>df.groupby("class")["score"].mean()</code> — split the rows into piles by their class, take the score column of each pile, average it, and hand back one row per pile.</li>
+      </ul>
+      <p>Read that last line right to left and it's a sentence: <i>the mean of the score, for each class</i>. It's worth dwelling on how much it replaces. In Unit 6 you'd have answered this with a dict of lists: walk every row, look up the class, append the score to the right list, then walk the dict and average each list. Twelve lines, an easy off-by-one, and a <code>KeyError</code> waiting the first time a new class appears. That whole paragraph of work is what <code>groupby</code> is. <b>Split, apply, combine</b> — split the rows into groups, apply a calculation to each, combine the answers into one small table.</p>
+      <p>What comes back from <code>groupby("class")["score"].mean()</code> is a Series whose index is the class names, so <code>avg["A"]</code> gets you class A's mean by name, and looping with <code>.items()</code> gives you the pairs — the same shape as looping over a dict, which is exactly the point.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — split, apply, combine</div>
+      <div class="m">avg = df.groupby("class")["score"].mean()
+for cls, m in avg.items():
+    print(f"Class {cls}: {m:.2f}")</div>
+      <p><b>Split.</b> Six rows fall into two piles by their <code>class</code> value. Pile <b>A</b>: Asha 72, Chitra 88, Esha 54. Pile <b>B</b>: Ben 45, Dev 61, Farid 90.</p>
+      <p><b>Apply.</b> <code>["score"]</code> says "only look at the score column of each pile"; <code>.mean()</code> averages each. Pile A: 214 ÷ 3 = 71.333…  Pile B: 196 ÷ 3 = 65.333…</p>
+      <p><b>Combine.</b> Two answers become a two-row Series, labelled by class name and sorted by that label — A before B, always, so your output is reproducible.</p>
+      <p><b>The loop.</b> <code>.items()</code> hands out (label, value) pairs, dict-style. Formatting at the exit with <code>:.2f</code>:</p>
+      <div class="m">Class A: 71.33
+Class B: 65.33</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      <code>groupby</code> is split–apply–combine: split the rows into piles by a column's value, apply a calculation to each pile, combine the results into one small table. It is the single highest-leverage line in pandas.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> all three tools on one table — rank the students, mark who passed, and report the per-class average. <b>Thinking:</b> each step leaves the table a little more useful than it found it, and none of them needs a loop over rows.</p>
+      <div class="pyrun" data-id="w5">
+        <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({
+    "name":  ["Asha", "Ben", "Chitra", "Dev", "Esha", "Farid"],
+    "class": ["A", "B", "A", "B", "A", "B"],
+    "score": [72, 45, 88, 61, 54, 90],
+})
+
+df["passed"] = df["score"] >= 50
+
+ranked = df.sort_values("score", ascending=False)
+print(ranked)
+print()
+print("Passed:", df["passed"].sum(), "of", len(df))
+print()
+for cls, m in df.groupby("class")["score"].mean().items():
+    print(f"Class {cls}: {m:.2f}")</textarea>
+      </div>
+      <p>Look at the index down the left of the sorted table: 5, 2, 0, 3, 4, 1. The rows moved; their labels went with them. That's how you know nothing got scrambled — and it's why <code>sort_values</code> is safe in a way that sorting three parallel lists never was.</p>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">22.5 · P1</span><span class="pt">The leaderboard</span></div>
+        <p class="pd">Sort the table by score, highest first, then print the top three names as a list and a headline naming the winner. Use <code>.iloc[0]</code> to reach the first row of the sorted table — position 0, whatever its label happens to be.</p>
+        <div class="want">['Farid', 'Chitra', 'Asha']
+Top: Farid with 90</div>
+        <div class="pyrun" data-id="s5p1" data-expect="['Farid', 'Chitra', 'Asha']\nTop: Farid with 90">
+          <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({
+    "name":  ["Asha", "Ben", "Chitra", "Dev", "Esha", "Farid"],
+    "class": ["A", "B", "A", "B", "A", "B"],
+    "score": [72, 45, 88, 61, 54, 90],
+})
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>ranked = df.sort_values("score", ascending=False)
+print(list(ranked["name"].head(3)))
+print(f"Top: {ranked['name'].iloc[0]} with {ranked['score'].iloc[0]}")</pre><p><code>head(3)</code> takes the first three rows of whatever order the table is currently in — which is why sorting first is the whole trick. Drop <code>ascending=False</code> and you get the bottom three instead.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">22.5 · P2</span><span class="pt">A column that didn't exist</span></div>
+        <p class="pd">Add a <code>passed</code> column holding True for anyone who scored 50 or more, then prove it landed: print the table's column names, and count how many passed. (Adding True/False values counts the Trues — Unit 3, still paying rent.)</p>
+        <div class="want">['name', 'class', 'score', 'passed']
+Passed: 5 of 6</div>
+        <div class="pyrun" data-id="s5p2" data-expect="['name', 'class', 'score', 'passed']\nPassed: 5 of 6">
+          <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({
+    "name":  ["Asha", "Ben", "Chitra", "Dev", "Esha", "Farid"],
+    "class": ["A", "B", "A", "B", "A", "B"],
+    "score": [72, 45, 88, 61, 54, 90],
+})
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>df["passed"] = df["score"] >= 50
+print(list(df.columns))
+print(f"Passed: {df['passed'].sum()} of {len(df)}")</pre><p>The right-hand side is 22.2's boolean mask — but instead of using it to filter, we stored it. A mask and a column of True/False are the same object; what changes is what you do with it next.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">22.5 · P3</span><span class="pt">Stretch — the class report line</span></div>
+        <p class="pd">Two <code>groupby</code> calls on the same column — <code>count()</code> for how many students, <code>mean()</code> for the average — then one loop printing a readable line per class. Report the count alongside every average, exactly as 22.4 argued you should.</p>
+        <div class="want">Class A: 3 students, average 71.33
+Class B: 3 students, average 65.33</div>
+        <div class="pyrun" data-id="s5p3" data-expect="Class A: 3 students, average 71.33\nClass B: 3 students, average 65.33">
+          <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({
+    "name":  ["Asha", "Ben", "Chitra", "Dev", "Esha", "Farid"],
+    "class": ["A", "B", "A", "B", "A", "B"],
+    "score": [72, 45, 88, 61, 54, 90],
+})
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>sizes = df.groupby("class")["score"].count()
+avgs = df.groupby("class")["score"].mean()
+for cls in avgs.index:
+    print(f"Class {cls}: {sizes[cls]} students, average {avgs[cls]:.2f}")</pre><p>Both results are indexed by class name, so <code>sizes[cls]</code> and <code>avgs[cls]</code> line up without any bookkeeping from you. Try writing this with a dict of lists and Unit 6 arithmetic — then come back and appreciate the four lines.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 22.6 BUILD ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">22.6</span>
+      <h2>Your build — the class report</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>Everything from this session as one small pipeline, which is what a real data job actually looks like: <b>load → inspect → clean → enrich → answer</b>. A CSV of six students arrives with one score missing. You'll write it, read it, count the hole, fill it with a stated policy, add a pass column, find the top scorer, and print the average per class. Two stages, and the second one is only five lines because the first did the honest work.</p>
+      <p>One decision is yours and it's the one that matters: the missing student's score becomes <code>0</code>, because in this school a missed test counts as a zero. That's a rule you can say out loud and defend to the head teacher. It's also visibly not neutral — watch what it does to class B's average.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">22.6 · P1</span><span class="pt">Stage 1 — load, inspect, clean</span></div>
+        <p class="pd">Write the CSV, read it back, report how many rows arrived and how many scores are missing, then fill the gaps with <code>0</code> and prove there are none left. Three printed lines, and the third is your receipt.</p>
+        <div class="want">Rows loaded: 6
+Missing scores: 1
+Missing after fill: 0</div>
+        <div class="pyrun" data-id="s6p1" data-expect="Rows loaded: 6\nMissing scores: 1\nMissing after fill: 0">
+          <textarea spellcheck="false">import pandas as pd
+
+csv_text = """name,class,score
+Asha,A,72
+Ben,B,45
+Chitra,A,88
+Dev,B,
+Esha,A,54
+Farid,B,90
+"""
+with open("class.csv", "w") as f:
+    f.write(csv_text)
+
+df = pd.read_csv("class.csv")
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print(f"Rows loaded: {len(df)}")
+print(f"Missing scores: {df['score'].isna().sum()}")
+df["score"] = df["score"].fillna(0)
+print(f"Missing after fill: {df['score'].isna().sum()}")</pre><p><code>fillna</code> returns a new column rather than editing in place, so we store it straight back over <code>df["score"]</code> — the same "compute the right side, store into the left" from Unit 2, on a whole column. Printing the count afterwards isn't paranoia; it's how you find out you assigned the result to the wrong name.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">22.6 · P2</span><span class="pt">Stage 2 — enrich and answer</span></div>
+        <p class="pd">Grow Stage 1: add a <code>passed</code> column (50 or more), count the passes, name the top scorer, and print the per-class average. Paste your Stage 1 code in and build on it. The score column is float now — the hole did that — so print the top score with <code>:.0f</code> to keep it tidy.</p>
+        <div class="want">Rows loaded: 6
+Missing scores: 1
+Passed: 4 of 6
+Top: Farid (90)
+Class A: 71.33
+Class B: 45.00</div>
+        <div class="pyrun" data-id="s6p2" data-expect="Rows loaded: 6\nMissing scores: 1\nPassed: 4 of 6\nTop: Farid (90)\nClass A: 71.33\nClass B: 45.00">
+          <textarea spellcheck="false">import pandas as pd
+
+csv_text = """name,class,score
+Asha,A,72
+Ben,B,45
+Chitra,A,88
+Dev,B,
+Esha,A,54
+Farid,B,90
+"""
+with open("class.csv", "w") as f:
+    f.write(csv_text)
+
+df = pd.read_csv("class.csv")
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print(f"Rows loaded: {len(df)}")
+print(f"Missing scores: {df['score'].isna().sum()}")
+df["score"] = df["score"].fillna(0)
+
+df["passed"] = df["score"] >= 50
+print(f"Passed: {df['passed'].sum()} of {len(df)}")
+
+ranked = df.sort_values("score", ascending=False)
+print(f"Top: {ranked['name'].iloc[0]} ({ranked['score'].iloc[0]:.0f})")
+
+for cls, m in df.groupby("class")["score"].mean().items():
+    print(f"Class {cls}: {m:.2f}")</pre><p>Eleven lines of work, and class B's average reads 45.00 — dragged down by the zero you invented. That number is not wrong, but it is a consequence of your policy, and anyone reading the report deserves to be told. Load, inspect, clean, enrich, answer: this shape will hold for tables a million rows long.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">22.6 · P3</span><span class="pt">Stretch — make it yours</span></div>
+        <p class="pd">No check on this one. Change the pass mark, add a class C, blank out another score, and — the interesting experiment — swap <code>fillna(0)</code> for <code>fillna(df["score"].mean())</code> and watch class B's average move. Same code, same file, a different story told about Dev. That's the whole of 22.4 in one edit.</p>
+        <div class="pyrun" data-id="s6p3">
+          <textarea spellcheck="false">import pandas as pd
+
+csv_text = """name,class,score
+Asha,A,72
+Ben,B,45
+Chitra,A,88
+Dev,B,
+Esha,A,54
+Farid,B,90
+"""
+with open("class.csv", "w") as f:
+    f.write(csv_text)
+
+df = pd.read_csv("class.csv")
+
+# try: fillna(0)  vs  fillna(df["score"].mean())  vs  dropna()
+df["score"] = df["score"].fillna(0)
+
+for cls, m in df.groupby("class")["score"].mean().items():
+    print(f"Class {cls}: {m:.2f}  ({df[df['class'] == cls].shape[0]} students)")</textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 22.7 PROBLEM BANK ============ -->
+  <section id="s7">
+    <div class="prose">
+      <span class="sec-num">22.7</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~14 min</span></span>
+      <p>The mixed set. Building, selecting, filtering, cleaning, computing, grouping — in combinations, and with Units 12 and 21 wandering back in. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">Ask, then filter</span></div>
+        <p class="pd">Ask for a pass mark, then report how many students reached it and who they are. Input fixed to <code>60</code> here — but write it so any number works.</p>
+        <div class="want">Pass mark? 60
+4 of 6 scored 60 or more
+['Asha', 'Chitra', 'Dev', 'Farid']</div>
+        <div class="pyrun" data-id="b1" data-stdin="60" data-stdin-lock data-expect="Pass mark? 60\n4 of 6 scored 60 or more\n['Asha', 'Chitra', 'Dev', 'Farid']">
+          <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({
+    "name":  ["Asha", "Ben", "Chitra", "Dev", "Esha", "Farid"],
+    "class": ["A", "B", "A", "B", "A", "B"],
+    "score": [72, 45, 88, 61, 54, 90],
+})
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>cut = int(input("Pass mark? "))
+above = df[df["score"] >= cut]
+print(f"{len(above)} of {len(df)} scored {cut} or more")
+print(list(above["name"]))</pre><p>Convert at the door — <code>input()</code> still hands back text, pandas or no pandas. The mask is built from a variable rather than a literal, which is the only difference between a demo and a tool.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">Fill it, then prove it</span></div>
+        <p class="pd">Ben's score is missing (that's what <code>None</code> becomes in a numeric column). Count the holes, fill them with the average of the scores that <i>are</i> known, count again to prove it worked, and print what Ben ended up with.</p>
+        <div class="want">Missing before: 1
+Missing after: 0
+Ben's score is now 73.67</div>
+        <div class="pyrun" data-id="b2" data-expect="Missing before: 1\nMissing after: 0\nBen's score is now 73.67">
+          <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({
+    "name":  ["Asha", "Ben", "Chitra", "Dev"],
+    "score": [72, None, 88, 61],
+})
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print(f"Missing before: {df['score'].isna().sum()}")
+df["score"] = df["score"].fillna(df["score"].mean())
+print(f"Missing after: {df['score'].isna().sum()}")
+print(f"Ben's score is now {df['score'].iloc[1]:.2f}")</pre><p><code>mean()</code> ignores the hole while computing, so Ben is filled with the average of the other three (221 ÷ 3). Neat — and note the circularity: filling with the mean guarantees the mean doesn't move, which makes the repair invisible in exactly the statistic people check.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">Marks into percentages</span></div>
+        <p class="pd">Marks out of 60. Add a <code>percent</code> column computing each as a percentage of the total, then print one readable line per student with two decimals — <code>zip</code> from Unit 12 walks two columns side by side.</p>
+        <div class="want">Asha: 71.67%
+Ben: 45.00%
+Chitra: 83.33%</div>
+        <div class="pyrun" data-id="b3" data-expect="Asha: 71.67%\nBen: 45.00%\nChitra: 83.33%">
+          <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({
+    "name":  ["Asha", "Ben", "Chitra"],
+    "marks": [43, 27, 50],
+})
+total = 60
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>df["percent"] = df["marks"] / total * 100
+for who, pct in zip(df["name"], df["percent"]):
+    print(f"{who}: {pct:.2f}%")</pre><p>One division for the whole column, no loop — then a loop only for the printing, which is the right place for one. Format at the exit: the column keeps 71.6666…, the line shows 71.67.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — the best in each class</span></div>
+        <p class="pd">Not "the highest score per class" — the <i>student</i> who got it, name and all. Two levels: group by class to find <i>where</i> each maximum lives, then go back to the table and fetch those whole rows. <code>idxmax()</code> gives you the row label of the maximum in each group, and <code>df.loc[...]</code> pulls rows out by label. Print one line per class.</p>
+        <div class="want">Class A: Chitra with 88
+Class B: Farid with 90</div>
+        <div class="pyrun" data-id="b4" data-expect="Class A: Chitra with 88\nClass B: Farid with 90">
+          <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({
+    "name":  ["Asha", "Ben", "Chitra", "Dev", "Esha", "Farid"],
+    "class": ["A", "B", "A", "B", "A", "B"],
+    "score": [72, 45, 88, 61, 54, 90],
+})
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>best = df.loc[df.groupby("class")["score"].idxmax()]
+for who, cls, sc in zip(best["name"], best["class"], best["score"]):
+    print(f"Class {cls}: {who} with {sc}")</pre><p>Read the first line inside out: <code>groupby(...).idxmax()</code> returns the row <i>labels</i> 2 and 5, and <code>df.loc[[2, 5]]</code> returns those two whole rows — names, classes, scores. This is the payoff of the index doing the gluing: a label found by looking at one column is enough to recover everything else about that row. (<code>sort_values</code> then <code>groupby(...).head(1)</code> is a perfectly good alternative route to the same answer.)</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 23 · matplotlib &amp; seaborn — seeing your data</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">You can now ask a table questions and get honest answers back — but a column of numbers rarely tells you what a picture does in one second. Two classes, two averages: you had to read them. Two bars side by side and you'd have <i>seen</i> it before you finished the sentence. Unit 23 is drawing your data.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>pandas documentation</b> — <i>10 minutes to pandas</i>. <span class="why">The official whirlwind tour: creating a DataFrame, selecting, missing data, grouping. The same ground as this whole unit, at speed.</span> <a href="https://pandas.pydata.org/docs/user_guide/10min.html" rel="noopener">pandas.pydata.org</a></li>
+      <li><b>pandas documentation</b> — <i>Getting started tutorials</i>. <span class="why">Short, task-shaped pages — "how do I read a CSV", "how do I select a subset", "how do I calculate summary statistics". Read them in the order the questions occur to you.</span> <a href="https://pandas.pydata.org/docs/getting_started/intro_tutorials/index.html" rel="noopener">pandas.pydata.org</a></li>
+      <li><b>NumPy documentation</b> — <i>NumPy quickstart</i>. <span class="why">Worth a second pass now that you've seen what pandas builds on top of it — every column really is one of these.</span> <a href="https://numpy.org/doc/stable/user/quickstart.html" rel="noopener">numpy.org</a></li>
+      <li><b>Sweigart, A.</b> — <i>Automate the Boring Stuff with Python, ch. 16 (Working with CSV Files and JSON Data)</i>. <span class="why">The manual way to read a CSV, without pandas. Do it once so you know exactly what <code>read_csv</code> saved you.</span> <a href="https://automatetheboringstuff.com/2e/chapter16/" rel="noopener">book</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit21.html"><span class="k">← Previous</span><span class="t">Unit 21 · NumPy — arrays that compute</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit23.html"><span class="k">Next →</span><span class="t">Unit 23 · matplotlib &amp; seaborn — seeing your data</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 22 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"What is the honest one-line description of a DataFrame?",
+   o:["A NumPy array that can hold text","A dict of NumPy arrays that all agree on their row labels","A list of lists with a header row","A spreadsheet file stored on disk"],
+   a:1,
+   e:"Each column is its own array with its own type; the shared index is the glue that makes them one table. That's why sorting by one column carries every other column along with it."},
+  {q:"What is the difference between  df[\"score\"]  and  df[[\"score\"]]  ?",
+   o:["Nothing — the extra brackets are optional","One pair gives a Series (a bare column); two pairs gives a one-column DataFrame","Two pairs is a syntax error","One pair copies the column, two pairs edits it in place"],
+   a:1,
+   e:"The inner brackets are just a list of the names you want, so the outer selection hands back a table. If a result unexpectedly behaves like a table rather than a column, count your brackets."},
+  {q:"What does  df[df[\"score\"] >= 50]  hand back?",
+   o:["A column of True and False, one per row","Only the score column, filtered","The whole rows — every column — for the students who scored 50 or more","The number of students who scored 50 or more"],
+   a:2,
+   e:"The inner part builds a column of True/False (Unit 21's boolean mask). Handing it to df[...] keeps the True rows whole — names, classes and all — because the columns share row labels."},
+  {q:"A CSV has an empty score field, so pandas puts NaN there. What does NaN mean?",
+   o:["Zero","An empty piece of text","We don't know — no value was recorded","An error in the file"],
+   a:2,
+   e:"NaN is the absence of a measurement, not a measurement of nothing. Treat it as zero and you'll average in students who never sat the test. It also explains why mean() skips it — and why NaN == NaN is False."},
+  {q:"What is groupby's job?",
+   o:["Sorting the table by one column","Removing duplicate rows","Splitting rows into piles by a column's value, applying a calculation to each pile, and combining the answers","Joining two tables together"],
+   a:2,
+   e:"Split, apply, combine. df.groupby(\"class\")[\"score\"].mean() replaces a whole paragraph of dict-of-lists bookkeeping with one line — and its result is indexed by the group names."},
+  {q:"Why is read_csv the usual way data enters a pandas program?",
+   o:["Because it's faster than typing a dict of lists","Because real data arrives as files, and CSV is the plain-text table format almost everything exports","Because pandas cannot build a DataFrame any other way","Because CSV files are smaller than other formats"],
+   a:1,
+   e:"Dicts of lists are fine for six rows and useless for six thousand. read_csv opens the file, takes the first line as column names, splits the rest on commas, and works out each column's type — one line, and you're holding the data."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. You can now hand a table a question and get an honest answer back."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 22.2 and 22.4 carry the load."
+           : " — worth another pass through the practice above before Unit 23.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["DataFrame","A table in a variable: named columns, numbered rows. Honestly, a dict of NumPy arrays that all agree on their row labels."],
+  ["Series","One column with its row labels attached — an array plus an index. df[\"score\"] gives you one; a DataFrame is a bundle of them."],
+  ["Index","The row labels shared by every column. The glue that makes several arrays one table, and why sorting or filtering never scrambles the rows."],
+  ["dtype","The type of one column: int64, float64, or object (which is pandas' word for 'text lives here'). df.dtypes shows them all."],
+  ["pd.DataFrame(dict)","Builds a table from a dict of lists: the keys become the column names, the lists become the columns."],
+  ["read_csv()","Reads a comma-separated text file into a DataFrame: first line becomes the column names, the rest become rows, types worked out automatically."],
+  ["head() / info() / describe()","The first look at any new table: the first few rows, the per-column types and non-null counts, and a numeric summary. Do all three before anything clever."],
+  ["Boolean mask (on a table)","A column of True/False built from a condition. df[mask] keeps the True rows whole; storing it as df[\"passed\"] makes it a column instead."],
+  ["NaN","'Not a number' — the marker for a missing value. Means 'we don't know'; is not 0 and not \"\". Forces a whole-number column to become float."],
+  ["isna()","True wherever a value is missing. isna().sum() gives the per-column tally of holes — the first thing to print about a new dataset."],
+  ["dropna() / fillna()","Delete the rows with holes, or put a value in them. A real judgment with no free option: one loses data, the other invents it."],
+  ["groupby()","Split rows into piles by a column's value, apply a calculation to each pile, combine the answers. df.groupby(\"class\")[\"score\"].mean() in one line."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

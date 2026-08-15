@@ -1,0 +1,1026 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PyTorch — First Contact — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<link rel="stylesheet" href="../../assets/unit.css">
+<style>
+/* One-off: this unit's torch code is READ-ONLY (torch can't run in the page),
+   so it needs a listing component the shared sheet doesn't carry. */
+.listing{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:900px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.listing .ll{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+.listing p{font-size:var(--fs-cap);color:var(--slate)}
+.listing pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:8px;padding:13px 16px;overflow-x:auto;margin:0;line-height:1.7;color:var(--ink)}
+.listing .out{font-family:var(--mono);font-size:var(--fs-sm);background:#23262e;color:#e8eaf0;border-radius:8px;padding:12px 16px;overflow-x:auto;margin:0;white-space:pre-wrap;line-height:1.6}
+.listing .out::before{content:"what it prints — in Colab, not here";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#9aa3b4;margin-bottom:6px}
+.annot{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px;font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.annot li{border-left:2px solid var(--line);padding-left:12px}
+.annot code,.listing p code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+a.colab{align-self:flex-start;font-size:var(--fs-sm);font-weight:700;border:1px solid color-mix(in srgb,var(--accent) 38%,transparent);background:var(--accent-wash);color:var(--accent-deep);border-radius:8px;padding:7px 13px;text-decoration:none}
+a.colab:hover{background:var(--panel)}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u25" data-lwa-title="Unit 25 · PyTorch — first contact">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Bridge — Python for ML &amp; DL · Unit 25</div>
+      <h1>PyTorch — First Contact</h1>
+      <p class="standfirst">Deep-learning code has a reputation for being unreadable. It isn't. A tensor is a NumPy array with two extra powers; a model is a class with an <code style="font-size:.85em">__init__</code> and one method; training is five lines in a loop. This session teaches you to <i>read</i> all three — and hands you a notebook where you actually run them.</p>
+      <div class="facts">
+        <div><b>One session</b>~50 min</div>
+        <div><b>5 concepts</b>each: short read + practice</div>
+        <div><b>18 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 13–16 (classes), 19 (functions as values), 21 (NumPy)</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">25.1 Tensors</a>
+    <a href="#s2">25.2 requires_grad</a>
+    <a href="#s3">25.3 nn.Module</a>
+    <a href="#s4">25.4 The training loop</a>
+    <a href="#s5">25.5 Build: a batch through a layer</a>
+    <a href="#s6">25.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 25.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Unit 21 and Units 13–16</b>NumPy arrays (shape, indexing, broadcasting) and classes (<code>__init__</code>, <code>self</code>, methods, inheritance, <code>super()</code>). Everything today is those two ideas wearing a new coat.</div>
+      <div class="pq"><b>The honest bit — the notebook <i>is</i> the lab today</b>This is the one unit these notes can't run in the page. PyTorch is far too big to download into a browser, so every torch example here is a read-only listing with its output printed for you. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit25.ipynb" rel="noopener">▶ Run this unit in Colab</a> — there, torch really runs, and you should have it open beside this page.</div>
+      <div class="pq"><b>Practice still happens here</b>Every checked problem below is plain Python or NumPy — shape arithmetic, derivatives by hand, class-shape drills. The ideas transfer exactly; only the import changes.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">25.1</span>
+      <h2>Tensors are NumPy arrays with two superpowers</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> You open a deep-learning tutorial and the first line is <code>x = torch.tensor([[1., 2.], [3., 4.]])</code>. A new library, a new word — <i>tensor</i> — and a mild panic that this is a new kind of maths you skipped. Is it?</p>
+      <p><b>The idea, in plain words.</b> No. A tensor is a grid of numbers with a shape, exactly like a NumPy array. Same vocabulary, same instincts: <code>.shape</code> tells you the dimensions, square brackets index and slice, arithmetic is element-wise, broadcasting stretches a smaller shape to meet a bigger one, <code>@</code> is matrix multiply. If you know arrays, you already know 90% of tensors — and the remaining 10% is two additions, both practical rather than mathematical:</p>
+      <ul class="plain">
+        <li><b>A tensor can live on a GPU.</b> A NumPy array always sits in ordinary memory, worked on by the CPU. A tensor can be moved — <code>x.to("cuda")</code> — onto a graphics card, which does thousands of multiplications at once. Nothing about the numbers changes; only <i>where</i> the arithmetic happens.</li>
+        <li><b>A tensor can remember how it was computed.</b> Ask for it with <code>requires_grad=True</code> and every operation you do leaves a breadcrumb. That's section 25.2, and it's the whole reason PyTorch exists.</li>
+      </ul>
+      <p>That's the entire conceptual jump. The name "tensor" is borrowed from physics and sounds grander than the thing deserves: a 0-dimensional tensor is a single number, 1-D is a list of numbers, 2-D is a table, 3-D is a stack of tables. Nobody in the room means more than that.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the same four lines, twice</div>
+      <div class="m">import numpy as np          |  import torch
+a = np.array([[1., 2.],     |  a = torch.tensor([[1., 2.],
+              [3., 4.]])    |                    [3., 4.]])
+print(a.shape)              |  print(a.shape)
+print(a * 2)                |  print(a * 2)</div>
+      <p><b>Line 2:</b> both build the same 2-row, 2-column grid of decimals. One calls it an <i>array</i>, one calls it a <i>tensor</i>.</p>
+      <p><b>Line 3:</b> both report the shape. NumPy says <code>(2, 2)</code>; torch says <code>torch.Size([2, 2])</code> — which is a tuple wearing a name tag, and indexes like one (<code>a.shape[0]</code> → 2 in both).</p>
+      <p><b>Line 4:</b> both multiply every element by 2 — element-wise, no loop, exactly the Unit 21 habit:</p>
+      <div class="m">[[2. 4.]        |  tensor([[2., 4.],
+ [6. 8.]]       |          [6., 8.]])</div>
+      <p>Different printing, identical thinking. That difference in <i>display</i> is the biggest shock of the day, and it's cosmetic.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 260" role="img" aria-label="A tensor is an array plus a device and a gradient history">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">WHAT A TENSOR CARRIES THAT AN ARRAY DOESN'T</text>
+        <rect x="40" y="52" width="230" height="170" rx="12" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="155" y="78" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#6b7585">np.array</text>
+        <rect x="66" y="94" width="178" height="60" rx="8" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="155" y="118" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">the numbers</text>
+        <text x="155" y="140" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">shape (2, 3)</text>
+        <text x="155" y="182" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">indexing · slicing · broadcasting</text>
+        <text x="155" y="202" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">element-wise arithmetic · @</text>
+        <text x="300" y="145" font-family="Segoe UI,system-ui,sans-serif" font-size="22" fill="#5b4b9e">+</text>
+        <rect x="340" y="52" width="480" height="170" rx="12" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="580" y="78" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">torch.tensor</text>
+        <rect x="364" y="94" width="200" height="76" rx="8" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="464" y="118" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">device</text>
+        <text x="464" y="140" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">cpu · cuda</text>
+        <text x="464" y="158" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">where the maths happens</text>
+        <rect x="592" y="94" width="204" height="76" rx="8" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="694" y="118" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">grad history</text>
+        <text x="694" y="140" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">requires_grad</text>
+        <text x="694" y="158" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#1d5654">how this number came to be</text>
+        <text x="580" y="202" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#3d3170">everything on the left, unchanged — plus these two</text>
+        <text x="430" y="246" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">Unit 21 taught you the left box. Today is only the right one.</text>
+      </svg>
+      <div class="figcap">Fig. 1 — A tensor is not a new kind of number. It is an array that also knows which processor it lives on and what arithmetic produced it.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Tensors and arrays are close cousins but not interchangeable in a function call. Hand a NumPy array to a torch model and you get <code>TypeError</code>; hand a tensor to a scikit-learn function and it may or may not cope. Convert deliberately at the border — <code>torch.from_numpy(a)</code> going in, <code>t.numpy()</code> coming out. It's Unit 2's "convert at the door" rule, one library up.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> rehearse the array vocabulary you'll use on tensors all day — build a grid, ask its shape, do element-wise arithmetic, pull out a row and a column. <b>Thinking:</b> nothing new here; that's the point. Read each printed line and say out loud what it would look like in torch. <b>Note:</b> the first NumPy run in this page takes about fifteen seconds while the library downloads — after that every problem below is instant.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">import numpy as np
+
+x = np.array([[1, 2, 3],
+              [4, 5, 6]])
+print(x)
+print("shape:", x.shape)
+print("rows:", x.shape[0], "columns:", x.shape[1])
+print("doubled:")
+print(x * 2)
+print("row 0:", x[0])
+print("column 2:", x[:, 2])</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">25.1 · P1</span><span class="pt">Shape and total</span></div>
+        <p class="pd">Build the 2×3 grid holding 1 to 6 (rows <code>1 2 3</code> then <code>4 5 6</code>), then print its shape and the total of all its elements with <code>.sum()</code>. Match the goal exactly — note how a shape prints.</p>
+        <div class="want">shape: (2, 3)
+sum: 21</div>
+        <div class="pyrun" data-id="s1p1" data-expect="shape: (2, 3)\nsum: 21">
+          <textarea spellcheck="false">import numpy as np
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+x = np.array([[1, 2, 3],
+              [4, 5, 6]])
+print("shape:", x.shape)
+print("sum:", x.sum())</pre><p>A shape is a tuple, so it prints with parentheses and a comma. In torch the same line prints <code>torch.Size([2, 3])</code> — same two numbers, fancier packaging.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">25.1 · P2</span><span class="pt">Predict: broadcasting</span></div>
+        <p class="pd">A 2×3 grid plus a 3-element row. Predict on paper: does this crash? If not, what shape comes out and what's in it? Then run. (This is the single most useful shape reflex in deep learning — a "bias" being added to every row of a batch is exactly this.)</p>
+        <div class="pyrun" data-id="s1p2">
+          <textarea spellcheck="false">import numpy as np
+
+a = np.array([[1, 2, 3],
+              [4, 5, 6]])
+b = np.array([10, 20, 30])
+print("a:", a.shape, " b:", b.shape)
+print((a + b).shape)
+print(a + b)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>a: (2, 3)  b: (3,)
+(2, 3)
+[[11 22 33]
+ [14 25 36]]</pre><p>The short shape is stretched — copied down every row — to meet the tall one. It does not crash, and the result keeps the bigger shape. Torch broadcasts by exactly the same rule.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">25.1 · P3</span><span class="pt">Reshape and reach in</span></div>
+        <p class="pd">Take the numbers 0–11 (<code>np.arange(12)</code> gives them in a row) and lay them out as 3 rows × 4 columns with <code>.reshape(3, 4)</code>. Then print the shape, the value at row 1 column 2, and the whole of column 0.</p>
+        <div class="want">(3, 4)
+6
+[0 4 8]</div>
+        <div class="pyrun" data-id="s1p3" data-expect="(3, 4)\n6\n[0 4 8]">
+          <textarea spellcheck="false">import numpy as np
+
+v = np.arange(12)
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+v = np.arange(12)
+m = v.reshape(3, 4)
+print(m.shape)
+print(m[1, 2])
+print(m[:, 0])</pre><p>Filling goes row by row, so row 1 is <code>4 5 6 7</code> and its column 2 is 6. The lone colon means "every row". <code>reshape</code> is the single most-used tensor method in real model code — usually to flatten an image into a row.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">25.1 · P4</span><span class="pt">Stretch — the two multiplications</span></div>
+        <p class="pd">One star and one at-sign, two completely different operations. Multiply the grids both ways and print each result with <code>.tolist()</code> (which turns a grid into plain Python lists, so the printing is tidy). Predict both before you run.</p>
+        <div class="want">[[10, 40], [90, 160]]
+[[70, 100], [150, 220]]</div>
+        <div class="pyrun" data-id="s1p4" data-expect="[[10, 40], [90, 160]]\n[[70, 100], [150, 220]]">
+          <textarea spellcheck="false">import numpy as np
+
+a = np.array([[1, 2], [3, 4]])
+b = np.array([[10, 20], [30, 40]])
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+a = np.array([[1, 2], [3, 4]])
+b = np.array([[10, 20], [30, 40]])
+print((a * b).tolist())
+print((a @ b).tolist())</pre><p><code>*</code> pairs up matching positions: 1×10, 2×20, and so on. <code>@</code> is real matrix multiplication: row of the first meets column of the second, multiply and add — 1×10 + 2×30 = 70. Every layer in every neural network is an <code>@</code>; mistaking one for the other is a rite of passage.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 25.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">25.2</span>
+      <h2>requires_grad and .backward() — the breadcrumb trail</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Suppose a program computes one number — how wrong a prediction was — from a few million other numbers, through a long chain of multiplications and additions. To improve, it needs to know: <i>if I nudge this particular input up a little, does the answer go up or down, and by how much?</i> Asking that by hand, a few million times, is not a plan.</p>
+      <p><b>The idea, in plain words.</b> Mark a tensor with <code>requires_grad=True</code> and it starts leaving breadcrumbs. Every operation you then do with it — square it, add to it, multiply it — is recorded: "this result came from that value, by this operation." When you finally have one answer, calling <code>.backward()</code> on it walks that trail in reverse, undoing each step, and works out how much each original input affected the answer. It parks the answer in each input's <code>.grad</code>.</p>
+      <p>That number — <i>how much the answer changes when I nudge this input</i> — is called the <b>gradient</b>. It is the slope you met in school as a derivative, and PyTorch's one great trick is computing it for you, automatically, no matter how long the chain. The whole feature is called <b>autograd</b>.</p>
+    </div>
+
+    <div class="listing">
+      <div class="ll">Listing 1 · read-only — torch does not run in this page</div>
+      <p><b>This is the one unit these notes can't run in the page.</b> PyTorch is too big for the browser, so the notebook is the lab today. Read the listing, read what it prints, then run it for real in Colab and change the 3.0 to something else.</p>
+      <pre>import torch
+
+x = torch.tensor(3.0, requires_grad=True)   # 1
+y = x ** 2                                  # 2
+y.backward()                                # 3
+print(x.grad)                               # 4</pre>
+      <div class="out">tensor(6.)</div>
+      <ul class="annot">
+        <li><b>Line 1</b> — a single number, 3.0, in a tensor, with the recorder switched on. <code>requires_grad=True</code> is the whole opt-in; without it, lines 3 and 4 fail.</li>
+        <li><b>Line 2</b> — square it. <code>y</code> now holds 9.0 <i>and</i> a note saying "I was made by squaring x".</li>
+        <li><b>Line 3</b> — walk the trail backwards from <code>y</code>. One step to undo: squaring.</li>
+        <li><b>Line 4</b> — the answer lands in <code>x.grad</code>. The slope of x² is 2x, and at x = 3 that is 6. Torch prints a bare float tensor as <code>tensor(6.)</code> — the trailing dot just means "this is a float".</li>
+      </ul>
+      <a class="colab" href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit25.ipynb" rel="noopener">▶ Run this in Colab</a>
+    </div>
+
+    <div class="fig">
+      <svg viewBox="0 0 860 250" role="img" aria-label="Forward pass records operations; backward pass walks them in reverse to fill x.grad">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">FORWARD LEAVES CRUMBS · BACKWARD FOLLOWS THEM HOME</text>
+        <rect x="60" y="60" width="150" height="58" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="135" y="83" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">x</text>
+        <text x="135" y="104" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">3.0</text>
+        <text x="135" y="136" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">requires_grad=True</text>
+        <rect x="330" y="60" width="160" height="58" rx="9" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="410" y="95" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">square</text>
+        <rect x="610" y="60" width="150" height="58" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="685" y="83" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">y</text>
+        <text x="685" y="104" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">9.0</text>
+        <line x1="212" y1="89" x2="326" y2="89" stroke="#5b4b9e" stroke-width="1.6" marker-end="url(#ah)"/>
+        <line x1="492" y1="89" x2="606" y2="89" stroke="#5b4b9e" stroke-width="1.6" marker-end="url(#ah)"/>
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b4b9e"/></marker>
+        <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#a35a33"/></marker></defs>
+        <text x="410" y="46" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#5b4b9e">forward — and the crumb is dropped here</text>
+        <path d="M660 128 L660 170 L160 170 L160 128" fill="none" stroke="#a35a33" stroke-width="1.6" marker-end="url(#ah2)"/>
+        <text x="410" y="190" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">y.backward() — undo the squaring, step by step</text>
+        <rect x="60" y="200" width="230" height="34" rx="8" fill="#ffffff" stroke="#a35a33" stroke-width="1.5"/>
+        <text x="175" y="223" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">x.grad → 6.0   (that is 2x)</text>
+      </svg>
+      <div class="figcap">Fig. 2 — The forward pass computes the answer and records the route. <code>.backward()</code> retraces it, filling in each input's <code>.grad</code>. With a million inputs the picture is wider, not different.</div>
+    </div>
+
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      <code>.grad</code> answers one question and only one: <b>if this input goes up by a whisker, which way does the final answer move, and how fast?</b> Everything called "learning" is built on that single number.
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>.backward()</code> does not change any numbers. After it runs, <code>x</code> still holds 3.0 — only <code>x.grad</code> is new. Changing the numbers is a separate step done by an optimizer (25.4). Torch keeps "work out the blame" and "act on the blame" as two different lines on purpose, and beginners routinely expect the first to do the second's job.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> convince yourself the gradient is just a slope, using nothing but plain Python. <b>Thinking:</b> a slope is "rise over run" — nudge x a hair each way, see how much the answer moved, divide by how far you nudged. Do that for x² at several points and compare with the formula 2x that torch printed above.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">def f(x):
+    return x ** 2
+
+def slope_at(x):
+    h = 0.000001
+    return (f(x + h) - f(x - h)) / (2 * h)
+
+for x in [1, 2, 3, 5]:
+    print(f"x={x}  measured slope={round(slope_at(x), 3)}  formula 2x={2 * x}")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">25.2 · P1</span><span class="pt">Be the autograd engine</span></div>
+        <p class="pd">Torch found <code>x.grad</code> = 6 at x = 3 because the slope of x² is 2x. Write the function <code>grad_of_square(x)</code> that returns that slope, and report it at four points. This is you doing by hand what <code>.backward()</code> does by machine.</p>
+        <div class="want">x=1 -> grad=2
+x=2 -> grad=4
+x=3 -> grad=6
+x=10 -> grad=20</div>
+        <div class="pyrun" data-id="s2p1" data-expect="x=1 -> grad=2\nx=2 -> grad=4\nx=3 -> grad=6\nx=10 -> grad=20">
+          <textarea spellcheck="false">def grad_of_square(x):
+    return 0   # fix me
+
+for x in [1, 2, 3, 10]:
+    </textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def grad_of_square(x):
+    return 2 * x
+
+for x in [1, 2, 3, 10]:
+    print(f"x={x} -> grad={grad_of_square(x)}")</pre><p>One line of maths, four points of evidence. Note the gradient is not one number — it depends on where you're standing, which is why torch recomputes it on every pass.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">25.2 · P2</span><span class="pt">A longer expression</span></div>
+        <p class="pd">Now <code>y = 3x² + 5x</code>. Its slope is <code>6x + 5</code> (each term differentiated, then added — the rule from school). Report the gradient at x = 0, 1 and 2, in the wording of the goal.</p>
+        <div class="want">at x=0 the gradient is 5
+at x=1 the gradient is 11
+at x=2 the gradient is 17</div>
+        <div class="pyrun" data-id="s2p2" data-expect="at x=0 the gradient is 5\nat x=1 the gradient is 11\nat x=2 the gradient is 17">
+          <textarea spellcheck="false">def grad(x):
+    </textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def grad(x):
+    return 6 * x + 5
+
+for x in [0, 1, 2]:
+    print(f"at x={x} the gradient is {grad(x)}")</pre><p>In torch this whole exercise is <code>y = 3 * x ** 2 + 5 * x</code> then <code>y.backward()</code>, and you never write the slope formula at all. That's the trade: torch does the calculus, you keep the understanding.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">25.2 · P3</span><span class="pt">Stretch — measure it, then check the formula</span></div>
+        <p class="pd">For <code>f(x) = x³</code> the formula says the slope is <code>3x²</code>. Don't take that on trust: measure it with the nudge trick from the worked example, round to two decimals, and print both side by side so they can be compared. Use <code>h = 0.00001</code>.</p>
+        <div class="want">1 3.0 3
+2 12.0 12
+3 27.0 27</div>
+        <div class="pyrun" data-id="s2p3" data-expect="1 3.0 3\n2 12.0 12\n3 27.0 27">
+          <textarea spellcheck="false">def f(x):
+    return x ** 3
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def f(x):
+    return x ** 3
+
+def numeric_slope(x):
+    h = 0.00001
+    return (f(x + h) - f(x - h)) / (2 * h)
+
+for x in [1, 2, 3]:
+    print(x, round(numeric_slope(x), 2), 3 * x ** 2)</pre><p>The measured value agrees with the formula to the decimals we asked for — the tiny disagreement further out is the price of nudging by a real distance instead of an infinitely small one. Torch uses the formulas, not the nudging, which is why it is both exact and fast.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 25.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">25.3</span>
+      <h2>nn.Module is just a class you can already read</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Open any deep-learning repository and the centrepiece is a block of code that <i>looks</i> like the hard part — the model definition. Twelve lines, unfamiliar words, and the sense that this is where the real difficulty hides.</p>
+      <p><b>The idea, in plain words.</b> It isn't. It's a class. Specifically it's a class that inherits from <code>nn.Module</code>, calls <code>super().__init__()</code> as its first act, stores its layers as attributes, and defines one method called <code>forward</code>. You met every one of those ideas in Units 13–16, in a class about a bank account. The vocabulary is identical; only the nouns changed.</p>
+      <p>Two conventions are worth naming before you read one. First, <b>a layer is itself an object you build once and call many times</b> — <code>nn.Linear(3, 4)</code> makes a thing that takes 3 numbers in and gives 4 out, with its own internal knobs. Second, <b><code>forward</code> is the recipe for one pass through the model</b>: input goes in the top, each layer is applied in turn, the answer comes out the bottom.</p>
+    </div>
+
+    <div class="listing">
+      <div class="ll">Listing 2 · read-only — run it in Colab</div>
+      <pre>import torch
+import torch.nn as nn
+
+class Net(nn.Module):                       # 1
+    def __init__(self):                     # 2
+        super().__init__()                  # 3
+        self.hidden = nn.Linear(3, 4)       # 4
+        self.output = nn.Linear(4, 1)       # 5
+
+    def forward(self, x):                   # 6
+        x = torch.relu(self.hidden(x))      # 7
+        return self.output(x)               # 8
+
+model = Net()                               # 9
+print(model)                                # 10</pre>
+      <div class="out">Net(
+  (hidden): Linear(in_features=3, out_features=4, bias=True)
+  (output): Linear(in_features=4, out_features=1, bias=True)
+)</div>
+      <ul class="annot">
+        <li><b>Line 1</b> — <code>class Net(nn.Module)</code>. Inheritance, exactly as in Unit 16: Net is a kind of Module and inherits everything Module can do (saving itself to disk, listing its own knobs, moving to a GPU).</li>
+        <li><b>Lines 2–3</b> — the rule from Unit 15, word for word: a subclass that writes its own <code>__init__</code> must call <code>super().__init__()</code> first, or the parent never gets set up. Torch is unusually strict about it and says so loudly if you forget.</li>
+        <li><b>Lines 4–5</b> — attributes. <code>self.hidden</code> and <code>self.output</code> are boxes on this object, holding two layer objects. 3 numbers in → 4 out, then 4 in → 1 out; the middle numbers must agree, and that's the whole art of stacking layers.</li>
+        <li><b>Line 6</b> — a method, with <code>self</code> as the first parameter, taking one input <code>x</code>.</li>
+        <li><b>Line 7</b> — <code>self.hidden(x)</code> calls the layer object like a function (Unit 19's "things can be called"), and <code>torch.relu</code> bends the result: negatives become zero, positives pass through. That bend is what stops a stack of layers collapsing into one.</li>
+        <li><b>Line 8</b> — the last layer's answer, returned. Read the last line first: whatever <code>forward</code> returns is what the model gives you.</li>
+        <li><b>Lines 9–10</b> — build one instance and print it. Torch's <code>__str__</code> lists the layers it found in the attributes — a free summary you didn't write.</li>
+      </ul>
+      <a class="colab" href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit25.ipynb" rel="noopener">▶ Run this in Colab</a>
+    </div>
+
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      Take a breath, because this deserves ceremony: <b>the hardest-looking code in machine learning is a class with an <code>__init__</code> and one method — and you learned to read that in Unit 13.</b> Not a simplified version of it. That exact thing.
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>You define <code>forward</code>, but you never call it. Real code writes <code>model(x)</code>, not <code>model.forward(x)</code> — because <code>nn.Module</code> defines <code>__call__</code>, which does some bookkeeping and <i>then</i> calls your <code>forward</code>. Calling <code>forward</code> yourself skips the bookkeeping and quietly breaks things. Define <code>forward</code>; call the model.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> prove the shape of that class is ordinary Python by building the same shape with no torch at all. <b>Thinking:</b> a parent class that sets something up, a child that calls <code>super().__init__()</code> and then stores two "layer" objects as attributes, and one method that runs them in order. If you can read this, you can read Listing 2.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">class Module:
+    def __init__(self):
+        self.parts = []
+        print("Module set up — the parent's bookkeeping")
+
+class Linear:
+    def __init__(self, n_in, n_out):
+        self.n_in = n_in
+        self.n_out = n_out
+    def __call__(self, name):
+        return f"{name}->({self.n_in}to{self.n_out})"
+
+class Net(Module):
+    def __init__(self):
+        super().__init__()
+        self.hidden = Linear(3, 4)
+        self.output = Linear(4, 1)
+        self.parts = ["hidden", "output"]
+
+    def forward(self, x):
+        x = self.hidden(x)
+        return self.output(x)
+
+model = Net()
+print(model.parts)
+print(model.forward("batch"))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">25.3 · P1</span><span class="pt">Layers as attributes</span></div>
+        <p class="pd">Write a plain-Python <code>Layer</code> class holding <code>n_in</code> and <code>n_out</code> with a <code>describe()</code> method returning <code>Linear(3 -&gt; 4)</code> style text, and a <code>Net</code> class whose <code>__init__</code> stores two layers (3→4 and 4→1) as attributes <code>hidden</code> and <code>output</code>. Print both descriptions. Same skeleton as Listing 2, zero torch.</p>
+        <div class="want">Linear(3 -> 4)
+Linear(4 -> 1)</div>
+        <div class="pyrun" data-id="s3p1" data-expect="Linear(3 -> 4)\nLinear(4 -> 1)">
+          <textarea spellcheck="false">class Layer:
+    def __init__(self, n_in, n_out):
+        </textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Layer:
+    def __init__(self, n_in, n_out):
+        self.n_in = n_in
+        self.n_out = n_out
+
+    def describe(self):
+        return f"Linear({self.n_in} -> {self.n_out})"
+
+class Net:
+    def __init__(self):
+        self.hidden = Layer(3, 4)
+        self.output = Layer(4, 1)
+
+net = Net()
+print(net.hidden.describe())
+print(net.output.describe())</pre><p>An object holding other objects as attributes — the composition pattern from Unit 14. That's all a model is: a bag of layers with a running order.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">25.3 · P2</span><span class="pt">super() earns its keep</span></div>
+        <p class="pd">The parent <code>Module</code> below sets up an empty <code>parts</code> list and announces itself. Write the child <code>Net</code> whose <code>__init__</code> calls the parent's first, then registers two parts. Print the list at the end.</p>
+        <div class="want">Module set up
+['hidden', 'output']</div>
+        <div class="pyrun" data-id="s3p2" data-expect="Module set up\n['hidden', 'output']">
+          <textarea spellcheck="false">class Module:
+    def __init__(self):
+        self.parts = []
+        print("Module set up")
+
+    def add(self, name):
+        self.parts.append(name)
+
+class Net(Module):
+    </textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Module:
+    def __init__(self):
+        self.parts = []
+        print("Module set up")
+
+    def add(self, name):
+        self.parts.append(name)
+
+class Net(Module):
+    def __init__(self):
+        super().__init__()
+        self.add("hidden")
+        self.add("output")
+
+net = Net()
+print(net.parts)</pre><p>The child gets <code>add</code> for free by inheriting, and <code>super().__init__()</code> is what makes <code>self.parts</code> exist before <code>add</code> touches it. Torch's <code>nn.Module.__init__</code> does the same job on a grander scale.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">25.3 · P3</span><span class="pt">Stretch — predict the forgotten super()</span></div>
+        <p class="pd">Here is that class with one line removed. Predict the exact failure — which line dies, and what the message will say — before running. Then run and compare.</p>
+        <div class="pyrun" data-id="s3p3">
+          <textarea spellcheck="false">class Module:
+    def __init__(self):
+        self.parts = []
+
+class Net(Module):
+    def __init__(self):
+        self.parts.append("hidden")
+
+net = Net()
+print(net.parts)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>AttributeError: 'Net' object has no attribute 'parts'</pre><p>Without <code>super().__init__()</code>, the parent's setup never runs, so <code>self.parts</code> was never created — and you can't append to a box that doesn't exist. Torch turns this into a friendlier sentence (<i>cannot assign module before Module.__init__() call</i>), but it is this bug, and it is the most common mistake in a first model class.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 25.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">25.4</span>
+      <h2>The training loop, read like prose</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~9 min</span></span>
+      <p><b>The problem.</b> Unit 24 let you write <code>model.fit(X, y)</code> and walk away — scikit-learn hid the whole business behind one word. PyTorch doesn't hide it. You write the training loop yourself, and every tutorial assumes you can read those five lines at a glance.</p>
+      <p><b>The idea, in plain words.</b> The loop is a rhythm, repeated: <i>guess, measure the mistake, clear the old notes, work out the blame, nudge the knobs.</i> Five lines, always in that order, and once you've seen it you'll recognise it in every repository you ever open.</p>
+      <p>What this session teaches is the <b>reading</b> of it, not the reason it works. Why nudging knobs against the gradient makes a model better — genuinely one of the loveliest ideas in the subject — belongs to the Deep Learning stage, where it gets the room it deserves. Today you learn what the lines say.</p>
+    </div>
+
+    <div class="listing">
+      <div class="ll">Listing 3 · read-only — run it in Colab</div>
+      <pre>loss_fn = nn.MSELoss()                              # 1
+optimizer = torch.optim.SGD(model.parameters(),     # 2
+                            lr=0.01)
+
+for epoch in range(100):                            # 3
+    pred = model(x)                                 # 4  forward
+    loss = loss_fn(pred, y)                         # 5  how wrong
+    optimizer.zero_grad()                           # 6  clear old grads
+    loss.backward()                                 # 7  work out the blame
+    optimizer.step()                                # 8  nudge the knobs</pre>
+      <div class="out">epoch 0   loss 4.7213
+epoch 20  loss 0.8104
+epoch 40  loss 0.1937
+epoch 60  loss 0.0522
+epoch 80  loss 0.0158</div>
+      <ul class="annot">
+        <li><b>Line 1</b> — the scorer. <code>MSELoss</code> compares predictions to answers and returns one number: bigger means more wrong.</li>
+        <li><b>Line 2</b> — the knob-turner. It is handed <code>model.parameters()</code> — every adjustable number inside every layer — and <code>lr</code>, the step size, which decides how big each nudge is.</li>
+        <li><b>Line 3</b> — do the whole thing 100 times. One pass over the data is called an <i>epoch</i>; that's the only new word in the block.</li>
+        <li><b>Line 4</b> — <b>forward.</b> Feed the inputs through the model and get predictions. This is where <code>forward</code> from 25.3 finally runs — note it's <code>model(x)</code>, not <code>model.forward(x)</code>.</li>
+        <li><b>Line 5</b> — <b>loss.</b> One number saying how wrong those predictions were. Because it was computed from tensors that remember, it carries the whole breadcrumb trail.</li>
+        <li><b>Line 6</b> — <b>zero_grad.</b> Gradients <i>accumulate</i> in torch — each <code>.backward()</code> adds to what's already in <code>.grad</code> rather than replacing it. So wipe last round's numbers first, or this round's blame is mixed with stale blame.</li>
+        <li><b>Line 7</b> — <b>backward.</b> Walk the trail from the loss back through every layer, filling in <code>.grad</code> on every knob: how much did <i>you</i> contribute to being this wrong?</li>
+        <li><b>Line 8</b> — <b>step.</b> The optimizer reads those <code>.grad</code> values and moves each knob a little in the direction that lowers the loss. Nothing else changes any weights — ever.</li>
+      </ul>
+      <p>The printed output above is what a healthy run looks like: the loss falls. In the notebook you'll watch it fall for real, on numbers you can change.</p>
+      <a class="colab" href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit25.ipynb" rel="noopener">▶ Run this in Colab</a>
+    </div>
+
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>zero_grad()</code> looks like pointless ceremony until it bites you. Leave it out and the gradients from every previous round pile up, the steps get wildly too big, and the loss explodes to <code>nan</code> — with no error message, because nothing illegal happened. Its position is flexible (many people put it first in the loop) but its presence is not.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> feel the rhythm with no library at all. One knob <code>w</code>, a pretend gradient, a step size — repeated a few times. <b>Thinking:</b> this is line 8 of Listing 3, alone in a room. Watch the number walk downhill.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">w = 10.0
+lr = 0.1
+
+for step in range(6):
+    grad = 2 * w                 # pretend the loss is w*w, so the slope is 2w
+    w = w - lr * grad            # this line is optimizer.step()
+    print(f"step {step + 1}: gradient {grad:.3f}, w is now {w:.3f}")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">25.4 · P1</span><span class="pt">Five steps downhill</span></div>
+        <p class="pd">Same idea, tightened up: start <code>w</code> at 10.0 with <code>lr = 0.1</code>, and for five steps compute <code>grad = 2 * w</code>, subtract <code>lr * grad</code>, and report <code>w</code> to three decimals in the goal's wording.</p>
+        <div class="want">step 1: w = 8.000
+step 2: w = 6.400
+step 3: w = 5.120
+step 4: w = 4.096
+step 5: w = 3.277</div>
+        <div class="pyrun" data-id="s4p1" data-expect="step 1: w = 8.000\nstep 2: w = 6.400\nstep 3: w = 5.120\nstep 4: w = 4.096\nstep 5: w = 3.277">
+          <textarea spellcheck="false">w = 10.0
+lr = 0.1
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>w = 10.0
+lr = 0.1
+
+for step in range(5):
+    grad = 2 * w
+    w = w - lr * grad
+    print(f"step {step + 1}: w = {w:.3f}")</pre><p>Each step takes 20% off, so the walk downhill slows as it goes — big strides where the slope is steep, small ones near the bottom. That self-slowing is the shape of every training curve you will ever see.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">25.4 · P2</span><span class="pt">What zero_grad() is for</span></div>
+        <p class="pd">The starter mimics torch's accumulating gradients: each round <i>adds</i> to the running total, so it prints 5, 10, 15. Add the one line that plays the part of <code>optimizer.zero_grad()</code> so every round starts clean and reports 5.</p>
+        <div class="want">step 1: total=5
+step 2: total=5
+step 3: total=5</div>
+        <div class="pyrun" data-id="s4p2" data-expect="step 1: total=5\nstep 2: total=5\nstep 3: total=5">
+          <textarea spellcheck="false">grad = 5
+total = 0
+
+for step in range(3):
+    total = total + grad
+    print(f"step {step + 1}: total={total}")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>grad = 5
+total = 0
+
+for step in range(3):
+    total = 0                 # this is optimizer.zero_grad()
+    total = total + grad
+    print(f"step {step + 1}: total={total}")</pre><p>One line, moved inside the loop. Without it you're steering by the sum of every mistake you ever made, which is as bad an idea as it sounds.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 25.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">25.5</span>
+      <h2>Your build — a batch of data through a layer</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~11 min</span></span>
+      <p>Time to put the pieces together on the smallest honest example there is: four samples, three features each, pushed through one 3→1 layer. In the notebook you'll do it with real tensors and a real <code>nn.Linear</code>. Here you'll do the same arithmetic with NumPy — because the shapes, which are the part people actually get wrong, are identical.</p>
+      <p>One shape rule carries the whole build: <b>a batch is rows.</b> Four samples of three features is a 4×3 grid — one row per sample. A layer that turns 3 numbers into 1 is a 3×1 grid of weights. Multiply them and the middle 3s cancel, leaving 4×1: one answer per sample. That's it. That's the shape arithmetic of every neural network layer ever written.</p>
+    </div>
+
+    <div class="listing">
+      <div class="ll">Listing 4 · read-only — this is the notebook's headline cell</div>
+      <pre>import torch
+import torch.nn as nn
+
+torch.manual_seed(0)
+
+x = torch.randn(4, 3)        # 4 samples, 3 features each
+layer = nn.Linear(3, 1)      # a 3 -> 1 layer, weights created for you
+out = layer(x)               # one forward pass
+
+print(x.shape)
+print(layer.weight.shape)
+print(out.shape)</pre>
+      <div class="out">torch.Size([4, 3])
+torch.Size([1, 3])
+torch.Size([4, 1])</div>
+      <ul class="annot">
+        <li><code>torch.randn(4, 3)</code> makes random numbers in the shape you ask for — a stand-in for real data while you check the plumbing. The actual values differ every run unless you set the seed, which is why only the shapes are printed here.</li>
+        <li><code>nn.Linear(3, 1)</code> creates the weights itself, at random, ready to be trained. Torch stores them transposed (1×3), which surprises everyone once and then never again.</li>
+        <li><code>layer(x)</code> — the layer called like a function. Four rows in, four rows out, one number each.</li>
+        <li>Reading shapes out loud after every step is the single best debugging habit in deep learning. Most bugs are a shape you assumed and never checked.</li>
+      </ul>
+      <a class="colab" href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit25.ipynb" rel="noopener">▶ Run this in Colab</a>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">25.5 · P1</span><span class="pt">The same shapes, in NumPy</span></div>
+        <p class="pd">Build the batch <code>X</code> as a 4×3 grid of ones, the weights <code>W</code> as a 3×1 grid, add a bias, and report all three shapes. Use <code>np.ones((rows, cols))</code> and <code>@</code>. This is Listing 4 with the training wheels visible.</p>
+        <div class="want">X: (4, 3)
+W: (3, 1)
+out: (4, 1)</div>
+        <div class="pyrun" data-id="s5p1" data-expect="X: (4, 3)\nW: (3, 1)\nout: (4, 1)">
+          <textarea spellcheck="false">import numpy as np
+
+X = np.ones((4, 3))
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+X = np.ones((4, 3))
+W = np.ones((3, 1))
+b = 0.1
+out = X @ W + b
+print("X:", X.shape)
+print("W:", W.shape)
+print("out:", out.shape)</pre><p>The inner numbers must match — 4×<b>3</b> against <b>3</b>×1 — and the outer numbers survive: 4×1. The bias is a single number broadcast onto every row, exactly the stretching from 25.1's P2.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">25.5 · P2</span><span class="pt">One sample, done twice</span></div>
+        <p class="pd">Take one sample <code>[1.0, 2.0, 3.0]</code> and weights <code>[0.5, -1.0, 2.0]</code> with bias <code>0.1</code>. Work the answer out the long way — every feature times its weight, added up, plus the bias, written as one arithmetic expression — then again with <code>np.dot</code>. They must agree. That agreement <i>is</i> what a layer does.</p>
+        <div class="want">by hand: 4.6
+by dot:  4.6</div>
+        <div class="pyrun" data-id="s5p2" data-expect="by hand: 4.6\nby dot:  4.6">
+          <textarea spellcheck="false">import numpy as np
+
+x = np.array([1.0, 2.0, 3.0])
+w = np.array([0.5, -1.0, 2.0])
+b = 0.1
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+x = np.array([1.0, 2.0, 3.0])
+w = np.array([0.5, -1.0, 2.0])
+b = 0.1
+by_hand = 1.0 * 0.5 + 2.0 * -1.0 + 3.0 * 2.0 + b
+by_dot = np.dot(x, w) + b
+print(f"by hand: {by_hand}")
+print(f"by dot:  {by_dot}")</pre><p>0.5 − 2.0 + 6.0 + 0.1 = 4.6. A neuron is a weighted sum plus a bias — one line of school arithmetic, done a few million times a second. Nothing more mystical than that is happening inside <code>nn.Linear</code>.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 25.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">25.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~13 min</span></span>
+      <p>Shapes, gradients, and class-reading in combination — all runnable right here, because all of it is Python you already own. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">Two layers, three shapes</span></div>
+        <p class="pd">Eight samples, five features each, through a 5→3 layer and then a 3→1 layer. Build all three grids with <code>np.ones</code>, multiply with <code>@</code>, and print the shape after each layer plus the first output value as a whole number (<code>int(out[0, 0])</code>).</p>
+        <div class="want">(8, 3)
+(8, 1)
+15</div>
+        <div class="pyrun" data-id="b1" data-expect="(8, 3)\n(8, 1)\n15">
+          <textarea spellcheck="false">import numpy as np
+
+X = np.ones((8, 5))
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+X = np.ones((8, 5))
+W1 = np.ones((5, 3))
+W2 = np.ones((3, 1))
+h = X @ W1
+out = h @ W2
+print(h.shape)
+print(out.shape)
+print(int(out[0, 0]))</pre><p>Each hidden value is five ones added up → 5.0; each output is three of those added up → 15.0. The sample count 8 never changes — a batch goes in and a batch comes out, always.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">The gradient desk</span></div>
+        <p class="pd">Ask <code>Which x? </code>, convert it, and report the slope of <code>f(x) = x*x</code> there — the number torch would put in <code>x.grad</code>. Input is fixed to 4.</p>
+        <div class="want">Which x? 4
+f(x) = x*x, at x=4 the slope is 8</div>
+        <div class="pyrun" data-id="b2" data-stdin="4" data-stdin-lock data-expect="Which x? 4\nf(x) = x*x, at x=4 the slope is 8">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>x = int(input("Which x? "))
+print(f"f(x) = x*x, at x={x} the slope is {2 * x}")</pre><p>Convert at the door, then one formula. In torch this is three lines and no formula — but the number that comes out is this number.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">Read the model, answer in print</span></div>
+        <p class="pd">Here is a model class. Read it — don't run it, torch isn't here — and answer four questions by printing the answers exactly as the goal shows: how many features go in, how many come out, how many <code>Linear</code> layers there are, and what shape a batch of 4 samples has when it emerges.</p>
+        <div class="want">in: 10
+out: 2
+layers: 3
+batch of 4 out shape: (4, 2)</div>
+        <p class="pd" style="font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:8px;padding:12px 15px;white-space:pre">class Tiny(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.a = nn.Linear(10, 6)
+        self.b = nn.Linear(6, 6)
+        self.c = nn.Linear(6, 2)
+
+    def forward(self, x):
+        x = torch.relu(self.a(x))
+        x = torch.relu(self.b(x))
+        return self.c(x)</p>
+        <div class="pyrun" data-id="b3" data-expect="in: 10\nout: 2\nlayers: 3\nbatch of 4 out shape: (4, 2)">
+          <textarea spellcheck="false">print("in:", ...)
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print("in: 10")
+print("out: 2")
+print("layers: 3")
+print("batch of 4 out shape: (4, 2)")</pre><p>The first number of the first layer is what goes in; the last number of the last layer is what comes out; the sample count is untouched all the way through. Being able to answer these four questions from a listing, in ten seconds, is most of what "reading model code" means.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — a shape checker with no torch in sight</span></div>
+        <p class="pd">Write <code>FakeLinear</code> (holding <code>n_in</code>, <code>n_out</code>, with a <code>forward(shape)</code> that takes a <code>(rows, cols)</code> tuple, returns <code>(rows, n_out)</code> if <code>cols</code> matches <code>n_in</code>, and the text <code>shape mismatch</code> otherwise) and a <code>FakeNet</code> holding a 10→6 layer and a 6→2 layer that runs a shape through both, stopping early on a mismatch. Test it with a good batch and a bad one.</p>
+        <div class="want">(4, 2)
+shape mismatch</div>
+        <div class="pyrun" data-id="b4" data-expect="(4, 2)\nshape mismatch">
+          <textarea spellcheck="false">class FakeLinear:
+    def __init__(self, n_in, n_out):
+        </textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class FakeLinear:
+    def __init__(self, n_in, n_out):
+        self.n_in = n_in
+        self.n_out = n_out
+
+    def forward(self, shape):
+        rows, cols = shape
+        if cols != self.n_in:
+            return "shape mismatch"
+        return (rows, self.n_out)
+
+class FakeNet:
+    def __init__(self):
+        self.a = FakeLinear(10, 6)
+        self.b = FakeLinear(6, 2)
+
+    def forward(self, shape):
+        shape = self.a.forward(shape)
+        if shape == "shape mismatch":
+            return shape
+        return self.b.forward(shape)
+
+net = FakeNet()
+print(net.forward((4, 10)))
+print(net.forward((4, 7)))</pre><p>You have just written, in twenty lines, the part of PyTorch that produces its most famous error message. A model class is a pipeline of objects, each one checking that what arrived is what it expected — and now you know what it feels like from the inside.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later — and you will need all of them.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 26 · Keras — first contact &amp; the grammar compared</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">PyTorch hands you the parts and trusts you to assemble them — that's why you wrote the training loop yourself. Keras hands you the assembled thing and asks what you'd like it to do. Neither is the right answer; they're different bargains. Unit 26 puts the three grammars side by side — scikit-learn's <code>fit</code>, PyTorch's loop, Keras's <code>compile</code> and <code>fit</code> — and closes the Bridge.</p>
+      <p style="font-size:var(--fs-cap);color:var(--slate);margin-top:10px">And when you're ready for the long walk: the <b>Build an LLM from Scratch</b> series is written in exactly the vocabulary you learned today — tensors, a class with a <code>forward</code>, and a loop of five lines. You will recognise the shape of every page of it.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now. Open them beside the notebook, not beside this page.</p>
+    </div>
+    <ol>
+      <li class="hero"><b>PyTorch tutorials</b> — <i>Tensors</i>. <span class="why">The official tour of the object from 25.1, including the NumPy bridge in both directions.</span> <a href="https://pytorch.org/tutorials/beginner/basics/tensorqs_tutorial.html" rel="noopener">pytorch.org</a></li>
+      <li><b>PyTorch tutorials</b> — <i>Automatic Differentiation with torch.autograd</i>. <span class="why">The breadcrumb trail of 25.2 in more detail — <code>requires_grad</code>, <code>.backward()</code>, and why gradients accumulate.</span> <a href="https://pytorch.org/tutorials/beginner/basics/autogradqs_tutorial.html" rel="noopener">pytorch.org</a></li>
+      <li><b>PyTorch tutorials</b> — <i>Build the Neural Network</i>. <span class="why">Listing 2's class, built up step by step, with the layer catalogue it draws on.</span> <a href="https://pytorch.org/tutorials/beginner/basics/buildmodel_tutorial.html" rel="noopener">pytorch.org</a></li>
+      <li><b>The Python Tutorial</b> — <i>§9 Classes</i>. <span class="why">If Listing 2 still felt foreign, the problem isn't torch — it's classes, and this is the shortest way back to solid ground.</span> <a href="https://docs.python.org/3/tutorial/classes.html" rel="noopener">docs.python.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit24.html"><span class="k">← Previous</span><span class="t">Unit 24 · scikit-learn — the shape of an ML library</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit26.html"><span class="k">Next →</span><span class="t">Unit 26 · Keras — first contact &amp; the grammar compared</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 25 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"What is the honest difference between a NumPy array and a PyTorch tensor?",
+   o:["A tensor can hold more dimensions than an array","A tensor is the same idea plus two additions: it can live on a GPU, and it can remember how it was computed","A tensor stores text as well as numbers","A tensor is a completely different branch of mathematics"],
+   a:1,
+   e:"Shape, indexing, broadcasting, element-wise arithmetic and @ are identical — that's the 90% you already had from Unit 21. The extra 10% is the device it lives on and the gradient history it carries."},
+  {q:"What does requires_grad=True actually buy you?",
+   o:["Faster arithmetic","Automatic conversion to a GPU tensor","A record of every operation done to the tensor, so .backward() can work out how it affected the answer","Protection against the tensor being changed"],
+   a:2,
+   e:"It switches on the breadcrumb trail. Without it, torch does the arithmetic and forgets; with it, torch can retrace the route and fill in .grad."},
+  {q:"In  class Net(nn.Module):  what is nn.Module?",
+   o:["A function being called","The parent class Net inherits from","A module being imported","The name of the model file"],
+   a:1,
+   e:"Plain inheritance, exactly as in Unit 16. Net is a kind of Module and gets Module's abilities for free — which is also why its __init__ must call super().__init__() first."},
+  {q:"You defined forward() in your model class. Which line actually runs it?",
+   o:["model.forward(x)","model(x) — nn.Module's __call__ does some bookkeeping and then calls your forward","loss.backward()","optimizer.step()"],
+   a:1,
+   e:"Define forward, call the model. Calling model.forward(x) yourself skips the bookkeeping nn.Module does around it, which quietly breaks things later."},
+  {q:"Put the training loop in order.",
+   o:["backward → step → forward → loss → zero_grad","forward → loss → zero_grad → backward → step","loss → forward → backward → zero_grad → step","zero_grad → step → forward → backward → loss"],
+   a:1,
+   e:"Guess, measure the mistake, clear the old notes, work out the blame, nudge the knobs. zero_grad must come before backward because gradients accumulate rather than replace."},
+  {q:"Why does this unit send you to Colab instead of running torch on the page?",
+   o:["The page runner refuses third-party libraries entirely","PyTorch is far too large to download into a browser — NumPy and pandas fit, torch never will","Torch code is too dangerous to run in a browser","The author simply hasn't got round to it"],
+   a:1,
+   e:"The in-page runner happily fetches numpy, pandas, matplotlib, scipy and scikit-learn — which is why every checked problem here uses them. Torch and TensorFlow are in a different weight class, so the notebook is the lab for those."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. You can now read a model class without flinching."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 25.2 and 25.4 carry the load."
+           : " — worth another pass through the listings above, with the notebook open beside them.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Tensor","PyTorch's grid of numbers. A NumPy array with two additions: it can live on a GPU, and it can remember how it was computed."],
+  ["torch.Size","What a tensor's .shape gives back — a tuple wearing a name tag. torch.Size([4, 3]) means 4 rows of 3."],
+  ["device","Where a tensor's arithmetic happens: \"cpu\" or \"cuda\" (a GPU). Move with x.to(\"cuda\"); mixing devices in one operation is an error."],
+  ["requires_grad","The opt-in flag that starts a tensor recording the operations done to it. Without it there is no trail to walk backwards."],
+  ["autograd","Torch's machinery for walking that trail in reverse and filling in gradients automatically, however long the chain."],
+  ["Gradient (.grad)","How much the final answer moves when this input is nudged up a whisker — the derivative, and the only number training steers by."],
+  [".backward()","Walk the recorded trail backwards from one number (usually the loss), filling in .grad on everything that helped produce it. It changes no values."],
+  ["nn.Module","The parent class every model inherits from. It brings saving, listing parameters, moving to a GPU, and the __call__ that runs your forward."],
+  ["forward()","The method holding the recipe for one pass through the model. You define it; you call model(x), never model.forward(x)."],
+  ["nn.Linear(a, b)","A layer object taking a numbers in and giving b out, with its own weights. Under the hood: a matrix multiply plus a bias."],
+  ["Loss","One number saying how wrong the predictions were. Bigger is worse; the whole loop exists to make it smaller."],
+  ["Optimizer / step / zero_grad","The knob-turner. step() nudges every parameter using its .grad; zero_grad() wipes last round's gradients, which otherwise accumulate."],
+  ["Epoch","One pass over the training data. range(100) in the loop means a hundred of them."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

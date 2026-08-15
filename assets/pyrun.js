@@ -72,6 +72,9 @@
 .pyrun .pr-out.show{display:block}\
 .pyrun .pr-out .err{color:#ffb3a0}\
 .pyrun .pr-out .hint{color:#9aa3b5;font-style:italic}\
+.pyrun .pr-out img.pr-fig{display:block;max-width:100%;height:auto;margin:10px 0 2px;\
+  background:#fff;border-radius:8px;padding:6px}\
+.pyrun .pr-out.has-fig{max-height:none}\
 ";
   var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
 
@@ -82,7 +85,8 @@
 
   /* ---------------- worker-based executor ---------------- */
   var PREAMBLE = [
-    "import builtins",
+    "import builtins, os",
+    "os.environ['MPLBACKEND'] = 'AGG'",   // draw plots to an image buffer, not a canvas
     "_lwa_stdin = []",
     "def _lwa_set_stdin(lines):",
     "    global _lwa_stdin",
@@ -95,29 +99,61 @@
     "builtins.input = _lwa_input"
   ].join("\n");
 
-  var WORKER_SRC =
-    'importScripts(' + JSON.stringify(PYODIDE_URL) + ');\n' +
-    'var pyReady = loadPyodide({indexURL:' + JSON.stringify(INDEX_URL) + '}).then(function(py){\n' +
-    '  py.runPython(' + JSON.stringify(PREAMBLE) + ');\n' +
-    '  postMessage({type:"ready"});\n' +
-    '  return py;\n' +
-    '}).catch(function(e){ postMessage({type:"bootfail", err:String(e && e.message || e)}); });\n' +
-    'onmessage = function(ev){\n' +
-    '  var msg = ev.data;\n' +
-    '  pyReady.then(function(py){\n' +
-    '    if (!py) return;\n' +
-    '    py.globals.get("_lwa_set_stdin")(py.toPy(msg.stdin || []));\n' +
-    '    var buf = [];\n' +
-    '    py.setStdout({batched:function(s){ buf.push(s); }});\n' +
-    '    py.setStderr({batched:function(s){ buf.push(s); }});\n' +
-    '    var err = null;\n' +
+  /* After a run, hand back any matplotlib figures the student drew as PNGs so
+     the plotting units can show pictures, not just text. */
+  var FIGCODE = [
+    "_lwa_figs = []",
+    "import sys",
+    "if 'matplotlib' in sys.modules:",
+    "    try:",
+    "        import matplotlib.pyplot as _plt, io as _io, base64 as _b64",
+    "        for _n in _plt.get_fignums():",
+    "            _buf = _io.BytesIO()",
+    "            _plt.figure(_n).savefig(_buf, format='png', dpi=110, bbox_inches='tight')",
+    "            _lwa_figs.append(_b64.b64encode(_buf.getvalue()).decode())",
+    "        _plt.close('all')",
+    "    except Exception:",
+    "        pass"
+  ].join("\n");
+
+  var WORKER_SRC = [
+    'importScripts(' + JSON.stringify(PYODIDE_URL) + ');',
+    'var FIGCODE = ' + JSON.stringify(FIGCODE) + ';',
+    'var pyReady = loadPyodide({indexURL:' + JSON.stringify(INDEX_URL) + '}).then(function(py){',
+    '  py.runPython(' + JSON.stringify(PREAMBLE) + ');',
+    '  postMessage({type:"ready"});',
+    '  return py;',
+    '}).catch(function(e){ postMessage({type:"bootfail", err:String(e && e.message || e)}); });',
+    'onmessage = function(ev){',
+    '  var msg = ev.data;',
+    '  pyReady.then(function(py){',
+    '    if (!py) return;',
+    '    var needs = /^[ \\t]*(import|from)[ \\t]+\\w/m.test(msg.code);',
+    '    postMessage({type: needs ? "loading" : "running", id: msg.id});',
+    // a first numpy/pandas download can take a while — it must not eat the run budget
+    '    return Promise.resolve(needs ? py.loadPackagesFromImports(msg.code) : null)',
+    '      .catch(function(){})',
+    '      .then(function(){',
+    '        postMessage({type:"running", id: msg.id});',
+    '        py.globals.get("_lwa_set_stdin")(py.toPy(msg.stdin || []));',
+    '        var buf = [];',
+    '        py.setStdout({batched:function(s){ buf.push(s); }});',
+    '        py.setStderr({batched:function(s){ buf.push(s); }});',
+    '        var err = null, figs = [];',
     // fresh namespace per run so one problem never leaks boxes into the next
-    '    try { py.runPython(msg.code, {globals: py.toPy({})}); }\n' +
-    '    catch (e) { err = String(e && e.message || e); }\n' +
-    '    py.setStdout(); py.setStderr();\n' +
-    '    postMessage({type:"result", id: msg.id, ok: !err, text: buf.join("\\n"), err: err});\n' +
-    '  });\n' +
-    '};\n';
+    '        try { py.runPython(msg.code, {globals: py.toPy({})}); }',
+    '        catch (e) { err = String(e && e.message || e); }',
+    '        try {',
+    '          py.runPython(FIGCODE);',
+    '          var fp = py.globals.get("_lwa_figs");',
+    '          if (fp) { figs = fp.toJs(); if (fp.destroy) fp.destroy(); }',
+    '        } catch (e) {}',
+    '        py.setStdout(); py.setStderr();',
+    '        postMessage({type:"result", id: msg.id, ok: !err, text: buf.join("\\n"), err: err, figs: figs});',
+    '      });',
+    '  });',
+    '};'
+  ].join("\n");
 
   var worker = null, workerReady = null, seq = 0, pending = {};
 
@@ -144,6 +180,13 @@
         else if (m.type === "bootfail") {
           clearTimeout(bootTimer); killWorker();
           reject(new Error("Could not start Python: " + m.err));
+        } else if ((m.type === "loading" || m.type === "running") && pending[m.id]) {
+          // downloading numpy/pandas isn't the student's program running:
+          // tell them what's happening and restart the run budget
+          var q = pending[m.id];
+          clearTimeout(q.timer);
+          q.onStatus(m.type === "loading" ? "Fetching the libraries this program imports …" : "Running …");
+          q.timer = setTimeout(q.onTimeout, m.type === "loading" ? BOOT_TIMEOUT_MS : RUN_TIMEOUT_MS);
         } else if (m.type === "result" && pending[m.id]) {
           var p = pending[m.id]; delete pending[m.id];
           clearTimeout(p.timer); p.resolve(m);
@@ -162,14 +205,17 @@
       onStatus("Running …");
       return new Promise(function (resolve, reject) {
         var id = ++seq;
+        var onTimeout = function () {
+          delete pending[id];
+          killWorker(); // a stuck run can only be stopped by terminating the worker
+          reject(new Error("__timeout__"));
+        };
         pending[id] = {
           resolve: resolve,
           reject: reject,
-          timer: setTimeout(function () {
-            delete pending[id];
-            killWorker(); // a stuck run can only be stopped by terminating the worker
-            reject(new Error("__timeout__"));
-          }, RUN_TIMEOUT_MS)
+          onStatus: onStatus,
+          onTimeout: onTimeout,
+          timer: setTimeout(onTimeout, RUN_TIMEOUT_MS)
         };
         w.postMessage({ id: id, code: code, stdin: stdin });
       });
@@ -279,7 +325,10 @@
             stat.className = "pr-st no"; stat.textContent = "Error — read the message below";
             return { ok: false, text: r.text };
           }
-          out.textContent = r.text.length ? r.text : "(the program ran, but printed nothing)";
+          var figs = r.figs || [];
+          out.textContent = r.text.length ? r.text
+            : (figs.length ? "" : "(the program ran, but printed nothing)");
+          showFigures(out, figs);
           if (!box.classList.contains("ok")) { stat.className = "pr-st"; stat.textContent = "Ran ✓"; }
           return { ok: true, text: r.text };
         })
@@ -341,6 +390,19 @@
     });
     ta.addEventListener("input", function () { autosize(ta); });
   });
+
+  /* plots come back as PNGs; show them under the printed output */
+  function showFigures(out, figs) {
+    out.classList.toggle("has-fig", !!(figs && figs.length));
+    if (!figs || !figs.length) return;
+    figs.forEach(function (b64) {
+      var img = document.createElement("img");
+      img.className = "pr-fig";
+      img.alt = "Plot drawn by this program";
+      img.src = "data:image/png;base64," + b64;
+      out.appendChild(img);
+    });
+  }
 
   function autosize(ta) {
     var lines = ta.value.split("\n").length;

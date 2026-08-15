@@ -1,0 +1,1020 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>scikit-learn — The Shape of an ML Library — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<link rel="stylesheet" href="../../assets/unit.css">
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u24" data-lwa-title="Unit 24 · scikit-learn — the shape of an ML library">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Bridge — Python for ML &amp; DL · Unit 24</div>
+      <h1>scikit-learn — The Shape of an ML Library</h1>
+      <p class="standfirst">Every machine-learning library you will ever touch speaks the same four-word sentence: make something, <code style="font-size:.85em">fit</code> it, <code style="font-size:.85em">predict</code> with it, score it. This session teaches you that sentence — the <i>grammar</i> — and deliberately teaches you nothing about what a model is or how learning works. You are learning to drive the controls. The engine gets opened in the next series.</p>
+      <div class="facts">
+        <div><b>One session</b>~50 min</div>
+        <div><b>5 concepts</b>each: short read + practice</div>
+        <div><b>18 problems</b>solved right here</div>
+        <div><b>Builds on</b>Unit 21 (shape), Unit 11 (seeds)</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">24.1 The four-beat sentence</a>
+    <a href="#s2">24.2 X and y, and shape</a>
+    <a href="#s3">24.3 train_test_split</a>
+    <a href="#s4">24.4 Different estimators</a>
+    <a href="#s5">24.5 Build: end to end</a>
+    <a href="#s6">24.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 24.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Unit 21</b>Arrays and, above all, <code>.shape</code> — rows and columns. That one habit is the whole of 24.2, and it is where beginners lose their first afternoon.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm as always: a short read, then practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit24.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook. The first worked example below downloads scikit-learn into the page — give it about fifteen seconds, once. Everything after it is instant.</div>
+      <div class="pq"><b>The boundary — read this twice</b>These notes teach the <i>grammar</i> of an ML library: the words, the order, the shapes. They do <b>not</b> teach what a model is, how learning happens, or how to judge a model honestly. That is the Machine Learning stage, and it is next. Here you learn the controls; there you open the engine.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">24.1</span>
+      <h2>The sentence every ML library speaks</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> You have a table of examples — eight people, how many hours each studied, whether each passed. You want a program that takes an hour count it has never seen and says "pass" or "fail". Nothing you have learned so far will do it: <code>if hours &gt; 5</code> is a rule <i>you</i> invented, not one drawn from the data. What does the code that learns a rule from examples actually look like?</p>
+      <p><b>The idea, in plain words.</b> It looks like four short lines, and they are the same four lines forever. Think of hiring a very literal-minded assistant — the same kitchen helper from Unit 1, grown up. First you <b>hire</b> one (there are many kinds, and you pick a kind). Then you <b>show it examples</b>: here are eight people, here is what happened to each. Then you <b>ask it about someone new</b>. Then you <b>ask how often it was right</b>. Four beats:</p>
+      <ul class="plain">
+        <li><b>Make an estimator</b> — <code>model = DecisionTreeClassifier(random_state=0)</code>. An <i>estimator</i> is scikit-learn's word for the object that does the learning. Right now it knows nothing.</li>
+        <li><b><code>fit(X, y)</code></b> — <code>model.fit(hours, passed)</code>. Hand it the examples and their answers. This is where whatever-it-is happens.</li>
+        <li><b><code>predict(X_new)</code></b> — <code>model.predict([[8]])</code>. Give it new rows with no answers, get answers back.</li>
+        <li><b><code>score(X, y)</code></b> — <code>model.score(hours, passed)</code>. Rows <i>and</i> answers, and it reports the fraction it got right.</li>
+      </ul>
+      <p>Read the code aloud and it is an English sentence: <i>"Make a decision-tree classifier. Learn from these hours and these outcomes. Now tell me about someone who studied eight hours. And how often were you right?"</i> That is the entire interface. Learn it once and you can open the documentation for any of the two hundred-odd estimators in this library and already know how to call it.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the four beats</div>
+      <div class="m">hours  = [[1], [2], [3], [4], [6], [7], [8], [9]]
+passed = [ 0,   0,   0,   0,   1,   1,   1,   1 ]
+model = DecisionTreeClassifier(random_state=0)
+model.fit(hours, passed)
+print(model.predict([[8]]))</div>
+      <p><b>Lines 1–2:</b> the examples. Eight people. Each row of <code>hours</code> is one person — note the inner brackets, we will spend all of 24.2 on them. Each entry of <code>passed</code> is that person's outcome: <code>0</code> for failed, <code>1</code> for passed. Row <i>i</i> of the first lines up with entry <i>i</i> of the second. That pairing is the only thing holding the whole exercise together.</p>
+      <p><b>Line 3:</b> a box called <code>model</code> now holds an estimator object. It has learned nothing. Ask it to predict now and it refuses, loudly — you'll meet that refusal in P3.</p>
+      <p><b>Line 4:</b> <code>fit</code>. The object reads all eight pairs and rearranges itself internally so that it can answer questions. <i>How</i> it rearranges itself is the next series' business, not ours.</p>
+      <p><b>Line 5:</b> a new row — one person, eight hours — goes in; an answer comes back. Note it comes back as an <i>array</i>, because you are allowed to ask about many people at once:</p>
+      <div class="m">[1]</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 880 250" role="img" aria-label="The four beats: make an estimator, fit on examples, predict for new rows, score against known answers">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">THE FOUR BEATS — THE SAME FOR EVERY ESTIMATOR</text>
+        <rect x="24" y="56" width="180" height="80" rx="10" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="114" y="82" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#6b7585">1 · MAKE</text>
+        <text x="114" y="106" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">DecisionTree</text>
+        <text x="114" y="123" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">Classifier()</text>
+        <path d="M208 96 L232 96" stroke="#e3e6ee" stroke-width="2"/><path d="M226 91 L234 96 L226 101 Z" fill="#5b4b9e"/>
+        <rect x="236" y="56" width="180" height="80" rx="10" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="326" y="82" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#6b7585">2 · LEARN</text>
+        <text x="326" y="108" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#3d3170">fit(X, y)</text>
+        <text x="326" y="126" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">rows + their answers</text>
+        <path d="M420 96 L444 96" stroke="#e3e6ee" stroke-width="2"/><path d="M438 91 L446 96 L438 101 Z" fill="#5b4b9e"/>
+        <rect x="448" y="56" width="180" height="80" rx="10" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="538" y="82" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#6b7585">3 · ANSWER</text>
+        <text x="538" y="108" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#1d5654">predict(X_new)</text>
+        <text x="538" y="126" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">rows, no answers</text>
+        <path d="M632 96 L656 96" stroke="#e3e6ee" stroke-width="2"/><path d="M650 91 L658 96 L650 101 Z" fill="#5b4b9e"/>
+        <rect x="660" y="56" width="180" height="80" rx="10" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="750" y="82" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#6b7585">4 · MARK</text>
+        <text x="750" y="108" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#1f2733">score(X, y)</text>
+        <text x="750" y="126" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">fraction it got right</text>
+        <rect x="24" y="168" width="816" height="60" rx="10" fill="#23262e"/>
+        <text x="44" y="194" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#e8e9ee">model = DecisionTreeClassifier(random_state=0)   ·   model.fit(X, y)</text>
+        <text x="44" y="215" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#e8e9ee">model.predict(X_new)   ·   model.score(X_test, y_test)</text>
+      </svg>
+      <div class="figcap">Fig. 1 — Swap the name in box 1 for any other estimator and boxes 2, 3 and 4 do not move. That single fact is what this whole unit is for.</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea — adopt this wording and keep it</div>
+      <b>fit</b> means <i>learn from these examples</i>. <b>predict</b> means <i>answer for new ones</i>. Everything else in scikit-learn — and a surprising amount of PyTorch and Keras — is decoration around those two verbs.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> the whole sentence, end to end, on an obviously fake dataset: eight people, hours studied, pass or fail. <b>Thinking:</b> make, fit, predict, score — in that order, no exceptions. We ask about two new people at once (5.5 hours and 2 hours) to see that <code>predict</code> hands back one answer per row. <b>This is the run that downloads scikit-learn</b> — about fifteen seconds the first time, then never again this session.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">from sklearn.tree import DecisionTreeClassifier
+
+# eight people: [hours studied] -> passed? (0 = no, 1 = yes)
+hours  = [[1], [2], [3], [4], [6], [7], [8], [9]]
+passed = [0, 0, 0, 0, 1, 1, 1, 1]
+
+model = DecisionTreeClassifier(random_state=0)   # 1 · make an estimator
+model.fit(hours, passed)                          # 2 · learn from these examples
+guess = model.predict([[5.5], [2.0]])             # 3 · answer for new ones
+print("Predictions:", guess)
+print("Score on the data it learned from:", model.score(hours, passed))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">24.1 · P1</span><span class="pt">The four beats, in order</span></div>
+        <p class="pd">The data is laid out for you. Add the three missing beats — make a <code>DecisionTreeClassifier(random_state=0)</code>, fit it, then print its answer for someone who studied 8 hours and someone who studied 1 hour. Use <code>[0]</code> after <code>predict</code> to pull the single answer out of the array.</p>
+        <div class="want">8 hours -&gt; 1
+1 hour -&gt; 0</div>
+        <div class="pyrun" data-id="s1p1" data-expect="8 hours -&gt; 1\n1 hour -&gt; 0">
+          <textarea spellcheck="false">from sklearn.tree import DecisionTreeClassifier
+
+hours  = [[1], [2], [3], [4], [6], [7], [8], [9]]
+passed = [0, 0, 0, 0, 1, 1, 1, 1]
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>from sklearn.tree import DecisionTreeClassifier
+
+hours  = [[1], [2], [3], [4], [6], [7], [8], [9]]
+passed = [0, 0, 0, 0, 1, 1, 1, 1]
+
+model = DecisionTreeClassifier(random_state=0)
+model.fit(hours, passed)
+print("8 hours ->", model.predict([[8]])[0])
+print("1 hour ->", model.predict([[1]])[0])</pre><p>Make, fit, predict. <code>predict</code> always returns an array — one answer per row you asked about — so <code>[0]</code> takes the first (and here only) one.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">24.1 · P2</span><span class="pt">Predict: how good is it, really?</span></div>
+        <p class="pd">Predict the printed number on paper before running. The model is being scored on the <i>exact same eight rows it learned from</i>. What fraction will it get right — and does that number tell you anything at all?</p>
+        <div class="pyrun" data-id="s1p2">
+          <textarea spellcheck="false">from sklearn.tree import DecisionTreeClassifier
+
+hours  = [[1], [2], [3], [4], [6], [7], [8], [9]]
+passed = [0, 0, 0, 0, 1, 1, 1, 1]
+
+model = DecisionTreeClassifier(random_state=0)
+model.fit(hours, passed)
+print(model.score(hours, passed))</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>1.0</pre><p>A perfect 1.0 — every one right. And it means nothing. The model was asked exactly the questions it had just been shown the answers to. This score is not a measurement, it is a memory test, and 24.3 exists entirely to fix it.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">24.1 · P3</span><span class="pt">Out of order</span></div>
+        <p class="pd">Someone shuffled the beats: this asks for a prediction before the model has seen anything. Run it, read the last line of the report the way Unit 1 taught you, and notice how plainly the library says what it wants.</p>
+        <div class="pyrun" data-id="s1p3">
+          <textarea spellcheck="false">from sklearn.tree import DecisionTreeClassifier
+
+hours  = [[1], [2], [3], [4], [6], [7], [8], [9]]
+passed = [0, 0, 0, 0, 1, 1, 1, 1]
+
+model = DecisionTreeClassifier(random_state=0)
+print(model.predict([[8]]))
+model.fit(hours, passed)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>NotFittedError: This DecisionTreeClassifier instance is not fitted yet.
+Call 'fit' with appropriate arguments before using this estimator.</pre><p>An estimator that has never been fitted has nothing to say — and rather than invent something, it stops. The fix is to move <code>fit</code> above <code>predict</code>. The beats are an order, not a menu.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 24.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">24.2</span>
+      <h2>X and y — and why shape decides everything</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> In 24.1 the hours were written <code>[[1], [2], [3]]</code> — brackets inside brackets, for a single number per person. That looks like a typo. It is not, and the day you write <code>[1, 2, 3]</code> instead, scikit-learn stops with a wall of red text. Why does it care so much?</p>
+      <p><b>The idea, in plain words.</b> Because the library has exactly one way of picturing your data, and it is a spreadsheet. <b>X</b> is the sheet of <i>what you know</i> — one row per example, one column per measurement. <b>y</b> is the single column of <i>what you want to predict</i> — one entry per row of X, in the same order. Two names, used by every estimator in the library, and by convention capital <code>X</code> (a table) and lowercase <code>y</code> (a list).</p>
+      <ul class="plain">
+        <li>Each column of X is a <b>feature</b> — one measurable thing: hours studied, classes attended, temperature.</li>
+        <li>The column y is the <b>target</b> — the thing you want an answer for: passed or not, price, category.</li>
+        <li><b>X is two-dimensional. Always.</b> <code>X.shape</code> reads <code>(rows, columns)</code> — Unit 21's habit, and here it earns its keep. Even with one single feature you get <code>(8, 1)</code>: eight rows, one column. That is why the inner brackets exist.</li>
+        <li><b>y is one-dimensional.</b> <code>y.shape</code> reads <code>(8,)</code> — that lonely trailing comma means "one axis, eight entries", not "eight columns".</li>
+      </ul>
+      <p>So a table of eight people measured on one thing is <code>(8, 1)</code> and <code>(8,)</code>. A table of eight people measured on three things is <code>(8, 3)</code> and still <code>(8,)</code>. The first number matches; the second is the whole difference. And when you have a flat list of numbers that ought to be a one-column X, one call fixes it: <code>np.array(flat).reshape(-1, 1)</code> — Unit 21's <code>-1</code> meaning "work the row count out yourself, I just want one column".</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — four shapes, one lesson</div>
+      <div class="m">X = np.array([[1], [2], [3], [4], [6], [7], [8], [9]])
+y = np.array([0, 0, 0, 0, 1, 1, 1, 1])
+print(X.shape, y.shape)
+flat = np.array([1, 2, 3, 4, 6, 7, 8, 9])
+print(flat.shape, flat.reshape(-1, 1).shape)</div>
+      <p><b>Line 1:</b> eight little lists, each with one number in it. NumPy reads that as eight rows of one column: <code>(8, 1)</code>.</p>
+      <p><b>Line 2:</b> eight bare numbers, no inner brackets. One axis: <code>(8,)</code>.</p>
+      <p><b>Line 4:</b> <code>flat</code> holds the same eight numbers as X — but written flat, so its shape is <code>(8,)</code>, identical to y's. To scikit-learn that reads as "one example measured eight ways", which is not what you meant at all.</p>
+      <p><b>Line 5:</b> <code>reshape(-1, 1)</code> stands the list on its end: one column, and NumPy counts the rows itself. Shape <code>(8, 1)</code> — a legal X again:</p>
+      <div class="m">(8, 1) (8,)
+(8,) (8, 1)</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 880 268" role="img" aria-label="X as a table of rows and feature columns beside y as a single column of answers">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">HOW SCIKIT-LEARN PICTURES YOUR DATA</text>
+        <text x="40" y="56" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#3d3170">X — what you know</text>
+        <text x="40" y="74" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">2-D · shape (4, 2) · rows = samples, columns = features</text>
+        <rect x="40" y="86" width="130" height="30" rx="6" fill="#f0f1f7" stroke="#e3e6ee"/>
+        <rect x="170" y="86" width="130" height="30" rx="6" fill="#f0f1f7" stroke="#e3e6ee"/>
+        <text x="105" y="106" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#6b7585">hours</text>
+        <text x="235" y="106" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#6b7585">classes</text>
+        <rect x="40" y="118" width="130" height="30" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.2"/>
+        <rect x="170" y="118" width="130" height="30" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.2"/>
+        <text x="105" y="138" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">1</text>
+        <text x="235" y="138" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">4</text>
+        <rect x="40" y="148" width="130" height="30" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.2"/>
+        <rect x="170" y="148" width="130" height="30" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.2"/>
+        <text x="105" y="168" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">3</text>
+        <text x="235" y="168" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">7</text>
+        <rect x="40" y="178" width="130" height="30" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.2"/>
+        <rect x="170" y="178" width="130" height="30" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.2"/>
+        <text x="105" y="198" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">7</text>
+        <text x="235" y="198" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">16</text>
+        <rect x="40" y="208" width="130" height="30" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.2"/>
+        <rect x="170" y="208" width="130" height="30" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.2"/>
+        <text x="105" y="228" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">9</text>
+        <text x="235" y="228" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">18</text>
+        <text x="352" y="140" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="18" fill="#5b4b9e">↔</text>
+        <text x="352" y="160" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="10.5" fill="#6b7585">same</text>
+        <text x="352" y="174" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="10.5" fill="#6b7585">order</text>
+        <text x="404" y="56" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#1d5654">y — what you want</text>
+        <text x="404" y="74" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">1-D · shape (4,) · one answer per row of X</text>
+        <rect x="404" y="86" width="110" height="30" rx="6" fill="#f0f1f7" stroke="#e3e6ee"/>
+        <text x="459" y="106" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#6b7585">passed</text>
+        <rect x="404" y="118" width="110" height="30" fill="#e3efee" stroke="#2b7a78" stroke-width="1.2"/>
+        <text x="459" y="138" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">0</text>
+        <rect x="404" y="148" width="110" height="30" fill="#e3efee" stroke="#2b7a78" stroke-width="1.2"/>
+        <text x="459" y="168" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">0</text>
+        <rect x="404" y="178" width="110" height="30" fill="#e3efee" stroke="#2b7a78" stroke-width="1.2"/>
+        <text x="459" y="198" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">1</text>
+        <rect x="404" y="208" width="110" height="30" fill="#e3efee" stroke="#2b7a78" stroke-width="1.2"/>
+        <text x="459" y="228" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">1</text>
+        <rect x="566" y="86" width="274" height="152" rx="10" fill="#23262e"/>
+        <text x="586" y="114" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#9fa6b8">the one rule</text>
+        <text x="586" y="142" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#e8e9ee">X.shape[0] == y.shape[0]</text>
+        <text x="586" y="170" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#9fa6b8">X is 2-D, always</text>
+        <text x="586" y="192" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#9fa6b8">y is 1-D, always</text>
+        <text x="586" y="220" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#7fd1c4">one feature -&gt; (n, 1)</text>
+      </svg>
+      <div class="figcap">Fig. 2 — Row 3 of X and entry 3 of y describe the same person. Break that alignment and every number the library gives you afterwards is quietly wrong, with no error at all.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion — the single most common first error</div>
+      <p>You pass a plain flat list as X and get this:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">ValueError: Expected 2D array, got 1D array instead:<br>array=[1. 2. 3. 4. 6. 7. 8. 9.].<br>Reshape your data either using array.reshape(-1, 1) if your data has a single feature or array.reshape(1, -1) if it contains a single sample.</p>
+      <p>Decode it: <b>"Expected 2D array"</b> — I wanted a table. <b>"got 1D array"</b> — you gave me a list. <b>Then it tells you the fix and offers you a choice</b>, because it genuinely cannot tell which you meant. Eight measurements of one thing, from eight people? That is one feature: <code>reshape(-1, 1)</code> → <code>(8, 1)</code>. One person measured eight different ways? That is one sample: <code>reshape(1, -1)</code> → <code>(1, 8)</code>. Nearly always you want the first. This error will find you in your first hour with the library; recognise it and lose thirty seconds instead of an afternoon.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> print the four shapes from the trace and watch <code>reshape(-1, 1)</code> do its one job. <b>Thinking:</b> before every <code>fit</code> you will ever write, print <code>X.shape</code> and <code>y.shape</code>. Two lines, and they catch the error above before it happens.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">import numpy as np
+
+X = np.array([[1], [2], [3], [4], [6], [7], [8], [9]])
+y = np.array([0, 0, 0, 0, 1, 1, 1, 1])
+print("X.shape:", X.shape)
+print("y.shape:", y.shape)
+
+flat = np.array([1, 2, 3, 4, 6, 7, 8, 9])
+print("flat.shape:", flat.shape)
+print("after reshape(-1, 1):", flat.reshape(-1, 1).shape)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">24.2 · P1</span><span class="pt">Stand the list on its end</span></div>
+        <p class="pd">Eight days of ice-cream trading: the temperature, and whether the stall sold out. <code>temps</code> is a flat Python list, so it is not a legal X yet. Turn it into one with <code>np.array(...).reshape(-1, 1)</code>, print its shape, then fit and ask about a 30-degree day.</p>
+        <div class="want">X.shape: (8, 1)
+30 degrees -&gt; 1</div>
+        <div class="pyrun" data-id="s2p1" data-expect="X.shape: (8, 1)\n30 degrees -&gt; 1">
+          <textarea spellcheck="false">import numpy as np
+from sklearn.tree import DecisionTreeClassifier
+
+temps    = [12, 15, 18, 22, 27, 31, 33, 36]
+sold_out = [0, 0, 0, 1, 1, 1, 1, 1]
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+from sklearn.tree import DecisionTreeClassifier
+
+temps    = [12, 15, 18, 22, 27, 31, 33, 36]
+sold_out = [0, 0, 0, 1, 1, 1, 1, 1]
+
+X = np.array(temps).reshape(-1, 1)
+print("X.shape:", X.shape)
+model = DecisionTreeClassifier(random_state=0)
+model.fit(X, sold_out)
+print("30 degrees ->", model.predict([[30]])[0])</pre><p>One feature, so one column. Note <code>sold_out</code> stays a flat list — y is supposed to be flat, and a plain list is fine for it.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">24.2 · P2</span><span class="pt">Two features, one target</span></div>
+        <p class="pd">Four flats: years old, and monthly rent in hundreds. The target says whether each was let within a week. Print the shape of X, the shape of y, and the first row of X as a plain Python list (use <code>.tolist()</code> — raw NumPy pads numbers with spaces and we want a clean line).</p>
+        <div class="want">rows, columns: (4, 2)
+targets: (4,)
+first sample: [1, 20]</div>
+        <div class="pyrun" data-id="s2p2" data-expect="rows, columns: (4, 2)\ntargets: (4,)\nfirst sample: [1, 20]">
+          <textarea spellcheck="false">import numpy as np
+
+X = np.array([[1, 20], [2, 30], [3, 45], [4, 60]])
+y = np.array([0, 0, 1, 1])
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+X = np.array([[1, 20], [2, 30], [3, 45], [4, 60]])
+y = np.array([0, 0, 1, 1])
+print("rows, columns:", X.shape)
+print("targets:", y.shape)
+print("first sample:", X[0].tolist())</pre><p>Two features means two columns — and y is still <code>(4,)</code>. Adding features widens X and never lengthens y.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">24.2 · P3</span><span class="pt">Stretch — meet the error on purpose</span></div>
+        <p class="pd">This is 24.1's data with the inner brackets removed. Run it, read the whole message, and answer for yourself: which of the two fixes it offers do you want here, and why? Then (optionally) apply it and watch the error vanish.</p>
+        <div class="pyrun" data-id="s2p3">
+          <textarea spellcheck="false">from sklearn.tree import DecisionTreeClassifier
+
+hours  = [1, 2, 3, 4, 6, 7, 8, 9]
+passed = [0, 0, 0, 0, 1, 1, 1, 1]
+
+model = DecisionTreeClassifier(random_state=0)
+model.fit(hours, passed)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>ValueError: Expected 2D array, got 1D array instead:
+array=[1. 2. 3. 4. 6. 7. 8. 9.].
+Reshape your data either using array.reshape(-1, 1) if your data
+has a single feature or array.reshape(1, -1) if it contains a
+single sample.
+
+# the fix:
+import numpy as np
+X = np.array(hours).reshape(-1, 1)
+model.fit(X, passed)</pre><p>Eight people measured on one thing, so it is a single <i>feature</i>: <code>reshape(-1, 1)</code>, giving <code>(8, 1)</code>. <code>reshape(1, -1)</code> would claim you had one person measured eight ways — <code>(1, 8)</code> — and <code>fit</code> would then complain that X has 1 row while y has 8.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 24.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">24.3</span>
+      <h2>train_test_split — never mark your own homework</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Back in 24.1's P2 the model scored a flawless <code>1.0</code>, and we called it meaningless. Here is why, in one sentence: it was tested on the very rows it had just been shown. That is marking your own homework from the answer key you spent last night memorising — a perfect score that tells you nothing about whether you understood anything.</p>
+      <p><b>The idea, in plain words.</b> Hold some rows back. Before fitting anything, take your table and split it in two: the model learns from one part and never sees the other. Then score it on the part it never saw. Whatever it gets there, it earned. One function does the whole thing:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=0)</p>
+      <p>Four boxes come back, in that order — memorise the order, it trips everyone once. <code>test_size=0.25</code> means a quarter of the rows go into the held-back pile. And it shuffles before splitting, so you don't accidentally train on all the young people and test on all the old ones.</p>
+      <p>Shuffling means randomness, and randomness means Unit 11's problem is back: run it twice, get two different splits, get two different scores, and you cannot tell whether your change helped or the dice moved. Same problem, same fix — <code>random_state=0</code> is a seed, exactly like <code>random.seed(0)</code>. It picks one particular shuffle and picks it again every single time. <b>Always pass it.</b> Not for the marks — so that when a number changes, you know it was you who changed it.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — six rows, cut in half</div>
+      <div class="m">X = [[1], [2], [3], [4], [5], [6]]
+y = [0, 0, 0, 1, 1, 1]
+X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.5, random_state=0)
+print(X_train)
+print(X_test)
+print(y_train)
+print(y_test)</div>
+      <p><b>Lines 3–4:</b> six rows in, <code>test_size=0.5</code>, so three go each way. The seed <code>0</code> fixes which three.</p>
+      <p><b>The training pile</b> comes out as rows 4, 1 and 5 — shuffled, not in table order. <b>The test pile</b> is rows 6, 3 and 2.</p>
+      <p>Now look at the two answer lists against the two row lists: <code>X_train</code> is <code>[[4], [1], [5]]</code> and <code>y_train</code> is <code>[1, 0, 1]</code> — row 4 passed, row 1 failed, row 5 passed. <b>The shuffle moved the rows and their answers together.</b> That is the one thing the function guarantees, and the reason you must never split X and y in two separate calls.</p>
+      <div class="m">[[4], [1], [5]]
+[[6], [3], [2]]
+[1, 0, 1]
+[1, 0, 0]</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>random_state=0</code> does <b>not</b> make the split "better", and <code>0</code> is not a magic number — <code>42</code>, <code>7</code> and <code>1234</code> are all equally good. It makes the split <i>repeatable</i>, which is a different and more valuable thing. Leave it out and your notebook prints a slightly different accuracy every time you run it, which makes debugging a hall of mirrors. Two rules for the rest of your life: always pass a seed, and never go shopping for the seed that gives the prettiest number.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> split twelve rows into nine and three, and look at exactly what was held back. <b>Thinking:</b> the four boxes come back in the order train-features, test-features, train-answers, test-answers. Print the sizes every time until it is automatic.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">from sklearn.model_selection import train_test_split
+
+X = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12]]
+y = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=0)
+
+print("learned from:", len(X_train), "rows")
+print("held back:", len(X_test), "rows")
+print("held-back rows:", X_test)
+print("their true answers:", y_test)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">24.3 · P1</span><span class="pt">Split it yourself</span></div>
+        <p class="pd">Split the twelve rows with <code>test_size=0.25</code> and <code>random_state=0</code>, then print how many rows landed in each pile and which rows were held back. Watch the order the four boxes come back in.</p>
+        <div class="want">train rows: 9
+test rows: 3
+test features: [[7], [12], [5]]</div>
+        <div class="pyrun" data-id="s3p1" data-expect="train rows: 9\ntest rows: 3\ntest features: [[7], [12], [5]]">
+          <textarea spellcheck="false">from sklearn.model_selection import train_test_split
+
+X = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12]]
+y = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>from sklearn.model_selection import train_test_split
+
+X = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12]]
+y = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=0)
+print("train rows:", len(X_train))
+print("test rows:", len(X_test))
+print("test features:", X_test)</pre><p>A quarter of twelve is three. Because the seed is fixed, those three rows will be rows 7, 12 and 5 on your machine, on mine, and on yours again tomorrow.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">24.3 · P2</span><span class="pt">What the seed actually controls</span></div>
+        <p class="pd">Three splits of the same data, three different seeds. Predict on paper: will the three test piles be the same or different? Will each one be the same next time you run this cell? Run it twice before reading on.</p>
+        <div class="pyrun" data-id="s3p2">
+          <textarea spellcheck="false">from sklearn.model_selection import train_test_split
+
+X = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12]]
+y = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
+
+for seed in [0, 1, 2]:
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.25, random_state=seed)
+    print("seed", seed, "->", X_test)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>seed 0 -> [[7], [12], [5]]
+seed 1 -> [[3], [4], [5]]
+seed 2 -> [[10], [6], [5]]</pre><p>Different seeds, different splits — and the same three lines every time you run it. That is the whole deal: the seed does not remove the randomness, it pins it down. Take out <code>random_state</code> entirely and you'd get three fresh piles on every run.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">24.3 · P3</span><span class="pt">The two scores</span></div>
+        <p class="pd">Fit on the training pile only, then score twice — once on the rows it learned from, once on the rows it never saw. Print both to two decimals with <code>:.2f</code>. Then sit with the gap for a moment.</p>
+        <div class="want">On rows it learned from: 1.00
+On rows it never saw: 0.67</div>
+        <div class="pyrun" data-id="s3p3" data-expect="On rows it learned from: 1.00\nOn rows it never saw: 0.67">
+          <textarea spellcheck="false">from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+
+X = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12]]
+y = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=0)
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=0)
+
+model = DecisionTreeClassifier(random_state=0)
+model.fit(X_train, y_train)
+print(f"On rows it learned from: {model.score(X_train, y_train):.2f}")
+print(f"On rows it never saw: {model.score(X_test, y_test):.2f}")</pre><p>Perfect on the homework it had the answers to; two out of three on the real questions. <i>Why</i> the gap appears, whether 0.67 is good, and what to do about it are all Machine Learning questions — the next series. Your job here was to produce an honest number instead of a flattering one, and you did.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 24.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">24.4</span>
+      <h2>The same grammar, different estimators</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Everything so far used a decision tree. There are dozens of other estimators in this library, with intimidating names — nearest neighbours, random forests, gradient boosting, support vector machines. How much new code do you have to learn to try one?</p>
+      <p><b>The idea, in plain words.</b> None. That is not a simplification; it is the design of the library. Change the name on the first line and stop. <code>fit</code>, <code>predict</code> and <code>score</code> are called exactly the same way, take exactly the same things, and hand back exactly the same kinds of answers. The estimators disagree wildly about <i>how</i> to learn and agree completely about <i>how to be spoken to</i>.</p>
+      <p>There is one more verb to collect, and it belongs to a different family. Some objects in scikit-learn don't predict anything — they <b>prepare</b> data. <code>StandardScaler</code> is the one you'll meet first: it rescales every column so they sit on a comparable footing (useful when one feature is "3 bedrooms" and another is "45,000 rupees" — raw, the rupees drown out the bedrooms). Its grammar is <code>fit</code> then <code>transform</code>:</p>
+      <ul class="plain">
+        <li><code>scaler.fit(X)</code> — look at the columns and remember how big each one runs. No <code>y</code>: there is nothing to predict.</li>
+        <li><code>scaler.transform(X)</code> — hand back a rescaled copy of the table. The original is untouched (Unit 2's "a box holds one thing" — <code>transform</code> returns a new table, it doesn't edit yours).</li>
+        <li><code>scaler.fit_transform(X)</code> — both at once, when it's the same table.</li>
+      </ul>
+      <p>So the whole vocabulary is four words. <b>fit</b> learns. <b>predict</b> answers. <b>score</b> marks. <b>transform</b> prepares. Every object in the library is some combination of those, and the documentation for each one tells you which — that is genuinely all the reading you need to do.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — spot the difference</div>
+      <div class="m">tree = DecisionTreeClassifier(random_state=0)
+tree.fit(X_train, y_train)
+tree.score(X_test, y_test)
+
+knn = KNeighborsClassifier(n_neighbors=3)
+knn.fit(X_train, y_train)
+knn.score(X_test, y_test)</div>
+      <p><b>Lines 1 and 5:</b> different class, different keyword argument. A tree takes <code>random_state</code> because it has ties to break; nearest-neighbours takes <code>n_neighbors</code> because it needs to know how many neighbours to consult, and it has no randomness at all — no seed needed.</p>
+      <p><b>Lines 2–3 and 6–7:</b> character for character identical. Same verbs, same arguments, same order.</p>
+      <p>The two will report different scores — on our twelve rows, <code>0.67</code> and <code>1.00</code>. Resist the obvious conclusion. Which estimator is <i>better</i>, and whether three held-back rows could possibly answer that, are Machine Learning questions. Here, the only observation is: <b>the code did not change</b>.</p>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      Learn the grammar once and the whole library opens: every estimator is <code>make → fit → predict → score</code>, and every data-preparer is <code>fit → transform</code>. Much of PyTorch and Keras reads the same way for the same reason — which is why Unit 25 will feel familiar rather than frightening.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> the same split, the same data, two completely different estimators — printed side by side so you can see that only line 1 moved. <b>Thinking:</b> copy the tree block, change the class name and its argument, change nothing else. If you find yourself editing the <code>fit</code> line, you have gone wrong.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+
+X = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12]]
+y = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=0)
+
+tree = DecisionTreeClassifier(random_state=0)
+tree.fit(X_train, y_train)
+print(f"tree  {tree.score(X_test, y_test):.2f}  says 3 hours ->", tree.predict([[3]])[0])
+
+knn = KNeighborsClassifier(n_neighbors=3)
+knn.fit(X_train, y_train)
+print(f"knn   {knn.score(X_test, y_test):.2f}  says 3 hours ->", knn.predict([[3]])[0])</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">24.4 · P1</span><span class="pt">Swap the estimator</span></div>
+        <p class="pd">The code below is written for a decision tree. Change it to a <code>KNeighborsClassifier(n_neighbors=3)</code> — and change <i>nothing else</i>. Print the accuracy to two decimals and its answer for 10 hours.</p>
+        <div class="want">Accuracy: 1.00
+10 hours -&gt; 1</div>
+        <div class="pyrun" data-id="s4p1" data-expect="Accuracy: 1.00\n10 hours -&gt; 1">
+          <textarea spellcheck="false">from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+
+X = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12]]
+y = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=0)
+
+model = DecisionTreeClassifier(random_state=0)
+model.fit(X_train, y_train)
+print(f"Accuracy: {model.score(X_test, y_test):.2f}")
+print("10 hours ->", model.predict([[10]])[0])</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+
+X = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12]]
+y = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=0)
+
+model = KNeighborsClassifier(n_neighbors=3)
+model.fit(X_train, y_train)
+print(f"Accuracy: {model.score(X_test, y_test):.2f}")
+print("10 hours ->", model.predict([[10]])[0])</pre><p>Two lines changed: the import and the constructor. The four beats below them never noticed. That is the lesson of this section, and it is worth more than any single estimator.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">24.4 · P2</span><span class="pt">When the answer is a number</span></div>
+        <p class="pd">Not every target is a yes/no. Six flats: floor area, and price in lakhs. <code>LinearRegression</code> predicts a <i>number</i> instead of a label — and speaks precisely the same grammar. Fit it and print the predicted price of an 1100 sq ft flat to two decimals.</p>
+        <div class="want">A 1100 sq ft flat: 55.50 lakh</div>
+        <div class="pyrun" data-id="s4p2" data-expect="A 1100 sq ft flat: 55.50 lakh">
+          <textarea spellcheck="false">from sklearn.linear_model import LinearRegression
+
+size  = [[600], [800], [1000], [1200], [1400], [1600]]
+price = [30, 41, 50, 61, 70, 81]
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>from sklearn.linear_model import LinearRegression
+
+size  = [[600], [800], [1000], [1200], [1400], [1600]]
+price = [30, 41, 50, 61, 70, 81]
+
+model = LinearRegression()
+model.fit(size, price)
+guess = model.predict([[1100]])
+print(f"A 1100 sq ft flat: {guess[0]:.2f} lakh")</pre><p>Same four beats; only the kind of answer changed. Predicting a label is called classification, predicting a number is called regression — two words worth knowing, and both are just <code>fit</code> and <code>predict</code> from where you are standing. Note <code>LinearRegression()</code> takes no seed: there is nothing random in it.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">24.4 · P3</span><span class="pt">Stretch — the other verb, transform</span></div>
+        <p class="pd">Four households: number of people, and annual income. The two columns live on wildly different scales. Use a <code>StandardScaler</code> — <code>fit</code> then <code>transform</code> — and print the first row before and after, plus the column means afterwards. Round the scaled numbers to 2 places with <code>np.round(...)</code> and print them as lists with <code>.tolist()</code>.</p>
+        <div class="want">first row before: [1, 20000]
+first row after: [-1.34, -1.24]
+column means after: [0.0, 0.0]</div>
+        <div class="pyrun" data-id="s4p3" data-expect="first row before: [1, 20000]\nfirst row after: [-1.34, -1.24]\ncolumn means after: [0.0, 0.0]">
+          <textarea spellcheck="false">import numpy as np
+from sklearn.preprocessing import StandardScaler
+
+X = np.array([[1, 20000], [2, 30000], [3, 45000], [4, 60000]])
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+from sklearn.preprocessing import StandardScaler
+
+X = np.array([[1, 20000], [2, 30000], [3, 45000], [4, 60000]])
+
+scaler = StandardScaler()
+scaler.fit(X)
+X_scaled = scaler.transform(X)
+print("first row before:", X[0].tolist())
+print("first row after:", np.round(X_scaled[0], 2).tolist())
+print("column means after:", np.round(X_scaled.mean(axis=0), 2).tolist())</pre><p>After scaling, every column is centred on zero and the household size and the income are finally comparable numbers rather than 1 versus 20000. Both entries of the first row land near −1.3: below average on both counts. Note <code>X</code> itself is unchanged — <code>transform</code> hands back a new table.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 24.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">24.5</span>
+      <h2>Your build — the whole grammar, end to end</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p>One small program with every word of the vocabulary in it. Twelve students, two features each — hours studied and classes attended out of twenty — and whether they passed. Split with a fixed seed, fit a classifier, score it on the rows it never saw, then ask about two people who aren't in the table at all and print the answers as sentences a human would read. Six lines of scikit-learn and one loop you already know how to write.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">24.5 · P1</span><span class="pt">The end-to-end run</span></div>
+        <p class="pd">Split the data (<code>test_size=0.25</code>, <code>random_state=0</code>), fit a <code>DecisionTreeClassifier(random_state=0)</code>, print the accuracy on the held-out rows to two decimals, then loop over the two new rows with <code>zip</code> (Unit 22's habit) and print a sentence for each. <code>guess == 1</code> means pass.</p>
+        <div class="want">Accuracy on held-out rows: 1.00
+3 hours, 5 classes -&gt; predicted fail
+9 hours, 16 classes -&gt; predicted pass</div>
+        <div class="pyrun" data-id="s5p1" data-expect="Accuracy on held-out rows: 1.00\n3 hours, 5 classes -&gt; predicted fail\n9 hours, 16 classes -&gt; predicted pass">
+          <textarea spellcheck="false">from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+
+# [hours studied, classes attended] -> passed?
+X = [[1, 4], [2, 6], [2, 9], [3, 7], [4, 11], [5, 8],
+     [6, 14], [7, 16], [8, 13], [9, 18], [10, 17], [11, 19]]
+y = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
+
+new_rows = [[3, 5], [9, 16]]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+
+X = [[1, 4], [2, 6], [2, 9], [3, 7], [4, 11], [5, 8],
+     [6, 14], [7, 16], [8, 13], [9, 18], [10, 17], [11, 19]]
+y = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=0)
+
+model = DecisionTreeClassifier(random_state=0)
+model.fit(X_train, y_train)
+print(f"Accuracy on held-out rows: {model.score(X_test, y_test):.2f}")
+
+new_rows = [[3, 5], [9, 16]]
+guesses = model.predict(new_rows)
+for row, guess in zip(new_rows, guesses):
+    verdict = "pass" if guess == 1 else "fail"
+    print(f"{row[0]} hours, {row[1]} classes -> predicted {verdict}")</pre><p>Every idea from this session in seventeen lines: 2-D X and 1-D y, a seeded split, the four beats, and f-strings turning a numpy array of 0s and 1s back into English. <code>predict</code> takes all the new rows at once and returns one answer per row, which is exactly what <code>zip</code> wants.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">24.5 · P2</span><span class="pt">Swap the engine, keep the car</span></div>
+        <p class="pd">Your build, with the tree replaced by nearest-neighbours. Read it before running and confirm for yourself that only the import and the constructor differ from P1's solution. Run-only — the point isn't the number, it's that you didn't have to learn anything to get it.</p>
+        <div class="pyrun" data-id="s5p2">
+          <textarea spellcheck="false">from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+
+X = [[1, 4], [2, 6], [2, 9], [3, 7], [4, 11], [5, 8],
+     [6, 14], [7, 16], [8, 13], [9, 18], [10, 17], [11, 19]]
+y = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=0)
+
+model = KNeighborsClassifier(n_neighbors=3)
+model.fit(X_train, y_train)
+print(f"Accuracy on held-out rows: {model.score(X_test, y_test):.2f}")
+
+new_rows = [[3, 5], [9, 16]]
+for row, guess in zip(new_rows, model.predict(new_rows)):
+    verdict = "pass" if guess == 1 else "fail"
+    print(f"{row[0]} hours, {row[1]} classes -> predicted {verdict}")</textarea>
+        </div>
+      </div>
+    </div>
+    <div class="prose">
+      <p><b>Now the honest part.</b> You have just run a complete machine-learning program, and it is worth being precise about what you did <i>not</i> do — because a page like this can leave a beginner believing they have learned machine learning, and you haven't. You did not choose those two features; they were handed to you, and choosing which measurements are worth feeding a model is most of the real work. You did not ask whether a decision tree was a sensible choice for this data, or what it does internally when it splits on a number. You did not tune a single setting — <code>n_neighbors=3</code> was a number we typed. You did not validate anything seriously: three held-out rows can produce a 1.00 by luck alone, and professionals would never report a score from a test set that small. And you did not once ask what the accuracy would mean if 95% of students passed anyway.</p>
+      <p>Every one of those sentences is a topic in the Machine Learning series, in roughly that order. What you own now is the thing that series will assume you already have: you can read any scikit-learn example on the internet, recognise the four beats inside it, and know which lines are the grammar and which lines are the idea. That is a real skill and it was worth fifty minutes. The engine gets opened next.</p>
+    </div>
+  </section>
+
+  <!-- ============ 24.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">24.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~12 min</span></span>
+      <p>The mixed set: shapes, splits, swapped estimators, scaling. Nothing here needs an idea you haven't met — only the four words, in the right order, on data that keeps changing its clothes.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">From flat list to legal X</span></div>
+        <p class="pd">Eight days: minutes of exercise, and whether you slept well. Both are flat lists. Make X a proper two-dimensional array with <code>reshape(-1, 1)</code>, make y an array, print both shapes on one line, then fit and ask about a 40-minute day.</p>
+        <div class="want">X.shape: (8, 1) y.shape: (8,)
+40 minutes -&gt; 1</div>
+        <div class="pyrun" data-id="b1" data-expect="X.shape: (8, 1) y.shape: (8,)\n40 minutes -&gt; 1">
+          <textarea spellcheck="false">import numpy as np
+from sklearn.tree import DecisionTreeClassifier
+
+minutes   = [5, 10, 15, 20, 35, 45, 50, 60]
+felt_good = [0, 0, 0, 0, 1, 1, 1, 1]
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+from sklearn.tree import DecisionTreeClassifier
+
+minutes   = [5, 10, 15, 20, 35, 45, 50, 60]
+felt_good = [0, 0, 0, 0, 1, 1, 1, 1]
+
+X = np.array(minutes).reshape(-1, 1)
+y = np.array(felt_good)
+print("X.shape:", X.shape, "y.shape:", y.shape)
+
+model = DecisionTreeClassifier(random_state=0)
+model.fit(X, y)
+print("40 minutes ->", model.predict([[40]])[0])</pre><p><code>(8, 1)</code> and <code>(8,)</code> — the shapes you should be able to write down before touching the keyboard. Same first number, different number of axes.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">Two estimators, one shape of code</span></div>
+        <p class="pd">One split, two estimators, two scores. Fit a <code>DecisionTreeClassifier(random_state=0)</code> and a <code>KNeighborsClassifier(n_neighbors=3)</code> on the same training pile and print each one's accuracy on the test pile to two decimals. Then look at your own code and count how many characters differ between the two blocks.</p>
+        <div class="want">tree: 0.67
+knn: 1.00</div>
+        <div class="pyrun" data-id="b2" data-expect="tree: 0.67\nknn: 1.00">
+          <textarea spellcheck="false">from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+
+X = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12]]
+y = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=0)
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>tree = DecisionTreeClassifier(random_state=0)
+tree.fit(X_train, y_train)
+print(f"tree: {tree.score(X_test, y_test):.2f}")
+
+knn = KNeighborsClassifier(n_neighbors=3)
+knn.fit(X_train, y_train)
+print(f"knn: {knn.score(X_test, y_test):.2f}")</pre><p>Two blocks, one shape. And no, 1.00 does not mean neighbours "beat" trees — it means three held-out rows happened to go that way. Resisting that conclusion is a skill; the next series gives you the tools to test it properly.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">Scale, then fit</span></div>
+        <p class="pd">Six households: size, and income in rupees. Column two is thousands of times bigger than column one, which matters a great deal to a neighbours-based estimator. Fit a <code>StandardScaler</code>, transform X, print the first row before and after (rounded to 2 places, as lists), then fit a <code>KNeighborsClassifier(n_neighbors=3)</code> on the <i>scaled</i> table and print its accuracy.</p>
+        <div class="want">first row before: [1, 20000]
+first row after: [-1.46, -1.28]
+Accuracy: 1.00</div>
+        <div class="pyrun" data-id="b3" data-expect="first row before: [1, 20000]\nfirst row after: [-1.46, -1.28]\nAccuracy: 1.00">
+          <textarea spellcheck="false">import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+
+X = np.array([[1, 20000], [2, 22000], [3, 45000],
+              [4, 48000], [5, 70000], [6, 72000]])
+y = np.array([0, 0, 0, 1, 1, 1])
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>scaler = StandardScaler()
+scaler.fit(X)
+X_scaled = scaler.transform(X)
+print("first row before:", X[0].tolist())
+print("first row after:", np.round(X_scaled[0], 2).tolist())
+
+model = KNeighborsClassifier(n_neighbors=3)
+model.fit(X_scaled, y)
+print(f"Accuracy: {model.score(X_scaled, y):.2f}")</pre><p><code>fit</code> then <code>transform</code> on the preparer, <code>fit</code> then <code>score</code> on the estimator — four calls, one pipeline. (And note the score here is on the training rows, so it is a memory test again, not a measurement. We're checking the plumbing, not the model.)</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — three new students, three sentences</span></div>
+        <p class="pd">Back to the two-feature build. After fitting on the training pile, predict for <b>three</b> new rows in one call, then loop with <code>zip</code> and print a full sentence for each — the hours, the classes, and the verdict in words. One <code>predict</code>, one loop, three lines out.</p>
+        <div class="want">Studied 2 h, attended 5 classes -&gt; predicted fail
+Studied 6 h, attended 12 classes -&gt; predicted pass
+Studied 10 h, attended 19 classes -&gt; predicted pass</div>
+        <div class="pyrun" data-id="b4" data-expect="Studied 2 h, attended 5 classes -&gt; predicted fail\nStudied 6 h, attended 12 classes -&gt; predicted pass\nStudied 10 h, attended 19 classes -&gt; predicted pass">
+          <textarea spellcheck="false">from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+
+X = [[1, 4], [2, 6], [2, 9], [3, 7], [4, 11], [5, 8],
+     [6, 14], [7, 16], [8, 13], [9, 18], [10, 17], [11, 19]]
+y = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=0)
+
+new_rows = [[2, 5], [6, 12], [10, 19]]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>model = DecisionTreeClassifier(random_state=0)
+model.fit(X_train, y_train)
+
+new_rows = [[2, 5], [6, 12], [10, 19]]
+for row, guess in zip(new_rows, model.predict(new_rows)):
+    word = "pass" if guess == 1 else "fail"
+    print(f"Studied {row[0]} h, attended {row[1]} classes -> predicted {word}")</pre><p>Ask about many rows in one <code>predict</code> — it is designed for it, and asking one at a time in a loop is the slow beginner habit. The f-string does what it has done since Unit 2: turns numbers back into a sentence a person can read.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the grammar — not on machine learning, which you have not been taught here and should not expect to be tested on. Read the explanations either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again — and you will need all of them, in every ML library you ever open.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 25 · PyTorch — first contact</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">scikit-learn hands you finished models: you say <code>fit</code> and something arrives, assembled. PyTorch hands you the parts. Unit 25 opens the box on two of them — tensors, which are NumPy arrays that remember how they were computed, and <code>nn.Module</code>, which turns out to be a class exactly like the ones you wrote in Unit 13. Nothing new to learn about Python; a great deal to recognise.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>scikit-learn</b> — <i>Getting Started</i>. <span class="why">The official five-minute version of exactly this unit: fitting, predicting, transformers, and splitting. Read it now that the words mean something.</span> <a href="https://scikit-learn.org/stable/getting_started.html" rel="noopener">scikit-learn.org</a></li>
+      <li><b>scikit-learn</b> — <i>An introduction to machine learning with scikit-learn</i>. <span class="why">The basic tutorial. It goes a step past our boundary into what the estimators actually do — useful as a preview of the next series.</span> <a href="https://scikit-learn.org/stable/tutorial/basic/tutorial.html" rel="noopener">scikit-learn.org</a></li>
+      <li><b>scikit-learn</b> — <i>train_test_split</i>. <span class="why">The full API page for 24.3, including <code>shuffle</code>, <code>stratify</code> and what <code>random_state</code> promises exactly.</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html" rel="noopener">scikit-learn.org</a></li>
+      <li><b>scikit-learn</b> — <i>Glossary of Common Terms and API Elements</i>. <span class="why">The library's own dictionary — estimator, transformer, predictor, fit, X, y. When a page confuses you, the word you're missing is usually in here.</span> <a href="https://scikit-learn.org/stable/glossary.html" rel="noopener">scikit-learn.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit23.html"><span class="k">← Previous</span><span class="t">Unit 23 · matplotlib &amp; seaborn — seeing your data</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit25.html"><span class="k">Next →</span><span class="t">Unit 25 · PyTorch — first contact</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 24 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"What does  model.fit(X, y)  do?",
+   o:["Prints the model's accuracy","Learns from the examples in X and their answers in y","Answers a question about new rows","Checks that X and y are the right shape and nothing else"],
+   a:1,
+   e:"fit means 'learn from these examples'. It needs both the rows AND their known answers. What it does internally to learn is the Machine Learning series' subject, not this unit's."},
+  {q:"What does  model.predict(X_new)  need, and what does it give back?",
+   o:["Rows and their answers; it gives back a score","Rows with no answers; it gives back one answer per row","A single row only; it gives back a single number","The training data again; it gives back a fitted model"],
+   a:1,
+   e:"predict means 'answer for new ones'. You hand it rows without answers and get an array back with one entry per row — which is why you can ask about three new students in a single call."},
+  {q:"You have 8 people, each measured on 3 things, and you want to predict one label per person. What are X.shape and y.shape?",
+   o:["(8, 3) and (8,)","(3, 8) and (8,)","(8, 3) and (8, 1)","(8,) and (8,)"],
+   a:0,
+   e:"X is always 2-D: rows = samples, columns = features, so (8, 3). y is always 1-D with one entry per row: (8,). Adding features widens X; it never lengthens y."},
+  {q:"Why is it a mistake to judge a model with  model.score(X, y)  on the very same rows you fitted it on?",
+   o:["It's slower than using a test set","It crashes for some estimators","It's marking your own homework from the answer key you memorised — a flattering number that says nothing about new data","It gives a score below 0.5 by design"],
+   a:2,
+   e:"The model has already seen those exact rows and their answers, so a high score may only prove it can recall them. Hold rows back with train_test_split and score on those instead."},
+  {q:"What does  random_state=0  in train_test_split actually give you?",
+   o:["A better, fairer split than other numbers","The same shuffle every run, so results are repeatable","No randomness at all — the rows stay in table order","A guaranteed 50/50 split"],
+   a:1,
+   e:"It's a seed, exactly like random.seed(0) in Unit 11. Different seeds give different splits; the same seed gives the same split forever. 0, 42 and 1234 are equally good — always pass one, and never shop for the one with the prettiest score."},
+  {q:"You replace DecisionTreeClassifier with KNeighborsClassifier. What has to change in the rest of your code?",
+   o:["fit needs a different argument order","predict must be called one row at a time","score is replaced by accuracy()","Nothing — fit, predict and score are called exactly the same way"],
+   a:3,
+   e:"That is the whole point of the library's design, and the whole point of this unit. Only the constructor line changes (and its arguments — a tree takes random_state, neighbours takes n_neighbors). The grammar below it is identical."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — the grammar is yours. Every ML library you open from here will look familiar."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 24.2 and 24.3 carry the load."
+           : " — worth another pass through the practice above before Unit 25.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Estimator","Any scikit-learn object that learns from data. You make one, then call fit on it. DecisionTreeClassifier, KNeighborsClassifier and LinearRegression are all estimators."],
+  ["fit(X, y)","Learn from these examples. Hands the estimator the rows and their known answers. Everything the estimator knows afterwards came from this call."],
+  ["predict(X_new)","Answer for new ones. Takes rows with no answers and returns an array with one answer per row."],
+  ["score(X, y)","Marks the estimator: takes rows AND their true answers and returns the fraction it got right (for classifiers). Only meaningful on rows the model did not learn from."],
+  ["transform(X)","The data-preparation verb. Returns a rescaled or reshaped copy of X; the original table is untouched. StandardScaler is fit then transform, with no y anywhere."],
+  ["X","The features — what you know. Always 2-D: rows are samples, columns are features. One feature still means one column: shape (n, 1)."],
+  ["y","The target — what you want to predict. Always 1-D, shape (n,), one entry per row of X, in the same order."],
+  ["Feature","One column of X: a single measurable thing, like hours studied or temperature."],
+  ["reshape(-1, 1)","Turns a flat list of n numbers into a legal one-column X of shape (n, 1). The -1 means 'work the row count out yourself'. The fix for the Expected 2D array error."],
+  ["train_test_split","Splits X and y into a training pile and a held-back test pile, shuffling rows and answers together. Returns four things, in the order X_train, X_test, y_train, y_test."],
+  ["random_state","A seed, like random.seed(). Fixes which shuffle happens, so the same code gives the same split every run. Always pass one; never shop for a flattering value."],
+  ["Classification / regression","Predicting a label (pass/fail) versus predicting a number (a price). Same four beats either way — only the kind of answer differs."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

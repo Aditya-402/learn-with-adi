@@ -1,0 +1,1042 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NumPy — Arrays That Compute — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<link rel="stylesheet" href="../../assets/unit.css">
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u21" data-lwa-title="Unit 21 · NumPy — arrays that compute">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Bridge — Python for ML &amp; DL · Unit 21</div>
+      <h1>NumPy — Arrays That Compute</h1>
+      <p class="standfirst">Twenty units of language are behind you. From here the notes teach the <i>grammar of the libraries</i> the ML world runs on — starting with the one everything else is built on. A NumPy array looks like a list and behaves nothing like one: multiply it by 1.05 and every number moves at once, no loop in sight. By the end you'll have rebuilt Unit 12's marks report without writing a single <code style="font-size:.85em">for</code>.</p>
+      <div class="facts">
+        <div><b>One session</b>~50 min</div>
+        <div><b>6 concepts</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 5, 12 &amp; 2 — indexing, comprehensions, f-strings</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">21.1 Why lists aren't enough</a>
+    <a href="#s2">21.2 Vectorised arithmetic</a>
+    <a href="#s3">21.3 Shape</a>
+    <a href="#s4">21.4 Indexing &amp; masks</a>
+    <a href="#s5">21.5 Aggregations &amp; axis</a>
+    <a href="#s6">21.6 Build: marks report</a>
+    <a href="#s7">21.7 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 21.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>The language is behind you</b>Units 1–20 taught Python itself — boxes, loops, functions, classes, the subtle machinery. You don't need any more <i>language</i>. What you need now is the grammar of the tools: this final stretch is that, and it starts here.</div>
+      <div class="pq"><b>You'll need Units 5, 12 and 2</b>List indexing and slicing, comprehensions (the thing we're about to replace), and f-strings with <code>:.2f</code>. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit21.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>Where the line is</b>This unit teaches what an array <i>is</i> and how to compute with it. What a model is, what training means — that belongs to the Machine Learning stage, and these notes will point forward rather than pretend. Grammar first; sentences later.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">21.1</span>
+      <h2>Why lists aren't enough</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p><b>The problem.</b> A shop raises every price by 5%. You have the prices in a list: <code>[40, 60, 120, 200]</code>. In pure Python you reach for a loop, or — since Unit 12 — a comprehension: <code>[p * 1.05 for p in prices]</code>. It works. Now make the list a million prices long and do it forty times a second, which is roughly what a real data pipeline asks for. The comprehension is suddenly the slow part of the program, and worse: you're still writing the <i>machinery</i> of the loop when all you wanted to say was "multiply everything by 1.05".</p>
+      <p><b>The idea, in plain words.</b> NumPy gives you a new kind of container — an <b>array</b> — that takes the multiplication personally. You write <code>prices * 1.05</code> and every number inside moves. No loop, no comprehension, no <code>for</code>. Underneath, the multiplication happens in compiled C over a solid block of memory, which is why it's tens of times faster; on the surface, your code finally says what you meant.</p>
+      <p>Two lines get you there. <code>import numpy as np</code> — the <code>as np</code> nickname is a universal convention, and every piece of NumPy code on Earth uses it — then <code>np.array([40, 60, 120, 200])</code> to turn a list into an array.</p>
+      <p>There is one honest catch, and it's the trade that buys the speed: <b>an array holds one type</b>. All ints, or all floats — not a mix, and certainly not names alongside numbers. That single type is called the array's <b>dtype</b>, and because every slot is the same size, NumPy can lay the whole array out as one unbroken run of memory and let the processor tear through it. A Python list can hold a string, a float and a duck; that flexibility is exactly what makes it slow.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the same job, two containers</div>
+      <div class="m">prices = [40, 60, 120, 200]
+taxed_list = [p * 1.05 for p in prices]
+
+arr = np.array([40, 60, 120, 200])
+taxed_arr = arr * 1.05</div>
+      <p><b>Line 2:</b> the comprehension does what you'd do by hand — take 40, multiply, keep it; take 60, multiply, keep it; four separate multiplications, four separate Python objects created. The result is a <i>list</i>: <code>[42.0, 63.0, 126.0, 210.0]</code>.</p>
+      <p><b>Line 4:</b> <code>np.array(...)</code> copies those four numbers into one block of memory, all of them ints, and remembers "this is a run of whole numbers, four of them".</p>
+      <p><b>Line 5:</b> here's the whole unit in one line. <code>arr * 1.05</code> does not mean "repeat the array" (that's what <code>*</code> does to a list — remember Unit 5). It means "multiply <i>each element</i>". A brand-new array comes back, and because 1.05 is a decimal, its dtype is float:</p>
+      <div class="m">[ 42.  63. 126. 210.]</div>
+      <p>Note the printing: no commas, and the trailing dots are NumPy saying "these are floats". Arrays print differently from lists, and you'll get used to it faster than you expect.</p>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>[1, 2, 3] * 2</code> gives <code>[1, 2, 3, 1, 2, 3]</code> — a list repeated. <code>np.array([1, 2, 3]) * 2</code> gives <code>[2 4 6]</code> — every number doubled. Same symbol, completely different meaning, decided entirely by what's on the left. This is Unit 2's rule ("the type decides what the operator means") coming back with a new type, and it catches everyone once.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> raise four prices by 5% both ways, and look at what each container gives back. <b>Thinking:</b> run it and compare the two printed lines carefully — commas versus no commas is your first clue about which world you're in. <b>Note:</b> this is the first block on the page that imports NumPy, so the runner spends about 15 seconds downloading the library before it starts. That happens once; every block after this is instant.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">import numpy as np
+
+prices = [40, 60, 120, 200]                  # a plain list
+taxed_list = [p * 1.05 for p in prices]      # Unit 12's comprehension
+print(taxed_list)
+
+arr = np.array([40, 60, 120, 200])           # the same numbers, as an array
+taxed_arr = arr * 1.05                       # no loop anywhere
+print(taxed_arr)
+
+print(arr.dtype, taxed_arr.dtype)            # one type per array</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">21.1 · P1</span><span class="pt">Your first array</span></div>
+        <p class="pd">Put the five marks <code>12, 15, 9, 20, 14</code> into an array called <code>marks</code>, then print the total and how many there are. <code>marks.sum()</code> adds them all; <code>marks.size</code> counts them. Use f-strings so the output matches the goal exactly.</p>
+        <div class="want">Total: 70
+How many: 5</div>
+        <div class="pyrun" data-id="s1p1" data-expect="Total: 70\nHow many: 5">
+          <textarea spellcheck="false">import numpy as np
+
+marks = </textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+marks = np.array([12, 15, 9, 20, 14])
+print(f"Total: {marks.sum()}")
+print(f"How many: {marks.size}")</pre><p><code>np.array()</code> takes a list and gives back an array. <code>.sum()</code> and <code>.size</code> hang off the array itself — no <code>sum(marks)</code>, no <code>len(marks)</code> needed, though both still work.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">21.1 · P2</span><span class="pt">Predict: times two</span></div>
+        <p class="pd">Same numbers, two containers, one operator. Predict both lines on paper before you run — and be honest about which one surprised you.</p>
+        <div class="pyrun" data-id="s1p2">
+          <textarea spellcheck="false">import numpy as np
+
+nums = [1, 2, 3]
+arr = np.array([1, 2, 3])
+print(nums * 2)
+print(arr * 2)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>[1, 2, 3, 1, 2, 3]
+[2 4 6]</pre><p>A list treats <code>* 2</code> as "give me two of these, end to end". An array treats it as arithmetic on every element. From here on, when you see <code>*</code> the first question is: list or array?</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 21.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">21.2</span>
+      <h2>Vectorised arithmetic — describing the whole</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Multiplying by 1.05 was one operation. Real work needs the rest: add a bonus to every score, subtract one array from another to get differences, divide quantities by totals to get proportions, and — constantly — ask a question of every element at once ("which of these are above 50?").</p>
+      <p><b>The idea, in plain words.</b> Every arithmetic operator works on arrays, and every one of them works <b>element-wise</b>. Two flavours:</p>
+      <ul class="plain">
+        <li><b>Array and a single number</b> — <code>a + 5</code>, <code>a * 2</code>, <code>a / 100</code>. The single number is applied to every element. (NumPy calls this <i>broadcasting</i>: the lone number is stretched to cover the array.)</li>
+        <li><b>Array and array</b> — <code>a + b</code>, <code>a * b</code>. Position by position: first with first, second with second. <code>[10, 20] * [3, 4]</code> gives <code>[30, 80]</code> — <i>not</i> a matrix multiplication, just neighbourly arithmetic down the line. Both arrays must be the same length; if they aren't, NumPy stops you with an error (and 21.3 explains what it's really complaining about).</li>
+      </ul>
+      <p>Comparisons work the same way, and this is where it starts to feel like magic. <code>a > 25</code> doesn't give you one True or False — it gives you a whole array of them, one answer per element. That's called a <b>boolean array</b>, and it is the single most useful object in NumPy; section 21.4 spends its whole life cashing it in. A small bonus: <code>.sum()</code> on a boolean array counts the Trues, because True counts as 1.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — one line, four answers</div>
+      <div class="m">a = np.array([10, 20, 30, 40])
+b = np.array([1, 2, 3, 4])
+print(a + b)
+print(a > 25)</div>
+      <p><b>Line 3:</b> NumPy walks the two arrays in step — 10+1, 20+2, 30+3, 40+4 — and builds a new array from the four answers. Nothing is changed in place; <code>a</code> and <code>b</code> are untouched.</p>
+      <div class="m">[11 22 33 44]</div>
+      <p><b>Line 4:</b> the same walk, but the question is "bigger than 25?" — asked of 10 (no), 20 (no), 30 (yes), 40 (yes). Four answers, one array:</p>
+      <div class="m">[False False  True  True]</div>
+      <p>The extra space before each <code>True</code> is NumPy lining the column up — <code>False</code> is a character wider. Cosmetic, but worth recognising so it doesn't look like a bug.</p>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      The operation is applied to every element at once. You stop writing the loop and start describing the whole. Say <code>scores + 5</code> out loud as "every score, plus five" — that sentence, not the loop, is now your unit of thought.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> two arrays and a scalar, put through every operator worth knowing. <b>Thinking:</b> predict each line before you run it — especially the division, which turns ints into floats exactly as <code>/</code> always has (Unit 2's rule, unchanged).</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">import numpy as np
+
+a = np.array([10, 20, 30, 40])
+b = np.array([1, 2, 3, 4])
+
+print(a + b)     # element-wise
+print(a - b)
+print(a * b)
+print(a / b)     # floats, always
+print(a + 5)     # the 5 reaches every element
+print(a > 25)    # a question asked of all four</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">21.2 · P1</span><span class="pt">Ten percent off, everything</span></div>
+        <p class="pd">Four prices — <code>200, 350, 90, 410</code> — in a sale at 10% off. Make the array, build <code>final</code> by multiplying the whole array by <code>0.9</code>, then print the total and the cheapest item with <code>:.2f</code>. (<code>.sum()</code> and <code>.min()</code> do the work; no loop is allowed anywhere near this.)</p>
+        <div class="want">Total: 945.00
+Cheapest: 81.00</div>
+        <div class="pyrun" data-id="s2p1" data-expect="Total: 945.00\nCheapest: 81.00">
+          <textarea spellcheck="false">import numpy as np
+
+prices = np.array([200, 350, 90, 410])
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+prices = np.array([200, 350, 90, 410])
+final = prices * 0.9
+print(f"Total: {final.sum():.2f}")
+print(f"Cheapest: {final.min():.2f}")</pre><p>One multiplication for all four prices, then two aggregations. Note <code>:.2f</code> earning its keep again — money still gets formatted at the exit.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">21.2 · P2</span><span class="pt">Predict: what does a comparison give back?</span></div>
+        <p class="pd">Three lines. For each, predict on paper: one value or many? True/False or a number? Then run and check yourself line by line.</p>
+        <div class="pyrun" data-id="s2p2">
+          <textarea spellcheck="false">import numpy as np
+
+scores = np.array([45, 82, 67, 91, 38])
+print(scores >= 50)
+print((scores >= 50).sum())
+print(scores * 2 > 100)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>[False  True  True  True False]
+3
+[False  True  True  True False]</pre><p>Line 1: one answer per element — a boolean array. Line 2: <code>.sum()</code> counts the Trues (True is 1), so three passed. Line 3: the doubling happens first, then the comparison — same three, because doubling can't change who's above half. Two operations, still no loop.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">21.2 · P3</span><span class="pt">Array times array — the shopping bill</span></div>
+        <p class="pd">Quantities <code>2, 1, 4, 3</code> and unit prices <code>25, 60, 15, 40</code>, in two arrays. Multiply them together to get the line totals — position pairs with position, which is exactly what <code>zip()</code> did in Unit 12, minus the ceremony. Print the bill and the biggest single line.</p>
+        <div class="want">Bill: 290
+Biggest line: 120</div>
+        <div class="pyrun" data-id="s2p3" data-expect="Bill: 290\nBiggest line: 120">
+          <textarea spellcheck="false">import numpy as np
+
+qty = np.array([2, 1, 4, 3])
+price = np.array([25, 60, 15, 40])
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+qty = np.array([2, 1, 4, 3])
+price = np.array([25, 60, 15, 40])
+line_total = qty * price
+print(f"Bill: {line_total.sum()}")
+print(f"Biggest line: {line_total.max()}")</pre><p>The line totals are <code>[50, 60, 60, 120]</code>. Compare this to Unit 12's <code>sum(q * p for q, p in zip(qty, price))</code> — same answer, and the array version says it in the language of the problem.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 21.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">21.3</span>
+      <h2>Shape — the thing that will bite you later</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Real data isn't a single row of numbers. Marks come as a table: students down the side, subjects across the top. An image is a grid of pixels. Lists could fake this with lists-inside-lists, but nothing kept track of the layout, and every operation meant nested loops. An array knows its own layout — and once there's a layout to get wrong, getting it wrong becomes the number-one source of errors in every numerical program ever written.</p>
+      <p><b>The idea, in plain words.</b> Every array carries a <b>shape</b>: a tuple saying how many along each direction. Ask for it with <code>.shape</code>.</p>
+      <ul class="plain">
+        <li><code>np.array([10, 20, 30, 40])</code> has shape <code>(4,)</code> — one direction, four elements. Flat. A row. This is <b>1-D</b>, and <code>.ndim</code> says <code>1</code>.</li>
+        <li><code>np.array([[1, 2, 3], [4, 5, 6]])</code> has shape <code>(2, 3)</code> — <b>2 rows, 3 columns</b>, written as a list of lists, one inner list per row. <code>.ndim</code> says <code>2</code>. Rows first, always: shape reads (rows, columns).</li>
+      </ul>
+      <p>Two tools come with it. <code>np.arange(12)</code> builds <code>[0 1 2 … 11]</code> — Unit 4's <code>range()</code>, but it hands back a real array. And <code>.reshape(3, 4)</code> takes the same twelve numbers and re-lays them as 3 rows of 4. Reshaping never changes the numbers or their order; it only changes how they're grouped. The one rule: the new shape must hold exactly as many slots as the old one — twelve numbers go into (3, 4) or (2, 6) or (12, 1), but never into (5, 3).</p>
+      <p>And here is the house rule, borrowed from the LLM notes and worth more than anything else in this unit: <b>say the shape out loud at every step.</b> "marks is (4, 3). Mean along axis 1 gives (4,). Compare to a scalar, still (4,)." Programmers who do this out of habit spend their evenings on ideas; programmers who don't spend them on shape errors. These same shapes, incidentally, are exactly what the LLM series means when it talks about tensor shapes — a tensor is this idea with more directions, and nothing more mysterious than that.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — twelve numbers, three shapes</div>
+      <div class="m">data = np.arange(12)
+grid = data.reshape(3, 4)
+print(data.shape)
+print(grid.shape)
+print(grid.ndim)</div>
+      <p><b>Line 1:</b> twelve numbers, 0 through 11, in one flat row. Shape <code>(4,)</code>-style: <code>(12,)</code>. One direction.</p>
+      <p><b>Line 2:</b> the same twelve numbers, re-grouped four at a time: row 0 is 0–3, row 1 is 4–7, row 2 is 8–11. Nothing moved; the fence moved. Shape <code>(3, 4)</code>.</p>
+      <p><b>Lines 3–5:</b> read the shapes back. Note the lone comma in <code>(12,)</code> — that's Python's way of writing a one-item tuple, not a typo:</p>
+      <div class="m">(12,)
+(3, 4)
+2</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 250" role="img" aria-label="The state of an array: a 1-D array of shape (4,) beside a 2-D array of shape (2, 3)">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">THE STATE OF AN ARRAY — SAY THE SHAPE OUT LOUD</text>
+        <!-- 1-D -->
+        <text x="40" y="62" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#3d3170">np.array([10, 20, 30, 40])</text>
+        <rect x="40" y="76" width="66" height="48" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="73" y="106" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">10</text>
+        <rect x="112" y="76" width="66" height="48" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="145" y="106" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">20</text>
+        <rect x="184" y="76" width="66" height="48" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="217" y="106" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">30</text>
+        <rect x="256" y="76" width="66" height="48" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="289" y="106" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">40</text>
+        <path d="M40 140 H322" stroke="#5b4b9e" stroke-width="1" stroke-dasharray="4 3"/>
+        <text x="181" y="160" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#3d3170">.shape → (4,)</text>
+        <text x="181" y="182" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">one direction · .ndim → 1</text>
+        <text x="181" y="206" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">"four elements, in a row"</text>
+        <!-- divider -->
+        <path d="M420 60 V220" stroke="#e3e6ee" stroke-width="1.5"/>
+        <!-- 2-D -->
+        <text x="500" y="62" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#3d3170">np.array([[1, 2, 3], [4, 5, 6]])</text>
+        <rect x="500" y="76" width="60" height="40" rx="7" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="530" y="102" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">1</text>
+        <rect x="566" y="76" width="60" height="40" rx="7" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="596" y="102" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">2</text>
+        <rect x="632" y="76" width="60" height="40" rx="7" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="662" y="102" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">3</text>
+        <rect x="500" y="122" width="60" height="40" rx="7" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="530" y="148" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">4</text>
+        <rect x="566" y="122" width="60" height="40" rx="7" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="596" y="148" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">5</text>
+        <rect x="632" y="122" width="60" height="40" rx="7" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="662" y="148" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">6</text>
+        <text x="484" y="102" text-anchor="end" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">row 0</text>
+        <text x="484" y="148" text-anchor="end" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">row 1</text>
+        <text x="530" y="182" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">col 0</text>
+        <text x="596" y="182" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">col 1</text>
+        <text x="662" y="182" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">col 2</text>
+        <text x="596" y="208" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#1d5654">.shape → (2, 3)</text>
+        <text x="596" y="230" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">"two rows, three columns" · .ndim → 2</text>
+      </svg>
+      <div class="figcap">Fig. 1 — The state of an array. Shape reads (rows, columns) and never the other way round. Every time an array changes hands in your program, this picture should change with it — out loud.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>(3,)</code> is <b>not</b> <code>(3, 1)</code>. The first is a flat row of three numbers — one direction, printed as <code>[1 2 3]</code>. The second is a 2-D array with three rows and one column each, printed as three stacked lines. They hold the same three numbers and NumPy treats them as different objects with different rules. When an operation fails with a shape complaint and the numbers "look right", this is almost always what happened: somewhere a <code>(3,)</code> met a <code>(3, 1)</code>. Say the shape out loud and the mismatch announces itself.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> build a 1-D and a 2-D array, interrogate both, and reshape one of them twice. <b>Thinking:</b> before each <code>print</code>, say the shape out loud. Then check whether NumPy agrees with you.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">import numpy as np
+
+a = np.array([10, 20, 30, 40])
+b = np.array([[1, 2, 3],
+              [4, 5, 6]])
+
+print(a.shape, a.ndim)
+print(b.shape, b.ndim)
+print(b.reshape(3, 2))     # same six numbers, regrouped
+print(b.reshape(6))        # flattened back to one direction
+print(b.reshape(6).shape)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">21.3 · P1</span><span class="pt">Twelve numbers, two layouts</span></div>
+        <p class="pd">Make <code>data</code> with <code>np.arange(12)</code>, reshape it into 3 rows of 4 as <code>grid</code>, and print the flat shape, the grid's shape, and the grid's <code>.ndim</code> — in that order.</p>
+        <div class="want">(12,)
+(3, 4)
+2</div>
+        <div class="pyrun" data-id="s3p1" data-expect="(12,)\n(3, 4)\n2">
+          <textarea spellcheck="false">import numpy as np
+
+data = </textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+data = np.arange(12)
+grid = data.reshape(3, 4)
+print(data.shape)
+print(grid.shape)
+print(grid.ndim)</pre><p>Twelve slots before, twelve slots after — reshape only re-groups. And <code>(12,)</code> with its lonely comma is a one-item tuple, which is how Python has always written them.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">21.3 · P2</span><span class="pt">Predict: when the shapes disagree</span></div>
+        <p class="pd">Three numbers plus two numbers. Predict what happens — a result, or a refusal? Then run it and read the error's last line, Unit 1 style; it is one of the most useful sentences in NumPy.</p>
+        <div class="pyrun" data-id="s3p2">
+          <textarea spellcheck="false">import numpy as np
+
+a = np.array([1, 2, 3])
+b = np.array([10, 20])
+print(a + b)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>ValueError: operands could not be broadcast together with shapes (3,) (2,)</pre><p>Element-wise means position-by-position, and there is no third element in <code>b</code> to pair with the 3. NumPy refuses rather than guessing — and notice it tells you both shapes in the message. Read that line as a question: "which of these two is wrong?"</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">21.3 · P3</span><span class="pt">Stretch — a row is not a column</span></div>
+        <p class="pd">Take <code>v = np.array([1, 2, 3])</code> and make <code>col</code> by reshaping it to 3 rows and 1 column. Print <code>v</code>'s shape, <code>col</code>'s shape, and then <code>col</code> itself — and look hard at how the printing differs.</p>
+        <div class="want">(3,)
+(3, 1)
+[[1]
+ [2]
+ [3]]</div>
+        <div class="pyrun" data-id="s3p3" data-expect="(3,)\n(3, 1)\n[[1]\n [2]\n [3]]">
+          <textarea spellcheck="false">import numpy as np
+
+v = np.array([1, 2, 3])
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+v = np.array([1, 2, 3])
+col = v.reshape(3, 1)
+print(v.shape)
+print(col.shape)
+print(col)</pre><p>Same three numbers, two different objects. The doubled brackets in the printout are the giveaway that you're looking at a 2-D array — one pair for the whole thing, one pair per row.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 21.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">21.4</span>
+      <h2>Indexing, slicing &amp; boolean masks</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> You have a marks table: four students down, three subjects across. You want one student's Physics mark. You want the entire Maths column. You want only the marks that passed. With lists-of-lists the first is awkward, the second needs a comprehension, and the third needs another one.</p>
+      <p><b>The idea, in plain words.</b> Everything you learned in Unit 5 still applies — positions count from 0, <code>:</code> slices, negatives count from the end — with one addition for 2-D: <b>one index per direction, separated by a comma</b>, rows first.</p>
+      <ul class="plain">
+        <li><code>a[1, 2]</code> — row 1, column 2. One number.</li>
+        <li><code>a[0]</code> — the whole of row 0, as a 1-D array.</li>
+        <li><code>a[:, 0]</code> — read it as "every row, column 0": the <b>whole first column</b>. The colon means "all of this direction". This is the move a list of lists could never make in one step, and you will use it constantly.</li>
+        <li><code>a[1:3, 0:2]</code> — slices work in both directions at once: rows 1 and 2, columns 0 and 1. A rectangular block.</li>
+      </ul>
+      <p>Then the payoff of 21.2. A boolean array can be used as an <b>index</b>: <code>scores[scores >= 50]</code>. Read it inside-out — <code>scores >= 50</code> makes a True/False array of the same length, and putting that inside the brackets means "keep the elements where it says True". This is called a <b>mask</b>, and it replaces the filtering comprehension from Unit 12 entirely. <code>[s for s in scores if s >= 50]</code> becomes <code>scores[scores >= 50]</code>: same meaning, said once instead of three times.</p>
+      <p>Like a filter, a mask usually gives back a <i>shorter</i> array, and nothing marks the gaps — the same honest warning Unit 12 gave about comprehensions still stands.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — one table, four questions</div>
+      <div class="m">grid = np.array([[10, 20, 30],
+                 [40, 50, 60],
+                 [70, 80, 90]])
+print(grid[1, 2])
+print(grid[:, 0])
+print(grid[grid &gt; 45])</div>
+      <p><b>Setup:</b> shape <code>(3, 3)</code> — say it out loud.</p>
+      <p><b><code>grid[1, 2]</code>:</b> row 1 (the middle row, <code>[40, 50, 60]</code>), then column 2 within it → <b>60</b>. A single number, not an array.</p>
+      <p><b><code>grid[:, 0]</code>:</b> every row, column 0 → the first number from each row → <code>[10 40 70]</code>. A 1-D array of shape (3,), pulled straight down through the table.</p>
+      <p><b><code>grid[grid &gt; 45]</code>:</b> the inside first — <code>grid &gt; 45</code> is a (3, 3) grid of True/False. Used as an index, it collects the Trues in reading order (left to right, top to bottom) and hands them back <i>flat</i>:</p>
+      <div class="m">60
+[10 40 70]
+[50 60 70 80 90]</div>
+      <p>Note that last shape change: a mask on a 2-D array gives a 1-D result, because the survivors don't form a rectangle any more. Say it out loud: "(3, 3) in, (5,) out."</p>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      <code>a[:, 0]</code> is "every row, column 0" — a whole column in one step. And a boolean array inside the brackets is a filter: <code>scores[scores &gt;= 50]</code> keeps exactly the elements whose answer was True.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> pull single cells, whole rows, whole columns, a block, and a masked selection out of one 3×3 grid. <b>Thinking:</b> before each line, say what shape you expect back — a number, a (3,), or something else. That habit is the entire skill.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">import numpy as np
+
+grid = np.array([[10, 20, 30],
+                 [40, 50, 60],
+                 [70, 80, 90]])
+
+print(grid[1, 2])         # one cell: row 1, column 2
+print(grid[0])            # a whole row
+print(grid[:, 0])         # a whole column
+print(grid[0:2, 1:3])     # a rectangular block
+print(grid[grid > 45])    # a mask — flat result
+print(grid[:, 0].shape, grid[grid > 45].shape)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">21.4 · P1</span><span class="pt">One cell, one column</span></div>
+        <p class="pd">The marks table below is students (Ada, Bob, Cara, Dev) down the rows, subjects (Maths, Physics, Python) across the columns. Print Cara's Physics mark, then the average of the whole Maths column with <code>:.2f</code>. Count rows and columns from 0 — and no loops.</p>
+        <div class="want">Cara's Physics: 88
+Maths average: 74.75</div>
+        <div class="pyrun" data-id="s4p1" data-expect="Cara's Physics: 88\nMaths average: 74.75">
+          <textarea spellcheck="false">import numpy as np
+
+marks = np.array([[91, 78, 85],
+                  [45, 32, 58],
+                  [78, 88, 92],
+                  [85, 70, 76]])
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+marks = np.array([[91, 78, 85],
+                  [45, 32, 58],
+                  [78, 88, 92],
+                  [85, 70, 76]])
+print(f"Cara's Physics: {marks[2, 1]}")
+print(f"Maths average: {marks[:, 0].mean():.2f}")</pre><p>Cara is row 2, Physics is column 1. The Maths column is <code>marks[:, 0]</code> → <code>[91 45 78 85]</code>, and <code>.mean()</code> takes it from there: 299 ÷ 4 = 74.75.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">21.4 · P2</span><span class="pt">The mask, cashed in</span></div>
+        <p class="pd">From these six scores, print the ones that passed (50 or more) as an array, then a count line. This is Unit 12's filtering comprehension, retired.</p>
+        <div class="want">[91 78 85 62]
+4 of 6 passed</div>
+        <div class="pyrun" data-id="s4p2" data-expect="[91 78 85 62]\n4 of 6 passed">
+          <textarea spellcheck="false">import numpy as np
+
+scores = np.array([91, 45, 78, 85, 62, 39])
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+scores = np.array([91, 45, 78, 85, 62, 39])
+print(scores[scores >= 50])
+print(f"{(scores >= 50).sum()} of {scores.size} passed")</pre><p>The mask keeps the four survivors in their original order. The count reuses the same comparison — a boolean array summed is a tally, which saves you a counter variable forever.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">21.4 · P3</span><span class="pt">Stretch — two masks, two averages</span></div>
+        <p class="pd">Same six scores. Print the average of the ones that passed and the average of the ones that didn't, both with <code>:.2f</code>. You need the mask twice — once as written, once flipped.</p>
+        <div class="want">Passed average: 79.00
+Failed average: 42.00</div>
+        <div class="pyrun" data-id="s4p3" data-expect="Passed average: 79.00\nFailed average: 42.00">
+          <textarea spellcheck="false">import numpy as np
+
+scores = np.array([91, 45, 78, 85, 62, 39])
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+scores = np.array([91, 45, 78, 85, 62, 39])
+passed = scores[scores >= 50]
+failed = scores[scores &lt; 50]
+print(f"Passed average: {passed.mean():.2f}")
+print(f"Failed average: {failed.mean():.2f}")</pre><p>Two masks, two sub-arrays, two means — and the original <code>scores</code> is untouched throughout. Masking never modifies; it selects.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 21.5 ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">21.5</span>
+      <h2>Aggregations &amp; axis — which way does it collapse?</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> A summary is a whole array boiled down to one number: the total, the average, the smallest, the spread. Easy enough on a flat array. But on a marks table, "the average" is ambiguous — do you mean each student's average across their subjects, or each subject's average across the students? Both are wanted, constantly, and they are different numbers.</p>
+      <p><b>The idea, in plain words.</b> The summary tools are methods on the array: <code>.sum()</code>, <code>.mean()</code>, <code>.min()</code>, <code>.max()</code>, and <code>.std()</code> (the standard deviation — how spread out the numbers are; a small std means everyone scored alike). Called plainly on a 2-D array, each one flattens everything and gives a single number for the whole table.</p>
+      <p>To summarise <i>part</i> way, add <code>axis=</code>. Here is the sentence to memorise, because it's the one everybody gets backwards: <b>axis is the direction that disappears.</b></p>
+      <ul class="plain">
+        <li><code>axis=0</code> collapses the <b>rows</b> — it runs <i>down</i> each column and gives you one number per column. On a (4, 3) marks table that's <b>one number per subject</b>, shape (3,).</li>
+        <li><code>axis=1</code> collapses the <b>columns</b> — it runs <i>across</i> each row and gives you one number per row. On the same table that's <b>one number per student</b>, shape (4,).</li>
+      </ul>
+      <p>Check yourself with shapes rather than intuition: (4, 3) with <code>axis=0</code> deletes the 4 and leaves <code>(3,)</code>; with <code>axis=1</code> it deletes the 3 and leaves <code>(4,)</code>. Say it out loud and you can't get it wrong; guess from the word "axis" and you'll get it wrong half the time forever.</p>
+      <p>One more, small but useful: <code>.argmax()</code> gives the <i>position</i> of the largest element rather than its value (and <code>.argmin()</code> the smallest). That position is what you feed back into a list of names to answer "who?" instead of "how much?".</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 300" role="img" aria-label="A 4 by 3 marks table with axis=0 collapsing down the columns and axis=1 collapsing across the rows">
+        <text x="16" y="24" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">AXIS IS THE DIRECTION THAT DISAPPEARS</text>
+        <text x="150" y="56" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">marks.shape → (4, 3)</text>
+        <!-- table -->
+        <g font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">
+          <rect x="150" y="68" width="70" height="38" rx="6" fill="#ffffff" stroke="#e3e6ee"/><text x="185" y="93" text-anchor="middle">91</text>
+          <rect x="222" y="68" width="70" height="38" rx="6" fill="#ffffff" stroke="#e3e6ee"/><text x="257" y="93" text-anchor="middle">78</text>
+          <rect x="294" y="68" width="70" height="38" rx="6" fill="#ffffff" stroke="#e3e6ee"/><text x="329" y="93" text-anchor="middle">85</text>
+          <rect x="150" y="108" width="70" height="38" rx="6" fill="#ffffff" stroke="#e3e6ee"/><text x="185" y="133" text-anchor="middle">45</text>
+          <rect x="222" y="108" width="70" height="38" rx="6" fill="#ffffff" stroke="#e3e6ee"/><text x="257" y="133" text-anchor="middle">32</text>
+          <rect x="294" y="108" width="70" height="38" rx="6" fill="#ffffff" stroke="#e3e6ee"/><text x="329" y="133" text-anchor="middle">58</text>
+          <rect x="150" y="148" width="70" height="38" rx="6" fill="#ffffff" stroke="#e3e6ee"/><text x="185" y="173" text-anchor="middle">78</text>
+          <rect x="222" y="148" width="70" height="38" rx="6" fill="#ffffff" stroke="#e3e6ee"/><text x="257" y="173" text-anchor="middle">88</text>
+          <rect x="294" y="148" width="70" height="38" rx="6" fill="#ffffff" stroke="#e3e6ee"/><text x="329" y="173" text-anchor="middle">92</text>
+          <rect x="150" y="188" width="70" height="38" rx="6" fill="#ffffff" stroke="#e3e6ee"/><text x="185" y="213" text-anchor="middle">85</text>
+          <rect x="222" y="188" width="70" height="38" rx="6" fill="#ffffff" stroke="#e3e6ee"/><text x="257" y="213" text-anchor="middle">70</text>
+          <rect x="294" y="188" width="70" height="38" rx="6" fill="#ffffff" stroke="#e3e6ee"/><text x="329" y="213" text-anchor="middle">76</text>
+        </g>
+        <text x="140" y="93" text-anchor="end" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">Ada</text>
+        <text x="140" y="133" text-anchor="end" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">Bob</text>
+        <text x="140" y="173" text-anchor="end" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">Cara</text>
+        <text x="140" y="213" text-anchor="end" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">Dev</text>
+        <text x="185" y="62" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">Maths</text>
+        <text x="257" y="62" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">Physics</text>
+        <text x="329" y="62" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">Python</text>
+        <!-- axis=0 arrows down -->
+        <defs>
+          <marker id="ar0" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 z" fill="#5b4b9e"/></marker>
+          <marker id="ar1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 z" fill="#2b7a78"/></marker>
+        </defs>
+        <path d="M185 232 V252" stroke="#5b4b9e" stroke-width="1.6" marker-end="url(#ar0)"/>
+        <path d="M257 232 V252" stroke="#5b4b9e" stroke-width="1.6" marker-end="url(#ar0)"/>
+        <path d="M329 232 V252" stroke="#5b4b9e" stroke-width="1.6" marker-end="url(#ar0)"/>
+        <rect x="150" y="256" width="70" height="32" rx="6" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.4"/><text x="185" y="277" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#3d3170">74.75</text>
+        <rect x="222" y="256" width="70" height="32" rx="6" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.4"/><text x="257" y="277" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#3d3170">67.00</text>
+        <rect x="294" y="256" width="70" height="32" rx="6" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.4"/><text x="329" y="277" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#3d3170">77.75</text>
+        <text x="380" y="277" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#3d3170">axis=0 → (3,) one per subject</text>
+        <!-- axis=1 arrows right -->
+        <path d="M372 87 H392" stroke="#2b7a78" stroke-width="1.6" marker-end="url(#ar1)"/>
+        <path d="M372 127 H392" stroke="#2b7a78" stroke-width="1.6" marker-end="url(#ar1)"/>
+        <path d="M372 167 H392" stroke="#2b7a78" stroke-width="1.6" marker-end="url(#ar1)"/>
+        <path d="M372 207 H392" stroke="#2b7a78" stroke-width="1.6" marker-end="url(#ar1)"/>
+        <rect x="398" y="70" width="76" height="34" rx="6" fill="#e3efee" stroke="#2b7a78" stroke-width="1.4"/><text x="436" y="92" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1d5654">84.67</text>
+        <rect x="398" y="110" width="76" height="34" rx="6" fill="#e3efee" stroke="#2b7a78" stroke-width="1.4"/><text x="436" y="132" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1d5654">45.00</text>
+        <rect x="398" y="150" width="76" height="34" rx="6" fill="#e3efee" stroke="#2b7a78" stroke-width="1.4"/><text x="436" y="172" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1d5654">86.00</text>
+        <rect x="398" y="190" width="76" height="34" rx="6" fill="#e3efee" stroke="#2b7a78" stroke-width="1.4"/><text x="436" y="212" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1d5654">77.00</text>
+        <text x="490" y="132" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#1d5654">axis=1 → (4,) one per student</text>
+        <text x="490" y="156" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">the 3 columns disappeared</text>
+        <text x="380" y="299" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">the 4 rows disappeared</text>
+      </svg>
+      <div class="figcap">Fig. 2 — <code>marks.mean(axis=0)</code> runs down the columns and leaves one number per subject; <code>marks.mean(axis=1)</code> runs across the rows and leaves one number per student. Read the shapes, not the arrows: (4, 3) minus axis 0 is (3,); (4, 3) minus axis 1 is (4,).</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>"axis=0 means rows, so it gives me row averages" — no, and this is the single most common NumPy mistake in existence. <code>axis=0</code> means <i>the row direction is the one being consumed</i>: it walks down through the rows and hands back one number <b>per column</b>. If you can't remember the arrow, remember the shape: whichever number you name in <code>axis=</code> is the one deleted from the shape tuple. (4, 3) with axis=0 → (3,). That test never lies.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> summarise a 2×4 array whole, then along each axis. <b>Thinking:</b> the eight numbers were chosen so the standard deviation comes out exactly 2 — mean 5, and the spread around it is tidy. Predict the shape of each of the last two lines before running.</p>
+      <div class="pyrun" data-id="w5">
+        <textarea spellcheck="false">import numpy as np
+
+t = np.array([[2, 4, 4, 4],
+              [5, 5, 7, 9]])
+
+print(t.sum(), t.mean(), t.min(), t.max())
+print(f"Spread: {t.std():.2f}")
+
+print(t.sum(axis=0))        # down the columns → one per column
+print(t.sum(axis=1))        # across the rows  → one per row
+print(t.sum(axis=0).shape, t.sum(axis=1).shape)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">21.5 · P1</span><span class="pt">Both directions, out loud</span></div>
+        <p class="pd">The marks table again. Print the per-student totals and their shape, then the per-subject totals and their shape — four lines, in that order. Before you run it, say each shape out loud; the check will tell you whether you were right.</p>
+        <div class="want">[254 135 258 231]
+(4,)
+[299 268 311]
+(3,)</div>
+        <div class="pyrun" data-id="s5p1" data-expect="[254 135 258 231]\n(4,)\n[299 268 311]\n(3,)">
+          <textarea spellcheck="false">import numpy as np
+
+marks = np.array([[91, 78, 85],
+                  [45, 32, 58],
+                  [78, 88, 92],
+                  [85, 70, 76]])
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+marks = np.array([[91, 78, 85],
+                  [45, 32, 58],
+                  [78, 88, 92],
+                  [85, 70, 76]])
+per_student = marks.sum(axis=1)
+per_subject = marks.sum(axis=0)
+print(per_student)
+print(per_student.shape)
+print(per_subject)
+print(per_subject.shape)</pre><p>Four students in, four totals out — so the per-student summary is <code>axis=1</code>, the one that eats the columns. The shapes are the proof, and printing them next to the numbers is a habit worth keeping when you're debugging for real.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">21.5 · P2</span><span class="pt">Stretch — which subject, not just how much</span></div>
+        <p class="pd">Compute the per-subject averages, then print the best one with <code>:.2f</code> and the column index it lives at. <code>.argmax()</code> gives the position of the largest element — the tool that turns "how much" into "which".</p>
+        <div class="want">Best subject average: 77.75
+Its column index: 2</div>
+        <div class="pyrun" data-id="s5p2" data-expect="Best subject average: 77.75\nIts column index: 2">
+          <textarea spellcheck="false">import numpy as np
+
+marks = np.array([[91, 78, 85],
+                  [45, 32, 58],
+                  [78, 88, 92],
+                  [85, 70, 76]])
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+marks = np.array([[91, 78, 85],
+                  [45, 32, 58],
+                  [78, 88, 92],
+                  [85, 70, 76]])
+subject_avg = marks.mean(axis=0)
+print(f"Best subject average: {subject_avg.max():.2f}")
+print(f"Its column index: {subject_avg.argmax()}")</pre><p><code>subject_avg</code> holds 74.75, 67.0 and 77.75 — shape (3,), one per subject. Position 2 is Python, and holding that index against a list of subject names is how you print the name instead of the number. The build does exactly that.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 21.6 BUILD ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">21.6</span>
+      <h2>Your build — the marks report, NumPy edition</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>Unit 12 ended with a marks report: a loop over <code>zip()</code>, a comprehension for the passers, another for the distinctions, an aligned line per person. It was a fine program and it earned its checkpoint. Now build the same report out of one 2-D array — and count the loops you write. There should be none.</p>
+      <p>The table is four students by three subjects, shape <code>(4, 3)</code>. Names and subjects stay in ordinary Python lists, because an array holds one type and these are text: the array carries the numbers, the lists carry the labels, and an <i>index</i> is what connects them. (That marriage of labels and numbers is clumsy here — hold that thought until the next unit, which fixes it.)</p>
+      <p>Everything you need is in hand: <code>axis=1</code> for per-student, <code>axis=0</code> for per-subject, a boolean mask summed for the pass count, <code>.argmax()</code> for the top scorer, and Unit 2's f-strings — including <code>{name:&lt;8}</code>, which pads a name out to eight characters so the columns line up.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">21.6 · P1</span><span class="pt">Stage 1 — the table and the students</span></div>
+        <p class="pd">Print the table's shape, then one line per student: the name padded to 8 characters with <code>{names[0]:&lt;8}</code>, followed by that student's average across their three subjects, to two decimals. Compute all four averages in <b>one</b> line with <code>axis=1</code>, then print them by index.</p>
+        <div class="want">Shape: (4, 3)
+Ada     84.67
+Bob     45.00
+Cara    86.00
+Dev     77.00</div>
+        <div class="pyrun" data-id="s6p1" data-expect="Shape: (4, 3)\nAda     84.67\nBob     45.00\nCara    86.00\nDev     77.00">
+          <textarea spellcheck="false">import numpy as np
+
+names = ["Ada", "Bob", "Cara", "Dev"]
+subjects = ["Maths", "Physics", "Python"]
+marks = np.array([[91, 78, 85],
+                  [45, 32, 58],
+                  [78, 88, 92],
+                  [85, 70, 76]])
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+names = ["Ada", "Bob", "Cara", "Dev"]
+subjects = ["Maths", "Physics", "Python"]
+marks = np.array([[91, 78, 85],
+                  [45, 32, 58],
+                  [78, 88, 92],
+                  [85, 70, 76]])
+
+student_avg = marks.mean(axis=1)
+print(f"Shape: {marks.shape}")
+print(f"{names[0]:&lt;8}{student_avg[0]:.2f}")
+print(f"{names[1]:&lt;8}{student_avg[1]:.2f}")
+print(f"{names[2]:&lt;8}{student_avg[2]:.2f}")
+print(f"{names[3]:&lt;8}{student_avg[3]:.2f}")</pre><p>One line of arithmetic for all twelve marks — <code>marks.mean(axis=1)</code> is shape (4,), one average per student. The four print lines are pure display; the <i>computation</i> has no loop and no comprehension in it anywhere.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">21.6 · P2</span><span class="pt">Stage 2 — the full report</span></div>
+        <p class="pd">Grow Stage 1 into the finished report: a header, the per-student block, a per-subject block (<code>axis=0</code>, names padded to 8 the same way), the class average over the whole table, the number of students whose average is 50 or more, and the top scorer by name with their average. Match the goal byte for byte.</p>
+        <div class="want">=== MARKS REPORT (NumPy) ===
+Shape: (4, 3)
+-- Per student --
+Ada     84.67
+Bob     45.00
+Cara    86.00
+Dev     77.00
+-- Per subject --
+Maths   74.75
+Physics 67.00
+Python  77.75
+Class average: 73.17
+Passed: 3 of 4
+Top scorer: Cara (86.00)</div>
+        <div class="pyrun" data-id="s6p2" data-expect="=== MARKS REPORT (NumPy) ===\nShape: (4, 3)\n-- Per student --\nAda     84.67\nBob     45.00\nCara    86.00\nDev     77.00\n-- Per subject --\nMaths   74.75\nPhysics 67.00\nPython  77.75\nClass average: 73.17\nPassed: 3 of 4\nTop scorer: Cara (86.00)">
+          <textarea spellcheck="false">import numpy as np
+
+names = ["Ada", "Bob", "Cara", "Dev"]
+subjects = ["Maths", "Physics", "Python"]
+marks = np.array([[91, 78, 85],
+                  [45, 32, 58],
+                  [78, 88, 92],
+                  [85, 70, 76]])
+
+student_avg = marks.mean(axis=1)
+subject_avg = </textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+names = ["Ada", "Bob", "Cara", "Dev"]
+subjects = ["Maths", "Physics", "Python"]
+marks = np.array([[91, 78, 85],
+                  [45, 32, 58],
+                  [78, 88, 92],
+                  [85, 70, 76]])
+
+student_avg = marks.mean(axis=1)
+subject_avg = marks.mean(axis=0)
+top = student_avg.argmax()
+
+print("=== MARKS REPORT (NumPy) ===")
+print(f"Shape: {marks.shape}")
+print("-- Per student --")
+print(f"{names[0]:&lt;8}{student_avg[0]:.2f}")
+print(f"{names[1]:&lt;8}{student_avg[1]:.2f}")
+print(f"{names[2]:&lt;8}{student_avg[2]:.2f}")
+print(f"{names[3]:&lt;8}{student_avg[3]:.2f}")
+print("-- Per subject --")
+print(f"{subjects[0]:&lt;8}{subject_avg[0]:.2f}")
+print(f"{subjects[1]:&lt;8}{subject_avg[1]:.2f}")
+print(f"{subjects[2]:&lt;8}{subject_avg[2]:.2f}")
+print(f"Class average: {marks.mean():.2f}")
+print(f"Passed: {(student_avg &gt;= 50).sum()} of {student_avg.size}")
+print(f"Top scorer: {names[top]} ({student_avg[top]:.2f})")</pre><p>Count the arithmetic: two <code>mean</code> calls with an axis, one plain <code>mean</code> for the whole table, one masked sum, one <code>argmax</code>. Five lines replace every loop and comprehension in Unit 12's version, and each one says what it means. That's the whole argument for arrays — speed is the bonus, clarity is the point.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 21.7 PROBLEM BANK ============ -->
+  <section id="s7">
+    <div class="prose">
+      <span class="sec-num">21.7</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~12 min</span></span>
+      <p>Four mixed problems. Vectorised arithmetic, masks, shape and axis, in combinations — and not a <code>for</code> among them. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">Celsius to Fahrenheit, all at once</span></div>
+        <p class="pd">Four temperatures in Celsius. Convert the <b>whole array</b> in one expression — <code>c * 9 / 5 + 32</code> — and print the result, then the hottest in Fahrenheit to two decimals.</p>
+        <div class="want">[32. 50. 68. 86.]
+Hottest: 86.00</div>
+        <div class="pyrun" data-id="b1" data-expect="[32. 50. 68. 86.]\nHottest: 86.00">
+          <textarea spellcheck="false">import numpy as np
+
+c = np.array([0, 10, 20, 30])
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+c = np.array([0, 10, 20, 30])
+f = c * 9 / 5 + 32
+print(f)
+print(f"Hottest: {f.max():.2f}")</pre><p>Three operations, four temperatures, one line. The trailing dots in the printout are NumPy telling you the division made these floats — the same rule <code>/</code> has followed since Unit 2.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">Who passed, and how many</span></div>
+        <p class="pd">Seven scores. Print the passing ones (50 or more) as an array, then a line saying how many passed out of how many sat. Use a mask for the first and the same comparison summed for the second.</p>
+        <div class="want">[91 78 85 62 55]
+5 of 7 passed</div>
+        <div class="pyrun" data-id="b2" data-expect="[91 78 85 62 55]\n5 of 7 passed">
+          <textarea spellcheck="false">import numpy as np
+
+scores = np.array([91, 45, 78, 85, 62, 39, 55])
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+scores = np.array([91, 45, 78, 85, 62, 39, 55])
+passed = scores[scores >= 50]
+print(passed)
+print(f"{passed.size} of {scores.size} passed")</pre><p>Store the mask result once and both lines can use it — <code>passed.size</code> is the count, no second comparison needed. (<code>(scores >= 50).sum()</code> gives the same 5.)</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">Reshape, then summarise both ways</span></div>
+        <p class="pd">Take the numbers 1 to 12 with <code>np.arange(1, 13)</code>, lay them out as 3 rows of 4, and print: the grid's shape, the row sums, then the column sums. Say each shape out loud first — one of these comes back with three numbers and one with four.</p>
+        <div class="want">(3, 4)
+[10 26 42]
+[15 18 21 24]</div>
+        <div class="pyrun" data-id="b3" data-expect="(3, 4)\n[10 26 42]\n[15 18 21 24]">
+          <textarea spellcheck="false">import numpy as np
+
+grid = </textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+grid = np.arange(1, 13).reshape(3, 4)
+print(grid.shape)
+print(grid.sum(axis=1))    # across each row  → 3 numbers
+print(grid.sum(axis=0))    # down each column → 4 numbers</pre><p>Row 0 is 1+2+3+4 = 10, row 1 is 26, row 2 is 42 — that's <code>axis=1</code>, three results because there are three rows. The column sums come back four-long. If you had them the other way round, re-read the shape test: (3, 4) minus axis 1 is (3,).</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — normalise to 0–1</span></div>
+        <p class="pd">Squashing numbers into the range 0 to 1 is the most common preparation step in all of machine learning, and the formula is one line of what you learned today: <code>(x - x.min()) / (x.max() - x.min())</code> — subtract the smallest from everything, then divide everything by the span. Print the normalised array rounded to two decimals with <code>np.round(norm, 2)</code>, then confirm the smallest is 0 and the largest is 1.</p>
+        <div class="want">[0.   0.25 0.5  0.75 1.  ]
+min 0.00, max 1.00</div>
+        <div class="pyrun" data-id="b4" data-expect="[0.   0.25 0.5  0.75 1.  ]\nmin 0.00, max 1.00">
+          <textarea spellcheck="false">import numpy as np
+
+x = np.array([10, 20, 30, 40, 50])
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+
+x = np.array([10, 20, 30, 40, 50])
+norm = (x - x.min()) / (x.max() - x.min())
+print(np.round(norm, 2))
+print(f"min {norm.min():.2f}, max {norm.max():.2f}")</pre><p>Two vectorised operations and two aggregations, and the smallest value always lands on 0 with the largest on 1 by construction. The ragged spacing in the printed array is NumPy padding each number to a common width — cosmetic, and a good reminder to print scalars with f-strings when you care about exact output. What this normalising is <i>for</i> — why models want their inputs on a common scale — belongs to the Machine Learning stage; today you own the grammar of it.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later — and most of them you'll meet again in every library that follows.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 22 · pandas — tables of data</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">Arrays are perfect when everything is numbers of one type. Real data isn't: it has names, dates, categories, and holes where a value should have been. Notice how the build kept its names in a separate Python list and connected them by index — that little awkwardness is the whole reason pandas exists. It's the table built on top of NumPy: labelled columns, mixed types, missing values handled honestly, and every array trick you learned today still working underneath.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>NumPy documentation</b> — <i>NumPy: the absolute basics for beginners</i>. <span class="why">The official first read: arrays, dtype, shape, indexing and axis, in the same order these notes took them.</span> <a href="https://numpy.org/doc/stable/user/absolute_beginners.html" rel="noopener">numpy.org</a></li>
+      <li><b>NumPy documentation</b> — <i>NumPy quickstart</i>. <span class="why">The next step up: reshaping, stacking, more on broadcasting and boolean indexing. Skim it once you're comfortable with 21.3.</span> <a href="https://numpy.org/doc/stable/user/quickstart.html" rel="noopener">numpy.org</a></li>
+      <li><b>The Python Tutorial</b> — <i>the language itself</i>. <span class="why">Still the reference for everything under the library: lists, slicing, f-strings, the pieces Units 1–20 built on.</span> <a href="https://docs.python.org/3/tutorial/" rel="noopener">docs.python.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit20.html"><span class="k">← Previous</span><span class="t">Unit 20 · Decorators &amp; context managers</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit22.html"><span class="k">Next →</span><span class="t">Unit 22 · pandas — tables of data</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 21 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"Why is  prices * 1.05  on a NumPy array better than a list comprehension for the same job?",
+   o:["It's shorter to type, and that's the only difference","The multiplication runs over one solid block of memory in compiled code, and the line says what you mean instead of how to loop","Arrays can hold more numbers than lists","Comprehensions can't multiply floats"],
+   a:1,
+   e:"Both are correct programs. The array version is far faster because every element is the same type in one unbroken run of memory — and it reads as a description of the whole rather than the machinery of a loop."},
+  {q:"An array holds only one type. What does that buy you?",
+   o:["Nothing — it's a limitation with no upside","Every slot is the same size, so the whole array sits in one block of memory the processor can tear through","It lets arrays store text and numbers together","It makes printing prettier"],
+   a:1,
+   e:"That's the trade. A list can hold a string, a float and a duck, and pays for the flexibility in speed. An array gives up the mixing and gets a solid, uniform block — which is exactly what fast numeric code needs."},
+  {q:"An array's  .shape  is  (4, 3).  What is it?",
+   o:["4 columns and 3 rows","4 rows and 3 columns","12 elements in one flat row","4 arrays of unknown length"],
+   a:1,
+   e:"Shape reads (rows, columns), rows first, always. So (4, 3) is four rows of three — four students, three subjects. Saying that out loud at every step prevents most NumPy bugs."},
+  {q:"On a (4, 3) marks table, which gives one average PER SUBJECT?",
+   o:["marks.mean(axis=0)","marks.mean(axis=1)","marks.mean()","marks.mean(axis=2)"],
+   a:0,
+   e:"axis is the direction that disappears. axis=0 consumes the rows, running down each column, leaving one number per column — per subject, shape (3,). The shape test never lies: (4, 3) minus axis 0 is (3,)."},
+  {q:"What does  scores[scores >= 50]  give back?",
+   o:["True or False","The positions of the passing scores","A new array containing only the elements where the comparison was True","The original array with failures set to zero"],
+   a:2,
+   e:"Read it inside-out: scores >= 50 is a boolean array, one answer per element; used as an index it keeps the elements marked True. It's Unit 12's filtering comprehension in one phrase — and like a filter, the result is usually shorter."},
+  {q:"You have 12 numbers in a flat array. Which reshape is IMPOSSIBLE?",
+   o:["reshape(3, 4)","reshape(2, 6)","reshape(12, 1)","reshape(5, 3)"],
+   a:3,
+   e:"Reshaping regroups the same numbers, so the new shape must hold exactly as many slots: 3×4, 2×6 and 12×1 are all 12. 5×3 is 15 slots and NumPy refuses — it will not invent three numbers for you."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. You can now describe the whole instead of writing the loop."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 21.3 and 21.5 are the two that repay it most."
+           : " — worth another pass through 21.3 and 21.5 before pandas arrives.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["NumPy","The library everything numerical in Python is built on. Imported as np by universal convention: import numpy as np."],
+  ["Array (ndarray)","NumPy's container: a fixed-size block of values, all of one type, that arithmetic applies to as a whole. Made with np.array([...])."],
+  ["dtype","The one type an array holds — a whole-number type (this page's Python shows int32, most installed Pythons show int64 — same idea, different width), float64, bool. The trade that buys the speed: no mixing, but one solid block of memory."],
+  ["Vectorised","Describing an operation on the whole array rather than looping element by element. prices * 1.05 instead of a comprehension."],
+  ["Element-wise","Position by position: a + b pairs first with first, second with second. Both arrays must be the same length."],
+  ["Broadcasting","Stretching a single value (or a smaller array) across a bigger one, so a + 5 reaches every element."],
+  ["Shape","A tuple saying how many along each direction: (4,) is a flat row of four, (4, 3) is four rows of three. Rows first, always."],
+  ["ndim","How many directions an array has. 1 for a flat row, 2 for a table."],
+  ["reshape","Re-group the same numbers into a new layout: arange(12).reshape(3, 4). The slot count must match exactly."],
+  ["Boolean array","What a comparison gives back: one True/False per element. Summing it counts the Trues."],
+  ["Mask","A boolean array used as an index — scores[scores >= 50] keeps only the elements marked True. The retirement of the filtering comprehension."],
+  ["axis","Which direction an aggregation consumes. axis=0 runs down the columns (one result per column); axis=1 runs across the rows (one per row). The named axis disappears from the shape."],
+  ["argmax / argmin","The position of the largest / smallest element, not its value. How you turn 'how much' into 'which one'."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

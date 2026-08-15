@@ -1,0 +1,1109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>matplotlib &amp; seaborn — Seeing Your Data — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<link rel="stylesheet" href="../../assets/unit.css">
+<style>
+/* one-off: read-only annotated listings for the libraries that cannot run in the page */
+.listing{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:16px 20px;max-width:820px}
+.listing .ll{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:9px}
+.listing pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:11px 14px;overflow-x:auto;margin:0 0 10px}
+.listing p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u23" data-lwa-title="Unit 23 · matplotlib &amp; seaborn — seeing your data">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Bridge — Python for ML &amp; DL · Unit 23</div>
+      <h1>matplotlib &amp; seaborn — Seeing Your Data</h1>
+      <p class="standfirst">Unit 21 gave you arrays, Unit 22 gave you tables. Both hand back numbers, and numbers are a poor way to notice things. This session gives you eyes: four charts, the three lines that make a chart honest, and the shortest path from a DataFrame to a picture you can actually show someone.</p>
+      <div class="facts">
+        <div><b>One session</b>~50 min</div>
+        <div><b>6 concepts</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 21–22 — NumPy &amp; pandas</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">23.1 The first picture</a>
+    <a href="#s2">23.2 Four charts</a>
+    <a href="#s3">23.3 Making it readable</a>
+    <a href="#s4">23.4 Straight from pandas</a>
+    <a href="#s5">23.5 seaborn, in the notebook</a>
+    <a href="#s6">23.6 Build: a mini data study</a>
+    <a href="#s7">23.7 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 23.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Units 21–22</b>NumPy arrays and, more importantly, pandas DataFrames and <code>groupby</code>. Nearly every chart here is drawn from a table you already know how to build.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm: a 3-minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit23.ipynb" rel="noopener">▶ Run this unit in Colab</a> — and for §23.5 you'll <i>need</i> the notebook.</div>
+      <div class="pq"><b>What runs here, what doesn't</b>matplotlib runs right in this page: any figure your code draws appears as a picture under the output — no extra line needed. seaborn does not, and never will; those listings are read-only, so open the notebook for them.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">23.1</span>
+      <h2>The first picture — and the three lines that make it honest</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Unit 22 ended with a column of numbers: nine marks, three subjects, a mean each. You <i>read</i> them, and you probably didn't notice the thing that matters. Humans are bad at scanning columns and excellent at spotting a shape. Twenty numbers in a list is homework; twenty numbers as a line is a story you take in at a glance. How do you turn one into the other?</p>
+      <p><b>The idea, in plain words.</b> matplotlib is a drawing pad, and <code>pyplot</code> is the set of pens. You import it once — everyone in the world writes it the same way, <code>import matplotlib.pyplot as plt</code> — and then each <code>plt.</code> line adds one thing to the pad that is currently open. <code>plt.plot(x, y)</code> draws the line. And then, before you stop:</p>
+      <ul class="plain">
+        <li><code>plt.title("...")</code> — what am I looking at?</li>
+        <li><code>plt.xlabel("...")</code> — what does sideways mean?</li>
+        <li><code>plt.ylabel("...")</code> — what does up mean?</li>
+      </ul>
+      <p>Three lines. They take four seconds to type and they are the entire difference between a chart and a scribble, because <b>an unlabelled chart is a lie waiting to happen</b> — not because it says anything false, but because a reader cannot check what they cannot read. A rising line with no axis names could be sales, could be temperature, could be your heart rate looking at the sales. Make it a habit now, while your charts are small and nobody is depending on them; the habit is what survives into the ones that matter.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — what each line adds to the pad</div>
+      <div class="m">import matplotlib.pyplot as plt
+days = [1, 2, 3, 4, 5]
+pages = [12, 20, 17, 26, 31]
+plt.plot(days, pages)
+plt.title("Pages read this week")
+plt.xlabel("Day")
+plt.ylabel("Pages")</div>
+      <p><b>Line 1:</b> the pens arrive. Nothing is drawn yet — this is the one line that makes the rest possible, and it is heavier than a normal import (the page fetches the library on first run, so give it a few seconds).</p>
+      <p><b>Lines 2–3:</b> two ordinary lists from Unit 3's world. matplotlib is not fussy: it takes lists, it takes NumPy arrays, it takes pandas columns.</p>
+      <p><b>Line 4:</b> a blank pad appears and gets one line drawn on it, pairing them up — (1, 12), (2, 20), (3, 17), (4, 26), (5, 31). Note the pairing rule: <b>the two lists must be the same length</b>, and the <i>n</i>th of one goes with the <i>n</i>th of the other.</p>
+      <p><b>Lines 5–7:</b> three captions written onto that same pad. The pad stays open until the program ends, and then this page hands you the picture.</p>
+      <p>There is no <code>print</code> here and no output text — the result of this program is the image itself, drawn below the (empty) output box.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 275" role="img" aria-label="The same line chart twice: unlabelled on the left, fully labelled on the right">
+        <text x="40" y="32" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#a35a33" letter-spacing="1.4">WITHOUT LABELS</text>
+        <rect x="40" y="60" width="340" height="150" rx="8" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5"/>
+        <line x1="55" y1="60" x2="55" y2="210" stroke="#e3e6ee" stroke-width="1.5"/>
+        <line x1="55" y1="210" x2="375" y2="210" stroke="#e3e6ee" stroke-width="1.5"/>
+        <polyline points="70,190 140,150 210,165 280,110 350,80" fill="none" stroke="#5b4b9e" stroke-width="2.5"/>
+        <circle cx="70" cy="190" r="3.5" fill="#5b4b9e"/><circle cx="140" cy="150" r="3.5" fill="#5b4b9e"/>
+        <circle cx="210" cy="165" r="3.5" fill="#5b4b9e"/><circle cx="280" cy="110" r="3.5" fill="#5b4b9e"/>
+        <circle cx="350" cy="80" r="3.5" fill="#5b4b9e"/>
+        <text x="210" y="256" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">something went up. what? measured how? over what?</text>
+
+        <text x="470" y="32" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#1d5654" letter-spacing="1.4">WITH THREE MORE LINES OF CODE</text>
+        <text x="640" y="52" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#1f2733">Pages read this week</text>
+        <rect x="470" y="60" width="340" height="150" rx="8" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5"/>
+        <line x1="485" y1="60" x2="485" y2="210" stroke="#e3e6ee" stroke-width="1.5"/>
+        <line x1="485" y1="210" x2="805" y2="210" stroke="#e3e6ee" stroke-width="1.5"/>
+        <polyline points="500,190 570,150 640,165 710,110 780,80" fill="none" stroke="#5b4b9e" stroke-width="2.5"/>
+        <circle cx="500" cy="190" r="3.5" fill="#5b4b9e"/><circle cx="570" cy="150" r="3.5" fill="#5b4b9e"/>
+        <circle cx="640" cy="165" r="3.5" fill="#5b4b9e"/><circle cx="710" cy="110" r="3.5" fill="#5b4b9e"/>
+        <circle cx="780" cy="80" r="3.5" fill="#5b4b9e"/>
+        <text x="640" y="232" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" font-weight="600" fill="#3d3170">Day</text>
+        <text x="462" y="135" text-anchor="middle" transform="rotate(-90 462 135)" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" font-weight="600" fill="#3d3170">Pages</text>
+        <text x="640" y="256" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">a claim a reader can check — and argue with</text>
+      </svg>
+      <div class="figcap">Fig. 1 — Identical data, identical drawing code. The right-hand pad had <code>title</code>, <code>xlabel</code> and <code>ylabel</code> added; that is the whole difference. Adopt it as a rule: no chart leaves your screen unlabelled.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Tutorials elsewhere end every example with <code>plt.show()</code>. In a normal Python program that line is what pops the picture window open — but in this page (and in Colab) the figure is collected and displayed for you, so <code>plt.show()</code> is unnecessary here and will simply do nothing. Leave it out in these notes; add it back the day you run a <code>.py</code> file from a terminal.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> draw the reading week from the trace above, labelled. <b>Thinking:</b> import, two same-length lists, one <code>plot</code>, three captions. <b>Note:</b> this is the unit's first run and the page has to fetch matplotlib first — expect ten or fifteen seconds, once. Every later problem reuses the download.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">import matplotlib.pyplot as plt
+
+days = [1, 2, 3, 4, 5]
+pages = [12, 20, 17, 26, 31]
+
+plt.plot(days, pages)
+plt.title("Pages read this week")
+plt.xlabel("Day")
+plt.ylabel("Pages")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">23.1 · P1</span><span class="pt">Draw it, then label it</span></div>
+        <p class="pd">A phone battery, measured every hour. Run the starter as-is and look at the naked chart. Then add the three caption lines — the y-axis is a percentage, the x-axis is hours since unplugging — and run again. No check on this one: judge the picture with your eyes.</p>
+        <div class="pyrun" data-id="s1p1">
+          <textarea spellcheck="false">import matplotlib.pyplot as plt
+
+hours = [0, 1, 2, 3, 4, 5]
+battery = [100, 84, 71, 55, 38, 20]
+
+plt.plot(hours, battery)
+# add the three lines that turn a scribble into a chart
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import matplotlib.pyplot as plt
+
+hours = [0, 1, 2, 3, 4, 5]
+battery = [100, 84, 71, 55, 38, 20]
+
+plt.plot(hours, battery)
+plt.title("Battery drain while unplugged")
+plt.xlabel("Hours since unplugging")
+plt.ylabel("Battery remaining (%)")</pre><p>The second picture answers a question the first only hints at. Notice you also had to <i>decide</i> what the axes mean — labelling forces you to know what you drew.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">23.1 · P2</span><span class="pt">The chart that lies</span></div>
+        <p class="pd">This one is labelled, which is worse than unlabelled — it is labelled <i>wrongly</i>. The lists say rainfall per month, but the captions claim something else entirely, and the axes are swapped. Run it, read the mismatch, and fix all three caption lines so the chart tells the truth.</p>
+        <div class="pyrun" data-id="s1p2">
+          <textarea spellcheck="false">import matplotlib.pyplot as plt
+
+month = [6, 7, 8, 9, 10]
+rain_mm = [45, 120, 180, 160, 210]
+
+plt.plot(month, rain_mm)
+plt.title("Exam marks by student")
+plt.xlabel("Rainfall (mm)")
+plt.ylabel("Month number")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import matplotlib.pyplot as plt
+
+month = [6, 7, 8, 9, 10]
+rain_mm = [45, 120, 180, 160, 210]
+
+plt.plot(month, rain_mm)
+plt.title("Monsoon rainfall by month")
+plt.xlabel("Month number")
+plt.ylabel("Rainfall (mm)")</pre><p>The first argument to <code>plot</code> goes sideways, the second goes up — so the first list's meaning belongs in <code>xlabel</code> and the second's in <code>ylabel</code>. Swapped labels are the commonest chart bug in the wild, and no error message will ever warn you.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">23.1 · P3</span><span class="pt">Know the number before you draw it</span></div>
+        <p class="pd">A chart shows you a shape; it rarely gives you an exact figure, so a good study prints the headline numbers <i>alongside</i> the picture. Using these two lists, print the total sales and the name of the best month. (<code>max</code>, <code>sum</code> and <code>.index()</code> from Unit 6 are all you need — no plotting in this one.)</p>
+        <div class="want">Total: 98
+Best month: May</div>
+        <div class="pyrun" data-id="s1p3" data-expect="Total: 98\nBest month: May">
+          <textarea spellcheck="false">months = ["Jan", "Feb", "Mar", "Apr", "May"]
+sales = [12, 19, 15, 22, 30]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>months = ["Jan", "Feb", "Mar", "Apr", "May"]
+sales = [12, 19, 15, 22, 30]
+print("Total:", sum(sales))
+best = months[sales.index(max(sales))]
+print("Best month:", best)</pre><p><code>max(sales)</code> finds the biggest number, <code>.index()</code> finds where it sits, and that same position in <code>months</code> is its name — the two lists line up, exactly as they must for <code>plt.plot</code>. Numbers and picture, side by side: that is the whole recipe of §23.6.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 23.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">23.2</span>
+      <h2>Four charts, and when to use which</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> You have a line chart, so everything starts looking like a line chart — including things that have no business being one. Sales for four cities drawn as a line implies Chennai <i>flows into</i> Pune, which is nonsense. Choosing the wrong chart doesn't produce an error; it produces a confident, well-labelled, wrong impression. So: which picture for which question?</p>
+      <p><b>The idea, in plain words.</b> There are dozens of chart types and you need four. Each one answers a different <i>shape</i> of question, and you pick by asking what your question is, not by what looks nice.</p>
+      <div class="fig" style="max-width:66ch;padding:6px 18px">
+      <table>
+        <tr><th>your question</th><th>chart</th><th>the call</th></tr>
+        <tr><td>How did one thing change over time?</td><td>line</td><td><code>plt.plot(x, y)</code></td></tr>
+        <tr><td>Which category is biggest?</td><td>bar</td><td><code>plt.bar(names, values)</code></td></tr>
+        <tr><td>Do these two numbers move together?</td><td>scatter</td><td><code>plt.scatter(x, y)</code></td></tr>
+        <tr><td>What does one column's spread look like?</td><td>histogram</td><td><code>plt.hist(values, bins=…)</code></td></tr>
+      </table>
+      </div>
+      <p>Three of those take two lists, as you'd expect. The <b>histogram</b> is the odd one and the interesting one: it takes a <i>single</i> list of numbers and counts them into ranges called <b>bins</b> — how many marks between 50 and 60, how many between 60 and 70 — then draws one bar per bin. You do not tell it the heights; it counts them for you. That is why a histogram answers a question no other chart here can: not "what is each value" but "what is the <i>shape</i> of all of them together" — clumped in the middle, spread wide, two humps, one long tail.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 225" role="img" aria-label="Four small charts: line, bar, scatter and histogram, each with the question it answers">
+        <rect x="20" y="46" width="175" height="110" rx="8" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5"/>
+        <polyline points="35,140 70,105 105,120 140,75 180,60" fill="none" stroke="#5b4b9e" stroke-width="2.5"/>
+        <text x="107" y="180" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#3d3170">line</text>
+        <text x="107" y="200" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">change over time</text>
+
+        <rect x="235" y="46" width="175" height="110" rx="8" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5"/>
+        <rect x="250" y="106" width="24" height="40" fill="#5b4b9e"/>
+        <rect x="285" y="76" width="24" height="70" fill="#5b4b9e"/>
+        <rect x="320" y="91" width="24" height="55" fill="#5b4b9e"/>
+        <rect x="355" y="56" width="24" height="90" fill="#5b4b9e"/>
+        <text x="322" y="180" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#3d3170">bar</text>
+        <text x="322" y="200" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">compare categories</text>
+
+        <rect x="450" y="46" width="175" height="110" rx="8" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5"/>
+        <circle cx="470" cy="138" r="4" fill="#2b7a78"/><circle cx="490" cy="126" r="4" fill="#2b7a78"/>
+        <circle cx="510" cy="130" r="4" fill="#2b7a78"/><circle cx="530" cy="113" r="4" fill="#2b7a78"/>
+        <circle cx="550" cy="118" r="4" fill="#2b7a78"/><circle cx="562" cy="100" r="4" fill="#2b7a78"/>
+        <circle cx="585" cy="92" r="4" fill="#2b7a78"/><circle cx="605" cy="72" r="4" fill="#2b7a78"/>
+        <text x="537" y="180" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#1d5654">scatter</text>
+        <text x="537" y="200" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">two numbers, related?</text>
+
+        <rect x="665" y="46" width="175" height="110" rx="8" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5"/>
+        <rect x="680" y="116" width="30" height="30" fill="#3d3170"/>
+        <rect x="710" y="86" width="30" height="60" fill="#3d3170"/>
+        <rect x="740" y="56" width="30" height="90" fill="#3d3170"/>
+        <rect x="770" y="91" width="30" height="55" fill="#3d3170"/>
+        <rect x="800" y="121" width="30" height="25" fill="#3d3170"/>
+        <text x="752" y="180" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#3d3170">histogram</text>
+        <text x="752" y="200" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">shape of one column</text>
+      </svg>
+      <div class="figcap">Fig. 2 — Bar and histogram look like cousins and are not: a bar chart's bars are <i>categories</i> you chose and can be reordered freely, while a histogram's bars are <i>ranges of one number</i>, touching, in the only order they can be. That is why histogram bars are drawn with no gaps.</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      Pick the chart from the question, not from the data. Time on the bottom → line. Names on the bottom → bar. Two measurements per thing → scatter. One measurement, many things, and you want its shape → histogram.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> the same small dataset, asked four different ways. <b>Thinking:</b> <code>plt.figure()</code> opens a fresh pad, so one program can draw several pictures — you'll get four images stacked under the output, in order. Read each title and check it against the shape underneath.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">import matplotlib.pyplot as plt
+
+months = ["Jan", "Feb", "Mar", "Apr"]
+month_no = [1, 2, 3, 4]
+sales = [120, 95, 143, 88]
+hours = [1, 2, 2, 3, 4, 4, 5, 6]
+marks = [52, 55, 61, 64, 70, 68, 79, 88]
+all_marks = [41, 55, 58, 62, 63, 65, 66, 68, 71, 72, 74, 77, 81, 90]
+
+plt.figure()
+plt.plot(month_no, sales)
+plt.title("Sales over the year so far")
+plt.xlabel("Month number")
+plt.ylabel("Sales (thousands)")
+
+plt.figure()
+plt.bar(months, sales)
+plt.title("Sales by month")
+plt.xlabel("Month")
+plt.ylabel("Sales (thousands)")
+
+plt.figure()
+plt.scatter(hours, marks)
+plt.title("Study hours against marks")
+plt.xlabel("Hours studied per week")
+plt.ylabel("Mark")
+
+plt.figure()
+plt.hist(all_marks, bins=5)
+plt.title("How the class marks are spread")
+plt.xlabel("Mark")
+plt.ylabel("Number of students")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">23.2 · P1</span><span class="pt">Line — a week of weather</span></div>
+        <p class="pd">Seven days, one temperature each. Draw it as a line and label all three captions (the temperatures are in °C — but write <code>C</code>, plain and ASCII, in the label; fancy symbols and the page's font don't always agree). Run-only: judge it yourself.</p>
+        <div class="pyrun" data-id="s2p1">
+          <textarea spellcheck="false">import matplotlib.pyplot as plt
+
+day = [1, 2, 3, 4, 5, 6, 7]
+temp = [31, 33, 34, 32, 29, 28, 30]
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import matplotlib.pyplot as plt
+
+day = [1, 2, 3, 4, 5, 6, 7]
+temp = [31, 33, 34, 32, 29, 28, 30]
+
+plt.plot(day, temp)
+plt.title("Temperature this week")
+plt.xlabel("Day of the week")
+plt.ylabel("Temperature (C)")</pre><p>Time on the bottom axis is the signature of a line chart. The dip on days 5–6 is the thing you notice in the picture and would have skimmed past in the list.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">23.2 · P2</span><span class="pt">Bar — which language wins</span></div>
+        <p class="pd">Four languages, four counts from a small survey. These are <i>categories</i> — a line between them would be meaningless. Draw a labelled bar chart. Then, for the feel of it, change <code>plt.bar</code> to <code>plt.barh</code> and run again: horizontal bars, and long category names stop overlapping.</p>
+        <div class="pyrun" data-id="s2p2">
+          <textarea spellcheck="false">import matplotlib.pyplot as plt
+
+langs = ["Python", "Java", "C++", "JavaScript"]
+count = [42, 25, 13, 30]
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import matplotlib.pyplot as plt
+
+langs = ["Python", "Java", "C++", "JavaScript"]
+count = [42, 25, 13, 30]
+
+plt.bar(langs, count)
+plt.title("Languages used by the class")
+plt.xlabel("Language")
+plt.ylabel("Number of students")</pre><p>Note that <code>plt.bar</code> happily takes text for the x values — it just spaces the categories out evenly and writes the names underneath. With <code>barh</code>, remember the axis labels swap meaning too.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">23.2 · P3</span><span class="pt">Scatter — does practice pay?</span></div>
+        <p class="pd">Ten students, each with two measurements: hours practised and the mark they got. One dot per student. Draw the labelled scatter and then look: is there a trend, and are there any dots that refuse to follow it? (There is one. Find it with your eyes — this is exactly the sort of thing a table hides.)</p>
+        <div class="pyrun" data-id="s2p3">
+          <textarea spellcheck="false">import matplotlib.pyplot as plt
+
+hours = [1, 2, 3, 3, 4, 5, 6, 7, 8, 2]
+mark = [45, 52, 58, 61, 66, 70, 75, 82, 88, 91]
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import matplotlib.pyplot as plt
+
+hours = [1, 2, 3, 3, 4, 5, 6, 7, 8, 2]
+mark = [45, 52, 58, 61, 66, 70, 75, 82, 88, 91]
+
+plt.scatter(hours, mark)
+plt.title("Practice hours against marks")
+plt.xlabel("Hours practised per week")
+plt.ylabel("Mark")</pre><p>Nine dots march up neatly; the tenth sits high and lonely at 2 hours, 91 marks. That is an <b>outlier</b>, and noticing them is half of what plotting is for. Whether it's a genius, a lucky guess or a typing error, you now know to ask.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">23.2 · P4</span><span class="pt">Stretch — histogram, and what <code>bins</code> does</span></div>
+        <p class="pd">Twenty marks, one list. Draw a labelled histogram with <code>bins=4</code>, look at it, then change to <code>bins=10</code> and run again. Same numbers, two different stories — decide for yourself which one you'd put in a report, and why. Run-only, deliberately: this is a judgement, not a check.</p>
+        <div class="pyrun" data-id="s2p4">
+          <textarea spellcheck="false">import matplotlib.pyplot as plt
+
+marks = [38, 44, 51, 53, 55, 58, 59, 61, 62, 63,
+         64, 66, 68, 69, 71, 74, 77, 81, 85, 94]
+
+plt.hist(marks, bins=4)
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import matplotlib.pyplot as plt
+
+marks = [38, 44, 51, 53, 55, 58, 59, 61, 62, 63,
+         64, 66, 68, 69, 71, 74, 77, 81, 85, 94]
+
+plt.hist(marks, bins=10)
+plt.title("Spread of marks, 20 students")
+plt.xlabel("Mark")
+plt.ylabel("Number of students")</pre><p>Few bins: a smooth hump, and detail is lost. Many bins: every wobble shows, including wobbles that are just twenty students being twenty students. <code>bins</code> is an honest judgement call — which is why a histogram should always say how many it used, or at least be shown next to the numbers.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 23.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">23.3</span>
+      <h2>Making it readable — size, colour and a legend</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~9 min</span></span>
+      <p><b>The problem.</b> Two cities, one chart. You call <code>plt.plot</code> twice, both lines land on the same pad — good — and now nobody, including you tomorrow, can tell which line is which. Meanwhile the default figure is a small square that squashes twelve month names into an unreadable smear.</p>
+      <p><b>The idea, in plain words.</b> Three knobs, and you will use all three constantly:</p>
+      <ul class="plain">
+        <li><b>Size.</b> <code>plt.figure(figsize=(8, 4))</code> — width and height in inches, set <i>before</i> you draw. Wide and short suits time-lines; tall suits horizontal bars with long names.</li>
+        <li><b>Colour and marker.</b> <code>plt.plot(x, y, color="#5b4b9e", marker="o")</code>. Colour names (<code>"teal"</code>, <code>"crimson"</code>) work too, and <code>marker</code> puts a shape on each data point so a reader can see where the real measurements are, as opposed to the line that merely joins them.</li>
+        <li><b>A legend.</b> Give each series a <code>label="Chennai"</code> when you draw it, then call <code>plt.legend()</code> once, at the end. The legend is a box matching each label to its line — and it appears only if you ask; labels alone draw nothing.</li>
+      </ul>
+      <p>One honest note on colour, and it matters more than it sounds. Roughly one person in twelve sees red and green as much the same, and plenty of charts get printed in black and white or screenshotted through a filter. So <b>never let colour be the only difference</b>: pair it with a marker shape or a dash style (<code>linestyle="--"</code>), and where the chart is simple enough, label the line directly on the picture rather than making the reader glance back and forth to a legend at all. Colour should be the pleasant reinforcement of a distinction, not the distinction itself.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — two lines on one pad</div>
+      <div class="m">plt.figure(figsize=(7, 4))
+plt.plot(months, chennai, color="#5b4b9e", marker="o", label="Chennai")
+plt.plot(months, pune, color="#2b7a78", marker="s", label="Pune")
+plt.legend()</div>
+      <p><b>Line 1:</b> a new pad, seven inches by four. Anything drawn from now on lands here.</p>
+      <p><b>Line 2:</b> the first line is drawn, purple, with a round marker on each month. The <code>label</code> is written on a sticky note and filed — nothing about it is visible yet.</p>
+      <p><b>Line 3:</b> a second line on the <i>same</i> pad (no new <code>plt.figure()</code>, so no new pad), teal, square markers, second sticky note filed.</p>
+      <p><b>Line 4:</b> matplotlib collects the sticky notes and draws the legend box, choosing a corner that covers the least data. Remove this line and the labels stay filed away forever — the commonest cause of "my legend isn't showing".</p>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>plt.figure()</code> starts a <i>new</i> picture; it does not clear the current one. So two <code>plot</code> calls with a <code>figure()</code> between them give you two charts with one line each, while two <code>plot</code> calls in a row give you one chart with two lines. If your second series has vanished, count your <code>plt.figure()</code> calls — and if you meant to compare, you want <i>fewer</i> of them, not more.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> five months, two cities, one readable chart. <b>Thinking:</b> size first, then one <code>plot</code> per city carrying its own colour, marker and label, then captions, then the legend last.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">import matplotlib.pyplot as plt
+
+months = ["Jan", "Feb", "Mar", "Apr", "May"]
+chennai = [120, 132, 128, 145, 150]
+pune = [95, 101, 118, 112, 130]
+
+plt.figure(figsize=(7, 4))
+plt.plot(months, chennai, color="#5b4b9e", marker="o", label="Chennai")
+plt.plot(months, pune, color="#2b7a78", marker="s", label="Pune")
+plt.title("Monthly sales, two cities")
+plt.xlabel("Month")
+plt.ylabel("Sales (thousands)")
+plt.legend()</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">23.3 · P1</span><span class="pt">Two series, one legend</span></div>
+        <p class="pd">Two products over six months. The drawing is done; the chart is unreadable. Make it readable: give the figure a sensible size, give each line a colour <i>and</i> a distinct marker, label both, add the three captions and the legend. Run-only — the test is whether a stranger could read it.</p>
+        <div class="pyrun" data-id="s3p1">
+          <textarea spellcheck="false">import matplotlib.pyplot as plt
+
+month = [1, 2, 3, 4, 5, 6]
+tea = [30, 34, 33, 40, 46, 51]
+coffee = [22, 28, 35, 38, 37, 44]
+
+plt.plot(month, tea)
+plt.plot(month, coffee)
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import matplotlib.pyplot as plt
+
+month = [1, 2, 3, 4, 5, 6]
+tea = [30, 34, 33, 40, 46, 51]
+coffee = [22, 28, 35, 38, 37, 44]
+
+plt.figure(figsize=(7, 4))
+plt.plot(month, tea, color="#5b4b9e", marker="o", label="Tea")
+plt.plot(month, coffee, color="#2b7a78", marker="s", linestyle="--", label="Coffee")
+plt.title("Cups sold per month")
+plt.xlabel("Month number")
+plt.ylabel("Cups sold")
+plt.legend()</pre><p>Circle-solid versus square-dashed: the two lines stay distinguishable in greyscale, which is the test worth applying to every chart you make.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">23.3 · P2</span><span class="pt">The number behind the crossing</span></div>
+        <p class="pd">A chart shows you <i>that</i> two series diverge; it rarely tells you by exactly how much. Two teams, four quarters. Print the quarter with the biggest gap between them, and the size of that gap, in the exact shape shown. (<code>abs()</code> gives a difference without a minus sign; loop over the four positions.) No plotting here — this is the number you would print under the picture.</p>
+        <div class="want">Biggest gap: Q3 (6)</div>
+        <div class="pyrun" data-id="s3p2" data-expect="Biggest gap: Q3 (6)">
+          <textarea spellcheck="false">quarters = ["Q1", "Q2", "Q3", "Q4"]
+team_a = [10, 14, 9, 18]
+team_b = [12, 11, 15, 13]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>quarters = ["Q1", "Q2", "Q3", "Q4"]
+team_a = [10, 14, 9, 18]
+team_b = [12, 11, 15, 13]
+
+best_q = ""
+best_gap = 0
+for i in range(len(quarters)):
+    gap = abs(team_a[i] - team_b[i])
+    if gap > best_gap:
+        best_gap = gap
+        best_q = quarters[i]
+
+print(f"Biggest gap: {best_q} ({best_gap})")</pre><p>Gaps of 2, 3, 6, 5 — Q3 wins. Pair this line with the two-series chart and your reader gets both the shape and the fact. A picture proposes; a number confirms.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 23.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">23.4</span>
+      <h2>Plotting straight from pandas — the short path</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~9 min</span></span>
+      <p><b>The problem.</b> Your data is almost never two hand-typed lists. It is a DataFrame from Unit 22, possibly the result of a <code>groupby</code>, and pulling columns out into lists just to hand them to <code>plt.bar</code> is busywork — busywork that also throws away the column names you'd want as labels.</p>
+      <p><b>The idea, in plain words.</b> pandas already knows about matplotlib. Every DataFrame and every Series has a <code>.plot()</code> method that draws itself:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">df.plot(kind="bar", x="city", y="sales")</p>
+      <p><code>kind</code> takes exactly the words you'd hope: <code>"line"</code>, <code>"bar"</code>, <code>"barh"</code>, <code>"scatter"</code>, <code>"hist"</code>. And a <code>groupby</code> result is even shorter, because a Series already knows its own index — <code>by_city.plot(kind="bar")</code> uses the group names as the bottom axis without being told. One line from table to picture.</p>
+      <p>Two things to keep straight. First, <code>.plot()</code> is still matplotlib underneath, so you must <code>import matplotlib.pyplot as plt</code> as well, and you finish with the same <code>plt.title</code> / <code>plt.xlabel</code> / <code>plt.ylabel</code> — pandas guesses at labels, and its guesses are for you, not for a reader. Second, pandas adds a legend automatically whenever it plots a named column; with a single series that legend is noise, and <code>legend=False</code> removes it.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — table to picture</div>
+      <div class="m">sales = pd.DataFrame({"city": ["Chennai", "Pune", "Delhi"],
+                      "sales": [120, 95, 143]})
+sales.plot(kind="bar", x="city", y="sales", legend=False)
+plt.title("Sales by city")</div>
+      <p><b>Line 1–2:</b> the DataFrame from Unit 22 — three rows, two columns, and pandas remembers both column <i>names</i>. That memory is the whole advantage here.</p>
+      <p><b>Line 3:</b> pandas opens a pad, reads <code>x="city"</code> for the categories and <code>y="sales"</code> for the heights, draws three bars, writes the city names underneath by itself, and suppresses the legend we don't need.</p>
+      <p><b>Line 4:</b> an ordinary <code>plt.</code> call, landing on the pad pandas just opened — because it is the same matplotlib all along. Everything you learned in §23.1 and §23.3 still applies.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a four-row table, straight to a labelled bar chart. <b>Thinking:</b> build the DataFrame, one <code>.plot()</code> call with <code>x</code> and <code>y</code> named, then the three captions as usual. Compare the line count with doing it by hand — this is the shortest honest path there is.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">import pandas as pd
+import matplotlib.pyplot as plt
+
+sales = pd.DataFrame({
+    "city": ["Chennai", "Pune", "Delhi", "Kochi"],
+    "sales": [120, 95, 143, 88],
+})
+print(sales)
+
+sales.plot(kind="bar", x="city", y="sales", color="#5b4b9e", legend=False)
+plt.title("Sales by city")
+plt.xlabel("City")
+plt.ylabel("Sales (thousands)")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">23.4 · P1</span><span class="pt">One table, two kinds</span></div>
+        <p class="pd">The rainfall table below. Draw it with <code>df.plot(kind="line", x="month", y="rain_mm")</code> and label it; then change <code>kind</code> to <code>"bar"</code> and run again. Both are defensible here — months are a time sequence <i>and</i> a set of categories — so decide which you prefer and be able to say why. Run-only.</p>
+        <div class="pyrun" data-id="s4p1">
+          <textarea spellcheck="false">import pandas as pd
+import matplotlib.pyplot as plt
+
+rain = pd.DataFrame({
+    "month": ["Jun", "Jul", "Aug", "Sep", "Oct"],
+    "rain_mm": [45, 120, 180, 160, 210],
+})
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import pandas as pd
+import matplotlib.pyplot as plt
+
+rain = pd.DataFrame({
+    "month": ["Jun", "Jul", "Aug", "Sep", "Oct"],
+    "rain_mm": [45, 120, 180, 160, 210],
+})
+
+rain.plot(kind="bar", x="month", y="rain_mm", color="#2b7a78", legend=False)
+plt.title("Monsoon rainfall by month")
+plt.xlabel("Month")
+plt.ylabel("Rainfall (mm)")</pre><p>The line emphasises the rise-and-fall; the bars emphasise "October was the wettest". Same data, different sentence. That choice is yours and you should make it on purpose.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">23.4 · P2</span><span class="pt">Plot a groupby result</span></div>
+        <p class="pd">Six rows, three cities, two days each — exactly Unit 22's shape. Group by city, take the mean of <code>sales</code>, and plot the result. The Series already carries the city names as its index, so <code>.plot(kind="bar")</code> needs no <code>x</code> or <code>y</code> at all. Label it properly and run.</p>
+        <div class="pyrun" data-id="s4p2">
+          <textarea spellcheck="false">import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.DataFrame({
+    "city": ["Chennai", "Chennai", "Pune", "Pune", "Delhi", "Delhi"],
+    "day": ["Mon", "Tue", "Mon", "Tue", "Mon", "Tue"],
+    "sales": [120, 140, 95, 105, 143, 157],
+})
+
+by_city = df.groupby("city")["sales"].mean()
+print(by_city)
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>by_city = df.groupby("city")["sales"].mean()
+print(by_city)
+
+by_city.plot(kind="bar", color="#5b4b9e")
+plt.title("Average daily sales by city")
+plt.xlabel("City")
+plt.ylabel("Mean sales (thousands)")</pre><p>Group, aggregate, plot — three ideas, three lines, and the group names travel from the table to the axis without you touching them. This is the motion you will repeat for years.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">23.4 · P3</span><span class="pt">Print what the picture claims</span></div>
+        <p class="pd">Same six rows. Never publish a bar chart without being able to state its numbers. Compute the mean sales per city and print one line per city, one decimal place, in the exact shape below. (A grouped Series can be walked with <code>for name, value in series.items():</code> — and note the order pandas gives you.)</p>
+        <div class="want">Chennai: 130.0
+Delhi: 150.0
+Pune: 100.0</div>
+        <div class="pyrun" data-id="s4p3" data-expect="Chennai: 130.0\nDelhi: 150.0\nPune: 100.0">
+          <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({
+    "city": ["Chennai", "Chennai", "Pune", "Pune", "Delhi", "Delhi"],
+    "day": ["Mon", "Tue", "Mon", "Tue", "Mon", "Tue"],
+    "sales": [120, 140, 95, 105, 143, 157],
+})
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>by_city = df.groupby("city")["sales"].mean()
+for name, value in by_city.items():
+    print(f"{name}: {value:.1f}")</pre><p>Alphabetical, because <code>groupby</code> sorts its keys — Chennai, Delhi, Pune, not the order they appeared in the table. Worth knowing before you claim your bar chart is "in order of sales".</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 23.5 ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">23.5</span>
+      <h2>seaborn, in the notebook</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · in Colab</span></span>
+      <p><b>The problem.</b> Some perfectly ordinary questions turn matplotlib into a chore. "Average mark per subject, with a little bar showing how uncertain that average is" needs a groupby, a mean, a standard error and a call to <code>plt.errorbar</code>. "Marks by subject, coloured by student, side by side" needs a loop, manual bar offsets and a hand-built legend. You <i>can</i> write all that. You will not enjoy it twice.</p>
+      <p><b>The idea, in plain words.</b> seaborn is a thin, well-mannered layer that sits on top of matplotlib and speaks DataFrame. You hand it the whole table and the <i>names</i> of the columns to use — <code>data=df, x="subject", y="marks"</code> — and it does the grouping, the aggregating, the colouring and the legend for you. Underneath it is still matplotlib, so every <code>plt.title</code> and <code>plt.xlabel</code> you know still works on a seaborn chart.</p>
+      <p>Two more gifts. First, its defaults are simply better-looking than raw matplotlib's — softer palette, grid lines, no fiddling. Second, and more useful: <code>hue=</code>. Name a third column as <code>hue</code> and seaborn splits every mark by that column, colours each group and builds the legend, in one word. Doing that by hand is the loop-and-offset misery above.</p>
+      <div class="aside">
+        <div class="lbl">Read-only from here to the end of this section</div>
+        seaborn cannot run in this page — it isn't one of the libraries the in-page Python can fetch, and that will not change. So the three listings below are for reading, not for running. Every one of them works as written in the notebook: <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit23.ipynb" rel="noopener">▶ open Unit 23 in Colab</a>, where seaborn is already installed, and type them out there. This is the honest state of things, not a limitation worth hiding.
+      </div>
+    </div>
+
+    <div class="listing">
+      <div class="ll">Listing 1 · <code>sns.barplot</code> — a category average, straight from the table</div>
+<pre>import seaborn as sns
+import matplotlib.pyplot as plt
+
+# marks is the nine-row DataFrame from 23.6: name, subject, marks
+sns.barplot(data=marks, x="subject", y="marks")
+plt.title("Average mark by subject")
+plt.xlabel("Subject")
+plt.ylabel("Mark")</pre>
+      <p><b>What it does for you.</b> No <code>groupby</code>, no <code>.mean()</code>. seaborn sees three subjects, averages the marks within each by itself, and draws one bar per subject — <i>plus</i> a thin vertical line on each bar showing how much the marks inside that group varied. That last part is the point: a bare average hides whether the group was tight or all over the place.</p>
+      <p><b>When it beats raw matplotlib.</b> Whenever the bar heights are a summary of many rows rather than numbers you already have. In matplotlib you must compute the summary first; here the raw table is the input.</p>
+    </div>
+
+    <div class="listing">
+      <div class="ll">Listing 2 · <code>sns.histplot</code> — the shape of one column</div>
+<pre>import seaborn as sns
+import matplotlib.pyplot as plt
+
+sns.histplot(data=marks, x="marks", bins=6, kde=True)
+plt.title("Spread of all marks")
+plt.xlabel("Mark")
+plt.ylabel("Number of results")</pre>
+      <p><b>What it does for you.</b> The same histogram as <code>plt.hist</code>, named by column instead of extracted by hand — and <code>kde=True</code> lays a smooth curve over the bars, the "if we had thousands of results instead of nine, this is roughly the shape it would settle into" line. It is a guess, drawn honestly as a guess, and it makes a lumpy small-sample histogram much easier to read.</p>
+      <p><b>When it beats raw matplotlib.</b> When you want the shape <i>and</i> the smoothed version, or when the numbers live in a DataFrame column you'd rather name than slice out.</p>
+    </div>
+
+    <div class="listing">
+      <div class="ll">Listing 3 · <code>sns.scatterplot</code> with <code>hue</code> — the third dimension</div>
+<pre>import seaborn as sns
+import matplotlib.pyplot as plt
+
+# study is a table with columns: hours, mark, subject
+sns.scatterplot(data=study, x="hours", y="mark", hue="subject")
+plt.title("Hours against marks, split by subject")
+plt.xlabel("Hours studied per week")
+plt.ylabel("Mark")</pre>
+      <p><b>What it does for you.</b> One word, <code>hue="subject"</code>, and every dot is coloured by its subject with a matching legend drawn automatically. Now you can see not just "more hours, better marks" but whether that relationship is <i>steeper</i> for one subject than another — a question the plain scatter cannot even ask.</p>
+      <p><b>When it beats raw matplotlib.</b> The moment a third column enters the picture. This is the single most common reason working analysts reach for seaborn — and, fair warning, the colours here are again doing the distinguishing, so for anything that matters add <code>style="subject"</code> too and let the marker shapes carry the same information.</p>
+    </div>
+
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      matplotlib draws what you tell it; seaborn works out what to draw from a table and a few column names. Learn matplotlib first — every seaborn chart is a matplotlib chart underneath, and when seaborn's answer isn't quite right, you fix it with the <code>plt.</code> calls you already know.
+    </div>
+  </section>
+
+  <!-- ============ 23.6 BUILD ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">23.6</span>
+      <h2>Your build — a mini data study</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>Three units, one motion. A study — the real thing, at small scale — is always these four beats: <b>load</b> the data, <b>compute</b> the numbers, <b>draw</b> the picture, <b>write</b> what you found. Skip the last beat and you have a slide deck; skip the third and nobody reads you; skip the second and you have a decoration.</p>
+      <p>Our data is the small student table: three students, three subjects, nine marks. We rebuild it in the program rather than reading a file, so every problem here stands alone — but everything below would be identical if the DataFrame had come from <code>pd.read_csv</code>, which is the only line that would change in real life.</p>
+      <p>Here is what the finished write-up sounds like, from the numbers the worked example prints. <b>The findings:</b> English is the weakest subject at an average of 74.0, six marks below Science's 80.0, and it is weak across all three students rather than being dragged down by one. Asha and Meera finish in a near dead heat — 238 and 237 total marks — but by very different routes: Meera tops Maths with 90 and comes last in English with 66, while Asha never drops below 72. Ravi trails on total at 221 yet posts the single best English mark of the group at 84, which suggests the English problem is a teaching or marking question rather than a Ravi question.</p>
+      <p>Three sentences. Each one names a number, and each one you could only have <i>found</i> by looking at the picture — but could only <i>state</i> by having the numbers. That is why the beats come in that order and why neither half is optional.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the four beats</div>
+      <div class="m">marks = pd.DataFrame({...})              # 1. load
+by_subject = marks.groupby("subject")["marks"].mean()   # 2. compute
+by_subject.plot(kind="bar")              # 3. draw
+# "English is 6 marks below Science"     # 4. write</div>
+      <p><b>Beat 1</b> gives you nine rows and three columns. In a real study this is <code>pd.read_csv("marks.csv")</code> and it is the only line that knows where the data lives.</p>
+      <p><b>Beat 2</b> collapses nine rows into three numbers: English 74.0, Maths 78.0, Science 80.0. These are the facts you will quote.</p>
+      <p><b>Beat 3</b> turns those three numbers into a shape your eye reads in a quarter of a second — and, crucially, might make you notice something you weren't looking for.</p>
+      <p><b>Beat 4</b> is the only beat with no library. It is also the only one anybody else will read.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> the whole study, top to bottom, in one program. <b>Thinking:</b> load the table, print it so we can see what we have, group and print the subject means, then draw the labelled bar chart of exactly those means. Read the printed numbers first, then look at the picture and check that it says the same thing — a picture that disagrees with your numbers means a bug in one of them.</p>
+      <div class="pyrun" data-id="w5">
+        <textarea spellcheck="false">import pandas as pd
+import matplotlib.pyplot as plt
+
+marks = pd.DataFrame({
+    "name": ["Asha", "Ravi", "Meera", "Asha", "Ravi", "Meera", "Asha", "Ravi", "Meera"],
+    "subject": ["Maths", "Maths", "Maths", "Science", "Science", "Science",
+                "English", "English", "English"],
+    "marks": [78, 66, 90, 88, 71, 81, 72, 84, 66],
+})
+print(marks)
+print()
+
+by_subject = marks.groupby("subject")["marks"].mean()
+print(by_subject)
+
+by_subject.plot(kind="bar", color="#5b4b9e", figsize=(6, 4))
+plt.title("Average mark by subject")
+plt.xlabel("Subject")
+plt.ylabel("Average mark")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">23.6 · P1</span><span class="pt">Beat 1 — load, and check what you loaded</span></div>
+        <p class="pd">Rebuild the table and print two sanity checks before anything else: how many rows you got, and the overall mean mark to two decimals. Every study starts here, because the fastest way to publish nonsense is to skip the moment where you look at what you actually have.</p>
+        <div class="want">Rows: 9
+Mean mark: 77.33</div>
+        <div class="pyrun" data-id="s6p1" data-expect="Rows: 9\nMean mark: 77.33">
+          <textarea spellcheck="false">import pandas as pd
+
+marks = pd.DataFrame({
+    "name": ["Asha", "Ravi", "Meera", "Asha", "Ravi", "Meera", "Asha", "Ravi", "Meera"],
+    "subject": ["Maths", "Maths", "Maths", "Science", "Science", "Science",
+                "English", "English", "English"],
+    "marks": [78, 66, 90, 88, 71, 81, 72, 84, 66],
+})
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print("Rows:", len(marks))
+print(f"Mean mark: {marks['marks'].mean():.2f}")</pre><p><code>len(df)</code> counts rows; the mean of all nine is 696 ÷ 9 = 77.333…, dressed to two places by <code>:.2f</code>. Note the single quotes inside the f-string's double quotes — Unit 22's habit, still paying off.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">23.6 · P2</span><span class="pt">Beat 2 — the three numbers you will quote</span></div>
+        <p class="pd">Group by subject, take the mean of the marks, and print one line per subject to one decimal place in the exact shape below. These are the numbers the findings paragraph quotes — and the ones the next problem's chart has to agree with.</p>
+        <div class="want">English: 74.0
+Maths: 78.0
+Science: 80.0</div>
+        <div class="pyrun" data-id="s6p2" data-expect="English: 74.0\nMaths: 78.0\nScience: 80.0">
+          <textarea spellcheck="false">import pandas as pd
+
+marks = pd.DataFrame({
+    "name": ["Asha", "Ravi", "Meera", "Asha", "Ravi", "Meera", "Asha", "Ravi", "Meera"],
+    "subject": ["Maths", "Maths", "Maths", "Science", "Science", "Science",
+                "English", "English", "English"],
+    "marks": [78, 66, 90, 88, 71, 81, 72, 84, 66],
+})
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>by_subject = marks.groupby("subject")["marks"].mean()
+for subject, avg in by_subject.items():
+    print(f"{subject}: {avg:.1f}")</pre><p>Alphabetical order again, and the six-mark English-to-Science gap is now a fact rather than an impression. Printing a grouped Series with a loop instead of <code>print(series)</code> also means you control the formatting — worth it the moment anyone else has to read it.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">23.6 · P3</span><span class="pt">Beat 3 — two charts, both labelled</span></div>
+        <p class="pd">Now the pictures. Draw <b>two</b>: the average by subject (you have that grouping already) and the total marks by student — <code>groupby("name")["marks"].sum()</code>. Remember <code>plt.figure()</code> between them so they don't land on the same pad, and label both fully. Then look at the second one and see for yourself how close Asha and Meera are. Run-only: your eyes are the check.</p>
+        <div class="pyrun" data-id="s6p3">
+          <textarea spellcheck="false">import pandas as pd
+import matplotlib.pyplot as plt
+
+marks = pd.DataFrame({
+    "name": ["Asha", "Ravi", "Meera", "Asha", "Ravi", "Meera", "Asha", "Ravi", "Meera"],
+    "subject": ["Maths", "Maths", "Maths", "Science", "Science", "Science",
+                "English", "English", "English"],
+    "marks": [78, 66, 90, 88, 71, 81, 72, 84, 66],
+})
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>by_subject = marks.groupby("subject")["marks"].mean()
+by_student = marks.groupby("name")["marks"].sum()
+
+plt.figure()
+by_subject.plot(kind="bar", color="#5b4b9e")
+plt.title("Average mark by subject")
+plt.xlabel("Subject")
+plt.ylabel("Average mark")
+
+plt.figure()
+by_student.plot(kind="bar", color="#2b7a78")
+plt.title("Total marks by student")
+plt.xlabel("Student")
+plt.ylabel("Total marks")</pre><p>Two groupings, two pads, two labelled pictures — and a study you could hand to someone. The bars for Asha (238) and Meera (237) are so close that the picture alone can't separate them, which is precisely why beat 2 exists.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 23.7 PROBLEM BANK ============ -->
+  <section id="s7">
+    <div class="prose">
+      <span class="sec-num">23.7</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~14 min</span></span>
+      <p>The mixed set. Most of these are run-only on purpose — a picture is judged by looking at it, not by matching a string — but where a number can be checked, it is. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">A chart of your own week</span></div>
+        <p class="pd">Ask for a chart title with <code>input()</code>, then draw a labelled bar chart of something real — cups of coffee, hours slept, messages sent, one bar per day. The starter's numbers are placeholders: replace them with yours. The typed title is fixed to <code>My week in coffees</code> here; unlock the input box and try your own.</p>
+        <div class="pyrun" data-id="b1" data-stdin="My week in coffees">
+          <textarea spellcheck="false">import matplotlib.pyplot as plt
+
+heading = input("Chart title? ")
+
+days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+count = [3, 2, 4, 3, 5, 1, 2]
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import matplotlib.pyplot as plt
+
+heading = input("Chart title? ")
+
+days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+count = [3, 2, 4, 3, 5, 1, 2]
+
+plt.figure(figsize=(7, 4))
+plt.bar(days, count, color="#5b4b9e")
+plt.title(heading)
+plt.xlabel("Day of the week")
+plt.ylabel("Cups of coffee")</pre><p>A title can be a variable like anything else — which is how one plotting function ends up serving twenty different reports.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">Histogram, with its numbers</span></div>
+        <p class="pd">Ten test scores. Draw a labelled histogram with <code>bins=5</code> <i>and</i> print the mean and median to one decimal place, in the exact shape below — the picture shows the shape, the two numbers pin it down. (NumPy from Unit 21: <code>np.mean</code> and <code>np.median</code>.) The check reads only the printed lines; the picture is yours to judge.</p>
+        <div class="want">Mean: 73.7
+Median: 72.5</div>
+        <div class="pyrun" data-id="b2" data-expect="Mean: 73.7\nMedian: 72.5">
+          <textarea spellcheck="false">import numpy as np
+import matplotlib.pyplot as plt
+
+scores = [55, 62, 68, 71, 71, 74, 78, 82, 85, 91]
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import numpy as np
+import matplotlib.pyplot as plt
+
+scores = [55, 62, 68, 71, 71, 74, 78, 82, 85, 91]
+
+plt.hist(scores, bins=5, color="#5b4b9e")
+plt.title("Spread of test scores")
+plt.xlabel("Score")
+plt.ylabel("Number of students")
+
+print(f"Mean: {np.mean(scores):.1f}")
+print(f"Median: {np.median(scores):.1f}")</pre><p>Mean 73.7, median 72.5 — close together, which matches a histogram with no long tail. When those two numbers drift far apart, the histogram will show you why: something is dragging the average.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">Two years on one chart</span></div>
+        <p class="pd">Website visitors, six months, two years to compare. Draw both series on one pad with distinct colours <i>and</i> distinct markers, size the figure sensibly, label all three captions and add the legend. Then answer for yourself, out loud: in which month did 2026 overtake 2025? Run-only.</p>
+        <div class="pyrun" data-id="b3">
+          <textarea spellcheck="false">import matplotlib.pyplot as plt
+
+months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
+y2025 = [220, 240, 265, 250, 280, 300]
+y2026 = [180, 210, 260, 290, 340, 410]
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import matplotlib.pyplot as plt
+
+months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
+y2025 = [220, 240, 265, 250, 280, 300]
+y2026 = [180, 210, 260, 290, 340, 410]
+
+plt.figure(figsize=(8, 4))
+plt.plot(months, y2025, color="#5b4b9e", marker="o", label="2025")
+plt.plot(months, y2026, color="#2b7a78", marker="s", linestyle="--", label="2026")
+plt.title("Monthly visitors, 2025 against 2026")
+plt.xlabel("Month")
+plt.ylabel("Visitors (thousands)")
+plt.legend()</pre><p>April is the crossing — 290 against 250 — and the gap widens fast after it. That crossing point is the entire message of the chart, and it is invisible in the two lists.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — group it, print it, draw it</span></div>
+        <p class="pd">The full motion from §23.6, on new data: two teams, three weeks of points. Group by team, <b>sum</b> the points, print one line per team in the exact shape below, and draw the labelled bar chart of that same grouped Series. The printed numbers are the check; the picture is the reward. (Mind the order <code>groupby</code> gives you.)</p>
+        <div class="want">Team A: 45
+Team B: 42</div>
+        <div class="pyrun" data-id="b4" data-expect="Team A: 45\nTeam B: 42">
+          <textarea spellcheck="false">import pandas as pd
+import matplotlib.pyplot as plt
+
+games = pd.DataFrame({
+    "team": ["A", "A", "A", "B", "B", "B"],
+    "week": [1, 2, 3, 1, 2, 3],
+    "points": [12, 15, 18, 20, 14, 8],
+})
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>by_team = games.groupby("team")["points"].sum()
+
+for team, total in by_team.items():
+    print(f"Team {team}: {total}")
+
+by_team.plot(kind="bar", color="#5b4b9e")
+plt.title("Total points by team")
+plt.xlabel("Team")
+plt.ylabel("Total points")</pre><p>A wins on total, 45 to 42 — but plot <code>week</code> against <code>points</code> for each team as a line chart and a different story appears: A is climbing every week while B collapses from 20 to 8. Totals hide direction. Two charts of one table, two conclusions, both true — which is the last and best argument for looking at your data instead of only summarising it.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 24 · scikit-learn — the shape of an ML library</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">You can load data, compute with it and now see it. The next question is the one this whole pathway has been walking toward: can a program <i>learn</i> a pattern from it? Unit 24 doesn't teach the maths — it teaches the grammar every machine-learning library speaks. Fit, predict, score; features and labels; the training set you learn from and the test set you are honest about. Learn that grammar once and every library you meet afterwards, scikit-learn or otherwise, is already half familiar.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>matplotlib documentation</b> — <i>Pyplot tutorial</i>. <span class="why">The official walk through <code>plt.plot</code>, labels and multiple figures — the same ground as 23.1 and 23.3, from the people who wrote it.</span> <a href="https://matplotlib.org/stable/tutorials/pyplot.html" rel="noopener">matplotlib.org</a></li>
+      <li><b>matplotlib documentation</b> — <i>Quick start guide</i>. <span class="why">Where the figure-and-axes picture behind every <code>plt.</code> call is drawn out properly. Read it when you want more than one chart in one image.</span> <a href="https://matplotlib.org/stable/users/explain/quick_start.html" rel="noopener">matplotlib.org</a></li>
+      <li><b>pandas documentation</b> — <i>User guide: Chart visualization</i>. <span class="why">Everything <code>df.plot()</code> can do, <code>kind</code> by <code>kind</code> — the short path of 23.4 in full.</span> <a href="https://pandas.pydata.org/docs/user_guide/visualization.html" rel="noopener">pandas.pydata.org</a></li>
+      <li><b>seaborn documentation</b> — <i>User guide and tutorial</i>. <span class="why">For 23.5, once you're in the notebook: the statistical plots, <code>hue</code>, and why its defaults look the way they do.</span> <a href="https://seaborn.pydata.org/tutorial.html" rel="noopener">seaborn.pydata.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit22.html"><span class="k">← Previous</span><span class="t">Unit 22 · pandas — tables of data</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit24.html"><span class="k">Next →</span><span class="t">Unit 24 · scikit-learn — the shape of an ML library</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 23 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"\"How did our monthly revenue change across the last two years?\" Which chart?",
+   o:["A bar chart","A line chart","A histogram","A scatter plot"],
+   a:1,
+   e:"Time along the bottom, one measurement going up — that is a line chart's whole job. A bar chart would work but implies the months are unordered categories, and it loses the sense of flow."},
+  {q:"\"Across 500 house prices, are most of them clustered together or spread wide?\" Which chart?",
+   o:["A histogram","A line chart","A bar chart with 500 bars","A scatter plot"],
+   a:0,
+   e:"One column of numbers, and the question is about its shape — that is exactly a histogram. It counts the values into bins for you; you never supply the bar heights."},
+  {q:"Why do these notes insist on plt.title, plt.xlabel and plt.ylabel every single time?",
+   o:["matplotlib raises an error without them","They make the chart render faster","Because a reader cannot check what they cannot read — an unlabelled chart is a lie waiting to happen","They are required before you can save the figure"],
+   a:2,
+   e:"Nothing forces them and nothing breaks without them — that is the danger. An unlabelled rising line could be anything, so it can be honestly read as anything. Three lines of code, four seconds, every time."},
+  {q:"What is the real difference between a bar chart and a histogram?",
+   o:["None — histogram is just the American word for bar chart","Bar bars are categories you chose and can reorder; histogram bars are ranges of one number, counted for you and in fixed order","A histogram can only show whole numbers","A bar chart needs pandas, a histogram needs NumPy"],
+   a:1,
+   e:"A bar chart takes names and heights you supply. A histogram takes one list of numbers and counts them into bins itself — which is why its bars touch, and why reordering them would be meaningless."},
+  {q:"What does seaborn mainly add on top of matplotlib?",
+   o:["It replaces matplotlib entirely with a different drawing engine","It makes charts interactive in the browser","It works straight from a DataFrame — you name columns and it does the grouping, aggregating, colouring and legend for you, with better defaults","It is the only way to draw a histogram in Python"],
+   a:2,
+   e:"seaborn is a thin layer over matplotlib that speaks DataFrame: data=df, x=\"subject\", y=\"marks\", hue=\"name\". Underneath it is still matplotlib, so every plt.title and plt.xlabel you know still works on a seaborn chart."},
+  {q:"You have a DataFrame df with columns \"city\" and \"sales\". What is the shortest way to a bar chart of it?",
+   o:["Convert both columns to lists, then plt.bar(city_list, sales_list)","df.plot(kind=\"bar\", x=\"city\", y=\"sales\")","seaborn is the only way to plot a DataFrame","df.bar(\"city\", \"sales\")"],
+   a:1,
+   e:"Every DataFrame and Series has .plot(), with kind taking \"line\", \"bar\", \"barh\", \"scatter\" or \"hist\". You still import matplotlib.pyplot and still add your own title and axis labels — pandas' guesses are for you, not for a reader."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. You can now see your data as well as compute it."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 23.2 and 23.4 carry the load."
+           : " — worth another pass through the practice above before Unit 24.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["matplotlib","The drawing library the whole Python world plots with. Everything else, seaborn and pandas' .plot() included, is built on it."],
+  ["pyplot","matplotlib's set of pens, imported as plt. Each plt. call adds one thing to the figure that is currently open."],
+  ["Figure","One drawing pad. plt.figure() opens a fresh one; every plot call after it lands there until the next plt.figure()."],
+  ["figsize","Width and height of a figure in inches: plt.figure(figsize=(8, 4)). Set it before you draw."],
+  ["Line chart","plt.plot(x, y) — how one thing changed over time or over an ordered scale."],
+  ["Bar chart","plt.bar(names, values) — comparing categories you chose. The bars have gaps and can be reordered."],
+  ["Scatter plot","plt.scatter(x, y) — one dot per thing, two measurements each. The chart for 'do these move together?' and for spotting outliers."],
+  ["Histogram","plt.hist(values, bins=n) — takes ONE list, counts it into ranges and draws the shape of its spread. You supply the numbers, not the heights."],
+  ["Bin","One of the ranges a histogram counts into. More bins show more detail and more noise; the count is an honest judgement call."],
+  ["Legend","The box matching each series to its colour. Give each plot a label=, then call plt.legend() once — labels alone draw nothing."],
+  ["Outlier","A point that refuses to follow the pattern the rest of the data makes. Charts are how you notice them; tables are how you hide them."],
+  ["seaborn","A thin layer over matplotlib that plots straight from a DataFrame — data=, x=, y=, hue= — doing the grouping and legend for you. Not available in this page; use the notebook."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>
