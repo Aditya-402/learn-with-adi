@@ -50,7 +50,16 @@
       supabase = mod.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey);
       const { data: s } = await supabase.auth.getSession();
       setUser(s && s.session ? s.session.user : null);
-      supabase.auth.onAuthStateChange((_e, session) => setUser(session ? session.user : null));
+      supabase.auth.onAuthStateChange((event, session) => {
+        // explicit sign-out wipes the local copy: your journey is safe in your
+        // account and must not linger on a shared machine
+        if (event === "SIGNED_OUT") {
+          data = {};
+          try { localStorage.removeItem(LS_KEY); } catch {}
+        }
+        setUser(session ? session.user : null);
+        if (event === "SIGNED_OUT") render();
+      });
     } catch (e) { console.warn("[LWA] Supabase unavailable:", e); }
   }
 
