@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Build an LLM from Scratch — Learn with Adi</title>
-<meta name="description" content="A free, hands-on course where you build a working GPT-style language model piece by piece. A guided companion to Sebastian Raschka's Build a Large Language Model (From Scratch).">
+<meta name="description" content="Free, hands-on study material where you build a working GPT-style language model piece by piece. A guided companion to Sebastian Raschka's Build a Large Language Model (From Scratch).">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
 <link rel="stylesheet" href="../../assets/site.css">
 <style>
@@ -37,7 +37,7 @@ footer{border-top:1px solid var(--lwa-line);margin-top:44px;background:var(--lwa
     <div class="lwa-brandrow" style="width:100%">
       <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
       <div class="lwa-brand-right">
-        <span class="lwa-tag">Track 01 · Build an LLM from Scratch</span>
+        <span class="lwa-tag">Series 01 · Build an LLM from Scratch</span>
         <span data-lwa-auth></span>
       </div>
     </div>
@@ -48,45 +48,45 @@ footer{border-top:1px solid var(--lwa-line);margin-top:44px;background:var(--lwa
   <div class="hero">
     <div>
       <h1>Build an LLM from Scratch</h1>
-      <p class="lede">By the end of this course you will have <b>written a GPT yourself</b> — the tokenizer, the attention mechanism, the transformer blocks, the training loop, the fine-tuning. Not used one. Written one.</p>
-      <p class="lede">Each chapter is atomic: one sitting, one set of ideas, every number derivable by hand, every claim testable in a live lab on the page.</p>
+      <p class="lede">By the end of this series you will have <b>written a GPT yourself</b> — the tokenizer, the attention mechanism, the transformer blocks, the training loop, the fine-tuning. Not used one. Written one.</p>
+      <p class="lede">Self-study material, unit by unit. Each unit is one session — one sitting, one set of ideas, every number derivable by hand, every claim testable in a live lab on the page.</p>
     </div>
     <div class="bookcard">
-      <span class="k">The book behind this course</span>
+      <span class="k">The reference material</span>
       <h3>Build a Large Language Model (From&nbsp;Scratch)</h3>
       <p>by <b>Sebastian Raschka</b> · Manning, 2024</p>
-      <p>This course follows the book's pathway — its chapter order, running examples and build-it-up sequence — and adds a teaching layer on top: deeper explanations, visual labs, and worked numbers. Reading the book alongside is warmly recommended: <a href="https://www.manning.com/books/build-a-large-language-model-from-scratch" rel="noopener">get the book</a> · <a href="https://github.com/rasbt/LLMs-from-scratch" rel="noopener">official code</a>.</p>
+      <p>This series follows the book's pathway — its chapter order, running examples and build-it-up sequence — and adds a teaching layer on top: deeper explanations, visual labs, and worked numbers. Reading the book alongside is warmly recommended: <a href="https://www.manning.com/books/build-a-large-language-model-from-scratch" rel="noopener">get the book</a> · <a href="https://github.com/rasbt/LLMs-from-scratch" rel="noopener">official code</a>.</p>
     </div>
   </div>
 
   <div data-lwa-journey data-lwa-root="../../"></div>
 
   <section>
-    <h2 class="sec">Chapters</h2>
+    <h2 class="sec">Units</h2>
     <div class="lwa-chaprows">
       <a class="lwa-chaprow" href="ch01.html">
         <span class="num">1</span>
-        <span class="body"><b>What Makes a Language Model Large</b><span>Next-word prediction, emergent behaviour, the GPT lineage — concepts only, no maths yet.</span></span>
+        <span class="body"><b>What Makes a Language Model Large</b><span>Next-word prediction, emergent behaviour, the GPT lineage — concepts only, no maths yet. One session · ~25 min.</span></span>
         <span data-lwa-chapstat="llm-from-scratch/ch01" class="st">not started</span>
       </a>
       <a class="lwa-chaprow" href="ch02.html">
         <span class="num">2</span>
-        <span class="body"><b>From Text to Tensors</b><span>Tokenization, byte pair encoding, sliding windows, token and positional embeddings — the whole input pipeline.</span></span>
+        <span class="body"><b>From Text to Tensors</b><span>Tokenization, byte pair encoding, sliding windows, token and positional embeddings — the whole input pipeline. One session · ~40 min.</span></span>
         <span data-lwa-chapstat="llm-from-scratch/ch02" class="st">not started</span>
       </a>
       <a class="lwa-chaprow" href="ch03.html">
         <span class="num">3<span style="font-size:12px;color:var(--lwa-muted)">·1</span></span>
-        <span class="body"><b>How Attention Actually Works — Part 1</b><span>From the dot product to trainable Q/K/V attention, every number derived by hand. The hardest material in the course, taken slowly.</span></span>
+        <span class="body"><b>How Attention Actually Works — Part 1</b><span>From the dot product to trainable Q/K/V attention, every number derived by hand. The hardest material in the series, taken slowly. One session · ~45 min.</span></span>
         <span data-lwa-chapstat="llm-from-scratch/ch03" class="st">not started</span>
       </a>
       <a class="lwa-chaprow" href="ch03b.html">
         <span class="num">3<span style="font-size:12px;color:var(--lwa-muted)">·2</span></span>
-        <span class="body"><b>Causal Masking, Dropout &amp; Multi-Head — Part 2</b><span>Hiding the future, the CausalAttention class, and multi-head attention with weight splits — the exact module the GPT uses.</span></span>
+        <span class="body"><b>Causal Masking, Dropout &amp; Multi-Head — Part 2</b><span>Hiding the future, the CausalAttention class, and multi-head attention with weight splits — the exact module the GPT uses. One session · ~40 min.</span></span>
         <span data-lwa-chapstat="llm-from-scratch/ch03b" class="st">not started</span>
       </a>
       <a class="lwa-chaprow" href="ch04.html">
         <span class="num">4</span>
-        <span class="body"><b>Assembling a GPT</b><span>Layer norm, GELU, shortcut connections, the transformer block — stacked into a 124M-parameter model that generates text.</span></span>
+        <span class="body"><b>Assembling a GPT</b><span>Layer norm, GELU, shortcut connections, the transformer block — stacked into a 124M-parameter model that generates text. One session · ~35 min.</span></span>
         <span data-lwa-chapstat="llm-from-scratch/ch04" class="st">not started</span>
       </a>
       <div class="lwa-chaprow soon">
@@ -109,9 +109,9 @@ footer{border-top:1px solid var(--lwa-line);margin-top:44px;background:var(--lwa
 
   <section class="lwa-refs">
     <h2 class="sec">References &amp; further reading</h2>
-    <p class="prose-md">The book below is the spine of this course; everything else is supporting material the chapters draw on or point to.</p>
+    <p class="prose-md">The book below is the reference material behind this series; everything else is supporting material the units draw on or point to.</p>
     <ol>
-      <li class="hero"><b>Raschka, S.</b> — <i>Build a Large Language Model (From Scratch)</i>, Manning, 2024. <span class="why">The hero reference: this course follows its pathway chapter by chapter.</span> <a href="https://www.manning.com/books/build-a-large-language-model-from-scratch" rel="noopener">book</a> · <a href="https://github.com/rasbt/LLMs-from-scratch" rel="noopener">code</a></li>
+      <li class="hero"><b>Raschka, S.</b> — <i>Build a Large Language Model (From Scratch)</i>, Manning, 2024. <span class="why">The reference material this series is a guided companion to — its pathway, running examples and printed values are the ones our units verify against.</span> <a href="https://www.manning.com/books/build-a-large-language-model-from-scratch" rel="noopener">book</a> · <a href="https://github.com/rasbt/LLMs-from-scratch" rel="noopener">code</a></li>
       <li><b>Vaswani, A. et al.</b> — <i>Attention Is All You Need</i>, NeurIPS 2017. <span class="why">The transformer paper.</span> <a href="https://arxiv.org/abs/1706.03762" rel="noopener">arXiv</a></li>
       <li><b>Bahdanau, D., Cho, K., Bengio, Y.</b> — <i>Neural Machine Translation by Jointly Learning to Align and Translate</i>, 2014. <span class="why">Where attention began.</span> <a href="https://arxiv.org/abs/1409.0473" rel="noopener">arXiv</a></li>
       <li><b>Radford, A. et al.</b> — <i>Language Models are Unsupervised Multitask Learners</i> (GPT-2), 2019. <span class="why">The model we rebuild.</span> <a href="https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf" rel="noopener">paper</a></li>

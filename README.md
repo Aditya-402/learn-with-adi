@@ -1,8 +1,8 @@
 # Learn with Adi
 
-Free, hands-on, self-study courses for graduate engineers. Static site — no build step, no framework; every page is plain HTML/CSS/JS.
+Free, hands-on study notes for graduate engineers. Static site — no build step, no framework; every page is plain HTML/CSS/JS.
 
-**Track 01 — Build an LLM from Scratch**: a guided companion to *Build a Large Language Model (From Scratch)* by Sebastian Raschka (Manning, 2024). The book is the course's hero reference and sets the pathway; these pages add the teaching layer — deeper explanations, interactive labs, worked numbers, quizzes. All book content is taught in our own words and cited; the book itself is not reproduced here.
+**Series 01 — Build an LLM from Scratch**: a guided companion to *Build a Large Language Model (From Scratch)* by Sebastian Raschka (Manning, 2024). The book is the series' reference material and sets the pathway; these pages add the teaching layer — deeper explanations, interactive labs, worked numbers, quizzes. All book content is taught in our own words and cited; the book itself is not reproduced here.
 
 ## Layout
 
@@ -10,7 +10,8 @@ Free, hands-on, self-study courses for graduate engineers. Static site — no bu
 index.html                    platform home (course catalog + journey)
 privacy.html
 assets/                       shared css, wordmark, progress engine, config
-courses/llm-from-scratch/     course hub + chapter pages (ch01…)
+series/llm-from-scratch/      series hub + unit pages (ch01…)
+notebooks/                    per-unit Colab companion notebooks
 setup/                        one-time GitHub Pages + Supabase setup guide
 ```
 

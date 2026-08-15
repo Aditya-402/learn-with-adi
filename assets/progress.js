@@ -142,8 +142,8 @@
       const done = !!rec(COURSE, CHAPTER).c;
       btn.classList.toggle("is-done", done);
       btn.innerHTML = done
-        ? "<span class='k'>Progress</span><span class='t'>✓ Chapter complete — well done</span>"
-        : "<span class='k'>Progress</span><span class='t'>Mark this chapter complete</span>";
+        ? "<span class='k'>Progress</span><span class='t'>✓ Unit complete — well done</span>"
+        : "<span class='k'>Progress</span><span class='t'>Mark this unit complete</span>";
     });
     // course progress bars / counts
     document.querySelectorAll("[data-lwa-progress]").forEach(el => {
@@ -153,7 +153,7 @@
       const bar = el.querySelector(".pbar i");
       if (bar && total) bar.style.width = Math.round(100 * doneN / total) + "%";
       const cnt = el.querySelector("[data-lwa-count]");
-      if (cnt) cnt.textContent = doneN + " of " + total + " chapters complete";
+      if (cnt) cnt.textContent = doneN + " of " + total + " units complete";
     });
     // chapter row statuses on hub pages
     document.querySelectorAll("[data-lwa-chapstat]").forEach(el => {
@@ -179,7 +179,7 @@
         el.innerHTML = "<div class='h'>Your journey</div><div class='row'>Nothing started yet — pick a course below and dive in.</div>";
         return;
       }
-      const href = el.getAttribute("data-lwa-root") ? el.getAttribute("data-lwa-root") + "courses/" + latest.course + "/" + latest.ch + ".html" : latest.ch + ".html";
+      const href = el.getAttribute("data-lwa-root") ? el.getAttribute("data-lwa-root") + "series/" + latest.course + "/" + latest.ch + ".html" : latest.ch + ".html";
       el.innerHTML = "<div class='h'>Your journey</div><div class='row'><span>Last visited: <b>" +
         escapeHtml(latest.t || latest.ch) + "</b>" + (latest.c ? " (completed)" : "") +
         (latest.q != null ? " · quiz " + latest.q + "/" + latest.qt : "") +

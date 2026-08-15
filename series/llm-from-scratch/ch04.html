@@ -188,22 +188,22 @@ tr:last-child td{border-bottom:none}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
 </style>
 </head>
-<body data-lwa-course="llm-from-scratch" data-lwa-chapter="ch04" data-lwa-title="Chapter 4 · Assembling a GPT">
+<body data-lwa-course="llm-from-scratch" data-lwa-chapter="ch04" data-lwa-title="Unit 4 · Assembling a GPT">
 <header class="masthead">
   <div class="masthead-in">
     <div class="lwa-brandrow">
       <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
       <div class="lwa-brand-right">
-        <span class="lwa-tag"><a href="index.html">Track 01 · Build an LLM from Scratch</a></span>
+        <span class="lwa-tag"><a href="index.html">Series 01 · Build an LLM from Scratch</a></span>
         <span data-lwa-auth></span>
       </div>
     </div>
     <div class="title-block">
-      <div class="eyebrow">Build a Large Language Model (From Scratch) · Chapter 4</div>
+      <div class="eyebrow">Build an LLM from Scratch · Unit 4</div>
       <h1>Assembling a GPT</h1>
       <p class="standfirst">Attention was the hard part. What remains is assembly: a normalisation layer, a two-layer network with a smooth activation, and a shortcut connection — wrapped into one block that gets stacked twelve times. Then it generates text, and the text is nonsense, and that turns out to be exactly right.</p>
       <div class="facts">
-        <div><b>Pages 176–236</b>Source chapter</div>
+        <div><b>One session</b>~35 min</div>
         <div><b>7 sections</b>4.1 – 4.7</div>
         <div><b>8 labs</b>Live computation</div>
         <div><b>163,009,536</b>Parameters, counted here</div>
@@ -231,7 +231,6 @@ tr:last-child td{border-bottom:none}
   <!-- 4.1 -->
   <section id="s1">
     <div class="prose">
-      <div class="sec-num">4.1</div>
       <h2>The shape of the whole thing</h2>
       <p>A GPT is large, but it isn't complicated — because almost all of it is one block repeated. The entire 124-million-parameter GPT-2 is described by seven settings:</p>
     </div>
@@ -266,7 +265,6 @@ tr:last-child td{border-bottom:none}
   <!-- 4.2 -->
   <section id="s2">
     <div class="prose">
-      <div class="sec-num">4.2</div>
       <h2>Layer normalization</h2>
       <p>Deep networks suffer from <span class="term" title="Gradients shrinking or growing uncontrollably as they propagate backward">vanishing and exploding gradients</span>, which makes training unstable. <b>Layer normalization</b> steadies it by rescaling each token's activations to have mean 0 and variance 1.</p>
       <p>Crucially it normalises <em>across the features of one token</em>, not across the batch. That independence from batch size is why it suits LLMs, where hardware often dictates batch size.</p>
@@ -306,7 +304,6 @@ tr:last-child td{border-bottom:none}
   <!-- 4.3 -->
   <section id="s3">
     <div class="prose">
-      <div class="sec-num">4.3</div>
       <h2>GELU and the feed forward network</h2>
       <p>ReLU zeroes everything negative and has a sharp corner at 0. GPT uses <b>GELU</b> instead — smooth everywhere, and crucially it lets small negative values through rather than flattening them to zero. Neurons receiving negative input can still contribute to learning.</p>
     </div>
@@ -354,7 +351,6 @@ tr:last-child td{border-bottom:none}
   <!-- 4.4 -->
   <section id="s4">
     <div class="prose">
-      <div class="sec-num">4.4</div>
       <h2>Shortcut connections</h2>
       <p>In a deep stack, gradients shrink as they propagate backward, so early layers barely learn. A <b>shortcut connection</b> (also called skip or residual) adds a layer's input to its output, giving gradients a direct path that bypasses the layer entirely.</p>
       <p>The book measures this on a five-layer network. The numbers below are its actual printed output.</p>
@@ -380,7 +376,6 @@ tr:last-child td{border-bottom:none}
   <!-- 4.5 -->
   <section id="s5">
     <div class="prose">
-      <div class="sec-num">4.5</div>
       <h2>The transformer block</h2>
       <p>Everything so far now snaps together. A transformer block runs two sub-blocks, each with the same three-part pattern: <b>normalise → transform → add the input back</b>.</p>
       <p>Attention handles relationships <em>between</em> tokens; the feed forward network refines each token <em>individually</em>. The block's output has exactly the same shape as its input, which is what makes stacking trivial.</p>
@@ -412,7 +407,6 @@ tr:last-child td{border-bottom:none}
   <!-- 4.6 -->
   <section id="s6">
     <div class="prose">
-      <div class="sec-num">4.6</div>
       <h2>Counting the parameters</h2>
       <p>Stack twelve of those blocks between the embedding layers and an output head and you have the whole model. So how big is it really? The counter below computes every weight matrix in the architecture — nothing is hard-coded.</p>
     </div>
@@ -459,7 +453,6 @@ tr:last-child td{border-bottom:none}
   <!-- 4.7 -->
   <section id="s7">
     <div class="prose">
-      <div class="sec-num">4.7</div>
       <h2>Generating text</h2>
       <p>The model outputs <b>logits</b>: for every position, a 50,257-long vector of raw scores, one per vocabulary entry. Turning that into text is a loop:</p>
       <ul class="plain">
@@ -521,17 +514,17 @@ tr:last-child td{border-bottom:none}
   <section>
     <div class="next">
       <div class="lbl">Coming next</div>
-      <h3>Chapter 5 · Pretraining on unlabeled data</h3>
+      <h3>Unit 5 · Pretraining on unlabeled data</h3>
       <p style="font-size:var(--fs-cap);color:var(--slate)">The model is built but empty. Chapter 5 measures how wrong it is with a loss function, runs the training loop that reduces that loss, and adds temperature scaling and top-k sampling so generation stops being purely greedy. It ends by loading OpenAI's pretrained GPT-2 weights into the architecture you just built.</p>
     </div>
   </section>
   <section class="lwa-refs" id="refs">
     <div class="prose">
       <h2>References</h2>
-      <p>This chapter follows the book below — the hero reference for the whole course. The rest is supporting material worth your time.</p>
+      <p>The book below is the reference material this series is a guided companion to — the reference material for the whole series. The rest is supporting material worth your time.</p>
     </div>
     <ol>
-      <li class="hero"><b>Raschka, S.</b> — <i>Build a Large Language Model (From Scratch), Manning, 2024</i>. <span class="why">The hero reference — this chapter follows its pathway (chapter 4, pages 176–236).</span> <a href="https://www.manning.com/books/build-a-large-language-model-from-scratch" rel="noopener">book</a> · <a href="https://github.com/rasbt/LLMs-from-scratch" rel="noopener">code</a></li>
+      <li class="hero"><b>Raschka, S.</b> — <i>Build a Large Language Model (From Scratch), Manning, 2024</i>. <span class="why">The reference material for this series — this unit covers the same ground as its chapter 4 (pages 176–236).</span> <a href="https://www.manning.com/books/build-a-large-language-model-from-scratch" rel="noopener">book</a> · <a href="https://github.com/rasbt/LLMs-from-scratch" rel="noopener">code</a></li>
       <li><b>Radford, A. et al.</b> — <i>Language Models are Unsupervised Multitask Learners (GPT-2), 2019</i>. <span class="why">The 124M-parameter architecture this chapter reproduces.</span> <a href="https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf" rel="noopener">paper</a></li>
       <li><b>Ba, J., Kiros, J., Hinton, G.</b> — <i>Layer Normalization, 2016</i>. <span class="why">The normalisation trick of section 4.2.</span> <a href="https://arxiv.org/abs/1607.06450" rel="noopener">arXiv</a></li>
       <li><b>Hendrycks, D., Gimpel, K.</b> — <i>Gaussian Error Linear Units (GELUs), 2016</i>. <span class="why">The activation function of section 4.3.</span> <a href="https://arxiv.org/abs/1606.08415" rel="noopener">arXiv</a></li>
@@ -541,9 +534,9 @@ tr:last-child td{border-bottom:none}
   </section>
 
   <div class="lwa-chapnav">
-    <a href="ch03b.html"><span class="k">← Previous</span><span class="t">Chapter 3 · Part 2 — Causal &amp; Multi-Head</span></a>
-    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this chapter complete</span></button>
-    <a href="index.html"><span class="k">Next →</span><span class="t">Chapter 5 · coming soon</span></a>
+    <a href="ch03b.html"><span class="k">← Previous</span><span class="t">Unit 3 · Part 2 — Causal &amp; Multi-Head</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="index.html"><span class="k">Next →</span><span class="t">Unit 5 · coming soon</span></a>
   </div>
 
 
@@ -553,7 +546,7 @@ tr:last-child td{border-bottom:none}
 <footer class="foot">
   <div class="foot-in">
     <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
-    <span>A guided companion to <i>Build a Large Language Model (From Scratch)</i> by Sebastian Raschka — chapter 4 (pages 176–236) · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Course</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+    <span>A guided companion to <i>Build a Large Language Model (From Scratch)</i> by Sebastian Raschka — Unit 4 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
   </div>
 </footer>
 

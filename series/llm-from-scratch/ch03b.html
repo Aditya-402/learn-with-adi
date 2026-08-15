@@ -81,6 +81,7 @@ ul.plain li::marker{color:var(--accent)}
 .listing{max-width:780px}
 .listing .lh{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;color:var(--accent-deep);font-weight:700;background:var(--accent-wash);border:1px solid #d5cfeb;border-bottom:none;border-radius:var(--r) var(--r) 0 0;padding:8px 14px}
 .listing pre{border-radius:0 0 var(--r) var(--r)}
+.lh a{float:right;font-weight:700;letter-spacing:.02em;text-transform:none;color:var(--accent)}
 pre.out{background:#eef4f3;border-color:#cfe2e0;color:#1d5654}
 .lab{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden}
 .lab-head{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;background:linear-gradient(var(--panel),var(--subtle))}
@@ -161,22 +162,22 @@ pre .kw{color:var(--accent);font-weight:600}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
 </style>
 </head>
-<body data-lwa-course="llm-from-scratch" data-lwa-chapter="ch03b" data-lwa-title="Chapter 3 · Attention — Part 2">
+<body data-lwa-course="llm-from-scratch" data-lwa-chapter="ch03b" data-lwa-title="Unit 3 · Attention — Part 2">
 <header class="masthead">
   <div class="masthead-in">
     <div class="lwa-brandrow">
       <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
       <div class="lwa-brand-right">
-        <span class="lwa-tag"><a href="index.html">Track 01 · Build an LLM from Scratch</a></span>
+        <span class="lwa-tag"><a href="index.html">Series 01 · Build an LLM from Scratch</a></span>
         <span data-lwa-auth></span>
       </div>
     </div>
     <div class="title-block">
-      <div class="eyebrow">Build a Large Language Model (From Scratch) · Chapter 3 · Part 2 of 2</div>
+      <div class="eyebrow">Build an LLM from Scratch · Unit 3 · Part 2 of 2</div>
       <h1>Causal Masking, Dropout &amp; Multi-Head</h1>
       <p class="standfirst">In <a href="ch03.html">Part 1</a> you built scaled dot-product attention. It has one fatal habit for text generation — it can see the future — and one limitation — it has only one way of looking. This part fixes both, and ends with the exact <code>MultiHeadAttention</code> class that chapter 4 plugs into the GPT.</p>
       <div class="facts">
-        <div><b>Pages 146–175</b>Book sections 3.5 – 3.6</div>
+        <div><b>One session</b>~40 min</div>
         <div><b>Part 2 of 2</b>Builds on Part 1</div>
         <div><b>3 labs</b>Masks, dropout, heads</div>
         <div><b>3 classes built</b>Causal, Wrapper, MHA</div>
@@ -224,7 +225,6 @@ pre .kw{color:var(--accent);font-weight:600}
   <!-- ============ 3.5 ============ -->
   <section id="s5">
     <div class="prose">
-      <div class="sec-num">3.5</div>
       <h2>Hiding the future with causal attention</h2>
       <p><b>The problem.</b> A GPT's one job is predicting the <em>next</em> token. Now recall what attention just built: when computing the context vector for “journey”, softmax spread weight over <em>all six tokens</em> — including “starts with one step”, the very words that come after. During training, the model sees complete sentences, so nothing stops position 2 from peeking at positions 3–6. A model allowed to peek learns to copy the future instead of predicting it — and at generation time, when there is no future to copy, it's helpless.</p>
       <p><b>The idea.</b> Make the rule structural: <em>position i may attend only to positions 1…i</em>. In matrix terms — remembering from Part 1 that rows are queries and columns are the tokens being looked at — that means every cell <b>above the diagonal is forbidden</b>. Attention with this restriction is called <b>causal attention</b> (or masked attention).</p>
@@ -317,7 +317,7 @@ pre .kw{color:var(--accent);font-weight:600}
     </div>
 
     <div class="listing">
-      <div class="lh">Route 1 in code</div>
+      <div class="lh">Route 1 in code <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part2.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>mask_simple   = torch.tril(torch.ones(6, 6))          <span class="cm"># 1s on/below diagonal, 0s above</span>
 masked_simple = attn_weights * mask_simple            <span class="cm"># erase the future</span>
 row_sums      = masked_simple.sum(dim=-1, keepdim=True)
@@ -335,7 +335,7 @@ masked_norm   = masked_simple / row_sums              <span class="cm"># rows su
     </div>
 
     <div class="listing">
-      <div class="lh">Route 2 in code — the version every real implementation uses</div>
+      <div class="lh">Route 2 in code — the version every real implementation uses <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part2.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>mask   = torch.triu(torch.ones(6, 6), diagonal=1)     <span class="cm"># 1s strictly ABOVE the diagonal</span>
 masked = attn_scores.masked_fill(mask.bool(), -torch.inf)
 attn_weights = torch.softmax(masked / keys.shape[-1]**0.5, dim=-1)</pre>
@@ -354,9 +354,12 @@ after softmax:   [0.5517, 0.4483, 0.0000, 0.0000, 0.0000, 0.0000]   # identical 
         <span class="lab-kicker">Compare the methods</span>
       </div>
       <div class="lab-body stack">
-        <div class="seg" role="group" aria-label="Masking method">
-          <button data-mask="naive" aria-pressed="true">Softmax → zero → renormalise</button>
-          <button data-mask="inf" aria-pressed="false">−∞ → softmax</button>
+        <div class="row" style="justify-content:space-between">
+          <div class="seg" role="group" aria-label="Masking method">
+            <button data-mask="naive" aria-pressed="true">Softmax → zero → renormalise</button>
+            <button data-mask="inf" aria-pressed="false">−∞ → softmax</button>
+          </div>
+          <button class="btn ghost" id="mask-watch">▶ Watch both routes</button>
         </div>
         <div id="mask-stages"></div>
         <div class="detail" id="mask-detail" aria-live="polite"></div>
@@ -416,7 +419,7 @@ after softmax:   [0.5517, 0.4483, 0.0000, 0.0000, 0.0000, 0.0000]   # identical 
     </div>
 
     <div class="listing">
-      <div class="lh">Listing 3.3 (book) · CausalAttention — annotated line by line</div>
+      <div class="lh">Listing 3.3 (book) · CausalAttention — annotated line by line <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part2.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>class CausalAttention(nn.Module):
     def __init__(self, d_in, d_out, context_length, dropout, qkv_bias=False):
         super().__init__()
@@ -464,7 +467,6 @@ context_vecs.shape: torch.Size([2, 6, 2])   # 2 texts, 6 tokens, each a 2-dim co
   <!-- ============ 3.6 multi-head ============ -->
   <section id="s6">
     <div class="prose">
-      <div class="sec-num">3.6</div>
       <h2>Multi-head attention: several ways of looking</h2>
       <p><b>The problem.</b> One attention module learns <em>one</em> pattern of relating tokens. But language runs many relationship systems simultaneously — syntax (“was” ↔ its subject), reference (“it” ↔ what “it” names), locality (neighbouring words), topic. A single softmax over the sentence must average all of these into one blurry compromise.</p>
       <p><b>The idea.</b> Run several attention mechanisms — <b>heads</b> — in parallel, each with its <em>own</em> W<sub>q</sub>, W<sub>k</sub>, W<sub>v</sub>. Each head is free to specialise in a different kind of relationship. Concatenate their context vectors side by side and you get one wider, richer representation.</p>
@@ -474,7 +476,7 @@ context_vecs.shape: torch.Size([2, 6, 2])   # 2 texts, 6 tokens, each a 2-dim co
     </div>
 
     <div class="listing">
-      <div class="lh">Listing 3.4 (book) · MultiHeadAttentionWrapper</div>
+      <div class="lh">Listing 3.4 (book) · MultiHeadAttentionWrapper <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part2.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>class MultiHeadAttentionWrapper(nn.Module):
     def __init__(self, d_in, d_out, context_length, dropout, num_heads, qkv_bias=False):
         super().__init__()
@@ -562,7 +564,7 @@ context_vecs.shape: torch.Size([2, 6, 4])          # d_out × num_heads = 2 × 2
     </div>
 
     <div class="listing">
-      <div class="lh">Listing 3.5 (book) · MultiHeadAttention — the class chapter 4 will import</div>
+      <div class="lh">Listing 3.5 (book) · MultiHeadAttention — the class chapter 4 will import <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part2.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>class MultiHeadAttention(nn.Module):
     def __init__(self, d_in, d_out, context_length, dropout, num_heads, qkv_bias=False):
         super().__init__()
@@ -674,10 +676,10 @@ context_vecs.shape: torch.Size([2, 6, 2])   # here d_out=2 with 2 heads → head
   <section class="lwa-refs" id="refs">
     <div class="prose">
       <h2>References</h2>
-      <p>This chapter follows the book below — the hero reference for the whole course. The rest is supporting material worth your time.</p>
+      <p>The book below is the reference material this series is a guided companion to — the reference material for the whole series. The rest is supporting material worth your time.</p>
     </div>
     <ol>
-      <li class="hero"><b>Raschka, S.</b> — <i>Build a Large Language Model (From Scratch), Manning, 2024</i>. <span class="why">The hero reference — this page follows its sections 3.5–3.6 (pages 146–175).</span> <a href="https://www.manning.com/books/build-a-large-language-model-from-scratch" rel="noopener">book</a> · <a href="https://github.com/rasbt/LLMs-from-scratch" rel="noopener">code</a></li>
+      <li class="hero"><b>Raschka, S.</b> — <i>Build a Large Language Model (From Scratch), Manning, 2024</i>. <span class="why">The reference material for this series — this unit covers the same ground as its chapter 3, sections 3.5–3.6 (pages 146–175).</span> <a href="https://www.manning.com/books/build-a-large-language-model-from-scratch" rel="noopener">book</a> · <a href="https://github.com/rasbt/LLMs-from-scratch" rel="noopener">code</a></li>
       <li><b>Vaswani, A. et al.</b> — <i>Attention Is All You Need, NeurIPS 2017</i>. <span class="why">Multi-head attention (their section 3.2.2) exactly as built here.</span> <a href="https://arxiv.org/abs/1706.03762" rel="noopener">arXiv</a></li>
       <li><b>Srivastava, N. et al.</b> — <i>Dropout: A Simple Way to Prevent Neural Networks from Overfitting, JMLR 2014</i>. <span class="why">The dropout paper behind section 3.5.2.</span> <a href="https://jmlr.org/papers/v15/srivastava14a.html" rel="noopener">paper</a></li>
       <li><b>Alammar, J.</b> — <i>The Illustrated GPT-2</i>. <span class="why">Beautiful pictures of exactly the masked multi-head attention you just built, at GPT-2 scale.</span> <a href="https://jalammar.github.io/illustrated-gpt2/" rel="noopener">article</a></li>
@@ -688,15 +690,15 @@ context_vecs.shape: torch.Size([2, 6, 2])   # here d_out=2 with 2 heads → head
   <section>
     <div class="next">
       <div class="lbl">Coming next</div>
-      <h3>Chapter 4 · Assembling a GPT</h3>
+      <h3>Unit 4 · Assembling a GPT</h3>
       <p style="font-size:var(--fs-cap);color:var(--slate)">You now have the engine — the exact <code>MultiHeadAttention</code> class the GPT uses. Chapter 4 builds the car around it: layer normalisation, GELU feed-forward networks, shortcut connections, and the transformer block that wraps attention. Stack that block twelve times and you have a 124-million-parameter GPT-2 that generates text.</p>
     </div>
   </section>
 
   <div class="lwa-chapnav">
-    <a href="ch03.html"><span class="k">← Previous</span><span class="t">Chapter 3 · Part 1 — Attention from First Principles</span></a>
-    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this chapter complete</span></button>
-    <a href="ch04.html"><span class="k">Next →</span><span class="t">Chapter 4 · Assembling a GPT</span></a>
+    <a href="ch03.html"><span class="k">← Previous</span><span class="t">Unit 3 · Part 1 — Attention from First Principles</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="ch04.html"><span class="k">Next →</span><span class="t">Unit 4 · Assembling a GPT</span></a>
   </div>
 
   </main>
@@ -705,7 +707,7 @@ context_vecs.shape: torch.Size([2, 6, 2])   # here d_out=2 with 2 heads → head
 <footer class="foot">
   <div class="foot-in">
     <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
-    <span>A guided companion to <i>Build a Large Language Model (From Scratch)</i> by Sebastian Raschka — chapter 3, part 2 (pages 146–175) · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Course</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+    <span>A guided companion to <i>Build a Large Language Model (From Scratch)</i> by Sebastian Raschka — Unit 3 · Part 2 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
   </div>
 </footer>
 
@@ -762,7 +764,16 @@ function renderMask(){
     "<div class='spam'><b>Both routes agree</b>Row 2 comes out as <code>[0.5517, 0.4483, 0, 0, 0, 0]</code>, matching the book. Tiny ±0.0001 differences can appear because this page starts from the book's printed 4-decimal values rather than full float precision — in PyTorch the two routes are bit-identical.</div>";
   document.querySelectorAll("[data-mask]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mask===maskMode)));
 }
-document.querySelectorAll("[data-mask]").forEach(b=>b.addEventListener("click",()=>{maskMode=b.dataset.mask;renderMask();}));
+let maskTimer=null;
+function stopMaskWatch(){ if(maskTimer){clearInterval(maskTimer);maskTimer=null;
+  document.getElementById("mask-watch").textContent="▶ Watch both routes";} }
+document.querySelectorAll("[data-mask]").forEach(b=>b.addEventListener("click",()=>{stopMaskWatch();maskMode=b.dataset.mask;renderMask();}));
+document.getElementById("mask-watch").addEventListener("click",()=>{
+  if(maskTimer){ stopMaskWatch(); return; }
+  document.getElementById("mask-watch").textContent="⏸ Stop";
+  maskTimer=setInterval(()=>{ maskMode = maskMode==="naive" ? "inf" : "naive"; renderMask(); },3600);
+  maskMode="naive"; renderMask();
+});
 renderMask();
 
 /* ============ Lab 8 — dropout ============ */

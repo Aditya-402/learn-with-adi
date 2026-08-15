@@ -92,6 +92,7 @@ ul.plain li::marker{color:var(--accent)}
 .listing{max-width:780px}
 .listing .lh{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;color:var(--accent-deep);font-weight:700;background:var(--accent-wash);border:1px solid #d5cfeb;border-bottom:none;border-radius:var(--r) var(--r) 0 0;padding:8px 14px}
 .listing pre{border-radius:0 0 var(--r) var(--r)}
+.lh a{float:right;font-weight:700;letter-spacing:.02em;text-transform:none;color:var(--accent)}
 pre.out{background:#eef4f3;border-color:#cfe2e0;color:#1d5654}
 
 .lab{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden}
@@ -198,22 +199,22 @@ pre .kw{color:var(--accent);font-weight:600}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
 </style>
 </head>
-<body data-lwa-course="llm-from-scratch" data-lwa-chapter="ch03" data-lwa-title="Chapter 3 · Attention — Part 1">
+<body data-lwa-course="llm-from-scratch" data-lwa-chapter="ch03" data-lwa-title="Unit 3 · Attention — Part 1">
 <header class="masthead">
   <div class="masthead-in">
     <div class="lwa-brandrow">
       <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
       <div class="lwa-brand-right">
-        <span class="lwa-tag"><a href="index.html">Track 01 · Build an LLM from Scratch</a></span>
+        <span class="lwa-tag"><a href="index.html">Series 01 · Build an LLM from Scratch</a></span>
         <span data-lwa-auth></span>
       </div>
     </div>
     <div class="title-block">
-      <div class="eyebrow">Build a Large Language Model (From Scratch) · Chapter 3 · Part 1 of 2</div>
+      <div class="eyebrow">Build an LLM from Scratch · Unit 3 · Part 1 of 2</div>
       <h1>How Attention Actually Works</h1>
       <p class="standfirst">The hardest chapter in the book, taken slowly. Attention is three small operations — a dot product, a softmax, and a weighted sum — applied in a particular order. In this first part we build it from nothing: every number is derived by hand on the page, every tensor shape is written down, and every value matches the book's printed output exactly.</p>
       <div class="facts">
-        <div><b>Pages 106–145</b>Book sections 3.1 – 3.4</div>
+        <div><b>One session</b>~45 min</div>
         <div><b>Part 1 of 2</b>Causal &amp; multi-head → Part 2</div>
         <div><b>6 labs</b>Real matrix arithmetic</div>
         <div><b>2 classes built</b>SelfAttention v1 &amp; v2</div>
@@ -251,7 +252,7 @@ pre .kw{color:var(--accent);font-weight:600}
       <div class="pq"><b>Vectors &amp; matrix multiplication</b>You should know that a (6×3) matrix times a (3×2) matrix gives a (6×2) matrix, and roughly why. Every step in this chapter is one of these.</div>
       <div class="pq"><b>Embeddings (chapter 2)</b>Tokens are already vectors, and <em>related tokens point in similar directions</em>. That single fact from <a href="ch02.html">chapter 2</a> is what makes attention work at all.</div>
       <div class="pq"><b>What “trainable” means</b>A trainable parameter is a number the training loop nudges to reduce the loss (chapter 1's idea; the mechanics arrive in chapter 5). Here you only need the concept.</div>
-      <div class="pq"><b>A little PyTorch</b><code>tensor</code>, <code>@</code> for matrix multiply, and what an <code>nn.Module</code> is. The book's appendix A covers all of it if you're new.</div>
+      <div class="pq"><b>A little PyTorch</b><code>tensor</code>, <code>@</code> for matrix multiply, and what an <code>nn.Module</code> is. New to it? The official <a href="https://docs.pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html" rel="noopener">60-minute blitz</a> is enough.</div>
     </div>
 
     <div class="prose">
@@ -266,15 +267,14 @@ pre .kw{color:var(--accent);font-weight:600}
       <div class="vt dim"><span class="k">STOP 5</span><div class="t">MultiHeadAttention</div><div class="d">+ heads</div><span class="tag">Part 2</span></div>
     </div>
     <div class="aside">
-      <div class="lbl">Reading alongside the book</div>
-      <p>This page covers sections 3.1–3.4 (pages 106–145) of Raschka's <i>Build a Large Language Model (From Scratch)</i> — the hero reference for this whole track. Read the book's section first or after, as you prefer; the numbers here are the book's numbers, so the two always agree.</p>
+      <div class="lbl">Reference material</div>
+      <p>This unit's worked examples and code follow Raschka's <i>Build a Large Language Model (From Scratch)</i>, the reference material for this series — so every number you compute here can be checked against a running PyTorch implementation. The exact mapping, and further reading, live in the <a href="#refs">References</a> at the bottom.</p>
     </div>
   </section>
 
   <!-- ============ 3.1 ============ -->
   <section id="s1">
     <div class="prose">
-      <div class="sec-num">3.1</div>
       <h2>The problem attention was invented to solve</h2>
       <p><b>The problem.</b> Suppose you're translating German to English. You cannot translate word by word — grammar reorders things, and a word's meaning depends on words far away from it. So pre-transformer translation systems used an <b>encoder–decoder RNN</b>: the encoder read the source sentence one word at a time, updating a <span class="term" title="The internal values at the hidden layers of the network">hidden state</span> as it went; the decoder then took the encoder's <em>final</em> hidden state and generated the translation from it, word by word.</p>
       <p>Look at what that architecture asserts: <em>the meaning of an entire sentence — however long — fits inside one fixed-size vector</em>, and the decoder may never look back at anything earlier. For a six-word sentence, fine. For a forty-word sentence with a pronoun referring to a noun fifteen words back, the information that pronoun needs was crushed long before the decoder got there.</p>
@@ -306,10 +306,9 @@ pre .kw{color:var(--accent);font-weight:600}
   <!-- ============ 3.2 ============ -->
   <section id="s2">
     <div class="prose">
-      <div class="sec-num">3.2</div>
       <h2>Attention arrives — in two steps, three years apart</h2>
-      <p><b>Step one (2014).</b> The <b>Bahdanau attention</b> mechanism modified the encoder–decoder RNN so the decoder could <em>selectively reach back</em> to any encoder position at every decoding step — deciding, per output word, which input words matter right now. The bottleneck was gone: nothing had to squeeze through a single vector anymore.</p>
-      <p><b>Step two (2017).</b> Researchers then discovered something more surprising: once you have attention, <em>the RNN itself is unnecessary</em>. The resulting architecture — the transformer, from the paper <i>Attention Is All You Need</i> — replaced recurrence entirely with a form of attention called <b>self-attention</b>. That is the mechanism inside GPTs, and it is what we now build.</p>
+      <p><b>Step one (2014).</b> The <b>Bahdanau attention</b> mechanism (Bahdanau, Cho &amp; Bengio, <a href="https://arxiv.org/abs/1409.0473" rel="noopener"><i>Neural Machine Translation by Jointly Learning to Align and Translate</i>, 2014</a>) modified the encoder–decoder RNN so the decoder could <em>selectively reach back</em> to any encoder position at every decoding step — deciding, per output word, which input words matter right now. The bottleneck was gone: nothing had to squeeze through a single vector anymore.</p>
+      <p><b>Step two (2017).</b> Researchers then discovered something more surprising: once you have attention, <em>the RNN itself is unnecessary</em>. The resulting architecture — the transformer, from Vaswani et al., <a href="https://arxiv.org/abs/1706.03762" rel="noopener"><i>Attention Is All You Need</i>, 2017</a> — replaced recurrence entirely with a form of attention called <b>self-attention</b>. That is the mechanism inside GPTs, and it is what we now build.</p>
     </div>
 
     <div class="keyidea">
@@ -321,7 +320,6 @@ pre .kw{color:var(--accent);font-weight:600}
   <!-- ============ 3.3 ============ -->
   <section id="s3">
     <div class="prose">
-      <div class="sec-num">3.3</div>
       <h2>Simple self-attention — no trainable weights yet</h2>
       <p>We start with a deliberately stripped-down version — version 1 on the route strip, with nothing to learn — because it isolates the mechanism. Once you can compute this version by hand, the real one is a small edit.</p>
 
@@ -332,7 +330,7 @@ pre .kw{color:var(--accent);font-weight:600}
     </div>
 
     <div class="listing">
-      <div class="lh">The input — six tokens, embedded</div>
+      <div class="lh">The input — six tokens, embedded <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part1.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>import torch
 inputs = torch.tensor(
   [[0.43, 0.15, 0.89], <span class="cm"># Your     x(1)</span>
@@ -361,7 +359,7 @@ inputs = torch.tensor(
     </div>
 
     <div class="listing">
-      <div class="lh">The same thing in code</div>
+      <div class="lh">The same thing in code <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part1.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>query = inputs[1]                            <span class="cm"># x(2), "journey" — Python counts from 0</span>
 attn_scores_2 = torch.empty(inputs.shape[0])
 for i, x_i in enumerate(inputs):
@@ -415,9 +413,51 @@ print(attn_scores_2)</pre>
     </div>
 
     <div class="prose">
-      <h3>Step 3 of 3 — blend: the weighted sum</h3>
-      <p><b>The problem.</b> We have shares of attention. Now we actually need to <em>mix the tokens</em> in those proportions to make the upgraded vector.</p>
-      <p><b>The idea.</b> Scale each token's full vector by its weight, then add the six scaled vectors together. That's a weighted average of the whole sentence, tilted toward the relevant tokens.</p>
+      <h3>Step 3 of 3 — blend: build the new “journey” out of the whole sentence</h3>
+      <p><b>The problem.</b> We now know <em>how much</em> each word matters to “journey” — 24% itself, 23% “starts”, 14% “Your”… But that's just a list of percentages. The goal from the start was an upgraded <em>vector</em> for “journey”, one that carries its surroundings. How do percentages become a vector?</p>
+      <p><b>The idea — mixing paint.</b> Suppose each word's embedding is a pot of paint, and the weights are your recipe: <i>“take 24% of the journey colour, 23% of the starts colour, 14% of the Your colour…”</i> Mix, and you get one new colour — recognisably close to “journey”'s original shade, but visibly tinted by everything around it. That mixing is precisely what the maths does: <b>scale each token's vector by its percentage, then add them all up.</b></p>
+      <p>Look once more at what falls out, because it's the point of the whole mechanism: the tokens with big weights dominate the mixture, the ones with small weights barely tint it. A different sentence would produce different weights — a different recipe — and so a <em>different</em> “journey” vector. The word finally means what its sentence makes it mean.</p>
+    </div>
+
+    <div class="fig" role="img" aria-label="Diagram: six token vectors scaled by their attention weights and stacked into one context vector">
+      <svg viewBox="0 0 740 190">
+        <defs><marker id="arrb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6b7585"/></marker></defs>
+        <g font-family="Consolas,monospace" font-size="11">
+          <!-- full-size bars = embeddings, scaled bars = weighted -->
+          <g text-anchor="middle" fill="#6b7585">
+            <text x="70" y="20">Your</text><text x="170" y="20">journey</text><text x="270" y="20">starts</text><text x="370" y="20">with</text><text x="470" y="20">one</text><text x="570" y="20">step</text>
+          </g>
+          <!-- original vectors (ghost) -->
+          <g fill="#e3e6ee">
+            <rect x="45" y="30" width="50" height="60" rx="5"/><rect x="145" y="30" width="50" height="60" rx="5"/><rect x="245" y="30" width="50" height="60" rx="5"/><rect x="345" y="30" width="50" height="60" rx="5"/><rect x="445" y="30" width="50" height="60" rx="5"/><rect x="545" y="30" width="50" height="60" rx="5"/>
+          </g>
+          <!-- weighted portions, heights ∝ weight/0.24 of 60 -->
+          <g fill="#5b4b9e">
+            <rect x="45" y="55.4" width="50" height="34.6" rx="5" opacity=".75"/>
+            <rect x="145" y="30.6" width="50" height="59.4" rx="5"/>
+            <rect x="245" y="31.7" width="50" height="58.3" rx="5" opacity=".95"/>
+            <rect x="345" y="59" width="50" height="31" rx="5" opacity=".7"/>
+            <rect x="445" y="63" width="50" height="27" rx="5" opacity=".65"/>
+            <rect x="545" y="50.5" width="50" height="39.5" rx="5" opacity=".8"/>
+          </g>
+          <g text-anchor="middle" fill="#3d3170" font-weight="700">
+            <text x="70" y="106">×0.1385</text><text x="170" y="106">×0.2379</text><text x="270" y="106">×0.2333</text><text x="370" y="106">×0.1240</text><text x="470" y="106">×0.1082</text><text x="570" y="106">×0.1581</text>
+          </g>
+          <!-- plus signs -->
+          <g fill="#6b7585" font-size="15" text-anchor="middle" font-weight="700">
+            <text x="120" y="65">+</text><text x="220" y="65">+</text><text x="320" y="65">+</text><text x="420" y="65">+</text><text x="520" y="65">+</text>
+          </g>
+          <line x1="600" y1="60" x2="648" y2="60" stroke="#6b7585" stroke-width="1.6" marker-end="url(#arrb)"/>
+          <text x="624" y="48" text-anchor="middle" fill="#6b7585" font-size="13" font-weight="700">=</text>
+          <rect x="652" y="30" width="76" height="60" rx="7" fill="#5b4b9e" stroke="#3d3170" stroke-width="1.6"/>
+          <text x="690" y="57" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="700">z(2)</text>
+          <text x="690" y="75" text-anchor="middle" fill="#d8d3ee" font-size="9.5">the new</text>
+          <text x="690" y="86" text-anchor="middle" fill="#d8d3ee" font-size="9.5">“journey”</text>
+          <text x="370" y="140" text-anchor="middle" fill="#6b7585" font-size="11.5" font-family="Segoe UI,sans-serif">Grey = each word's full embedding. Purple = the share of it that makes it into the mix.</text>
+          <text x="370" y="160" text-anchor="middle" fill="#6b7585" font-size="11.5" font-family="Segoe UI,sans-serif">Big-weight words dominate the blend; small-weight words barely tint it.</text>
+        </g>
+      </svg>
+      <div class="figcap">The weighted sum as paint-mixing: six vectors, each contributing its percentage, added into one new vector — mostly “journey” and “starts”, faintly “one”.</div>
     </div>
 
     <div class="derive">
@@ -438,6 +478,13 @@ print(attn_scores_2)</pre>
         <span class="lab-kicker">The centrepiece</span>
       </div>
       <div class="lab-body stack">
+        <div class="row" style="justify-content:space-between">
+          <div class="seg" role="group" aria-label="Mode">
+            <button id="sa-watch" aria-pressed="true">▶ Watch it run</button>
+            <button id="sa-play" aria-pressed="false">✎ Play yourself</button>
+          </div>
+          <button class="btn ghost" id="sa-pause">⏸ Pause</button>
+        </div>
         <div>
           <div class="lbl-sm" style="margin-bottom:8px">Query token — click to change</div>
           <div class="toks" id="sa-query"></div>
@@ -489,7 +536,7 @@ print(attn_scores_2)</pre>
     </div>
 
     <div class="listing">
-      <div class="lh">Three lines replace all the loops</div>
+      <div class="lh">Three lines replace all the loops <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part1.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>attn_scores  = inputs @ inputs.T                      <span class="cm"># (6,3) @ (3,6) → (6,6), all-pairs dots</span>
 attn_weights = torch.softmax(attn_scores, dim=-1)     <span class="cm"># softmax each ROW (dim=-1 = last dim)</span>
 all_context  = attn_weights @ inputs                  <span class="cm"># (6,6) @ (6,3) → (6,3), six blends</span></pre>
@@ -527,19 +574,26 @@ tensor([[0.4421, 0.5931, 0.5790],
   <!-- ============ 3.4 ============ -->
   <section id="s4">
     <div class="prose">
-      <div class="sec-num">3.4</div>
       <h2>Trainable weights — the real mechanism</h2>
-      <p><b>The problem.</b> The version above contains not a single learnable number. Its notion of “relevant” is frozen: whatever alignment the chapter-2 embeddings happen to have <em>is</em> the attention pattern, forever. But relevance is subtler than similarity — in “the cat that the dog chased was black”, the verb “was” needs to attend hard to “cat”, a word it is not particularly <em>similar</em> to. The model must be able to <em>learn</em> what counts as relevant for predicting the next token.</p>
-      <p><b>The idea.</b> Give the model adjustable knobs <em>inside</em> the attention computation: instead of dotting raw embeddings, first pass each embedding through small trainable matrices, and dot the <em>projections</em>. During training (chapter 5), gradient descent turns these knobs until the projections make useful things aligned.</p>
+      <p>This is the step where most readers fall off the chapter, so we'll climb it one rung at a time. Nothing about the three-step machine changes — we're only upgrading <em>where the vectors come from</em> before the machine runs.</p>
 
-      <h3>Why three matrices, not one?</h3>
-      <p>Look closely at the simple version and you'll see each token vector was quietly doing <b>three different jobs</b>:</p>
+      <h3>Rung 1 — see the flaw in what we built</h3>
+      <p>The simple version contains not a single learnable number. Walk through what that means: the attention scores were dot products of the <em>raw embeddings</em>, so “how much does journey attend to starts?” is answered entirely by how similar their embeddings happen to be. The attention pattern is <b>frozen at whatever similarity chapter 2 delivered</b>.</p>
+      <p>And similarity is often the wrong question. Take the sentence <i>“the cat that the dog chased <b>was</b> black”</i>. To predict what follows “was”, the model desperately needs “was” to attend to <b>“cat”</b> — its subject. But “was” and “cat” are not <em>similar</em> words; their embeddings don't especially align. Frozen-similarity attention can never route that connection. Relevance ≠ similarity, and we've built a machine that can only do similarity.</p>
+
+      <h3>Rung 2 — one knob: transform before you compare</h3>
+      <p>Here's the smallest possible fix. What if, before dotting, we passed every embedding through a trainable transformation — a matrix <b>W</b> — and dotted the <em>transformed</em> vectors instead?</p>
+      <p>A matrix reshapes a vector space: it can stretch some directions, shrink others, rotate the whole thing. So a trainable W means <b>training can move vectors around before the comparison happens</b> — it could learn a transformation under which verb-vectors land close to their subject-vectors, making “was”·“cat” score high <em>after</em> transformation even though the raw embeddings disagree. The dot product still measures alignment; W decides <em>what gets aligned</em>. That single idea is the whole leap. Everything from here is refinement.</p>
+
+      <h3>Rung 3 — why one knob isn't enough: the three jobs</h3>
+      <p>Now look closely at how a token's vector actually gets used inside the three-step machine, and you'll notice it is quietly doing <b>three different jobs</b>:</p>
       <ul class="plain">
         <li>acting as the <b>seeker</b> — “as the current token, what am I looking for?” (the query role),</li>
         <li>acting as the <b>advertisement</b> — “as some other token, here is what I offer for matching” (the key role),</li>
         <li>acting as the <b>content</b> — “if you pick me, this is what actually gets blended in” (the value role).</li>
       </ul>
-      <p>One vector cannot be optimised for three jobs at once — tuning it for matching would corrupt what it contributes as content. So the fix is to give each token <em>three separate projections</em>, one per job, each with its own trainable matrix: <b>W<sub>q</sub></b> makes queries, <b>W<sub>k</sub></b> makes keys, <b>W<sub>v</sub></b> makes values. That's the entire reason Q, K and V exist.</p>
+      <p>With a single W, all three jobs share one transformation — tuning it to improve <em>matching</em> would simultaneously corrupt what each token contributes as <em>content</em>. The jobs pull in different directions. So give each job its own knob: <b>W<sub>q</sub></b> transforms a token when it's the seeker (producing its <b>query</b>), <b>W<sub>k</sub></b> when it's being matched against (its <b>key</b>), <b>W<sub>v</sub></b> for what it contributes to the blend (its <b>value</b>). Three matrices, because three jobs. That's the entire reason Q, K and V exist — nothing deeper.</p>
+      <p>And to say it before the maths does: <b>training will touch nothing but these three matrices.</b> The dot products, the softmax, the weighted sum — all fixed machinery. When chapter 5's training loop runs, the only thing being learned in this mechanism is <em>what the three transformations should be</em>.</p>
     </div>
 
     <div class="aside">
@@ -588,7 +642,7 @@ tensor([[0.4421, 0.5931, 0.5790],
     </div>
 
     <div class="listing">
-      <div class="lh">Initialising the three matrices — and their actual values</div>
+      <div class="lh">Initialising the three matrices — and their actual values <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part1.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>torch.manual_seed(123)
 W_query = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
 W_key   = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
@@ -680,7 +734,7 @@ W_query = [[0.2961, 0.5166],      W_key = [[0.1366, 0.1025],      W_value = [[0.
     </div>
 
     <div class="listing">
-      <div class="lh">Listing 3.1 (book) · A compact self-attention class — stop 2 on the route</div>
+      <div class="lh">Listing 3.1 (book) · A compact self-attention class — stop 2 on the route <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part1.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>import torch.nn as nn
 
 class SelfAttention_v1(nn.Module):                        <span class="cm"># nn.Module = PyTorch's building block</span>
@@ -717,7 +771,7 @@ tensor([[0.2996, 0.8053],
     </div>
 
     <div class="listing">
-      <div class="lh">Listing 3.2 (book) · The nn.Linear version — stop 3 on the route</div>
+      <div class="lh">Listing 3.2 (book) · The nn.Linear version — stop 3 on the route <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part1.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>class SelfAttention_v2(nn.Module):
     def __init__(self, d_in, d_out, qkv_bias=False):
         super().__init__()
@@ -786,10 +840,10 @@ tensor([[-0.0739,  0.0713],
   <section class="lwa-refs" id="refs">
     <div class="prose">
       <h2>References</h2>
-      <p>This chapter follows the book below — the hero reference for the whole course. The rest is supporting material worth your time.</p>
+      <p>The book below is the reference material this series is a guided companion to — the reference material for the whole series. The rest is supporting material worth your time.</p>
     </div>
     <ol>
-      <li class="hero"><b>Raschka, S.</b> — <i>Build a Large Language Model (From Scratch), Manning, 2024</i>. <span class="why">The hero reference — this page follows its sections 3.1–3.4 (pages 106–145).</span> <a href="https://www.manning.com/books/build-a-large-language-model-from-scratch" rel="noopener">book</a> · <a href="https://github.com/rasbt/LLMs-from-scratch" rel="noopener">code</a></li>
+      <li class="hero"><b>Raschka, S.</b> — <i>Build a Large Language Model (From Scratch), Manning, 2024</i>. <span class="why">The reference material for this series — this unit covers the same ground as its chapter 3, sections 3.1–3.4 (pages 106–145).</span> <a href="https://www.manning.com/books/build-a-large-language-model-from-scratch" rel="noopener">book</a> · <a href="https://github.com/rasbt/LLMs-from-scratch" rel="noopener">code</a></li>
       <li><b>Bahdanau, D., Cho, K., Bengio, Y.</b> — <i>Neural Machine Translation by Jointly Learning to Align and Translate, 2014</i>. <span class="why">Where attention began — the mechanism section 3.2 describes.</span> <a href="https://arxiv.org/abs/1409.0473" rel="noopener">arXiv</a></li>
       <li><b>Vaswani, A. et al.</b> — <i>Attention Is All You Need, NeurIPS 2017</i>. <span class="why">Scaled dot-product attention exactly as built here (their eq. 1 is this page).</span> <a href="https://arxiv.org/abs/1706.03762" rel="noopener">arXiv</a></li>
       <li><b>Alammar, J.</b> — <i>The Illustrated Transformer</i>. <span class="why">The classic visual walkthrough of queries, keys and values.</span> <a href="https://jalammar.github.io/illustrated-transformer/" rel="noopener">article</a></li>
@@ -800,15 +854,15 @@ tensor([[-0.0739,  0.0713],
   <section>
     <div class="next">
       <div class="lbl">Continue</div>
-      <h3>Chapter 3 · Part 2 — Causal masking, dropout &amp; multi-head</h3>
+      <h3>Unit 3 · Part 2 — Causal masking, dropout &amp; multi-head</h3>
       <p style="font-size:var(--fs-cap);color:var(--slate)">The mechanism you just built has one flaw for text generation: when processing “journey” it can peek at “starts with one step”. Part 2 hides the future with a mask, adds dropout, wraps everything into the <code>CausalAttention</code> class, and then runs several attention heads in parallel — arriving at the exact module chapter 4 plugs into the GPT.</p>
     </div>
   </section>
 
   <div class="lwa-chapnav">
-    <a href="ch02.html"><span class="k">← Previous</span><span class="t">Chapter 2 · From Text to Tensors</span></a>
-    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this chapter complete</span></button>
-    <a href="ch03b.html"><span class="k">Next →</span><span class="t">Chapter 3 · Part 2 — Causal &amp; Multi-Head</span></a>
+    <a href="ch02.html"><span class="k">← Previous</span><span class="t">Unit 2 · From Text to Tensors</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="ch03b.html"><span class="k">Next →</span><span class="t">Unit 3 · Part 2 — Causal &amp; Multi-Head</span></a>
   </div>
 
   </main>
@@ -817,7 +871,7 @@ tensor([[-0.0739,  0.0713],
 <footer class="foot">
   <div class="foot-in">
     <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
-    <span>A guided companion to <i>Build a Large Language Model (From Scratch)</i> by Sebastian Raschka — chapter 3, part 1 (pages 106–145) · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Course</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+    <span>A guided companion to <i>Build a Large Language Model (From Scratch)</i> by Sebastian Raschka — Unit 3 · Part 1 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
   </div>
 </footer>
 
@@ -948,8 +1002,32 @@ function renderSA(){
   }
 }
 document.querySelectorAll(".step[data-step]").forEach(b=>
-  b.addEventListener("click",()=>{saStep=+b.dataset.step;renderSA();}));
-renderSA();
+  b.addEventListener("click",()=>{setSAMode("play");saStep=+b.dataset.step;renderSA();}));
+
+/* --- Watch mode: the lab demonstrates itself (the "GIF", rendered live) --- */
+let saMode="watch", saTimer=null, saPaused=false;
+function saTick(){
+  if(saPaused) return;
+  if(saStep<3){ saStep++; } else { saStep=1; saQ=(saQ+1)%TOKENS.length; }
+  renderSA();
+}
+function setSAMode(mode){
+  saMode=mode;
+  document.getElementById("sa-watch").setAttribute("aria-pressed",String(mode==="watch"));
+  document.getElementById("sa-play").setAttribute("aria-pressed",String(mode==="play"));
+  document.getElementById("sa-pause").style.display = mode==="watch" ? "" : "none";
+  if(saTimer){clearInterval(saTimer);saTimer=null;}
+  if(mode==="watch"){ saPaused=false; document.getElementById("sa-pause").textContent="⏸ Pause";
+    saQ=1; saStep=1; renderSA(); saTimer=setInterval(saTick,2600); }
+}
+document.getElementById("sa-watch").addEventListener("click",()=>setSAMode("watch"));
+document.getElementById("sa-play").addEventListener("click",()=>setSAMode("play"));
+document.getElementById("sa-pause").addEventListener("click",()=>{
+  saPaused=!saPaused;
+  document.getElementById("sa-pause").textContent=saPaused?"▶ Resume":"⏸ Pause";
+});
+document.getElementById("sa-query").addEventListener("click",()=>{ if(saMode==="watch") setSAMode("play"); },true);
+renderSA(); setSAMode("watch");
 
 /* ============ Lab 4 — full matrix ============ */
 let matMode="scores";

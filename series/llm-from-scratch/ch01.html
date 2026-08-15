@@ -358,22 +358,22 @@ tr:last-child td{border-bottom:none}
 }
 </style>
 </head>
-<body data-lwa-course="llm-from-scratch" data-lwa-chapter="ch01" data-lwa-title="Chapter 1 · What Makes a Language Model Large">
+<body data-lwa-course="llm-from-scratch" data-lwa-chapter="ch01" data-lwa-title="Unit 1 · What Makes a Language Model Large">
 <header class="masthead">
   <div class="masthead-in">
     <div class="lwa-brandrow">
       <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
       <div class="lwa-brand-right">
-        <span class="lwa-tag"><a href="index.html">Track 01 · Build an LLM from Scratch</a></span>
+        <span class="lwa-tag"><a href="index.html">Series 01 · Build an LLM from Scratch</a></span>
         <span data-lwa-auth></span>
       </div>
     </div>
     <div class="title-block">
-      <div class="eyebrow">Build a Large Language Model (From Scratch) · Chapter 1</div>
+      <div class="eyebrow">Build an LLM from Scratch · Unit 1</div>
       <h1>What Makes a Language Model Large</h1>
       <p class="standfirst">An LLM learns one absurdly simple task — guess the next word — a few hundred billion times. Everything else it can do falls out of that. These notes take you through why that works.</p>
       <div class="facts">
-        <div><b>Pages 25–52</b>Source chapter</div>
+        <div><b>One session</b>~25 min</div>
         <div><b>7 sections</b>1.1 – 1.7</div>
         <div><b>7 labs</b>Hands-on, in this page</div>
         <div><b>No maths yet</b>Concepts only</div>
@@ -401,7 +401,6 @@ tr:last-child td{border-bottom:none}
   <!-- ============ 1.1 ============ -->
   <section id="s1">
     <div class="prose">
-      <div class="sec-num">1.1</div>
       <h2>What is an LLM?</h2>
       <p>A <span class="term" title="Large Language Model">large language model</span> is a neural network trained to understand, generate and respond to human-like text. That is the whole definition. The interesting part is the word <em>large</em>, which is doing two jobs at once:</p>
       <ul class="plain">
@@ -451,7 +450,6 @@ tr:last-child td{border-bottom:none}
   <!-- ============ 1.2 ============ -->
   <section id="s2">
     <div class="prose">
-      <div class="sec-num">1.2</div>
       <h2>What LLMs are actually used for</h2>
       <p>Because they parse and generate unstructured text well, LLMs turn up almost anywhere text is involved: machine translation, sentiment analysis, summarisation, writing fiction and articles, writing computer code, powering chatbots and virtual assistants, and retrieving knowledge from large specialised document collections in fields like medicine and law.</p>
       <p>There's a pattern worth noticing here. Before LLMs, each of these was a <em>separate</em> model. You built one system for translation, another for classification, another for summarisation — each with its own architecture and its own labelled dataset.</p>
@@ -470,7 +468,6 @@ tr:last-child td{border-bottom:none}
   <!-- ============ 1.3 ============ -->
   <section id="s3">
     <div class="prose">
-      <div class="sec-num">1.3</div>
       <h2>The two stages: pretraining and fine-tuning</h2>
       <p>Building an LLM happens in two phases, and understanding the split explains almost everything about how these models are made and shared.</p>
     </div>
@@ -537,7 +534,6 @@ tr:last-child td{border-bottom:none}
   <!-- ============ 1.4 ============ -->
   <section id="s4">
     <div class="prose">
-      <div class="sec-num">1.4</div>
       <h2>The transformer architecture</h2>
       <p>Nearly every modern LLM rests on the <b>transformer</b>, introduced in the 2017 paper <a href="https://arxiv.org/abs/1706.03762">"Attention Is All You Need"</a>. It was originally built for machine translation — English to German and French — and it has two halves:</p>
       <ul class="plain">
@@ -626,7 +622,6 @@ tr:last-child td{border-bottom:none}
   <!-- ============ 1.5 ============ -->
   <section id="s5">
     <div class="prose">
-      <div class="sec-num">1.5</div>
       <h2>The data behind the model</h2>
       <p>GPT-3 was the base model for the first version of ChatGPT. Its training data is documented, and it repays a close look — because the obvious reading of the table is wrong.</p>
       <p>A <b>token</b> is a unit of text the model reads; roughly, tokens ≈ words plus punctuation. Chapter 2 is entirely about how text becomes tokens.</p>
@@ -667,7 +662,6 @@ tr:last-child td{border-bottom:none}
   <!-- ============ 1.6 ============ -->
   <section id="s6">
     <div class="prose">
-      <div class="sec-num">1.6</div>
       <h2>A closer look at GPT</h2>
       <p>Compared with the full transformer, GPT's architecture is startlingly plain: <b>it's just the decoder, with the encoder removed.</b> It reads left to right, one direction only, and it was pretrained on nothing but next-word prediction.</p>
       <p>Because each new word is chosen based on the sequence that precedes it — and then becomes part of the sequence for the <em>next</em> prediction — GPT is called an <span class="term" title="Its own output is fed back in as input">autoregressive</span> model. That feedback loop is what keeps generated text coherent.</p>
@@ -721,7 +715,6 @@ tr:last-child td{border-bottom:none}
   <!-- ============ 1.7 ============ -->
   <section id="s7">
     <div class="prose">
-      <div class="sec-num">1.7</div>
       <h2>The plan for the rest of the book</h2>
       <p>We'll take GPT's core idea as a blueprint and build it in three stages. Here's the whole route, so you always know where you are.</p>
     </div>
@@ -777,18 +770,18 @@ tr:last-child td{border-bottom:none}
   <section>
     <div class="next">
       <div class="lbl">Coming next</div>
-      <h3>Chapter 2 · Working with text data</h3>
+      <h3>Unit 2 · Working with text data</h3>
       <p style="font-size:var(--fs-cap);color:var(--slate)">This chapter kept saying "the model reads a word" — that's a convenient lie. Neural networks only take numbers. Chapter 2 is the whole pipeline that gets us from a string of characters to a tensor: splitting text into tokens, mapping tokens to IDs, byte pair encoding, sliding windows, and finally turning IDs into embedding vectors.</p>
     </div>
   </section>
   <section class="lwa-refs" id="refs">
     <div class="prose">
       <h2>References</h2>
-      <p>This chapter follows the book below — the hero reference for the whole course. The rest is supporting material worth your time.</p>
+      <p>The book below is the reference material this series is a guided companion to — the reference material for the whole series. The rest is supporting material worth your time.</p>
     </div>
     <ol>
-      <li class="hero"><b>Raschka, S.</b> — <i>Build a Large Language Model (From Scratch), Manning, 2024</i>. <span class="why">The hero reference — this chapter follows its pathway (chapter 1, pages 25–52).</span> <a href="https://www.manning.com/books/build-a-large-language-model-from-scratch" rel="noopener">book</a> · <a href="https://github.com/rasbt/LLMs-from-scratch" rel="noopener">code</a></li>
-      <li><b>Radford, A. et al.</b> — <i>Improving Language Understanding by Generative Pre-Training (GPT-1), 2018</i>. <span class="why">The decoder-only recipe this whole course follows.</span> <a href="https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf" rel="noopener">paper</a></li>
+      <li class="hero"><b>Raschka, S.</b> — <i>Build a Large Language Model (From Scratch), Manning, 2024</i>. <span class="why">The reference material for this series — this unit covers the same ground as its chapter 1 (pages 25–52).</span> <a href="https://www.manning.com/books/build-a-large-language-model-from-scratch" rel="noopener">book</a> · <a href="https://github.com/rasbt/LLMs-from-scratch" rel="noopener">code</a></li>
+      <li><b>Radford, A. et al.</b> — <i>Improving Language Understanding by Generative Pre-Training (GPT-1), 2018</i>. <span class="why">The decoder-only recipe this whole series follows.</span> <a href="https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf" rel="noopener">paper</a></li>
       <li><b>Brown, T. et al.</b> — <i>Language Models are Few-Shot Learners (GPT-3), NeurIPS 2020</i>. <span class="why">Where few-shot and zero-shot behaviour was shown at scale.</span> <a href="https://arxiv.org/abs/2005.14165" rel="noopener">arXiv</a></li>
       <li><b>Vaswani, A. et al.</b> — <i>Attention Is All You Need, NeurIPS 2017</i>. <span class="why">The transformer architecture chapter 1 sketches and chapter 3 builds.</span> <a href="https://arxiv.org/abs/1706.03762" rel="noopener">arXiv</a></li>
       <li><b>3Blue1Brown</b> — <i>But what is a GPT? — Neural networks series</i>. <span class="why">The best visual primer to watch alongside this chapter.</span> <a href="https://www.3blue1brown.com/lessons/gpt" rel="noopener">video</a></li>
@@ -797,8 +790,8 @@ tr:last-child td{border-bottom:none}
 
   <div class="lwa-chapnav">
     <a href="index.html"><span class="k">← Previous</span><span class="t">Course home</span></a>
-    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this chapter complete</span></button>
-    <a href="ch02.html"><span class="k">Next →</span><span class="t">Chapter 2 · From Text to Tensors</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="ch02.html"><span class="k">Next →</span><span class="t">Unit 2 · From Text to Tensors</span></a>
   </div>
 
 
@@ -808,7 +801,7 @@ tr:last-child td{border-bottom:none}
 <footer class="foot">
   <div class="foot-in">
     <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
-    <span>A guided companion to <i>Build a Large Language Model (From Scratch)</i> by Sebastian Raschka — chapter 1 (pages 25–52) · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Course</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+    <span>A guided companion to <i>Build a Large Language Model (From Scratch)</i> by Sebastian Raschka — Unit 1 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
   </div>
 </footer>
 
