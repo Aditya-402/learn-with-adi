@@ -507,7 +507,7 @@ scores = np.array([91, 45, 78, 85, 62, 39])
 
 scores = np.array([91, 45, 78, 85, 62, 39])
 passed = scores[scores >= 50]
-failed = scores[scores < 50]
+failed = scores[scores &lt; 50]
 print(f"Passed average: {passed.mean():.2f}")
 print(f"Failed average: {failed.mean():.2f}")</pre><p>Two masks, two sub-arrays, two means — and the original <code>scores</code> is untouched throughout. Masking never modifies; it selects.</p></details>
       </div>
@@ -658,7 +658,7 @@ marks = np.array([[91, 78, 85],
                   [85, 70, 76]])
 subject_avg = marks.mean(axis=0)
 print(f"Best subject average: {subject_avg.max():.2f}")
-print(f"Its column index: {subject_avg.argmax()}")</pre><p><code>subject_avg</code> is <code>[74.75, 67.0, 77.75]</code> — shape (3,), one per subject. Position 2 is Python, and holding that index against a list of subject names is how you print the name instead of the number. The build does exactly that.</p></details>
+print(f"Its column index: {subject_avg.argmax()}")</pre><p><code>subject_avg</code> holds 74.75, 67.0 and 77.75 — shape (3,), one per subject. Position 2 is Python, and holding that index against a list of subject names is how you print the name instead of the number. The build does exactly that.</p></details>
       </div>
     </div>
   </section>
@@ -984,7 +984,7 @@ QUIZ.forEach((item,qi)=>{
 const GLOSSARY = [
   ["NumPy","The library everything numerical in Python is built on. Imported as np by universal convention: import numpy as np."],
   ["Array (ndarray)","NumPy's container: a fixed-size block of values, all of one type, that arithmetic applies to as a whole. Made with np.array([...])."],
-  ["dtype","The one type an array holds — int64, float64, bool. The trade that buys the speed: no mixing, but one solid block of memory."],
+  ["dtype","The one type an array holds — a whole-number type (this page's Python shows int32, most installed Pythons show int64 — same idea, different width), float64, bool. The trade that buys the speed: no mixing, but one solid block of memory."],
   ["Vectorised","Describing an operation on the whole array rather than looping element by element. prices * 1.05 instead of a comprehension."],
   ["Element-wise","Position by position: a + b pairs first with first, second with second. Both arrays must be the same length."],
   ["Broadcasting","Stretching a single value (or a smaller array) across a bigger one, so a + 5 reaches every element."],

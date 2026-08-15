@@ -1,0 +1,1065 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keras — First Contact &amp; the Grammar Compared — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<link rel="stylesheet" href="../../assets/unit.css">
+<style>
+/* One-off: read-only annotated listings for code that cannot run in this page. */
+.listing{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);max-width:82ch;overflow:hidden;box-shadow:var(--shadow)}
+.listing .lh{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;
+  background:var(--subtle);border-bottom:1px solid var(--line);padding:10px 16px;
+  font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.listing .lh a{text-transform:none;letter-spacing:0;font-weight:600;font-size:var(--fs-cap);color:var(--accent-deep);
+  background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);
+  border-radius:999px;padding:3px 13px;text-decoration:none;white-space:nowrap}
+.listing .lh a:hover{background:#e0defa}
+.listing pre{font-family:var(--mono);font-size:var(--fs-sm);line-height:1.62;margin:0;padding:15px 17px;overflow-x:auto;color:var(--ink)}
+.listing .ann{margin:0;padding:13px 17px 15px;border-top:1px dashed var(--line);font-size:var(--fs-cap);
+  color:var(--slate);display:flex;flex-direction:column;gap:7px}
+.listing .ann b{color:var(--accent-deep);font-family:var(--mono);font-size:.93em}
+.listing .out{margin:0;border-top:1px dashed var(--line);padding:12px 17px 14px;background:var(--teal-wash);
+  font-family:var(--mono);font-size:var(--fs-sm);white-space:pre-wrap;color:#1d5654}
+.listing .out::before{content:"what it prints, run in colab:";display:block;font-family:var(--sans);
+  font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.wide table{max-width:none}
+.wide td,.wide th{font-size:var(--fs-sm)}
+.wide td code{white-space:nowrap}
+.sendoff{background:linear-gradient(180deg,#f4f2fd,#ecebf6);border:1px solid color-mix(in srgb,var(--accent) 34%,transparent);
+  border-radius:var(--r-lg);padding:26px 28px;max-width:70ch;box-shadow:var(--shadow)}
+.sendoff .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:8px}
+.sendoff h3{font-size:var(--fs-xl);margin:0 0 10px}
+.sendoff p{font-size:var(--fs-cap);color:var(--slate);margin-bottom:12px}
+.sendoff ol{margin:4px 0 14px;padding-left:22px;font-size:var(--fs-cap);color:var(--slate);display:flex;flex-direction:column;gap:5px}
+.sendoff .sig{font-family:var(--serif);font-size:var(--fs-base);color:var(--accent-deep);margin-top:4px}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u26" data-lwa-title="Unit 26 · Keras — first contact &amp; the grammar compared">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Bridge — Python for ML &amp; DL · Unit 26</div>
+      <h1>Keras — First Contact &amp; the Grammar Compared</h1>
+      <p class="standfirst">Unit 25 made you write the training loop by hand. Keras writes it for you — you describe the model as a <i>list of layers</i> and say <code style="font-size:.85em">fit</code>. This final session puts all three libraries side by side, shows you that they are three dialects of one sentence, teaches you to read ML code you've never seen before — and then sends you on to the Machine Learning stage.</p>
+      <div class="facts">
+        <div><b>One session</b>~50 min</div>
+        <div><b>5 concepts</b>each: short read + practice</div>
+        <div><b>18 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 21–25 — NumPy to PyTorch</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">26.1 Describe, don't assemble</a>
+    <a href="#s2">26.2 Three grammars</a>
+    <a href="#s3">26.3 Which one, when</a>
+    <a href="#s4">26.4 Reading code in the wild</a>
+    <a href="#s5">26.5 Your build</a>
+    <a href="#s6">26.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 26.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Units 24 &amp; 25</b>scikit-learn's <code>fit</code>/<code>predict</code> grammar, and PyTorch's class-plus-loop. This unit is the comparison, so both halves have to be fresh. NumPy (21) and pandas (22) do the real work in the practice.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm, one honest difference — see the card to the right. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit26.ipynb" rel="noopener">▶ Run this unit in Colab</a>, where the Keras code genuinely runs.</div>
+      <div class="pq"><b>Keras does not run on this page</b>The in-page runner has NumPy, pandas, matplotlib and scikit-learn, but never TensorFlow/Keras — they're far too large for a browser. So every Keras example here is a <b>read-only annotated listing</b> with a Colab button. Everything else on the page still runs and still gets checked.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">26.1</span>
+      <h2>Keras: describe the model, don't assemble it</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Unit 25's network was honest work: a class with <code>__init__</code> and <code>forward</code>, then five lines of loop you typed yourself — zero the gradients, forward, loss, backward, step — wrapped in a <code>for</code> over epochs. Twenty-odd lines before anything learns. Most days you don't want to design a training loop. You want a perfectly ordinary network, trained on your perfectly ordinary data, before lunch. Is there a shorter way to say it?</p>
+      <p><b>The idea, in plain words.</b> Keras is that shorter way, and its whole personality is in one sentence: <b>you describe the model, you don't assemble it.</b> Think of ordering a cake. PyTorch is the kitchen — you own the oven, the timings, every fold of the batter. Keras is the order form: three layers, this size, this icing, bake it twenty times. You still choose everything that matters about the <i>cake</i>; someone else owns the oven.</p>
+      <p>The description itself is a thing you already know intimately. <code>keras.Sequential([...])</code> takes <b>a list</b> — square brackets, commas between items, order matters (Unit 5, cashing in properly at last). The list holds layers, and data flows through them top to bottom, in list order. Around that description sit exactly three verbs:</p>
+      <ul class="plain">
+        <li><b><code>model.compile(optimizer=…, loss=…, metrics=…)</code></b> — not "compile" in any scary sense. It's the settings form: <i>how</i> should it learn (the optimizer), <i>what counts as wrong</i> (the loss), and <i>what should I be told</i> as it goes (the metrics).</li>
+        <li><b><code>model.fit(X, y, epochs=…)</code></b> — show it the examples, this many times over. Unit 25's entire five-line loop lives inside this one call.</li>
+        <li><b><code>model.evaluate(X, y)</code></b> and <b><code>model.predict(X_new)</code></b> — how did it do, and what does it say about data it has never seen. That second one is scikit-learn's word, exactly (Unit 24), and that is not a coincidence.</li>
+      </ul>
+      <p>Be clear-eyed about the trade, because it is a real one. Less to write, less to get wrong — and less control. When you need to do something the order form has no box for, you are writing PyTorch. That's the whole of 26.3, so hold the thought.</p>
+    </div>
+
+    <div class="listing">
+      <div class="lh"><span>Read-only listing · Keras cannot run in this page</span>
+        <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit26.ipynb" rel="noopener">▶ Run this in Colab</a></div>
+<pre>import numpy as np
+from tensorflow import keras
+from tensorflow.keras import layers
+
+# the data: 4 students, 2 features each, one 0/1 answer each
+X = np.array([[1.0, 7.0], [2.0, 6.0], [4.0, 5.0], [5.0, 7.0]])
+y = np.array([0, 0, 1, 1])
+
+# 1. DESCRIBE the model - a LIST of layers
+model = keras.Sequential([
+    keras.Input(shape=(2,)),
+    layers.Dense(8, activation="relu"),
+    layers.Dense(1, activation="sigmoid"),
+])
+
+# 2. SET UP how it should learn
+model.compile(optimizer="adam",
+              loss="binary_crossentropy",
+              metrics=["accuracy"])
+
+# 3. SHOW it the examples, 200 times over
+model.fit(X, y, epochs=200, verbose=0)
+
+# 4. ASK: how did it do, and what about a new student?
+loss, acc = model.evaluate(X, y, verbose=0)
+print(f"loss {loss:.3f}  accuracy {acc:.2f}")
+print(model.predict(np.array([[3.0, 6.0]]), verbose=0))</pre>
+      <div class="ann">
+        <span><b>from tensorflow import keras</b> — Keras ships inside TensorFlow. One install, two names; you'll see both spellings in the wild.</span>
+        <span><b>keras.Input(shape=(2,))</b> — the doorway. It says only "each sample is 2 numbers wide"; the batch size is deliberately left out, because the model doesn't care how many rows you hand it.</span>
+        <span><b>layers.Dense(8, activation="relu")</b> — <i>dense</i> means every input connects to every one of the 8 outputs. Under the hood it is Unit 21's <code>X @ W + b</code> and nothing more exotic; the activation bends the result so the network can learn more than a straight line.</span>
+        <span><b>layers.Dense(1, activation="sigmoid")</b> — one output, squeezed into 0…1, which is how you say "a probability" for a yes/no question.</span>
+        <span><b>model.compile(...)</b> — three settings, no learning yet. <code>optimizer</code> is the step rule, <code>loss</code> is the scorer for wrongness, <code>metrics</code> is what gets reported to you.</span>
+        <span><b>model.fit(X, y, epochs=200)</b> — the whole of Unit 25's loop, folded into one line: 200 passes over the data, each one forward, loss, backward, step. <code>verbose=0</code> only silences the progress bar.</span>
+        <span><b>model.evaluate / model.predict</b> — score on data, then answer about new data. <code>predict</code> returns an array of shape (1, 1) here — one row in, one probability out.</span>
+      </div>
+      <div class="out">loss 0.284  accuracy 1.00
+[[0.6127831]]</div>
+    </div>
+
+    <div class="fig">
+      <svg viewBox="0 0 880 250" role="img" aria-label="PyTorch's five loop lines folding into one Keras fit call">
+        <text x="16" y="24" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">WHAT fit() IS HIDING</text>
+        <text x="30" y="54" font-family="Segoe UI,system-ui,sans-serif" font-size="12" font-weight="700" fill="#3d3170">PyTorch — you write this</text>
+        <rect x="24" y="66" width="320" height="146" rx="10" fill="#23262e"/>
+        <text x="42" y="90" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#c9d1e4">for epoch in range(200):</text>
+        <text x="58" y="112" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#9fb2d8">opt.zero_grad()</text>
+        <text x="58" y="134" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#9fb2d8">pred = model(X)</text>
+        <text x="58" y="156" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#9fb2d8">loss = loss_fn(pred, y)</text>
+        <text x="58" y="178" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#9fb2d8">loss.backward()</text>
+        <text x="58" y="200" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#9fb2d8">opt.step()</text>
+        <path d="M362 139 L470 139" stroke="#5b4b9e" stroke-width="2" fill="none"/>
+        <path d="M470 139 l-11 -6 v12 z" fill="#5b4b9e"/>
+        <text x="416" y="128" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#5b4b9e">folded away</text>
+        <text x="500" y="54" font-family="Segoe UI,system-ui,sans-serif" font-size="12" font-weight="700" fill="#1d5654">Keras — you write this</text>
+        <rect x="494" y="66" width="360" height="60" rx="10" fill="#23262e"/>
+        <text x="512" y="102" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#c9d1e4">model.fit(X, y, epochs=200)</text>
+        <rect x="494" y="140" width="360" height="72" rx="10" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="514" y="166" font-family="Segoe UI,system-ui,sans-serif" font-size="12" fill="#1d5654">The loop still happens — identical steps,</text>
+        <text x="514" y="186" font-family="Segoe UI,system-ui,sans-serif" font-size="12" fill="#1d5654">identical maths. It is simply not <tspan font-style="italic">yours</tspan></text>
+        <text x="514" y="204" font-family="Segoe UI,system-ui,sans-serif" font-size="12" fill="#1d5654">to change any more.</text>
+      </svg>
+      <div class="figcap">Fig. 1 — Keras doesn't remove the training loop; it removes <i>you</i> from the training loop. That's the deal in one picture: five lines you no longer type, and five lines you can no longer edit.</div>
+    </div>
+
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>compile</code> does <b>not</b> mean "translate my program into machine code", and it does <b>not</b> train anything. It's an unfortunate name for a settings form — three choices recorded and stored on the model, ready for <code>fit</code>. Nothing has learned a thing until <code>fit</code> runs.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> see for yourself that a <code>Dense</code> layer is Unit 21's matrix arithmetic wearing a hat. Three samples with two features go in; a Dense(4) layer sends four numbers per sample out. <b>Thinking:</b> weights are a <code>(features, units)</code> block, biases are one per unit, and <code>X @ W + b</code> is the whole layer. This is also the unit's first NumPy run — give it ~15 seconds to fetch the library, once.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">import numpy as np
+
+X = np.array([[1.0, 2.0],
+              [3.0, 4.0],
+              [5.0, 6.0]])        # 3 samples, 2 features
+W = np.ones((2, 4)) * 0.5         # weights: 2 in -> 4 out
+b = np.zeros(4)                   # one bias per output unit
+
+out = X @ W + b                   # exactly what Dense(4) computes
+print("X  ", X.shape)
+print("W  ", W.shape)
+print("out", out.shape)
+print("first row out:", out[0])</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">26.1 · P1</span><span class="pt">Sequential really is a list</span></div>
+        <p class="pd">Here is a model description with no Keras in sight — a plain list of dictionaries, one per layer. Print how many layers there are, and the units and activation of the <i>last</i> one. (Negative indexing from Unit 5 is the tidy way to reach the end.)</p>
+        <div class="want">Layers: 3
+Output units: 1
+Output activation: sigmoid</div>
+        <div class="pyrun" data-id="s1p1" data-expect="Layers: 3\nOutput units: 1\nOutput activation: sigmoid">
+          <textarea spellcheck="false">model = [
+    {"kind": "Dense", "units": 16, "activation": "relu"},
+    {"kind": "Dense", "units": 8,  "activation": "relu"},
+    {"kind": "Dense", "units": 1,  "activation": "sigmoid"},
+]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>model = [
+    {"kind": "Dense", "units": 16, "activation": "relu"},
+    {"kind": "Dense", "units": 8,  "activation": "relu"},
+    {"kind": "Dense", "units": 1,  "activation": "sigmoid"},
+]
+print("Layers:", len(model))
+print("Output units:", model[-1]["units"])
+print("Output activation:", model[-1]["activation"])</pre><p>A Keras model description is exactly this shape — a list you can count, index and slice. The layer objects carry more machinery than these dicts, but the container is the same container you met in Unit 5.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">26.1 · P2</span><span class="pt">compile is a settings form</span></div>
+        <p class="pd">Model <code>compile</code> as what it is: three settings recorded in a dictionary. Fill in the three keys, then print each one as <code>key: value</code> by looping over the dictionary.</p>
+        <div class="want">optimizer: adam
+loss: binary_crossentropy
+metrics: ['accuracy']</div>
+        <div class="pyrun" data-id="s1p2" data-expect="optimizer: adam\nloss: binary_crossentropy\nmetrics: ['accuracy']">
+          <textarea spellcheck="false">settings = {}
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>settings = {}
+settings["optimizer"] = "adam"
+settings["loss"] = "binary_crossentropy"
+settings["metrics"] = ["accuracy"]
+for key, value in settings.items():
+    print(f"{key}: {value}")</pre><p>Dictionaries keep insertion order, so the three lines come out in the order you set them — and note the last line printing <code>['accuracy']</code> with its quotes, because printing a list shows the list.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">26.1 · P3</span><span class="pt">Stretch — count the parameters</span></div>
+        <p class="pd">A <code>Dense</code> layer with <i>n</i> inputs and <i>u</i> units holds <code>n * u</code> weights plus <code>u</code> biases. Starting from 4 input features and the layer sizes <code>[16, 8, 1]</code>, print each layer's parameter count and the total. Remember: each layer's <i>output</i> size becomes the next layer's <i>input</i> size.</p>
+        <div class="want">Dense(16): 80 parameters
+Dense(8): 136 parameters
+Dense(1): 9 parameters
+Total: 225</div>
+        <div class="pyrun" data-id="s1p3" data-expect="Dense(16): 80 parameters\nDense(8): 136 parameters\nDense(1): 9 parameters\nTotal: 225">
+          <textarea spellcheck="false">units = [16, 8, 1]
+n_in = 4
+total = 0
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>units = [16, 8, 1]
+n_in = 4
+total = 0
+for u in units:
+    params = n_in * u + u
+    print(f"Dense({u}): {params} parameters")
+    total = total + params
+    n_in = u
+print("Total:", total)</pre><p>The line <code>n_in = u</code> is the whole idea of a stack: the shape flows forward. This is what <code>model.summary()</code> prints in Keras — and now you know it's arithmetic, not magic.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 26.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">26.2</span>
+      <h2>The three grammars, side by side</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Five units of this Bridge have handed you three libraries that look nothing alike on the page. scikit-learn is two verbs. PyTorch is a class and a loop. Keras is a list and a settings form. It is entirely reasonable to feel you've learned three unrelated things and to dread learning a fourth. You haven't, and you needn't.</p>
+      <p><b>The idea, in plain words.</b> They are <b>three dialects of one sentence</b>. Every one of them says: <i>describe the model, show it examples, ask it about new data.</i> Same three beats, every time. What changes between the libraries is only <b>how much of the middle beat you write yourself</b> — and that is a preference, not a different subject.</p>
+      <p>Here is the same tiny task — learn a relationship from four rows, then answer about a fifth — in all three:</p>
+    </div>
+
+    <div class="fig wide">
+      <table>
+        <tr><th>the sentence</th><th>scikit-learn</th><th>PyTorch</th><th>Keras</th></tr>
+        <tr><td><b>Describe<br>the model</b></td><td><code>model = LinearRegression()</code></td><td><code>class Net(nn.Module):</code><br><code>&nbsp;&nbsp;def forward(self, x): …</code></td><td><code>model = Sequential([</code><br><code>&nbsp;&nbsp;Dense(8), Dense(1)])</code></td></tr>
+        <tr><td><b>Set up<br>the learning</b></td><td>nothing — the algorithm brings its own</td><td><code>opt = optim.SGD(…)</code><br><code>loss_fn = nn.MSELoss()</code></td><td><code>model.compile(optimizer=…,</code><br><code>&nbsp;&nbsp;loss=…, metrics=…)</code></td></tr>
+        <tr><td><b>Show it<br>examples</b></td><td><code>model.fit(X, y)</code></td><td>the five-line loop, in a <code>for</code> over epochs — yours to type</td><td><code>model.fit(X, y, epochs=200)</code></td></tr>
+        <tr><td><b>Ask about<br>new data</b></td><td><code>model.predict(X_new)</code></td><td><code>model(X_new)</code></td><td><code>model.predict(X_new)</code></td></tr>
+        <tr><td><b>It decides<br>for you</b></td><td>everything inside the algorithm, and the whole of training</td><td>almost nothing — it hands you gradients and gets out of the way</td><td>the loop, the gradient bookkeeping, the progress reporting</td></tr>
+        <tr><td><b>You decide</b></td><td>which algorithm, and the features you feed it</td><td>every single step, in order</td><td>the layer list, optimizer, loss, epochs</td></tr>
+      </table>
+    </div>
+
+    <div class="fig">
+      <svg viewBox="0 0 880 268" role="img" aria-label="One sentence in three dialects: describe, show, ask">
+        <text x="16" y="24" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">ONE SENTENCE, THREE DIALECTS</text>
+        <rect x="20" y="40" width="180" height="60" rx="10" fill="#f0f1f7" stroke="#e3e6ee"/>
+        <text x="110" y="66" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#1f2733">describe</text>
+        <text x="110" y="86" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">the model</text>
+        <rect x="20" y="112" width="180" height="60" rx="10" fill="#f0f1f7" stroke="#e3e6ee"/>
+        <text x="110" y="138" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#1f2733">show it</text>
+        <text x="110" y="158" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">examples</text>
+        <rect x="20" y="184" width="180" height="60" rx="10" fill="#f0f1f7" stroke="#e3e6ee"/>
+        <text x="110" y="210" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#1f2733">ask about</text>
+        <text x="110" y="230" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">new data</text>
+
+        <text x="290" y="34" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12" font-weight="700" fill="#2b7a78">scikit-learn</text>
+        <rect x="214" y="40" width="200" height="60" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.3"/>
+        <text x="314" y="76" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1d5654">LinearRegression()</text>
+        <rect x="214" y="112" width="200" height="60" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.3"/>
+        <text x="314" y="148" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1d5654">.fit(X, y)</text>
+        <rect x="214" y="184" width="200" height="60" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.3"/>
+        <text x="314" y="220" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1d5654">.predict(X_new)</text>
+
+        <text x="524" y="34" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12" font-weight="700" fill="#a35a33">PyTorch</text>
+        <rect x="428" y="40" width="200" height="60" rx="9" fill="#f7ebe4" stroke="#a35a33" stroke-width="1.3"/>
+        <text x="528" y="68" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#7c4324">class Net(nn.Module)</text>
+        <text x="528" y="86" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#7c4324">def forward(self, x)</text>
+        <rect x="428" y="112" width="200" height="60" rx="9" fill="#f7ebe4" stroke="#a35a33" stroke-width="1.3"/>
+        <text x="528" y="140" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#7c4324">the five-line loop</text>
+        <text x="528" y="158" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#7c4324">— you type it</text>
+        <rect x="428" y="184" width="200" height="60" rx="9" fill="#f7ebe4" stroke="#a35a33" stroke-width="1.3"/>
+        <text x="528" y="220" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#7c4324">model(X_new)</text>
+
+        <text x="752" y="34" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12" font-weight="700" fill="#3d3170">Keras</text>
+        <rect x="642" y="40" width="214" height="60" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.3"/>
+        <text x="749" y="68" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#3d3170">Sequential([...])</text>
+        <text x="749" y="86" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#3d3170">.compile(...)</text>
+        <rect x="642" y="112" width="214" height="60" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.3"/>
+        <text x="749" y="148" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#3d3170">.fit(X, y, epochs=200)</text>
+        <rect x="642" y="184" width="214" height="60" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.3"/>
+        <text x="749" y="220" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#3d3170">.predict(X_new)</text>
+      </svg>
+      <div class="figcap">Fig. 2 — The payoff of the whole Bridge. Read it row by row, not column by column: the rows are the subject, the columns are only accents. Learning a fourth library means filling in a fourth column, not starting over.</div>
+    </div>
+
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      Three dialects of one sentence: <b>describe the model, show it examples, ask it about new data.</b> scikit-learn says it in two words, Keras in four, PyTorch in twenty — and they all say the same thing.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> the scikit-learn column, running for real — because scikit-learn <i>does</i> work in this page. Four rows follow <code>y = 2x + 1</code>; the model has to notice, then answer for <code>x = 5</code>. <b>Thinking:</b> three lines, one per beat of the sentence. Watch how little ceremony there is, and remember that Unit 25 spent twenty lines reaching the same place.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">import numpy as np
+from sklearn.linear_model import LinearRegression
+
+X = np.array([[1.0], [2.0], [3.0], [4.0]])   # 4 samples, 1 feature
+y = np.array([3.0, 5.0, 7.0, 9.0])           # y = 2x + 1
+
+model = LinearRegression()      # 1. describe the model
+model.fit(X, y)                 # 2. show it examples
+print(model.predict([[5.0]]))   # 3. ask about new data
+
+print("slope:", round(float(model.coef_[0]), 2))
+print("intercept:", round(float(model.intercept_), 2))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">26.2 · P1</span><span class="pt">Write the table out yourself</span></div>
+        <p class="pd">Typing a thing is how it sticks. The grammar table is already in the list below, one tuple per beat. Loop over it and print each beat with its three dialects indented underneath, exactly as the goal shows. (Watch the three spaces after <code>keras:</code> — they line the column up.)</p>
+        <div class="want">describe the model
+  sklearn: LinearRegression()
+  pytorch: class Net(nn.Module)
+  keras:   Sequential([...])
+show it examples
+  sklearn: model.fit(X, y)
+  pytorch: the training loop
+  keras:   model.fit(X, y, epochs=200)
+ask about new data
+  sklearn: model.predict(X2)
+  pytorch: model(X2)
+  keras:   model.predict(X2)</div>
+        <div class="pyrun" data-id="s2p1" data-expect="describe the model\n  sklearn: LinearRegression()\n  pytorch: class Net(nn.Module)\n  keras:   Sequential([...])\nshow it examples\n  sklearn: model.fit(X, y)\n  pytorch: the training loop\n  keras:   model.fit(X, y, epochs=200)\nask about new data\n  sklearn: model.predict(X2)\n  pytorch: model(X2)\n  keras:   model.predict(X2)">
+          <textarea spellcheck="false">grammar = [
+    ("describe the model", "LinearRegression()", "class Net(nn.Module)", "Sequential([...])"),
+    ("show it examples",   "model.fit(X, y)",    "the training loop",    "model.fit(X, y, epochs=200)"),
+    ("ask about new data", "model.predict(X2)",  "model(X2)",            "model.predict(X2)"),
+]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>for step, skl, torch, keras in grammar:
+    print(step)
+    print(f"  sklearn: {skl}")
+    print(f"  pytorch: {torch}")
+    print(f"  keras:   {keras}")</pre><p>Unpacking four names from each tuple at once (Unit 6's trick) is what makes the loop read like the table. Three beats, three dialects, one loop.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">26.2 · P2</span><span class="pt">The grammar outlives the model</span></div>
+        <p class="pd">Two completely different algorithms — a straight line and a decision tree — through the <i>same</i> three lines. Predict what changes before you run: the numbers, or the grammar? Run-only; the tree's answer is its own business.</p>
+        <div class="pyrun" data-id="s2p2">
+          <textarea spellcheck="false">import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+
+X = np.array([[1.0], [2.0], [3.0], [4.0]])
+y = np.array([3.0, 5.0, 7.0, 9.0])
+
+for model in [LinearRegression(), DecisionTreeRegressor()]:
+    model.fit(X, y)
+    answer = model.predict([[2.5]])
+    print(type(model).__name__, "->", answer)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>LinearRegression -> [6.]
+DecisionTreeRegressor -> [5.] or [7.]</pre><p>The line interpolates smoothly to 6.0; the tree can only repeat an answer it saw, so it picks one side of its split. Two utterly different machines, one unchanged grammar — and a list of models looped over like any other list, because a model is just an object (Units 13–16) and objects go in lists.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">26.2 · P3</span><span class="pt">Stretch — fake the progress bar</span></div>
+        <p class="pd">When Keras runs <code>fit</code> it prints one line per epoch. That printout is the best evidence that <code>fit</code> is a loop someone else wrote. Print it yourself from the losses below, four decimal places, then the closing line. Nothing here is machine learning — that's rather the point.</p>
+        <div class="want">Epoch 1/3 - loss: 0.9124
+Epoch 2/3 - loss: 0.5310
+Epoch 3/3 - loss: 0.3078
+Done - that printout is all fit() is hiding: a loop.</div>
+        <div class="pyrun" data-id="s2p3" data-expect="Epoch 1/3 - loss: 0.9124\nEpoch 2/3 - loss: 0.5310\nEpoch 3/3 - loss: 0.3078\nDone - that printout is all fit() is hiding: a loop.">
+          <textarea spellcheck="false">losses = [0.9124, 0.5310, 0.3078]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>losses = [0.9124, 0.5310, 0.3078]
+for i, loss in enumerate(losses, start=1):
+    print(f"Epoch {i}/3 - loss: {loss:.4f}")
+print("Done - that printout is all fit() is hiding: a loop.")</pre><p><code>enumerate(..., start=1)</code> hands you the position and the value together, counting from 1 like humans do. And <code>:.4f</code> keeps 0.531 looking like 0.5310 — format at the exit, as ever.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 26.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">26.3</span>
+      <h2>Which one, when</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~7 min</span></span>
+      <p><b>The problem.</b> Somebody will ask you, quite soon, "should we use PyTorch or Keras?" — and the internet will offer you a thousand confident, contradictory, slightly heated answers. You need a position that is honest, brief, and yours.</p>
+      <p><b>The idea, in plain words.</b> Pick by the shape of the job, not by loyalty. Three rules of thumb cover almost everything you'll meet in your first year:</p>
+      <ul class="plain">
+        <li><b>scikit-learn — for classic tabular work.</b> Rows and columns in a spreadsheet, a few thousand of them, a number or a category to predict. Trees and linear models are often <i>better</i> here than a neural network, not merely easier, and they train in a blink. Reach for a network on tabular data only after a scikit-learn model has failed you.</li>
+        <li><b>Keras — when you want a standard network, fast.</b> An ordinary stack of layers on images, text or numbers, no unusual training tricks. The order form fits the order; take the shortcut and spend the saved hour on the data instead, where it will do more good.</li>
+        <li><b>PyTorch — when you want to see and control every step.</b> Anything unusual in the loop, anything from a recent paper, anything you need to debug from the inside. It is also, plainly, the language research is written in — which is why the whole of the modern LLM world is PyTorch.</li>
+      </ul>
+      <p>And the honest footnote: it is not a marriage. The libraries share NumPy arrays as their common currency, so the pandas-and-NumPy work you did in Units 21–22 is the part that transfers everywhere, unchanged. Swapping libraries costs you an afternoon. Choosing wrong is not a catastrophe; refusing to start is.</p>
+      <p><b>The pointer worth writing down.</b> When you finish the Machine Learning and Deep Learning stages and open the <i>Build an LLM from Scratch</i> series on this site — that series is written in <b>PyTorch</b>, in exactly Unit 25's vocabulary: tensors, autograd, <code>nn.Module</code> as a class, the five-line loop. Nothing further to learn before you start it. That was the plan all along.</p>
+    </div>
+
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>"Keras is for beginners, PyTorch is for professionals" is folklore, and wrong in both directions. Keras runs in serious production at serious scale; PyTorch is the friendliest thing in the world once you've written the loop twice. The real axis isn't skill — it's <b>how much of the loop this particular job needs you to control.</b></p>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">26.3 · P1</span><span class="pt">The recommendation, as a function</span></div>
+        <p class="pd">Write <code>pick(task)</code> — a function (Units 8 &amp; 19) that returns the library name for the three task descriptions below, then loop over them and print each verdict. Rules: <code>"tabular"</code> → scikit-learn; <code>"standard network, fast"</code> → Keras; anything else → PyTorch.</p>
+        <div class="want">tabular -> scikit-learn
+standard network, fast -> Keras
+research -> PyTorch</div>
+        <div class="pyrun" data-id="s3p1" data-expect="tabular -> scikit-learn\nstandard network, fast -> Keras\nresearch -> PyTorch">
+          <textarea spellcheck="false">def pick(task):
+    pass
+
+for t in ["tabular", "standard network, fast", "research"]:
+    print(t, "->", pick(t))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def pick(task):
+    if task == "tabular":
+        return "scikit-learn"
+    elif task == "standard network, fast":
+        return "Keras"
+    else:
+        return "PyTorch"
+
+for t in ["tabular", "standard network, fast", "research"]:
+    print(t, "->", pick(t))</pre><p>The <code>else</code> catching everything unlisted is the honest default: when in doubt, the library that lets you look inside. Note the comma-print puts single spaces around the arrow for you.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">26.3 · P2</span><span class="pt">Stretch — a lookup with a humble default</span></div>
+        <p class="pd">Chains of <code>elif</code> grow ugly fast; a dictionary is the grown-up version. Use <code>CHOICE.get(job, ...)</code> so that jobs nobody listed get the sensible fallback text instead of a <code>KeyError</code>. Print one line per job, in the order given.</p>
+        <div class="want">spreadsheet of customers: scikit-learn
+a new idea from a paper: PyTorch
+an LLM from scratch: PyTorch
+something nobody listed: read the docs, then pick</div>
+        <div class="pyrun" data-id="s3p2" data-expect="spreadsheet of customers: scikit-learn\na new idea from a paper: PyTorch\nan LLM from scratch: PyTorch\nsomething nobody listed: read the docs, then pick">
+          <textarea spellcheck="false">CHOICE = {
+    "spreadsheet of customers": "scikit-learn",
+    "image classifier, standard": "Keras",
+    "a new idea from a paper": "PyTorch",
+    "an LLM from scratch": "PyTorch",
+}
+jobs = ["spreadsheet of customers", "a new idea from a paper",
+        "an LLM from scratch", "something nobody listed"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>for job in jobs:
+    print(f"{job}: {CHOICE.get(job, 'read the docs, then pick')}")</pre><p><code>.get(key, fallback)</code> is the polite lookup: ask, and accept a default rather than crashing (Unit 10). Single quotes inside the f-string's double quotes — different quote characters, no clash.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 26.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">26.4</span>
+      <h2>Reading ML code in the wild</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Nobody's real work begins with a blank file. It begins with somebody else's notebook — a GitHub repo, a Kaggle kernel, a colleague's forty lines with no comments — and the first two minutes decide whether you're useful or lost. There is a method for those two minutes, and it is embarrassingly mechanical.</p>
+      <p><b>The idea, in plain words.</b> Don't read ML code top to bottom like prose. Read it as <b>four questions</b>, in this order, skimming for the answer to each:</p>
+      <ol class="plain">
+        <li><b>Which library?</b> Look only at the imports. <code>sklearn</code> → scikit-learn. <code>torch</code> → PyTorch. <code>keras</code> or <code>tensorflow</code> → Keras. That one line tells you which grammar the rest of the file is written in, and therefore what to expect.</li>
+        <li><b>Where does the data come in?</b> Find <code>read_csv</code>, <code>np.load</code>, <code>load_dataset</code>, <code>ImageFolder</code> — and then find where <code>X</code> and <code>y</code> get made. Everything before that point is preparation; everything after it is modelling.</li>
+        <li><b>Where is the model described?</b> One line, usually: <code>= SomeEstimator(...)</code>, or <code>= Sequential([...])</code>, or a <code>class … (nn.Module)</code>. Its shape tells you what's being predicted — a final layer of 1 with sigmoid means yes/no, 10 with softmax means ten categories.</li>
+        <li><b>Where does learning happen?</b> Look for <code>.fit(</code>, or a <code>for epoch in range(...)</code>. If there's no <code>.fit</code> and no epoch loop, nothing in that file is learning anything — it's loading a model somebody else trained.</li>
+      </ol>
+      <p>Four questions, four answers, and you can now say what a file does even if half its lines are unfamiliar. Skipping the unfamiliar lines is allowed. It's the professional move, in fact — you go back for the details only once you know the shape.</p>
+    </div>
+
+    <div class="trace">
+      <div class="dl">Trace it by hand — four questions on eight lines</div>
+      <div class="m">1  import numpy as np
+2  from tensorflow import keras
+3  X = np.load("features.npy")
+4  y = np.load("labels.npy")
+5  model = keras.Sequential([keras.layers.Dense(1, activation="sigmoid")])
+6  model.compile(optimizer="adam", loss="binary_crossentropy")
+7  model.fit(X, y, epochs=5)
+8  print(model.predict(X[:3]))</div>
+      <p><b>Q1 — which library?</b> Line 2 says <code>keras</code>. So expect a list of layers, a compile, a fit. Confirmed by lines 5–7.</p>
+      <p><b>Q2 — where does the data come in?</b> Lines 3–4: two arrays off the disk, already split into features and target. No cleaning at all — which tells you somebody else did the cleaning in an earlier file.</p>
+      <p><b>Q3 — where is the model described?</b> Line 5. One <code>Dense(1, activation="sigmoid")</code>: a single probability out, so this is a yes/no question.</p>
+      <p><b>Q4 — where does learning happen?</b> Line 7, and nowhere else. Line 6 only records settings; line 8 asks about the first three rows.</p>
+      <p>Total time: under a minute, and you can describe the file to somebody honestly:</p>
+      <div class="m">"A Keras yes/no classifier on pre-prepared arrays, five epochs, then a peek at three predictions."</div>
+    </div>
+
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>model.compile(...)</code> and <code>opt = optim.SGD(...)</code> look like they're doing something. They aren't — they're <i>arrangements</i>. Learning happens only inside <code>.fit(</code> or inside an epoch loop. When you're skimming for "where does it learn", those setup lines are the most convincing decoys in the file.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> make question 1 mechanical — a snippet in, a library name out. <b>Thinking:</b> the code is a string, and strings answer <code>in</code> questions (Unit 7). Order the checks from most specific to least, because <code>tensorflow.keras</code> contains both words.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">snippet = """import torch
+import torch.nn as nn
+model = nn.Sequential(nn.Linear(4, 8), nn.ReLU(), nn.Linear(8, 1))
+"""
+
+if "torch" in snippet:
+    print("Library: PyTorch")
+elif "keras" in snippet or "tensorflow" in snippet:
+    print("Library: Keras")
+elif "sklearn" in snippet:
+    print("Library: scikit-learn")
+else:
+    print("Library: not an ML file, or not one I know")
+
+print("Note: nn.Sequential exists in PyTorch too - the import is the giveaway.")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">26.4 · P1</span><span class="pt">Name that library</span></div>
+        <p class="pd">Three import lines, three verdicts. Loop over them and print just the library name for each — <code>scikit-learn</code>, <code>Keras</code> or <code>PyTorch</code>, spelled exactly as in the goal. (One <code>if</code>/<code>elif</code>/<code>else</code> inside the loop is all it takes.)</p>
+        <div class="want">scikit-learn
+Keras
+PyTorch</div>
+        <div class="pyrun" data-id="s4p1" data-expect="scikit-learn\nKeras\nPyTorch">
+          <textarea spellcheck="false">snippets = [
+    "from sklearn.ensemble import RandomForestClassifier",
+    "from tensorflow.keras.models import Sequential",
+    "import torch.nn as nn",
+]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>for s in snippets:
+    if "torch" in s:
+        print("PyTorch")
+    elif "keras" in s:
+        print("Keras")
+    else:
+        print("scikit-learn")</pre><p>Check <code>torch</code> first: it's the least ambiguous. Real snippets are messier than these, but the method doesn't change — the imports are always the fastest tell.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">26.4 · P2</span><span class="pt">Answer the four questions</span></div>
+        <p class="pd">Here is the eight-line listing from the trace above again, numbered. Answer questions 2–4 by printing the <b>line number</b> where each thing happens, in the format the goal shows. No cleverness needed — read, then print four literal answers.</p>
+        <div class="want">data in: 3
+model described: 5
+learning happens: 7
+asked about new data: 8</div>
+        <div class="pyrun" data-id="s4p2" data-expect="data in: 3\nmodel described: 5\nlearning happens: 7\nasked about new data: 8">
+          <textarea spellcheck="false"># 1  import numpy as np
+# 2  from tensorflow import keras
+# 3  X = np.load("features.npy")
+# 4  y = np.load("labels.npy")
+# 5  model = keras.Sequential([keras.layers.Dense(1, activation="sigmoid")])
+# 6  model.compile(optimizer="adam", loss="binary_crossentropy")
+# 7  model.fit(X, y, epochs=5)
+# 8  print(model.predict(X[:3]))
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print("data in:", 3)
+print("model described:", 5)
+print("learning happens:", 7)
+print("asked about new data:", 8)</pre><p>Line 4 also brings data in, of course — line 3 is where it starts, and "where does the data come in" is a region, not a point. Line 6 is the decoy: settings, not learning.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">26.4 · P3</span><span class="pt">Stretch — label every line automatically</span></div>
+        <p class="pd">Turn the four questions into a scanner. For each line of the program below, decide its role — <code>data</code> (it loads or shapes data), <code>describe</code> (it creates the model), <code>learn</code> (it calls fit), <code>ask</code> (it calls predict), or <code>setup</code> (everything else) — and print <code>role | line</code> using a comma-print.</p>
+        <div class="want">setup | import pandas as pd
+data | df = pd.read_csv('sales.csv')
+data | X = df[['size', 'rooms']].to_numpy()
+data | y = df['price'].to_numpy()
+describe | model = LinearRegression()
+learn | model.fit(X, y)
+ask | print(model.predict(X[:2]))</div>
+        <div class="pyrun" data-id="s4p3" data-expect="setup | import pandas as pd\ndata | df = pd.read_csv('sales.csv')\ndata | X = df[['size', 'rooms']].to_numpy()\ndata | y = df['price'].to_numpy()\ndescribe | model = LinearRegression()\nlearn | model.fit(X, y)\nask | print(model.predict(X[:2]))">
+          <textarea spellcheck="false">program = [
+    "import pandas as pd",
+    "df = pd.read_csv('sales.csv')",
+    "X = df[['size', 'rooms']].to_numpy()",
+    "y = df['price'].to_numpy()",
+    "model = LinearRegression()",
+    "model.fit(X, y)",
+    "print(model.predict(X[:2]))",
+]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>for line in program:
+    if "read_csv" in line or "to_numpy" in line:
+        role = "data"
+    elif "model =" in line:
+        role = "describe"
+    elif ".fit(" in line:
+        role = "learn"
+    elif ".predict(" in line:
+        role = "ask"
+    else:
+        role = "setup"
+    print(role, "|", line)</pre><p>Order matters again: <code>"model ="</code> (with the space and equals) must be tested before <code>".fit("</code>, or nothing would ever be labelled <code>describe</code>. Crude string tests, genuinely useful — this is roughly how your own eye will learn to skim.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 26.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">26.5</span>
+      <h2>Your build — everything up to the model</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>The exit exercise, and it comes in two halves — deliberately, because that split is the honest summary of where you now stand.</p>
+      <p><b>Half (a), here in the page:</b> the pipeline that gets data ready for a model. Build a small table, clean it, split it into features and target, check the shapes, scale the numbers. That is real, checked, running work — and it is <i>the majority of every ML project's hours</i>, which is exactly why these notes taught it properly.</p>
+      <p><b>Half (b), in the notebook:</b> the same prepared arrays handed to a small Keras model. It appears below as an annotated listing, because Keras can't run here — and because the model is the next stage's subject, not this one's. You can now do every step around the model. Learning what happens <i>inside</i> the model is where you're going next.</p>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">26.5 · P1</span><span class="pt">Stage 1 — build the table, clean it</span></div>
+        <p class="pd">Five students: hours studied, hours slept, and whether they passed. One row has a missing value (that's what <code>None</code> becomes in a pandas column: <code>NaN</code>). Print the row count before and after dropping incomplete rows, then the surviving <code>hours</code> as a plain list.</p>
+        <div class="want">rows before: 5
+rows after: 4
+[1.0, 2.0, 4.0, 5.0]</div>
+        <div class="pyrun" data-id="s5p1" data-expect="rows before: 5\nrows after: 4\n[1.0, 2.0, 4.0, 5.0]">
+          <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({
+    "hours":  [1.0, 2.0, None, 4.0, 5.0],
+    "slept":  [7.0, 6.0, 8.0, 5.0, 7.0],
+    "passed": [0, 0, 1, 1, 1],
+})
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print("rows before:", len(df))
+df = df.dropna()
+print("rows after:", len(df))
+print(df["hours"].tolist())</pre><p><code>dropna()</code> hands back a <i>new</i> table without the incomplete rows — so it has to be stored back into <code>df</code>, or nothing changes (Unit 22's warning, still true). Dropping is the bluntest cleaning there is; sometimes filling the gap is wiser, and that's a Machine Learning stage conversation.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">26.5 · P2</span><span class="pt">Stage 2 — features and target, shapes checked</span></div>
+        <p class="pd">The moment every library agrees on: a 2-D <code>X</code> of features and a 1-D <code>y</code> of answers, both as NumPy arrays. Make them from the clean table, then print the two shapes and the first row of <code>X</code>. Getting a habit of printing shapes here will save you hours later — mismatched shapes are the single most common error in all of ML.</p>
+        <div class="want">X shape: (4, 2)
+y shape: (4,)
+first row of X: [1. 7.]</div>
+        <div class="pyrun" data-id="s5p2" data-expect="X shape: (4, 2)\ny shape: (4,)\nfirst row of X: [1. 7.]">
+          <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({
+    "hours":  [1.0, 2.0, 4.0, 5.0],
+    "slept":  [7.0, 6.0, 5.0, 7.0],
+    "passed": [0, 0, 1, 1],
+})
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>X = df[["hours", "slept"]].to_numpy()
+y = df["passed"].to_numpy()
+print("X shape:", X.shape)
+print("y shape:", y.shape)
+print("first row of X:", X[0])</pre><p>Double brackets for <code>X</code> because you're asking for a <i>table</i> of two columns; single for <code>y</code> because you want one column as a series. Hence <code>(4, 2)</code> against <code>(4,)</code> — and that lonely trailing comma is NumPy saying "one dimension, four items".</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">26.5 · P3</span><span class="pt">Stage 3 — put the columns on the same scale</span></div>
+        <p class="pd">"Hours studied" runs 1–5, "hours slept" runs 5–7 — different ranges confuse most models, so the standard fix is to subtract each column's mean and divide by its standard deviation. Compute <code>mean</code> and <code>std</code> down the columns (<code>axis=0</code>), build the scaled <code>Xs</code>, and print the three values in the goal.</p>
+        <div class="want">mean hours: 3.00
+std hours : 1.5811
+first scaled hours: -1.26</div>
+        <div class="pyrun" data-id="s5p3" data-expect="mean hours: 3.00\nstd hours : 1.5811\nfirst scaled hours: -1.26">
+          <textarea spellcheck="false">import numpy as np
+
+X = np.array([[1.0, 7.0],
+              [2.0, 6.0],
+              [4.0, 5.0],
+              [5.0, 7.0]])
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>mean = X.mean(axis=0)
+std = X.std(axis=0)
+Xs = (X - mean) / std
+print(f"mean hours: {mean[0]:.2f}")
+print(f"std hours : {std[0]:.4f}")
+print(f"first scaled hours: {Xs[0][0]:.2f}")</pre><p><code>axis=0</code> means "collapse the rows, keep the columns" — two means for two features. Then <code>(X - mean) / std</code> broadcasts the two-number row across all four rows at once (Unit 21). A first row of <code>-1.26</code> means "1.26 standard deviations below average" — the same sentence now true of every column.</p></details>
+      </div>
+    </div>
+
+    <div class="listing">
+      <div class="lh"><span>Half (b) · read-only listing · this runs in the notebook</span>
+        <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit26.ipynb" rel="noopener">▶ Run this in Colab</a></div>
+<pre>import pandas as pd
+from tensorflow import keras
+from tensorflow.keras import layers
+
+# --- everything above the line is what you just did yourself ---
+df = pd.DataFrame({
+    "hours":  [1.0, 2.0, None, 4.0, 5.0],
+    "slept":  [7.0, 6.0, 8.0, 5.0, 7.0],
+    "passed": [0, 0, 1, 1, 1],
+})
+df = df.dropna()
+X = df[["hours", "slept"]].to_numpy()
+y = df["passed"].to_numpy()
+X = (X - X.mean(axis=0)) / X.std(axis=0)
+print("X", X.shape, " y", y.shape)
+
+# --- and this is the next stage's subject ---
+model = keras.Sequential([
+    keras.Input(shape=(2,)),
+    layers.Dense(8, activation="relu"),
+    layers.Dense(1, activation="sigmoid"),
+])
+model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
+model.fit(X, y, epochs=100, verbose=0)
+
+loss, acc = model.evaluate(X, y, verbose=0)
+print(f"loss {loss:.3f}  accuracy {acc:.2f}")</pre>
+      <div class="ann">
+        <span><b>lines 1–15</b> — identical, line for line, to the three problems you just finished. Load, clean, split into <code>X</code> and <code>y</code>, scale, print the shapes. No Keras involved yet, and none needed.</span>
+        <span><b>the handover</b> — <code>X</code> and <code>y</code> are ordinary NumPy arrays. That's why the same two variables would feed scikit-learn or PyTorch without a single change. Arrays are the common currency of the entire field.</span>
+        <span><b>lines 18–27</b> — describe, compile, fit, evaluate. Four calls. Everything that makes those four calls <i>work</i> — what a loss really measures, why 100 epochs and not 10, whether an accuracy of 1.00 on four rows means anything at all (it does not) — is the Machine Learning stage.</span>
+      </div>
+      <div class="out">X (4, 2)  y (4,)
+loss 0.431  accuracy 1.00</div>
+    </div>
+
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      You can now do every step around the model: get the data, clean it, shape it, check it, and read the code that models it. The model itself is the next stage's job — and it is the smallest part of the file.
+    </div>
+  </section>
+
+  <!-- ============ 26.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">26.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~14 min</span></span>
+      <p>The last mixed set of the series. Reading drills, shapes, a pandas-to-arrays preparation, and a stretch that builds a toy <code>Sequential</code> out of nothing but plain Python — so you can feel, from the inside, what a model description actually <i>is</i>.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">The dialect phrasebook</span></div>
+        <p class="pd">Ask <code>Which library? </code> and print how that library describes a model. The dictionary is written for you; the input is fixed to <code>keras</code>. Remember that the prompt and the typed answer share one output line.</p>
+        <div class="want">Which library? keras
+Describe: model = Sequential([Dense(1)])</div>
+        <div class="pyrun" data-id="b1" data-stdin="keras" data-stdin-lock data-expect="Which library? keras\nDescribe: model = Sequential([Dense(1)])">
+          <textarea spellcheck="false">lines = {
+    "sklearn": "model = LinearRegression()",
+    "keras":   "model = Sequential([Dense(1)])",
+    "torch":   "class Net(nn.Module): ...",
+}
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>lib = input("Which library? ")
+print("Describe:", lines[lib])</pre><p>Put the <code>input()</code> line <i>after</i> the dictionary — the name has to exist before you look anything up in it. Try <code>torch</code> in the notebook, where you can type whatever you like.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">Shape check for a Dense layer</span></div>
+        <p class="pd">Five samples, three features, and a <code>Dense(2)</code> layer. Build the zero-filled arrays of the right shapes, compute <code>out = X @ W + b</code>, and print all four shapes plus the parameter count. If the shapes are wrong, NumPy will say so loudly — which is the point of the exercise.</p>
+        <div class="want">X   (5, 3)
+W   (3, 2)
+b   (2,)
+out (5, 2)
+params: 8</div>
+        <div class="pyrun" data-id="b2" data-expect="X   (5, 3)\nW   (3, 2)\nb   (2,)\nout (5, 2)\nparams: 8">
+          <textarea spellcheck="false">import numpy as np
+
+n_samples, n_features, units = 5, 3, 2
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>X = np.zeros((n_samples, n_features))
+W = np.zeros((n_features, units))
+b = np.zeros(units)
+out = X @ W + b
+print(f"X   {X.shape}")
+print(f"W   {W.shape}")
+print(f"b   {b.shape}")
+print(f"out {out.shape}")
+print("params:", n_features * units + units)</pre><p>The inner numbers have to touch: <code>(5,&nbsp;3) @ (3,&nbsp;2)</code> works because 3 meets 3, and what survives is <code>(5,&nbsp;2)</code> — the outer pair. Samples in, samples out; features in, units out. That one rule explains most shape errors you will ever see.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">From a table to arrays, with a made feature</span></div>
+        <p class="pd">Four houses, with a text column a model can't eat. Turn <code>city</code> into a 0/1 column called <code>is_pune</code> (comparing a column to a value gives True/False; <code>.astype(int)</code> turns those into 1/0), then build <code>X</code> from <code>size</code> and <code>is_pune</code>, and <code>y</code> from <code>price</code>. Print the shapes, the first row as a list, and the mean price.</p>
+        <div class="want">X shape: (4, 2)
+y shape: (4,)
+first row: [800, 0]
+mean price: 58.25</div>
+        <div class="pyrun" data-id="b3" data-expect="X shape: (4, 2)\ny shape: (4,)\nfirst row: [800, 0]\nmean price: 58.25">
+          <textarea spellcheck="false">import pandas as pd
+
+df = pd.DataFrame({
+    "city":  ["Chennai", "Pune", "Chennai", "Pune"],
+    "size":  [800, 1200, 950, 1500],
+    "price": [40, 65, 48, 80],
+})
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>df["is_pune"] = (df["city"] == "Pune").astype(int)
+X = df[["size", "is_pune"]].to_numpy()
+y = df["price"].to_numpy()
+print("X shape:", X.shape)
+print("y shape:", y.shape)
+print("first row:", X[0].tolist())
+print("mean price:", y.mean())</pre><p>Inventing a numeric column from a text one is called feature engineering, and it's most of the craft. <code>.tolist()</code> is used only so the row prints with its commas — NumPy's own printing pads columns, which is lovely on screen and awkward in a checker.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — build your own Sequential</span></div>
+        <p class="pd">The finale, and it uses nothing but Unit 5 lists, Unit 10 dictionaries and Unit 8 functions. Write <code>summary(layers, n_in)</code> which walks a list of layer dictionaries and prints one line per layer — position, kind, units, activation and parameter count — then the total and the final output size. You are writing <code>model.summary()</code>. It really is this.</p>
+        <div class="want">1. Dense(32, relu) -> 288 params
+2. Dense(16, relu) -> 528 params
+3. Dense(3, softmax) -> 51 params
+Total params: 867
+Output size: 3</div>
+        <div class="pyrun" data-id="b4" data-expect="1. Dense(32, relu) -> 288 params\n2. Dense(16, relu) -> 528 params\n3. Dense(3, softmax) -> 51 params\nTotal params: 867\nOutput size: 3">
+          <textarea spellcheck="false">def summary(layers, n_in):
+    pass
+
+model = [
+    {"kind": "Dense", "units": 32, "activation": "relu"},
+    {"kind": "Dense", "units": 16, "activation": "relu"},
+    {"kind": "Dense", "units": 3,  "activation": "softmax"},
+]
+summary(model, n_in=8)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def summary(layers, n_in):
+    total = 0
+    for i, layer in enumerate(layers, start=1):
+        u = layer["units"]
+        p = n_in * u + u
+        print(f"{i}. {layer['kind']}({u}, {layer['activation']}) -> {p} params")
+        total = total + p
+        n_in = u
+    print(f"Total params: {total}")
+    print(f"Output size: {n_in}")</pre><p>A model description is a list of dictionaries and a rule for how shapes flow through it. Everything Keras adds on top — the actual numbers, the gradients, the GPU — is machinery around this idea, not a replacement for it. If this function makes sense to you, <code>Sequential</code> holds no mystery.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions, the last six of the series. Wrong answers are still worth more than right ones — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>The last set of terms. These are the words you'll hear on day one of the Machine Learning stage.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ SEND-OFF ============ -->
+  <section>
+    <div class="sendoff">
+      <div class="lbl">Coming next</div>
+      <h3>You're done. Twenty-six units, and you're ready for Machine Learning.</h3>
+      <p>Stop for a second and look back honestly, because you've earned it. Unit 1 was <code>print("Hello, world")</code> and a promise that the computer would eventually feel less like a stranger. Since then you have taught it to remember, decide, repeat, and hold collections of things; you've written your own functions and your own classes; you've met the subtle machinery underneath. Then the Bridge: arrays, tables, plots, and three libraries of machine learning. And today you prepared a real dataset end to end and read model code in three dialects without flinching. That is not a small distance. Most people who start never get here.</p>
+      <p><b>Here is the exit condition, stated plainly: you are ready to start the Machine Learning stage.</b> Not "nearly ready", not "after one more Python thing". The Python is done. What comes next is a different subject that happens to be written in the language you now speak — and those notes begin exactly where these end: what a model actually <i>is</i>, how learning really works, and how to judge whether a model is any good (because an accuracy of 1.00 on four rows, as you saw in 26.5, means precisely nothing).</p>
+      <p>The pathway ahead, in order:</p>
+      <ol>
+        <li><b>Machine Learning</b> — models, training, evaluation, the things that go wrong. Starts next.</li>
+        <li><b>Deep Learning</b> — networks with depth, and why depth buys you anything.</li>
+        <li><b>Computer Vision &amp; NLP</b> — the same ideas pointed at images and at language.</li>
+        <li><b>Generative AI</b> — how machines came to produce rather than merely classify.</li>
+        <li><b>Build an LLM from Scratch</b> — already written, already waiting. In PyTorch, in Unit 25's vocabulary. That series exists because of the road you just walked.</li>
+      </ol>
+      <p>One request before you go: don't move straight on. Open the <a href="../../index.html">Projects gallery</a> and build something small and useless and yours with what you already have — a bill splitter, a marks analyser, a scraper for a page you care about, a plot of something you've always wondered about. Nothing in these notes will stick as well as one thing you made because you wanted it to exist.</p>
+      <p class="sig">Thank you for reading all twenty-six. Go build something. — Adi</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>Keras</b> — <i>Getting started</i>. <span class="why">The official front door: installation, the two-minute tour, and links to every guide worth reading.</span> <a href="https://keras.io/getting_started/" rel="noopener">keras.io</a></li>
+      <li><b>Keras</b> — <i>The Sequential model</i>. <span class="why">The full story of 26.1 — what a list of layers can and cannot express, and when you outgrow it.</span> <a href="https://keras.io/guides/sequential_model/" rel="noopener">keras.io</a></li>
+      <li><b>TensorFlow</b> — <i>Quickstart for beginners</i>. <span class="why">A complete describe–compile–fit–evaluate program on real data, runnable in Colab in one click.</span> <a href="https://www.tensorflow.org/tutorials/quickstart/beginner" rel="noopener">tensorflow.org</a></li>
+      <li><b>scikit-learn</b> — <i>Getting started</i>. <span class="why">The other end of 26.2's table, in the library's own words — fit/predict, transformers, pipelines.</span> <a href="https://scikit-learn.org/stable/getting_started.html" rel="noopener">scikit-learn.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit25.html"><span class="k">← Previous</span><span class="t">Unit 25 · PyTorch — first contact</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="index.html"><span class="k">Next →</span><span class="t">Series complete — back to the units</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 26 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"What is keras.Sequential([...]) actually given?",
+   o:["A dictionary of settings","A list of layers, in the order data flows through them","A function that trains the model","A file path to a saved model"],
+   a:1,
+   e:"It is a plain list — square brackets, commas, order matters. Unit 5's list, holding layer objects. Data enters at item 0 and leaves at the last item."},
+  {q:"What does model.compile(optimizer=..., loss=..., metrics=...) do?",
+   o:["Translates the model into machine code","Trains the model on the data","Records three settings — how to learn, what counts as wrong, what to report — and nothing else","Checks the model for syntax errors"],
+   a:2,
+   e:"An unfortunate name for a settings form. Nothing learns during compile; the three choices are simply stored on the model, ready for fit."},
+  {q:"model.fit(X, y, epochs=200) replaces which part of a PyTorch program?",
+   o:["The class definition with __init__ and forward","The import lines","The whole training loop — zero the gradients, forward, loss, backward, step, repeated over epochs","The call to predict"],
+   a:2,
+   e:"fit IS the loop. Identical steps, identical maths — just written by someone else, which means you can no longer edit them."},
+  {q:"Which is the fair statement of the Keras/PyTorch trade-off?",
+   o:["Keras is for beginners, PyTorch is for professionals","Keras is less code and less control; PyTorch is more code and every step visible","Keras is faster to run; PyTorch is slower","PyTorch can do things Keras cannot express at all"],
+   a:1,
+   e:"The axis is control, not skill. Keras is production-grade and PyTorch is friendly; what really differs is how much of the training loop the job needs you to own."},
+  {q:"You have a 3,000-row spreadsheet of customers and need to predict who will churn. Best first reach?",
+   o:["PyTorch, because it's what research uses","Keras, because a neural network is always strongest","scikit-learn, because classic tabular work is exactly its ground","Any of them — try all three before deciding"],
+   a:2,
+   e:"On tabular data, trees and linear models are often better than a network, not merely easier — and they train in a blink. Reach for a network only after scikit-learn has failed you."},
+  {q:"You open an unfamiliar file. Which line tells you fastest which library it uses?",
+   o:["The line that calls .fit(","The import lines at the top","The line that creates X and y","The last print in the file"],
+   a:1,
+   e:"sklearn → scikit-learn, torch → PyTorch, keras or tensorflow → Keras. .fit( is no help at all: scikit-learn and Keras both use that exact word."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — a clean sweep to finish on. The Machine Learning stage is yours."
+           : correct >= 4 ? " — solid. Reread 26.2's table once more; that one page is the whole Bridge."
+           : " — worth another pass through 26.1 and 26.2 before you move on. No rush at all.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Keras","A high-level library for describing and training neural networks. Ships inside TensorFlow; imported as 'from tensorflow import keras'."],
+  ["TensorFlow","The engine Keras runs on — the array maths, the gradients, the GPU support. You rarely call it directly."],
+  ["Sequential","A model described as a plain list of layers, run top to bottom in list order. keras.Sequential([...])."],
+  ["Dense layer","A layer where every input connects to every output. Underneath it is X @ W + b — Unit 21's arithmetic with a name."],
+  ["Activation","A function applied to a layer's output ('relu', 'sigmoid', 'softmax') that bends it, so a stack of layers can learn more than a straight line."],
+  ["compile()","Keras's settings form: optimizer, loss and metrics recorded on the model. Records only — nothing learns until fit()."],
+  ["Optimizer","The rule for how weights step towards better values ('adam', 'sgd'). PyTorch's optim.SGD, chosen by a name string."],
+  ["Loss","The score for how wrong the model currently is. Training means pushing this number down."],
+  ["Metric","A number reported to you for your benefit — accuracy, say. The loss is what training minimises; a metric is what you read."],
+  ["Epoch","One full pass over all the training data. epochs=200 means the loop runs 200 times."],
+  ["fit() / evaluate() / predict()","Show it examples; score it; ask about new data. The same three verbs in Keras and (minus evaluate) in scikit-learn."],
+  ["The three-step sentence","Describe the model, show it examples, ask it about new data. Every ML library is a dialect of this sentence."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>
