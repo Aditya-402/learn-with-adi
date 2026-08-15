@@ -2,6 +2,10 @@
    Zero-install: real CPython compiled to WebAssembly, loaded lazily from the
    jsDelivr CDN the first time a student presses Run (≈6 MB, cached after that).
 
+   Execution happens in a Web Worker so a runaway loop can never freeze the
+   page: each run has a time budget, and on timeout the worker is terminated
+   (and rebooted lazily on the next Run) with a friendly infinite-loop hint.
+
    Markup contract — pyrun.js enhances every  <div class="pyrun">…</div>  block:
 
      <div class="pyrun"
@@ -17,15 +21,15 @@
      </div>
 
    Solved state is stored per unit in localStorage under
-   "lwa-pyrun::<course>::<chapter>" and re-rendered on load.
-
-   NOTE (before Unit 4 ships): user code runs on the main thread, so a genuine
-   infinite `while` loop freezes the tab. Loops arrive in Unit 4 — move
-   execution into a Web Worker with terminate-on-timeout before then. */
+   "lwa-pyrun::<course>::<chapter>" and re-rendered on load. */
 (function () {
   "use strict";
 
   var PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js";
+  var INDEX_URL = PYODIDE_URL.replace(/pyodide\.js$/, "");
+  var RUN_TIMEOUT_MS = 12000;   // per-run budget once Python is booted
+  var BOOT_TIMEOUT_MS = 120000; // download + boot budget (slow connections)
+
   var body = document.body;
   var COURSE = body.getAttribute("data-lwa-course") || "any";
   var UNIT = body.getAttribute("data-lwa-chapter") || "any";
@@ -76,8 +80,7 @@
   function saveSolved(o) { try { localStorage.setItem(LS_KEY, JSON.stringify(o)); } catch (e) {} }
   var solved = loadSolved();
 
-  /* ---------------- pyodide boot (lazy, once) ---------------- */
-  var pyodide = null, booting = null;
+  /* ---------------- worker-based executor ---------------- */
   var PREAMBLE = [
     "import builtins",
     "_lwa_stdin = []",
@@ -92,22 +95,84 @@
     "builtins.input = _lwa_input"
   ].join("\n");
 
-  function boot(onStatus) {
-    if (pyodide) return Promise.resolve(pyodide);
-    if (booting) return booting;
+  var WORKER_SRC =
+    'importScripts(' + JSON.stringify(PYODIDE_URL) + ');\n' +
+    'var pyReady = loadPyodide({indexURL:' + JSON.stringify(INDEX_URL) + '}).then(function(py){\n' +
+    '  py.runPython(' + JSON.stringify(PREAMBLE) + ');\n' +
+    '  postMessage({type:"ready"});\n' +
+    '  return py;\n' +
+    '}).catch(function(e){ postMessage({type:"bootfail", err:String(e && e.message || e)}); });\n' +
+    'onmessage = function(ev){\n' +
+    '  var msg = ev.data;\n' +
+    '  pyReady.then(function(py){\n' +
+    '    if (!py) return;\n' +
+    '    py.globals.get("_lwa_set_stdin")(py.toPy(msg.stdin || []));\n' +
+    '    var buf = [];\n' +
+    '    py.setStdout({batched:function(s){ buf.push(s); }});\n' +
+    '    py.setStderr({batched:function(s){ buf.push(s); }});\n' +
+    '    var err = null;\n' +
+    '    try { py.runPython(msg.code, {globals: py.globals.get("dict")()}); }\n' +
+    '    catch (e) { err = String(e && e.message || e); }\n' +
+    '    py.setStdout(); py.setStderr();\n' +
+    '    postMessage({type:"result", id: msg.id, ok: !err, text: buf.join("\\n"), err: err});\n' +
+    '  });\n' +
+    '};\n';
+
+  var worker = null, workerReady = null, seq = 0, pending = {};
+
+  function killWorker() {
+    if (worker) { try { worker.terminate(); } catch (e) {} }
+    worker = null; workerReady = null;
+    for (var k in pending) { pending[k].reject(new Error("__killed__")); }
+    pending = {};
+  }
+
+  function ensureWorker(onStatus) {
+    if (workerReady) return workerReady;
     onStatus("Loading Python … first time only (about 6 MB)");
-    booting = new Promise(function (resolve, reject) {
-      var s = document.createElement("script");
-      s.src = PYODIDE_URL;
-      s.onload = function () {
-        window.loadPyodide({ indexURL: PYODIDE_URL.replace(/pyodide\.js$/, "") })
-          .then(function (py) { py.runPython(PREAMBLE); pyodide = py; resolve(py); })
-          .catch(reject);
+    workerReady = new Promise(function (resolve, reject) {
+      var blob = new Blob([WORKER_SRC], { type: "application/javascript" });
+      var w = new Worker(URL.createObjectURL(blob));
+      var bootTimer = setTimeout(function () {
+        killWorker();
+        reject(new Error("Python took too long to download. Check your connection and press Run again."));
+      }, BOOT_TIMEOUT_MS);
+      w.onmessage = function (ev) {
+        var m = ev.data || {};
+        if (m.type === "ready") { clearTimeout(bootTimer); worker = w; resolve(w); }
+        else if (m.type === "bootfail") {
+          clearTimeout(bootTimer); killWorker();
+          reject(new Error("Could not start Python: " + m.err));
+        } else if (m.type === "result" && pending[m.id]) {
+          var p = pending[m.id]; delete pending[m.id];
+          clearTimeout(p.timer); p.resolve(m);
+        }
       };
-      s.onerror = function () { reject(new Error("Could not download Python. Check your connection and try again.")); };
-      document.head.appendChild(s);
+      w.onerror = function (e) {
+        clearTimeout(bootTimer); killWorker();
+        reject(new Error("Could not download Python. Check your connection and try again."));
+      };
     });
-    return booting;
+    return workerReady;
+  }
+
+  function runInWorker(code, stdin, onStatus) {
+    return ensureWorker(onStatus).then(function (w) {
+      onStatus("Running …");
+      return new Promise(function (resolve, reject) {
+        var id = ++seq;
+        pending[id] = {
+          resolve: resolve,
+          reject: reject,
+          timer: setTimeout(function () {
+            delete pending[id];
+            killWorker(); // a stuck run can only be stopped by terminating the worker
+            reject(new Error("__timeout__"));
+          }, RUN_TIMEOUT_MS)
+        };
+        w.postMessage({ id: id, code: code, stdin: stdin });
+      });
+    });
   }
 
   /* keep only the traceback lines a beginner can act on */
@@ -185,40 +250,48 @@
       var code = ta.value;
       out.classList.add("show");
       out.textContent = "";
-      return boot(function (m) { stat.className = "pr-st"; stat.textContent = m; })
-        .then(function (py) {
-          stat.className = "pr-st"; stat.textContent = "Running …";
-          py.globals.get("_lwa_set_stdin")(stdinLines());
-          var buf = [];
-          py.setStdout({ batched: function (s) { buf.push(s); } });
-          py.setStderr({ batched: function (s) { buf.push(s); } });
-          var err = null;
-          try { py.runPython(code, { globals: py.globals.get("dict")() }); }
-          catch (e) { err = e; }
-          py.setStdout(); py.setStderr();
-          var text = buf.join("\n");
-          if (err) {
+      var setStatus = function (m) { stat.className = "pr-st"; stat.textContent = m; };
+      return runInWorker(code, stdinLines(), setStatus)
+        .then(function (r) {
+          if (!r.ok) {
             out.innerHTML = "";
-            if (text) out.appendChild(document.createTextNode(text + "\n"));
+            if (r.text) out.appendChild(document.createTextNode(r.text + "\n"));
             var es = document.createElement("span");
             es.className = "err";
-            es.textContent = cleanTraceback(err.message || String(err));
+            es.textContent = cleanTraceback(r.err);
             out.appendChild(es);
             var hint = document.createElement("div");
             hint.className = "hint";
             hint.textContent = "An error is Python talking to you, not judging you — read its last line first.";
             out.appendChild(hint);
             stat.className = "pr-st no"; stat.textContent = "Error — read the message below";
-            return { ok: false, text: text };
+            return { ok: false, text: r.text };
           }
-          out.textContent = text.length ? text : "(the program ran, but printed nothing)";
+          out.textContent = r.text.length ? r.text : "(the program ran, but printed nothing)";
           if (!box.classList.contains("ok")) { stat.className = "pr-st"; stat.textContent = "Ran ✓"; }
-          return { ok: true, text: text };
+          return { ok: true, text: r.text };
         })
         .catch(function (e) {
+          var msg = String(e && e.message || e);
           out.classList.add("show");
-          out.textContent = String(e.message || e);
-          stat.className = "pr-st no"; stat.textContent = "Could not run";
+          if (msg === "__timeout__") {
+            out.innerHTML = "";
+            var es2 = document.createElement("span");
+            es2.className = "err";
+            es2.textContent = "Stopped: the program ran for more than " + (RUN_TIMEOUT_MS / 1000) + " seconds.";
+            out.appendChild(es2);
+            var h2 = document.createElement("div");
+            h2.className = "hint";
+            h2.textContent = "That usually means a loop that never ends — check the condition that is supposed to stop it. Just press Run again when you've fixed it (Python reloads automatically).";
+            out.appendChild(h2);
+            stat.className = "pr-st no"; stat.textContent = "Stopped — probably an endless loop";
+          } else if (msg === "__killed__") {
+            out.textContent = "";
+            stat.className = "pr-st"; stat.textContent = "";
+          } else {
+            out.textContent = msg;
+            stat.className = "pr-st no"; stat.textContent = "Could not run";
+          }
           return { ok: false, text: "" };
         });
     }

@@ -1,0 +1,1143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>When Things Break — Errors &amp; Debugging — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u09" data-lwa-title="Unit 9 · When things break — errors &amp; debugging">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Beginner — Foundations · Unit 9</div>
+      <h1>When Things Break — Errors &amp; Debugging</h1>
+      <p class="standfirst">Eight units of building; this session is about breaking — on purpose. You'll provoke every classic error and learn to read the reports like a mechanic reads engine noise, then catch trouble before it kills the program, hunt bugs that never announce themselves, and armour the to-do app until nothing a user types can crash it.</p>
+      <div class="facts">
+        <div><b>One session</b>~45 min</div>
+        <div><b>5 concepts</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 1, 4, 5 &amp; 7</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">9.1 Reading a traceback</a>
+    <a href="#s2">9.2 The rogues' gallery</a>
+    <a href="#s3">9.3 try / except</a>
+    <a href="#s4">9.4 Print-debugging &amp; raise</a>
+    <a href="#s5">9.5 Build: bulletproof to-do</a>
+    <a href="#s6">9.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 9.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Units 1 &amp; 4</b>Unit 1's "read the last line first" habit graduates today, and Unit 4's <code>while</code> loop finally gets its promised payoff — the retry pattern.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm: each concept is a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit9.ipynb" rel="noopener">▶ Run this unit in Colab</a> — errors there show the full, honest traceback.</div>
+      <div class="pq"><b>Bring the to-do app</b>Units 5 and 7 built it; today it gets armour-plated. By the end of 9.5, no amount of user mischief will crash it.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">9.1</span>
+      <h2>Reading a traceback, properly</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> In Unit 1 your programs were three lines long, so the error reports were short and the advice was simple: read the last line first. But your programs now have functions calling functions. When something breaks three layers deep, the report is a wall of text a dozen lines tall — and most beginners' eyes glaze over at exactly the moment the machine is being most helpful.</p>
+      <p><b>The idea, in plain words.</b> An error report — Python calls it a <b>traceback</b> — is not a scolding. It's the machine holding up its end of the conversation: the kitchen helper handing back the recipe with a bookmark at the exact step it got stuck, plus a note listing every recipe card it was in the middle of following when it happened. The report has a fixed shape:</p>
+      <ul class="plain">
+        <li><b>The last line</b> names what went wrong: the error's type and a one-sentence reason. Still read this first — that habit survives intact.</li>
+        <li><b>The <code>File …, line …, in …</code> lines above it</b> are the <b>call chain</b> — the trail of function calls that led to the crash. The very first line of the report tells you how to read them: <i>most recent call last</i>. Oldest call at the top, the call that actually crashed at the bottom.</li>
+        <li><b>So the full reading order is:</b> last line first (the <i>what</i>), then the bottom-most <code>File</code> line (the <i>where</i>), then walk <i>upward</i> to see how the program got there (the <i>how</i>).</li>
+      </ul>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — a crash three layers deep</div>
+      <div class="m">def share_per_person(total, people):
+    return total / people
+
+def print_share(total, people):
+    each = share_per_person(total, people)
+    print("Each pays:", each)
+
+print_share("900", 3)</div>
+      <p><b>Last line of the file:</b> <code>print_share</code> is called with <code>"900"</code> — a string. Someone forgot to convert at the door.</p>
+      <p><b>Inside <code>print_share</code>:</b> the string travels on, into <code>share_per_person</code>.</p>
+      <p><b>Inside <code>share_per_person</code>:</b> <code>"900" / 3</code> — dividing text by a number. Here, and only here, Python must give up:</p>
+      <div class="m">Traceback (most recent call last):
+  File "bill.py", line 8, in &lt;module&gt;
+    print_share("900", 3)
+  File "bill.py", line 5, in print_share
+    each = share_per_person(total, people)
+  File "bill.py", line 2, in share_per_person
+    return total / people
+TypeError: unsupported operand type(s) for /: 'str' and 'int'</div>
+      <p>Last line: a TypeError — text divided by a number. Bottom frame: the crash happened in <code>share_per_person</code>, line 2. Walk up: it was called by <code>print_share</code>, which was called at the top level — where the <code>"900"</code> entered. The crash site is line 2; the <i>culprit</i> is line 8.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 880 320" role="img" aria-label="Anatomy of a traceback: read the last line first, then the bottom frame, then walk up the call chain">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">HOW TO READ A TRACEBACK</text>
+        <rect x="16" y="42" width="536" height="252" rx="10" fill="#23262e"/>
+        <text x="34" y="74" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#9aa0b4">Traceback (most recent call last):</text>
+        <text x="34" y="100" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#c9cede">  File "bill.py", line 8, in &lt;module&gt;</text>
+        <text x="34" y="122" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#8f95a8">    print_share("900", 3)</text>
+        <text x="34" y="148" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#c9cede">  File "bill.py", line 5, in print_share</text>
+        <text x="34" y="170" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#8f95a8">    each = share_per_person(total, people)</text>
+        <text x="34" y="196" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#c9cede">  File "bill.py", line 2, in share_per_person</text>
+        <text x="34" y="218" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#8f95a8">    return total / people</text>
+        <text x="34" y="252" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#f0a58f">TypeError: unsupported operand type(s)</text>
+        <text x="34" y="272" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#f0a58f">for /: 'str' and 'int'</text>
+        <line x1="568" y1="258" x2="556" y2="258" stroke="#a35a33" stroke-width="2"/>
+        <text x="576" y="254" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#a35a33">① read me first</text>
+        <text x="576" y="272" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">the WHAT — error type + reason</text>
+        <line x1="568" y1="208" x2="556" y2="208" stroke="#5b4b9e" stroke-width="2"/>
+        <text x="576" y="204" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#3d3170">② bottom frame = crash site</text>
+        <text x="576" y="222" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#3d3170">the newest call — where it died</text>
+        <line x1="600" y1="176" x2="600" y2="100" stroke="#2b7a78" stroke-width="2" stroke-dasharray="4 3"/>
+        <path d="M 600 100 L 595 110 L 605 110 Z" fill="#2b7a78"/>
+        <text x="614" y="128" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#1d5654">③ walk up the chain</text>
+        <text x="614" y="146" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">how the bad value travelled —</text>
+        <text x="614" y="162" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">the top frame is the oldest call</text>
+        <text x="576" y="82" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">"most recent call last" — Python</text>
+        <text x="576" y="98" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">tells you the reading order itself</text>
+      </svg>
+      <div class="figcap">Fig. 1 — Anatomy of a traceback. Three moves, always the same: last line for the <i>what</i>, bottom frame for the <i>where</i>, then upward for the <i>how</i>. The wall of text becomes a breadcrumb trail.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>The crash site is not always the culprit. The bottom frame shows where Python <i>gave up</i> — but the bad value often entered several calls earlier. In the trace above, line 2 crashed, yet line 2 is innocent; the <code>"900"</code> snuck in at the top-level call. Fix where the bad value <i>entered</i>, not where it finally exploded — that's why you walk the chain.</p>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      A traceback reads bottom-up: last line = what went wrong, bottom <code>File</code> line = where it died, the frames above = the journey that got it there. Newest call last — Python says so in its opening line.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> run the crashing bill-splitter and read its report against Fig. 1 — out loud if nobody's watching. <b>Thinking:</b> before running, predict all three answers: what will the last line say? Which function will the bottom frame name? Where did the bad value enter? (The in-page runner's report may add a line or two of its own machinery — the shape is always the same: frames oldest-to-newest, error last.)</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">def share_per_person(total, people):
+    return total / people
+
+def print_share(total, people):
+    each = share_per_person(total, people)
+    print("Each pays:", each)
+
+print_share("900", 3)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">9.1 · P1</span><span class="pt">Predict the bottom frame</span></div>
+        <p class="pd">Before running: which function will the <b>bottom</b> <code>File</code> line name, and what will the last line say? Write both down, then run and check yourself.</p>
+        <div class="pyrun" data-id="s1p1">
+          <textarea spellcheck="false">def shout(word):
+    return wrd + "!"
+
+def greet(name):
+    print(shout(name))
+
+greet("adi")</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>Traceback (most recent call last):
+  ...in &lt;module&gt;: greet("adi")
+  ...in greet: print(shout(name))
+  ...in shout: return wrd + "!"
+NameError: name 'wrd' is not defined</pre><p>The crash is inside <code>shout</code> — a typo'd label, <code>wrd</code> for <code>word</code>. The chain reads: top level called <code>greet</code>, which called <code>shout</code>, which died. Bottom frame names <code>shout</code>; last line names the NameError.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">9.1 · P2</span><span class="pt">Fix at the door</span></div>
+        <p class="pd">The bill-splitter from the worked example. The traceback blames line 2, but you know better — the bad value entered at the bottom of the file. Fix it <i>there</i> (convert at the door — Unit 2's rule) so it prints the goal.</p>
+        <div class="want">Each pays: 300.0</div>
+        <div class="pyrun" data-id="s1p2" data-expect="Each pays: 300.0">
+          <textarea spellcheck="false">def share_per_person(total, people):
+    return total / people
+
+def print_share(total, people):
+    each = share_per_person(total, people)
+    print("Each pays:", each)
+
+print_share("900", 3)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def share_per_person(total, people):
+    return total / people
+
+def print_share(total, people):
+    each = share_per_person(total, people)
+    print("Each pays:", each)
+
+print_share(900, 3)</pre><p>One character of fix: the quotes come off. The functions were always correct — the walk up the chain told you that. (And <code>/</code> gives a float, so 300.0, not 300 — Unit 2.)</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">9.1 · P3</span><span class="pt">Stretch — four frames deep</span></div>
+        <p class="pd">Run it, count the <code>File</code> lines in the report (there are four), then fix the program <b>at the point where the bad value entered</b> — not where it crashed — so it prints the goal.</p>
+        <div class="want">22</div>
+        <div class="pyrun" data-id="s1p3" data-expect="22">
+          <textarea spellcheck="false">def inner(n):
+    return n + 1
+
+def middle(n):
+    return inner(n) * 2
+
+def outer(n):
+    return middle(n) + 10
+
+print(outer("5"))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def inner(n):
+    return n + 1
+
+def middle(n):
+    return inner(n) * 2
+
+def outer(n):
+    return middle(n) + 10
+
+print(outer(5))</pre><p>The string rode the chain unharmed through <code>outer</code> and <code>middle</code> and only exploded at <code>n + 1</code> in <code>inner</code> — four frames from home. Fix the entry point: <code>outer(5)</code>. Then inner gives 6, middle 12, outer 22.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 9.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">9.2</span>
+      <h2>The rogues' gallery — five errors you'll meet weekly</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Reading the report's shape is half the skill; the other half is recognising the name on the last line. Five names cover the overwhelming majority of beginner crashes — meet them deliberately here, in a safe room, and they'll never ambush you again.</p>
+      <p><b>The idea, in plain words.</b> Each error name states exactly which promise got broken:</p>
+      <div class="fig" style="max-width:66ch;padding:6px 18px">
+      <table>
+        <tr><th>the rogue</th><th>the broken promise</th><th>classic trigger</th></tr>
+        <tr><td><code>NameError</code></td><td>a label that doesn't exist — typo, or never created</td><td><code>print(mesage)</code></td></tr>
+        <tr><td><code>TypeError</code></td><td>right values, wrong <i>types</i> mixed</td><td><code>"7" + 7</code></td></tr>
+        <tr><td><code>ValueError</code></td><td>right type, unusable <i>value</i></td><td><code>int("hello")</code></td></tr>
+        <tr><td><code>IndexError</code></td><td>a list position that doesn't exist</td><td><code>menu[3]</code> of 3 items</td></tr>
+        <tr><td><code>KeyError</code></td><td>a dictionary key that doesn't exist</td><td><code>prices["Dosa"]</code></td></tr>
+      </table>
+      </div>
+      <p>One of these is new: <b>ValueError</b>. Hand <code>int()</code> a string — perfectly legal, that's its whole job — but a string with no number in it, like <code>"hello"</code>, and the <i>type</i> was fine while the <i>value</i> was hopeless. That's the distinction the next confusion box nails down, and it matters enormously in 9.3: users type <code>"hello"</code> at number prompts all the time.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the newest rogue</div>
+      <div class="m">text = "hello"
+number = int(text)
+print(number)</div>
+      <p><b>Line 1:</b> box <code>text</code> holds the string <code>"hello"</code>.</p>
+      <p><b>Line 2:</b> <code>int()</code> reads the box. A string is exactly what it accepts — no type complaint. But it scans the characters for a number and finds… greetings. Nothing to convert. It gives up:</p>
+      <div class="m">Traceback (most recent call last):
+  File "rogue.py", line 2, in &lt;module&gt;
+    number = int(text)
+ValueError: invalid literal for int() with base 10: 'hello'</div>
+      <p><b>Line 3</b> never runs. Programs die mid-flight — everything before the crash happened; nothing after it does.</p>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>ValueError vs TypeError — they sound interchangeable and aren't. <code>"7" + 7</code> is a <b>TypeError</b>: the <i>kinds</i> of things don't combine, whatever their contents. <code>int("hello")</code> is a <b>ValueError</b>: the kind is fine (int() happily takes strings — <code>int("42")</code> works), but this particular <i>content</i> is unusable. Wrong category of thing → TypeError. Right category, hopeless contents → ValueError.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> watch <code>int()</code> succeed twice and fail once, and read the ValueError report closely — it quotes the offending string back at you. <b>Thinking:</b> predict which of the three lines survives before you run. Remember: the program dies at the first failure.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">print(int("42"))       # a number in disguise - fine
+print(int("  7  "))    # stray spaces are forgiven
+print(int("hello"))    # no number in sight - ValueError</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">9.2 · P1</span><span class="pt">Match the reports — pair one</span></div>
+        <p class="pd">Run as-is and read the last line. Then comment out the crashing line (put <code>#</code> in front), uncomment the second rogue, and run again. Match each report to its row in the gallery table before peeking.</p>
+        <div class="pyrun" data-id="s2p1">
+          <textarea spellcheck="false"># Rogue A - run as-is first:
+nickname = "Adi"
+print(nickame)
+
+# Rogue B - now comment the print above, uncomment this, rerun:
+# print("You have " + 3 + " messages")</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>Rogue A -> NameError: name 'nickame' is not defined
+Rogue B -> TypeError: can only concatenate str (not "int") to str</pre><p>A is a typo — the label <code>nickame</code> was never created, so the name lookup fails. B glues text to a bare int — wrong types mixed, so TypeError. Note how A's report even names the missing label: the machine does half your detective work.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">9.2 · P2</span><span class="pt">Match the reports — pair two</span></div>
+        <p class="pd">Same drill: run, read, swap the comments, rerun. These two rogues guard the collections from Units 5 and 6 — positions and keys.</p>
+        <div class="pyrun" data-id="s2p2">
+          <textarea spellcheck="false"># Rogue C - run as-is first:
+days = ["Mon", "Tue", "Wed"]
+print(days[3])
+
+# Rogue D - comment the print above, uncomment these, rerun:
+# ages = {"adi": 24, "mira": 22}
+# print(ages["Adi"])</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>Rogue C -> IndexError: list index out of range
+Rogue D -> KeyError: 'Adi'
+</pre><p>Three items means positions 0, 1, 2 — there is no seat 3, so IndexError. And dictionaries are exact about keys the way labels are exact about case: <code>"Adi"</code> ≠ <code>"adi"</code>, so KeyError, with the missing key quoted back at you.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">9.2 · P3</span><span class="pt">Fix them all — the full gallery</span></div>
+        <p class="pd">Five bugs, one per rogue, in one snack-stand program. Run it, read the report, fix, rerun — each fix reveals the next rogue. Keep going until the output matches the goal exactly.</p>
+        <div class="want">Adi's Snacks
+Plates: 4
+Special: vada
+Dosa costs: 30
+Bill: 120</div>
+        <div class="pyrun" data-id="s2p3" data-expect="Adi's Snacks\nPlates: 4\nSpecial: vada\nDosa costs: 30\nBill: 120">
+          <textarea spellcheck="false">stand = "Adi's Snacks"
+print(stnad)
+plates = int("four")
+print("Plates:", plates)
+menu = ["idli", "dosa", "vada"]
+print("Special:", menu[3])
+prices = {"dosa": 30}
+print("Dosa costs:", prices["Dosa"])
+print("Bill: " + plates * 30)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>stand = "Adi's Snacks"
+print(stand)
+plates = int("4")
+print("Plates:", plates)
+menu = ["idli", "dosa", "vada"]
+print("Special:", menu[2])
+prices = {"dosa": 30}
+print("Dosa costs:", prices["dosa"])
+print("Bill: " + str(plates * 30))</pre><p>In order of appearance: NameError (typo), ValueError (<code>"four"</code> has no digits — give int() something it can use), IndexError (last of three is position 2), KeyError (lowercase <code>"dosa"</code>), TypeError (gluing needs text — <code>str()</code>, or rewrite as an f-string). Five rogues, five one-line fixes.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 9.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">9.3</span>
+      <h2>try / except — the safety net under the risky line</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> You can read crash reports now — but your <i>users</i> can't, and shouldn't have to. A user typing <code>twenty</code> at an age prompt is being human, not hostile; rewarding them with a ten-line traceback and a dead program is bad manners. Crashes are for you at your desk. Users deserve a friendly sentence and a second chance.</p>
+      <p><b>The idea, in plain words.</b> Tell the kitchen helper in advance: <i>attempt this step, and if it fails in this particular way, don't fling the pan down — do plan B instead.</i> That's <code>try</code>/<code>except</code>:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">try:<br>&nbsp;&nbsp;&nbsp;&nbsp;age = int(text)&nbsp;&nbsp;&nbsp;&nbsp;# the risky line<br>except ValueError:<br>&nbsp;&nbsp;&nbsp;&nbsp;print("Numbers only, please.")</p>
+      <p>If the risky line succeeds, the <code>except</code> block is skipped entirely. If it raises a <b>ValueError</b> — and only that — the rest of the <code>try</code> block is abandoned, the <code>except</code> block runs instead, and then <i>the program carries on</i>. No traceback, no death. Two rules make it professional: guard the <i>risky line</i>, not your whole program; and name the <i>specific</i> error you expect. And here's Unit 4's promised payoff — wrap the guarded attempt in <code>while True:</code>, <code>break</code> on success, complain on failure, and you get the politest pattern in programming: <i>keep asking until a number arrives.</i></p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the net catches</div>
+      <div class="m">text = input("Age? ")        # user types: twenty
+try:
+    age = int(text)
+    print("Stored!")
+except ValueError:
+    print("That wasn't a number.")
+print("Program still alive.")</div>
+      <p><b>Line 1:</b> box <code>text</code> holds <code>"twenty"</code>.</p>
+      <p><b>Line 3:</b> <code>int("twenty")</code> raises ValueError — but this time there's a net. <code>print("Stored!")</code> is abandoned, execution jumps to the <code>except</code> block.</p>
+      <p><b>Line 6:</b> the friendly message prints. <b>Line 7:</b> life goes on:</p>
+      <div class="m">Age? twenty
+That wasn't a number.
+Program still alive.</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 880 250" role="img" aria-label="Two paths through try/except: success skips the except block; a ValueError jumps to it; both paths continue afterwards">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">TWO PATHS THROUGH THE SAME CODE</text>
+        <rect x="30" y="70" width="230" height="90" rx="10" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="145" y="98" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">try:</text>
+        <text x="145" y="120" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">age = int(text)</text>
+        <text x="145" y="142" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">the risky line</text>
+        <rect x="330" y="160" width="230" height="66" rx="10" fill="#f7ebe4" stroke="#a35a33" stroke-width="1.5"/>
+        <text x="445" y="186" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#7c4324">except ValueError:</text>
+        <text x="445" y="208" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#5c3f28">print("Numbers only")</text>
+        <rect x="640" y="70" width="210" height="90" rx="10" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="745" y="106" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#1d5654">the program</text>
+        <text x="745" y="126" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#1d5654">carries on</text>
+        <line x1="260" y1="100" x2="632" y2="100" stroke="#2b7a78" stroke-width="2"/>
+        <path d="M 632 100 L 622 95 L 622 105 Z" fill="#2b7a78"/>
+        <text x="446" y="90" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#1d5654">converts fine → except is skipped</text>
+        <path d="M 200 160 Q 230 193 322 193" fill="none" stroke="#a35a33" stroke-width="2"/>
+        <path d="M 322 193 L 312 188 L 312 198 Z" fill="#a35a33"/>
+        <text x="212" y="215" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#a35a33">ValueError!</text>
+        <path d="M 560 180 Q 640 175 700 166" fill="none" stroke="#a35a33" stroke-width="2"/>
+        <path d="M 700 166 L 689 165 L 693 174 Z" fill="#a35a33"/>
+        <text x="652" y="200" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">…then rejoins</text>
+      </svg>
+      <div class="figcap">Fig. 2 — The two paths through <code>try</code>/<code>except</code>. Success takes the high road and never touches the except block; the named error takes the detour — and both roads lead on. Nobody dies.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>A bare <code>except:</code> — no error name — catches <b>everything</b>, and that's a trap, not a convenience. Typo a label inside the <code>try</code> block and the NameError <i>also</i> gets caught, so your program calmly prints "Numbers only, please" while the real bug — your typo — hides forever. Name the error you expect (<code>except ValueError:</code>) and let the ones you don't expect crash loudly. During building, a loud crash is a gift.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> the safe age-asker — the guarded version of Unit 2's birthday bot. Input is fixed to <code>twenty</code>; run it, then trace the path it took through Fig. 2. <b>Thinking:</b> the only risky line is the conversion, so only the conversion (and what depends on it) lives inside <code>try</code>.</p>
+      <div class="pyrun" data-id="w3" data-stdin="twenty">
+        <textarea spellcheck="false">text = input("How old are you? ")
+try:
+    age = int(text)
+    print(f"Next year you'll be {age + 1}")
+except ValueError:
+    print("That doesn't look like a number.")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">9.3 · P1</span><span class="pt">Guard the ticket booth</span></div>
+        <p class="pd">This program dies when someone types <code>two</code> instead of <code>2</code>. Add a <code>try</code>/<code>except ValueError</code> so it answers politely instead. Input fixed to <code>two</code>.</p>
+        <div class="want">How many tickets? two
+Numbers only, please.</div>
+        <div class="pyrun" data-id="s3p1" data-stdin="two" data-stdin-lock data-expect="How many tickets? two\nNumbers only, please.">
+          <textarea spellcheck="false">tickets = input("How many tickets? ")
+count = int(tickets)
+print(f"Booking {count} tickets")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>tickets = input("How many tickets? ")
+try:
+    count = int(tickets)
+    print(f"Booking {count} tickets")
+except ValueError:
+    print("Numbers only, please.")</pre><p>The conversion and the print that depends on it go inside <code>try</code>; the plan B goes in <code>except ValueError</code>. The input line itself isn't risky — it stays outside.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">9.3 · P2</span><span class="pt">Keep asking — the retry pattern</span></div>
+        <p class="pd">Unit 4's payoff. Finish the loop: try the conversion; if it works, <code>break</code> out; if not, complain and let the loop ask again. Inputs fixed: first <code>abc</code>, then <code>42</code>.</p>
+        <div class="want">Age? abc
+Numbers only, try again.
+Age? 42
+Next year: 43</div>
+        <div class="pyrun" data-id="s3p2" data-stdin="abc\n42" data-stdin-lock data-expect="Age? abc\nNumbers only, try again.\nAge? 42\nNext year: 43">
+          <textarea spellcheck="false">while True:
+    text = input("Age? ")
+    # try the conversion; break on success;
+    # print "Numbers only, try again." on ValueError
+
+print(f"Next year: {age + 1}")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>while True:
+    text = input("Age? ")
+    try:
+        age = int(text)
+        break
+    except ValueError:
+        print("Numbers only, try again.")
+
+print(f"Next year: {age + 1}")</pre><p>Round one: <code>"abc"</code> fails, the except complains, the loop swings back. Round two: <code>"42"</code> converts, <code>break</code> escapes. This while-try-break trio guards nearly every input prompt in real programs — you'll write it for the rest of your life.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">9.3 · P3</span><span class="pt">Stretch — the lying net</span></div>
+        <p class="pd">Predict what this prints, then run. The text is a perfectly good number — so why the complaint? Then change <code>except:</code> to <code>except ValueError:</code>, run again, and watch the honest report appear.</p>
+        <div class="pyrun" data-id="s3p3">
+          <textarea spellcheck="false">text = "25"
+try:
+    age = int(txt)
+    print("Age:", age)
+except:
+    print("That wasn't a number.")</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>That wasn't a number.</pre><p>A lie. <code>"25"</code> converts fine — the real problem is the typo <code>txt</code>, a NameError. The bare <code>except:</code> swallowed it and blamed the user. Narrow the net to <code>except ValueError:</code> and the NameError crashes loudly, pointing straight at the typo. This is the confusion box made flesh — catch what you expect, nothing more.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 9.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">9.4</span>
+      <h2>Debugging by printing — and raising your own</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Not every bug announces itself. The nastiest ones produce no traceback at all — the program runs to the end, smiles, and prints the <i>wrong number</i>. No last line to read, no chain to walk. How do you hunt a bug that won't confess?</p>
+      <p><b>The idea, in plain words.</b> Make memory visible. Since Unit 2 you've traced programs by hand, drawing the boxes after every line — a debug print is the machine doing that trace <i>for</i> you, live, from inside the running program. Python even has a gift for it: put <code>=</code> after a name inside an f-string — <code>f"{total=}"</code> — and it prints the label <i>and</i> the contents: <code>total=240</code>. Drop <code>print(f"DEBUG: {total=}")</code> at a checkpoint and compare what memory <i>actually</i> holds against what your hand-trace says it <i>should</i> hold. The bug lives between the last matching print and the first surprising one. When the hunt is over, delete the DEBUG lines — they're scaffolding, not furniture.</p>
+      <p>And the reverse skill: sometimes <i>you</i> know a value is wrong before Python does. An age of <code>-3</code> is a perfectly legal int — Python has no objection — but it breaks <i>your</i> rules. <code>raise ValueError("age cannot be negative")</code> lets you throw the flag yourself: the function stops on the spot, and the report's last line carries <i>your</i> sentence, exactly where you've learned to look. Errors are the machine holding up its end of the conversation — <code>raise</code> is how your own functions join in.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — raise in action</div>
+      <div class="m">def book(seats):
+    if seats > 4:
+        raise ValueError("max 4 seats per booking")
+    print(f"Booked {seats} seats")
+
+book(2)
+book(6)</div>
+      <p><b>Call <code>book(2)</code>:</b> the condition is False, the raise never fires, the print runs.</p>
+      <p><b>Call <code>book(6)</code>:</b> condition True — <code>raise</code> builds a ValueError carrying your message and stops the function right there. Nothing catches it, so it climbs out and the program dies with your words on the last line:</p>
+      <div class="m">Booked 2 seats
+Traceback (most recent call last):
+  ...
+ValueError: max 4 seats per booking</div>
+      <p>Your own errors read exactly like Python's — and they're catchable with the same <code>except ValueError:</code> net, which the problem bank will use.</p>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      <code>print(f"DEBUG: {box=}")</code> shows the true state of memory mid-flight — the hand-trace, automated. <code>raise ValueError("…")</code> enforces <i>your</i> rules with the same machinery Python uses for its own.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> watch the <code>{name=}</code> trick narrate a small computation. <b>Thinking:</b> the DEBUG line prints both labels with their contents in one go — this is the state-of-memory diagram from Unit 2, drawn by the machine. In a finished program you'd delete it; here it <i>is</i> the lesson.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">minutes = 200
+hours = minutes // 60
+left = minutes % 60
+print(f"DEBUG: {hours=} {left=}")
+print(f"{hours} h {left} min")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">9.4 · P1</span><span class="pt">Plant a checkpoint</span></div>
+        <p class="pd">A hotel booking: the deposit is a quarter of the price. Add <b>one</b> debug line that reveals the deposit using the <code>{name=}</code> trick, placed before the final print, to match the goal exactly.</p>
+        <div class="want">DEBUG: deposit=120.0
+Total: 600.00</div>
+        <div class="pyrun" data-id="s4p1" data-expect="DEBUG: deposit=120.0\nTotal: 600.00">
+          <textarea spellcheck="false">price = 480
+deposit = price * 0.25
+total = price + deposit
+print(f"Total: {total:.2f}")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>price = 480
+deposit = price * 0.25
+total = price + deposit
+print(f"DEBUG: {deposit=}")
+print(f"Total: {total:.2f}")</pre><p><code>{deposit=}</code> expands to <code>deposit=120.0</code> — label and contents in one. Note the float: multiplying by 0.25 produces 120.0, and the debug print shows the honest value, unformatted. That honesty is the whole point.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">9.4 · P2</span><span class="pt">Raise your own flag</span></div>
+        <p class="pd">Run it and read the report: <i>your</i> sentence sits on the last line, exactly where 9.1 taught you to look. Then try changing 150 to 15 and rerun to see the happy path.</p>
+        <div class="pyrun" data-id="s4p2">
+          <textarea spellcheck="false">def set_discount(percent):
+    if percent > 100:
+        raise ValueError("discount cannot exceed 100")
+    print(f"Discount set to {percent}%")
+
+set_discount(20)
+set_discount(150)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>Discount set to 20%
+Traceback (most recent call last):
+  ...
+ValueError: discount cannot exceed 100</pre><p>The first call passes the check; the second trips the raise, and the function stops before the print — a function that raises never reaches its remaining lines. A 150% discount would have the shop paying customers; better a loud stop now than silent nonsense later.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">9.4 · P3</span><span class="pt">Stretch — the silent bug hunt</span></div>
+        <p class="pd">This program runs without a single error and prints a nonsense average. Plant <code>print(f"DEBUG: {total=}")</code> <i>inside</i> the loop, run, and watch the box misbehave — then fix the one wrong line, remove your DEBUG scaffolding, and match the goal.</p>
+        <div class="want">Average: 80.0</div>
+        <div class="pyrun" data-id="s4p3" data-expect="Average: 80.0">
+          <textarea spellcheck="false">scores = [80, 90, 70]
+total = 0
+for s in scores:
+    total = s
+average = total / 3
+print(f"Average: {average}")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>scores = [80, 90, 70]
+total = 0
+for s in scores:
+    total = total + s
+average = total / 3
+print(f"Average: {average}")</pre><p>The DEBUG line shows <code>total=80</code>, then <code>total=90</code>, then <code>total=70</code> — replacing, not accumulating, so the "total" was just the last score. The fix is Unit 2's oldest lesson: <code>total = total + s</code>, old contents plus the new. 240 / 3 = 80.0. (Remember to delete the DEBUG line before checking.)</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 9.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">9.5</span>
+      <h2>Your build — bulletproof the to-do app</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>Unit 5 built the to-do list; Unit 7 rebuilt it from functions. It works beautifully — for polite users. (We've tightened the menu prompt a little along the way — the functions are Unit 7's.) Today we hire a rude one. Three ways a real person will break it: typing a menu choice that doesn't exist, removing a task that isn't there (that's <code>.remove()</code> raising a rogue you now know), and adding a task with no name at all. A program that only survives polite users isn't finished — armour all three paths so every failure gets a friendly sentence and the program marches on.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">9.5 · P1</span><span class="pt">Stage 1 — armour the remove</span></div>
+        <p class="pd">A surprise: <code>tasks.remove(name)</code> on a missing task raises <b>ValueError</b> — Python reuses the rogues you already know. Wrap the risky line in <code>try</code>/<code>except ValueError</code> so the second call answers politely instead of crashing, and the final print still runs.</p>
+        <div class="want">Removed: call home
+Not on the list: walk dog
+['buy milk']</div>
+        <div class="pyrun" data-id="s5p1" data-expect="Removed: call home\nNot on the list: walk dog\n['buy milk']">
+          <textarea spellcheck="false">def remove_task(tasks, name):
+    tasks.remove(name)
+    print("Removed:", name)
+
+tasks = ["buy milk", "call home"]
+remove_task(tasks, "call home")
+remove_task(tasks, "walk dog")
+print(tasks)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def remove_task(tasks, name):
+    try:
+        tasks.remove(name)
+        print("Removed:", name)
+    except ValueError:
+        print("Not on the list:", name)
+
+tasks = ["buy milk", "call home"]
+remove_task(tasks, "call home")
+remove_task(tasks, "walk dog")
+print(tasks)</pre><p>The net lives <i>inside</i> the function, so every caller is protected forever. And note the last line still prints the list with quotes — Python's way of showing you the strings inside.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">9.5 · P2</span><span class="pt">Stage 2 — refuse nonsense politely</span></div>
+        <p class="pd">Two more armour plates: in <code>add_task</code>, refuse an empty name with <code>A task needs a name.</code> — and in the menu, answer unknown choices with <code>Unknown choice. Try add, show or quit.</code> instead of silence. The scripted session presses both bruises, then behaves.</p>
+        <div class="want">add / show / quit? add
+Task name?
+A task needs a name.
+add / show / quit? paint
+Unknown choice. Try add, show or quit.
+add / show / quit? add
+Task name? buy milk
+Added: buy milk
+add / show / quit? show
+- buy milk
+add / show / quit? quit
+Bye!</div>
+        <div class="pyrun" data-id="s5p2" data-stdin="add\n\npaint\nadd\nbuy milk\nshow\nquit" data-stdin-lock data-expect="add / show / quit? add\nTask name? \nA task needs a name.\nadd / show / quit? paint\nUnknown choice. Try add, show or quit.\nadd / show / quit? add\nTask name? buy milk\nAdded: buy milk\nadd / show / quit? show\n- buy milk\nadd / show / quit? quit\nBye!">
+          <textarea spellcheck="false">def add_task(tasks, name):
+    # refuse an empty name here
+    tasks.append(name)
+    print("Added:", name)
+
+def show_tasks(tasks):
+    for t in tasks:
+        print("-", t)
+
+tasks = []
+while True:
+    choice = input("add / show / quit? ")
+    if choice == "add":
+        add_task(tasks, input("Task name? "))
+    elif choice == "show":
+        show_tasks(tasks)
+    elif choice == "quit":
+        print("Bye!")
+        break
+    # answer unknown choices here</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def add_task(tasks, name):
+    if name == "":
+        print("A task needs a name.")
+    else:
+        tasks.append(name)
+        print("Added:", name)
+
+def show_tasks(tasks):
+    for t in tasks:
+        print("-", t)
+
+tasks = []
+while True:
+    choice = input("add / show / quit? ")
+    if choice == "add":
+        add_task(tasks, input("Task name? "))
+    elif choice == "show":
+        show_tasks(tasks)
+    elif choice == "quit":
+        print("Bye!")
+        break
+    else:
+        print("Unknown choice. Try add, show or quit.")</pre><p>Notice: neither guard needed try/except. Bulletproofing is mostly plain if/else — you reach for the net only when the failure arrives as an <i>error</i>. Checking beats catching when a simple question ("is it empty?") does the job.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">9.5 · P3</span><span class="pt">Stage 3 — the full armoured app</span></div>
+        <p class="pd">Everything together: the menu grows <code>remove</code> (with P1's armoured <code>remove_task</code>), and keeps P2's two guards. The scripted rude user hits all three failure paths — unknown choice, remove a missing task, empty name — then finally behaves. Your app must survive all of it.</p>
+        <div class="want">add / remove / show / quit? paint
+Unknown choice. Try add, remove, show or quit.
+add / remove / show / quit? remove
+Which task? milk
+Not on the list: milk
+add / remove / show / quit? add
+Task name?
+A task needs a name.
+add / remove / show / quit? add
+Task name? buy milk
+Added: buy milk
+add / remove / show / quit? show
+- buy milk
+add / remove / show / quit? quit
+Bye!</div>
+        <div class="pyrun" data-id="s5p3" data-stdin="paint\nremove\nmilk\nadd\n\nadd\nbuy milk\nshow\nquit" data-stdin-lock data-expect="add / remove / show / quit? paint\nUnknown choice. Try add, remove, show or quit.\nadd / remove / show / quit? remove\nWhich task? milk\nNot on the list: milk\nadd / remove / show / quit? add\nTask name? \nA task needs a name.\nadd / remove / show / quit? add\nTask name? buy milk\nAdded: buy milk\nadd / remove / show / quit? show\n- buy milk\nadd / remove / show / quit? quit\nBye!">
+          <textarea spellcheck="false"># Build the full armoured app:
+#   functions: add_task (refuses ""), remove_task (try/except ValueError),
+#              show_tasks
+#   menu loop: add / remove / show / quit
+#              unknown choice -> "Unknown choice. Try add, remove, show or quit."
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def add_task(tasks, name):
+    if name == "":
+        print("A task needs a name.")
+    else:
+        tasks.append(name)
+        print("Added:", name)
+
+def remove_task(tasks, name):
+    try:
+        tasks.remove(name)
+        print("Removed:", name)
+    except ValueError:
+        print("Not on the list:", name)
+
+def show_tasks(tasks):
+    for t in tasks:
+        print("-", t)
+
+tasks = []
+while True:
+    choice = input("add / remove / show / quit? ")
+    if choice == "add":
+        add_task(tasks, input("Task name? "))
+    elif choice == "remove":
+        remove_task(tasks, input("Which task? "))
+    elif choice == "show":
+        show_tasks(tasks)
+    elif choice == "quit":
+        print("Bye!")
+        break
+    else:
+        print("Unknown choice. Try add, remove, show or quit.")</pre><p>Three armour plates, three techniques: an else branch for unknown commands, a checked refusal for empty names, and a try/except net where the failure arrives as an error. This app now shrugs off anything a keyboard can throw at it — which matters, because in Unit 10 it starts keeping your real list.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 9.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">9.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~12 min</span></span>
+      <p>The mixed set: nets, raises, rogues and debug prints — plus a sixth rogue making its entrance. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">Safe division — meet the sixth rogue</span></div>
+        <p class="pd">Dividing by zero raises <b>ZeroDivisionError</b> — the sixth member of the gallery. Write <code>safe_divide(a, b)</code> that prints <code>a / b = result</code> normally, but <code>Cannot divide a by zero.</code> when b is 0. Call it once directly, then once with two asked-for numbers. Inputs fixed: 10, then 0.</p>
+        <div class="want">9 / 4 = 2.25
+Numerator? 10
+Denominator? 0
+Cannot divide 10 by zero.</div>
+        <div class="pyrun" data-id="b1" data-stdin="10\n0" data-stdin-lock data-expect="9 / 4 = 2.25\nNumerator? 10\nDenominator? 0\nCannot divide 10 by zero.">
+          <textarea spellcheck="false">def safe_divide(a, b):
+    # try the division; catch ZeroDivisionError
+
+safe_divide(9, 4)
+a = int(input("Numerator? "))
+b = int(input("Denominator? "))
+safe_divide(a, b)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def safe_divide(a, b):
+    try:
+        print(f"{a} / {b} = {a / b}")
+    except ZeroDivisionError:
+        print(f"Cannot divide {a} by zero.")
+
+safe_divide(9, 4)
+a = int(input("Numerator? "))
+b = int(input("Denominator? "))
+safe_divide(a, b)</pre><p>Same net, new rogue: name the error, catch exactly it. 9 / 4 is 2.25 — the honest float, straight from Unit 2.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">Safe lookup, two ways</span></div>
+        <p class="pd">A missing dictionary key, handled two ways: once with <code>.get()</code> and a default, once with <code>try</code>/<code>except KeyError</code>. Both should print <code>not on the menu</code> for <code>"vada"</code>. Rule of thumb: reach for <code>.get()</code> when a stand-in <i>value</i> is all you need; reach for the net when a missing key should trigger different <i>actions</i>.</p>
+        <div class="want">not on the menu
+not on the menu</div>
+        <div class="pyrun" data-id="b2" data-expect="not on the menu\nnot on the menu">
+          <textarea spellcheck="false">prices = {"idli": 10, "dosa": 30}
+# way 1: .get() with a default
+
+# way 2: try / except KeyError
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>prices = {"idli": 10, "dosa": 30}
+# way 1: .get() with a default
+print(prices.get("vada", "not on the menu"))
+
+# way 2: try / except KeyError
+try:
+    print(prices["vada"])
+except KeyError:
+    print("not on the menu")</pre><p>Identical output, different philosophies. <code>.get()</code> quietly substitutes a value — one line, perfect for defaults. The net version lets the except block <i>do</i> things — log, retry, ask the user. Simple default → get; different behaviour → try/except.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">Raise at the gate, catch at the door</span></div>
+        <p class="pd">Both ends of the conversation in one program: <code>check_age(age)</code> raises <code>ValueError("age cannot be negative")</code> for negatives and prints <code>Age N accepted</code> otherwise. The loop calls it for each age, catching the ValueError and printing <code>Rejected: N</code> — so the bad age in the middle can't stop the good one after it.</p>
+        <div class="want">Age 25 accepted
+Rejected: -3
+Age 40 accepted</div>
+        <div class="pyrun" data-id="b3" data-expect="Age 25 accepted\nRejected: -3\nAge 40 accepted">
+          <textarea spellcheck="false">def check_age(age):
+    # raise on negatives; otherwise print "Age N accepted"
+
+for age in [25, -3, 40]:
+    # call check_age; catch the ValueError -> "Rejected: N"
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def check_age(age):
+    if age &lt; 0:
+        raise ValueError("age cannot be negative")
+    print(f"Age {age} accepted")
+
+for age in [25, -3, 40]:
+    try:
+        check_age(age)
+    except ValueError:
+        print(f"Rejected: {age}")</pre><p>The function guards the rule; the caller decides what a violation <i>means</i> here (skip and continue). That split — raise where the rule lives, catch where the decision lives — is how grown-up programs are organised.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — the messy data sweep</span></div>
+        <p class="pd">Real data arrives dirty. Split the string on commas (Unit 8), attempt to convert each piece inside a <code>try</code>; sum the ones that convert, count the ones that don't. One net inside one loop cleans the whole feed.</p>
+        <div class="want">Sum: 28
+Rejected: 1</div>
+        <div class="pyrun" data-id="b4" data-expect="Sum: 28\nRejected: 1">
+          <textarea spellcheck="false">data = "12,7,notanumber,9"
+total = 0
+rejects = 0
+# split, loop, try each piece
+
+print(f"Sum: {total}")
+print(f"Rejected: {rejects}")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>data = "12,7,notanumber,9"
+total = 0
+rejects = 0
+for piece in data.split(","):
+    try:
+        total = total + int(piece)
+    except ValueError:
+        rejects = rejects + 1
+
+print(f"Sum: {total}")
+print(f"Rejected: {rejects}")</pre><p>12 + 7 + 9 = 28, one reject. The net sits inside the loop, so one bad piece costs one iteration, never the whole run. This exact shape — try each item, tally the failures — cleans real-world data files every day, and you'll meet it again the moment files arrive in Unit 10.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 10 · Saving your work — files</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">Every program you've written so far has amnesia: the moment it ends, every box is emptied and the to-do list you so carefully bulletproofed evaporates. Unit 10 gives your programs a memory that survives — reading and writing files — and the to-do list is about to become permanent. Good thing you armoured it first; programs that touch files need every plate of it.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>The Python Tutorial</b> — <i>§8 Errors and Exceptions</i>. <span class="why">The official treatment of tracebacks, try/except and raise — the same ground as 9.1, 9.3 and 9.4, with the full machinery.</span> <a href="https://docs.python.org/3/tutorial/errors.html" rel="noopener">docs.python.org</a></li>
+      <li><b>Sweigart, A.</b> — <i>Automate the Boring Stuff with Python, ch. 3 (Functions)</i>. <span class="why">The exception-handling half of the chapter mirrors 9.3's try/except, with more hands-on examples.</span> <a href="https://automatetheboringstuff.com/2e/chapter3/" rel="noopener">book</a></li>
+      <li><b>Sweigart, A.</b> — <i>Automate the Boring Stuff with Python, ch. 11 (Debugging)</i>. <span class="why">Raising exceptions, assertions and the print-debugging mindset of 9.4 — plus a first look at real debugger tools.</span> <a href="https://automatetheboringstuff.com/2e/chapter11/" rel="noopener">book</a></li>
+      <li><b>Python documentation</b> — <i>Built-in Exceptions</i>. <span class="why">The complete rogues' gallery — every error Python can raise, including your six, with precise definitions. Skim now, bookmark forever.</span> <a href="https://docs.python.org/3/library/exceptions.html" rel="noopener">docs.python.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit8.html"><span class="k">← Previous</span><span class="t">Unit 8 · Words &amp; text — strings properly</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit10.html"><span class="k">Next →</span><span class="t">Unit 10 · Saving your work — files</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 9 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"A traceback shows three 'File …, line …' entries. Where did the program actually crash?",
+   o:["At the top File line — reports read top-down","At the bottom File line, just above the error message","Python doesn't say — you have to guess","At whichever line number is highest"],
+   a:1,
+   e:"The opening line says it itself: 'most recent call last'. Frames run oldest to newest, so the bottom frame is the crash site — and the error message sits right below it. Read last line, then bottom frame, then walk up."},
+  {q:"int(\"hello\") raises ValueError, but \"7\" + 7 raises TypeError. What's the distinction?",
+   o:["No real distinction — the names are historical accident","ValueError = wrong kind of thing; TypeError = right kind, bad contents","TypeError = wrong kinds of things mixed; ValueError = right kind of thing, unusable contents","ValueError only ever comes from int()"],
+   a:2,
+   e:"int() happily accepts strings — int(\"42\") works — so handing it a string is the right TYPE; \"hello\" just has an unusable VALUE. Gluing a str to a bare int is types that don't combine at all: TypeError."},
+  {q:"Why is  except ValueError:  better than a bare  except:  ?",
+   o:["It runs faster","A bare except is a syntax error in modern Python","Bare except only works inside functions","A bare except also swallows unrelated bugs — like a typo's NameError — and blames the user instead"],
+   a:3,
+   e:"The net should be exactly as wide as the failure you expect. A bare except catches everything, so your own typo gets caught and disguised as 'bad input' — the bug hides forever. Catch the specific error; let surprises crash loudly."},
+  {q:"Which of these will try/except NOT save you from?",
+   o:["int(\"abc\") inside the try block","A KeyError raised inside a function called from the try block","A missing quote — a SyntaxError — anywhere in the file","Division by zero inside the try block"],
+   a:2,
+   e:"try/except handles errors that happen while the program RUNS. A SyntaxError means Python couldn't even read the file — the program never starts, so no net was ever set up. Errors raised inside called functions, though, do climb out into your net."},
+  {q:"What does  raise ValueError(\"age cannot be negative\")  actually do?",
+   o:["Prints the message as a warning and carries on","Stops the function immediately with an error that behaves exactly like Python's own — your message on the report's last line, catchable with except ValueError","Deletes the offending variable","Asks the user to re-enter the value"],
+   a:1,
+   e:"raise fires the same machinery Python uses for its own errors: the function stops on the spot, the traceback ends with your sentence, and a caller's except ValueError can catch it. It enforces YOUR rules, not just Python's."},
+  {q:"An error strikes on the 2nd line of a 4-line try block. What runs next?",
+   o:["The remaining 2 lines of the try block, then the except block","The except block, then the program continues after the whole try/except","The except block, then the program stops","Python retries the failed line once more"],
+   a:1,
+   e:"The moment the error fires, the rest of the try block is abandoned — lines 3 and 4 never run. The except block runs instead, and then execution carries on after the try/except. That 'carries on' is the whole point: nobody dies."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. You now read crash reports like a mechanic, not a passenger."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 9.1 and 9.3 carry the load."
+           : " — worth another walk through the rogues' gallery before Unit 10.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Traceback","Python's crash report: the call chain (oldest call first, newest last), then the error's type and reason on the final line. Read last line first, then bottom frame, then walk up."],
+  ["Call chain / frame","The trail of function calls active at the moment of a crash. Each 'File …, line …, in …' entry is one frame; the bottom frame is where the program died."],
+  ["NameError","A label that doesn't exist — a typo, or a box never created. The report names the missing label."],
+  ["TypeError","Wrong kinds of things mixed: \"7\" + 7, or dividing text by a number. The types don't combine, whatever their contents."],
+  ["ValueError","Right type, unusable contents: int(\"hello\") — a string is welcome, but there's no number in it. The user-input error, and the one you'll catch most."],
+  ["IndexError","A list position that doesn't exist: asking for item 3 of a three-item list (positions 0, 1, 2)."],
+  ["KeyError","A dictionary key that doesn't exist — keys are exact, case and all. The report quotes the missing key."],
+  ["ZeroDivisionError","Dividing by zero, with / or // or %. The sixth rogue."],
+  ["try / except","The safety net: attempt the try block; if the named error fires, abandon the rest, run the except block, and carry on. Success skips except entirely."],
+  ["Bare except","except: with no error name — catches everything, including your own typos, disguising bugs as bad input. Name the error you expect instead."],
+  ["raise","Fire an error yourself: raise ValueError(\"…\") stops the function immediately with your message on the report's last line. Enforces your rules with Python's machinery."],
+  ["Debug print — f\"{x=}\"","An f-string with = after the name prints label and contents together: total=240. The hand-trace, automated; scaffolding to delete once the bug is found."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

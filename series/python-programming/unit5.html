@@ -1,0 +1,952 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Many Things at Once — Lists — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u05" data-lwa-title="Unit 5 · Many things at once — lists">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Beginner — Foundations · Unit 5</div>
+      <h1>Many Things at Once — Lists</h1>
+      <p class="standfirst">Unit 4 taught your programs to repeat; this session gives them something worth repeating over. One box with numbered slots — a <b>list</b> — replaces an armful of variables, and by the end you've built version 1 of a to-do list that these notes will keep upgrading for units to come.</p>
+      <div class="facts">
+        <div><b>One session</b>~45 min</div>
+        <div><b>4 concepts + a build</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 2–4 — boxes, ifs, loops</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">5.1 One box, many slots</a>
+    <a href="#s2">5.2 Changing a list</a>
+    <a href="#s3">5.3 Slices &amp; membership</a>
+    <a href="#s4">5.4 Loops meet lists</a>
+    <a href="#s5">5.5 Build: to-do list v1</a>
+    <a href="#s6">5.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 5.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Units 2–4</b>Labeled boxes and f-strings (U2), if/else (U3), for and while (U4). Lists lean on all three before this page is out.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm: each concept is a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit5.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>A build that sticks around</b>The to-do list you write in 5.5 is version 1. Units 7, 9 and 10 will reorganise it, bulletproof it, and save it to disk — so build it plainly now and let future-you do the polishing.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">5.1</span>
+      <h2>One box, many slots — your first list</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Every box so far holds exactly one thing. Now try a shopping list: milk, eggs, bread, tea, sugar. Five boxes — <code>item1</code>, <code>item2</code>, <code>item3</code>… — five prints, and "add one more item" means editing the program itself. Boxes don't scale. A week needs seven, a class of marks needs sixty.</p>
+      <p><b>The idea, in plain words.</b> A <b>list</b> is one labeled box divided into <b>numbered slots</b>. Write the values between square brackets, commas between:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">fruits = ["apple", "banana", "cherry"]</p>
+      <p>One label, any number of values — and three moves to start with:</p>
+      <ul class="plain">
+        <li><b><code>len(fruits)</code> counts the slots</b> — here, <code>3</code>. (Yes, the same <code>len()</code> works on strings; it counts whatever the thing is made of.)</li>
+        <li><b><code>fruits[0]</code> reads a slot by number</b> — and the numbering starts at <b>zero</b>, because the slot number is really a distance: how many steps from the front. <code>fruits[0]</code> is at the front itself, zero steps in.</li>
+        <li><b>Negative numbers count from the back:</b> <code>fruits[-1]</code> is the last item, <code>fruits[-2]</code> second-to-last — no <code>len()</code> gymnastics needed.</li>
+      </ul>
+      <p>Ask for a slot that doesn't exist — <code>fruits[3]</code>, when the slots are 0, 1 and 2 — and Python stops with <code>IndexError: list index out of range</code>. Same drill as Unit 1: read the error report's last line first; an IndexError almost always means your slot arithmetic is off by one.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — reading the slots</div>
+      <div class="m">fruits = ["apple", "banana", "cherry"]
+print(len(fruits))
+print(fruits[0], fruits[2])
+print(fruits[-1])</div>
+      <p><b>Line 1:</b> one box <code>fruits</code>, three slots: slot 0 holds <code>"apple"</code>, slot 1 <code>"banana"</code>, slot 2 <code>"cherry"</code>.</p>
+      <p><b>Line 2:</b> <code>len(fruits)</code> counts slots → 3.</p>
+      <p><b>Line 3:</b> slot 0 and slot 2, comma-printed with the usual single space.</p>
+      <p><b>Line 4:</b> <code>-1</code> steps in from the back → the last slot.</p>
+      <div class="m">3
+apple cherry
+cherry</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 220" role="img" aria-label="A list box named fruits with three numbered slots, indexed 0 to 2 from the front and -1 to -3 from the back">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">ONE BOX, NUMBERED SLOTS</text>
+        <text x="42" y="62" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#3d3170">fruits</text>
+        <rect x="40" y="72" width="472" height="80" rx="10" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.5"/>
+        <rect x="52" y="84" width="144" height="56" rx="7" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.2"/>
+        <text x="124" y="117" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">"apple"</text>
+        <rect x="204" y="84" width="144" height="56" rx="7" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.2"/>
+        <text x="276" y="117" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">"banana"</text>
+        <rect x="356" y="84" width="144" height="56" rx="7" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.2"/>
+        <text x="428" y="117" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">"cherry"</text>
+        <text x="124" y="70" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#2b7a78">slot 0</text>
+        <text x="276" y="70" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#2b7a78">slot 1</text>
+        <text x="428" y="70" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#2b7a78">slot 2</text>
+        <text x="124" y="172" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#a35a33">-3</text>
+        <text x="276" y="172" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#a35a33">-2</text>
+        <text x="428" y="172" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#a35a33">-1</text>
+        <text x="276" y="196" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">counting from the back</text>
+        <text x="560" y="86" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">fruits[0]  → "apple"</text>
+        <text x="560" y="112" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">fruits[1]  → "banana"</text>
+        <text x="560" y="138" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1d5654">fruits[-1] → "cherry"</text>
+        <text x="560" y="164" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#a35a33">fruits[3]  → IndexError</text>
+      </svg>
+      <div class="figcap">Fig. 1 — The list box. The slot number is a distance from the front, which is why the first item lives at 0 — and why <code>fruits[1]</code> is the <i>second</i> item, not the first.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>The number in the brackets is <b>not</b> "1st, 2nd, 3rd". It's steps from the front — so <code>fruits[1]</code> is one step in: the <b>second</b> item. Every programmer alive was bitten by this exactly once; make your bite a small one. When a program grabs the wrong item — or dies with an <code>IndexError</code> — check the slot number first and count from zero on your fingers.</p>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      A list is one box with numbered slots. The number counts steps from the front — first item <code>[0]</code>, last item <code>[-1]</code> — and <code>len()</code> tells you how many slots there are.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a metro line has four stations in a list — report how many stops there are, the terminus at each end. <b>Thinking:</b> count with <code>len()</code>, front with <code>[0]</code>, back with <code>[-1]</code> — no need to know the list is four long. Predict all three lines, then run.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">stations = ["Central", "Park", "Lake", "Airport"]
+print("Stops:", len(stations))
+print("First:", stations[0])
+print("Last:", stations[-1])</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">5.1 · P1</span><span class="pt">Build and read</span></div>
+        <p class="pd">Make a list <code>colors</code> holding <code>red</code>, <code>green</code>, <code>blue</code> in that order. Print the <i>second</i> color, then the length — two prints, matching the goal.</p>
+        <div class="want">green
+3</div>
+        <div class="pyrun" data-id="s1p1" data-expect="green\n3">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>colors = ["red", "green", "blue"]
+print(colors[1])
+print(len(colors))</pre><p>The second item is one step from the front — slot 1. If you printed <code>red</code>, the confusion box above was written for this exact moment.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">5.1 · P2</span><span class="pt">Predict: three reads, one trap</span></div>
+        <p class="pd">Predict all three prints on paper — including whether each line runs at all. Then run and reconcile. (Remember from Unit 1: programs die mid-flight, so think about what appears <i>before</i> any crash.)</p>
+        <div class="pyrun" data-id="s1p2">
+          <textarea spellcheck="false">letters = ["a", "b", "c", "d"]
+print(letters[1])
+print(letters[-1])
+print(letters[4])</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>b
+d
+IndexError: list index out of range</pre><p>Four items means slots 0–3, so <code>letters[4]</code> is one past the end. Lines 2 and 3 printed before the crash — the first two reads were fine.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">5.1 · P3</span><span class="pt">Fix the off-by-one</span></div>
+        <p class="pd">This wants to print the first and third dishes. Both slot numbers are wrong — one prints the wrong dish, one crashes. Fix both to match the goal.</p>
+        <div class="want">dosa
+vada</div>
+        <div class="pyrun" data-id="s1p3" data-expect="dosa\nvada">
+          <textarea spellcheck="false">menu = ["dosa", "idli", "vada"]
+print(menu[1])
+print(menu[3])</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>menu = ["dosa", "idli", "vada"]
+print(menu[0])
+print(menu[2])</pre><p>First is slot 0, third is slot 2 — the human position minus one, always.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">5.1 · P4</span><span class="pt">Stretch — the middle item</span></div>
+        <p class="pd">Print the middle item of this five-item list — but compute the slot from <code>len()</code> with <code>//</code> (Unit 2's floor division), so your line still works if the list grows to seven or nine items.</p>
+        <div class="want">yellow</div>
+        <div class="pyrun" data-id="s1p4" data-expect="yellow">
+          <textarea spellcheck="false">words = ["red", "orange", "yellow", "green", "blue"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>words = ["red", "orange", "yellow", "green", "blue"]
+print(words[len(words) // 2])</pre><p><code>len(words) // 2</code> → 5 // 2 → 2, and slot 2 is the middle of five. Expressions are welcome inside the brackets — Python computes the number first, then reads the slot.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">5.2</span>
+      <h2>Changing a list — append, insert, remove, pop</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> A real list never sits still. You buy the milk and cross it off; a new task lands on top of the day. If lists were frozen at birth you'd have to rebuild the whole box for every change. They aren't — lists come with handles for changing the contents <i>in place</i>.</p>
+      <p><b>The idea, in plain words.</b> A list carries its own toolkit, reached with a dot: <code>tasks.append(…)</code> means "tasks, do your append thing". Four tools cover almost everything:</p>
+      <div class="fig" style="max-width:66ch;padding:6px 18px">
+      <table>
+        <tr><th>tool</th><th>does</th><th>example</th></tr>
+        <tr><td><code>.append(x)</code></td><td>add <code>x</code> in a new slot at the end</td><td><code>tasks.append("study")</code></td></tr>
+        <tr><td><code>.insert(i, x)</code></td><td>squeeze <code>x</code> in at slot <code>i</code>; everything after shifts right</td><td><code>tasks.insert(0, "call home")</code></td></tr>
+        <tr><td><code>.remove(x)</code></td><td>delete the first slot holding the <b>value</b> <code>x</code></td><td><code>tasks.remove("study")</code></td></tr>
+        <tr><td><code>.pop(i)</code></td><td>take out <b>slot</b> <code>i</code> and hand you the item; <code>.pop()</code> alone takes the last</td><td><code>done = tasks.pop(0)</code></td></tr>
+      </table>
+      </div>
+      <p>Note the split: <code>remove</code> works by <i>value</i> ("delete the milk, wherever it is"), <code>pop</code> works by <i>slot</i> ("take out whatever is at the front — and give it to me"). After any removal, the slots renumber so there are never gaps.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — a morning's to-dos</div>
+      <div class="m">tasks = ["wash dishes"]
+tasks.append("study")
+tasks.insert(0, "call home")
+tasks.remove("wash dishes")
+print(tasks)</div>
+      <p><b>Line 1:</b> one slot: <code>["wash dishes"]</code>.</p>
+      <p><b>Line 2:</b> new slot at the end: <code>["wash dishes", "study"]</code>.</p>
+      <p><b>Line 3:</b> squeezed in at slot 0, everything shifts right: <code>["call home", "wash dishes", "study"]</code>.</p>
+      <p><b>Line 4:</b> the slot holding <code>"wash dishes"</code> is deleted; the rest close ranks: <code>["call home", "study"]</code>.</p>
+      <p><b>Line 5:</b> printing a whole list shows Python's own notation — brackets, quotes, commas:</p>
+      <div class="m">['call home', 'study']</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 250" role="img" aria-label="Three snapshots of the tasks list: one slot, then three after append and insert, then two after remove, with slots renumbered">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">SAME BOX, CHANGING CONTENTS</text>
+        <text x="60" y="58" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">after line 1</text>
+        <text x="62" y="80" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">tasks</text>
+        <rect x="60" y="88" width="190" height="34" rx="7" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.2"/>
+        <text x="72" y="110" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">"wash dishes"</text>
+        <text x="262" y="110" font-family="Cascadia Mono,Consolas,monospace" font-size="11" fill="#2b7a78">0</text>
+        <text x="330" y="58" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">after append + insert</text>
+        <text x="332" y="80" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">tasks</text>
+        <rect x="330" y="88" width="190" height="34" rx="7" fill="#e3efee" stroke="#2b7a78" stroke-width="1.2"/>
+        <text x="342" y="110" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">"call home"</text>
+        <text x="532" y="110" font-family="Cascadia Mono,Consolas,monospace" font-size="11" fill="#2b7a78">0</text>
+        <rect x="330" y="128" width="190" height="34" rx="7" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.2"/>
+        <text x="342" y="150" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">"wash dishes"</text>
+        <text x="532" y="150" font-family="Cascadia Mono,Consolas,monospace" font-size="11" fill="#2b7a78">1</text>
+        <rect x="330" y="168" width="190" height="34" rx="7" fill="#e3efee" stroke="#2b7a78" stroke-width="1.2"/>
+        <text x="342" y="190" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">"study"</text>
+        <text x="532" y="190" font-family="Cascadia Mono,Consolas,monospace" font-size="11" fill="#2b7a78">2</text>
+        <text x="620" y="58" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">after remove</text>
+        <text x="622" y="80" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">tasks</text>
+        <rect x="620" y="88" width="190" height="34" rx="7" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.2"/>
+        <text x="632" y="110" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">"call home"</text>
+        <text x="822" y="110" font-family="Cascadia Mono,Consolas,monospace" font-size="11" fill="#2b7a78">0</text>
+        <rect x="620" y="128" width="190" height="34" rx="7" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.2"/>
+        <text x="632" y="150" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">"study"</text>
+        <text x="822" y="150" font-family="Cascadia Mono,Consolas,monospace" font-size="11" fill="#2b7a78">1</text>
+        <text x="715" y="196" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">slots renumber — "study" moved from 2 to 1</text>
+        <text x="430" y="234" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">one box the whole time — the label never moved; only the contents changed</text>
+      </svg>
+      <div class="figcap">Fig. 2 — The state of memory across the trace. <code>append</code>, <code>insert</code> and <code>remove</code> all reached into the <i>same</i> box; nothing was reassigned.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>tasks.append("rest")</code> and <code>tasks = ["rest"]</code> look like cousins and are opposites. The first reaches into the existing box and adds a slot — same box, changed contents (that's <b>mutation</b>). The second builds a brand-new one-slot list and stores it into the box, and Unit 2's rule fires: a box holds one thing, so everything that was there is <b>gone</b>. Related trap: <code>tasks = tasks.append("rest")</code> leaves <code>tasks</code> holding <code>None</code> — append changes the box and hands back nothing, so never store its answer.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> run a party guest list: Alan RSVPs, Edsger must sit second, then Ada leaves early. Print the list at each stage and see the slots shuffle. <b>Thinking:</b> add-at-end is <code>append</code>, add-at-a-slot is <code>insert</code>, take-from-a-slot-and-keep is <code>pop</code>. Predict each printed list before running.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">guests = ["Ada", "Grace"]
+guests.append("Alan")
+print(guests)
+guests.insert(1, "Edsger")
+print(guests)
+gone = guests.pop(0)
+print("Left early:", gone)
+print(guests)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">5.2 · P1</span><span class="pt">Grow from nothing</span></div>
+        <p class="pd">Start with an <i>empty</i> list — <code>items = []</code> — then <code>append</code> three things: <code>pen</code>, <code>book</code>, <code>lamp</code>, in that order. Print the list once at the end. (Note the goal shows Python's list notation — that's what printing a whole list looks like.)</p>
+        <div class="want">['pen', 'book', 'lamp']</div>
+        <div class="pyrun" data-id="s2p1" data-expect="['pen', 'book', 'lamp']">
+          <textarea spellcheck="false">items = []
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>items = []
+items.append("pen")
+items.append("book")
+items.append("lamp")
+print(items)</pre><p>Empty box, three appends, each landing at the end. Start-empty-and-append is the single most common list pattern in real programs — the build in 5.5 runs on it.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">5.2 · P2</span><span class="pt">Predict: mutate vs replace</span></div>
+        <p class="pd">Two prints, two predictions. The first line changes a list; the fourth line does something much more drastic. Say both outputs aloud before running.</p>
+        <div class="pyrun" data-id="s2p2">
+          <textarea spellcheck="false">nums = [1, 2, 3]
+nums.append(4)
+print(nums)
+nums = [9]
+print(nums)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>[1, 2, 3, 4]
+[9]</pre><p><code>append</code> changed the contents of the existing box. <code>nums = [9]</code> replaced them wholesale — a new list stored into the box, the old four values gone without ceremony.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">5.2 · P3</span><span class="pt">The queue at the counter</span></div>
+        <p class="pd">Ravi gives up and leaves the queue (remove him <i>by name</i>). Then the person at the front is served — take them out <i>by slot</i> with <code>pop</code>, print <code>Serving:</code> and their name, and print the remaining queue.</p>
+        <div class="want">Serving: Meena
+['Sara', 'Vikram']</div>
+        <div class="pyrun" data-id="s2p3" data-expect="Serving: Meena\n['Sara', 'Vikram']">
+          <textarea spellcheck="false">queue = ["Meena", "Ravi", "Sara", "Vikram"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>queue = ["Meena", "Ravi", "Sara", "Vikram"]
+queue.remove("Ravi")
+served = queue.pop(0)
+print("Serving:", served)
+print(queue)</pre><p><code>remove</code> hunts by value; <code>pop(0)</code> takes the front slot <i>and hands the item over</i> so you can still use it after it's out of the list.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">5.3</span>
+      <h2>Slices &amp; membership — chunks and questions</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p><b>The problem.</b> Sometimes you don't want one slot — you want a chunk: the top three from a leaderboard, everyone except the first, the weekend from the week. And sometimes you don't want any slot at all, just an answer: <i>is milk already on the list?</i></p>
+      <p><b>The idea, in plain words.</b> A <b>slice</b> reads a range of slots in one go: <code>days[1:3]</code> means "from slot 1 up to <i>but not including</i> slot 3" — start included, end excluded. Leave an end blank and it means "from the very front" or "to the very end": <code>days[:2]</code> is the first two, <code>days[2:]</code> is everything from slot 2 on. A slice hands you a <b>new</b> list — the original is untouched, which makes slicing the safe way to work with part of a list.</p>
+      <p>The other tool is a question: <code>"Wed" in days</code> asks whether any slot holds that value and answers <code>True</code> or <code>False</code> — the same booleans Unit 3 runs on, so the answer drops straight into an <code>if</code>. <code>not in</code> asks the opposite. (Bonus: both tricks work on strings too — <code>"Python"[0:2]</code> is <code>"Py"</code>, and <code>"y" in "Python"</code> is <code>True</code>.)</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — carving the week</div>
+      <div class="m">days = ["Mon", "Tue", "Wed", "Thu", "Fri"]
+print(days[1:3])
+print(days[:2])
+print(days[2:])
+print("Wed" in days)</div>
+      <p><b>Line 2:</b> slots 1 and 2 — slot 3 is excluded. Two items, not three.</p>
+      <p><b>Line 3:</b> from the front up to (not including) slot 2.</p>
+      <p><b>Line 4:</b> slot 2 to the end. Notice lines 3 and 4 together rebuild the whole week — the 2 is excluded on one side and included on the other, so nothing is doubled and nothing is lost.</p>
+      <p><b>Line 5:</b> is <code>"Wed"</code> in any slot? It is.</p>
+      <div class="m">['Tue', 'Wed']
+['Mon', 'Tue']
+['Wed', 'Thu', 'Fri']
+True</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>days[1:3]</code> gives <b>two</b> items, not three — the end slot is left out. It feels stingy until you see the gift: the count is always <code>stop − start</code> (3 − 1 = 2), and <code>days[:k]</code> + <code>days[k:]</code> always seams back into the whole list with no overlap. Python chose the convention that makes the arithmetic clean; trust it, and when a slice comes up short by one, look at the end number.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> from a race's finishing order, print the podium (first three), the rest of the field, and answer two "did they even run?" questions. <b>Thinking:</b> "first three" is <code>[:3]</code>, "the rest" is <code>[3:]</code>, and the questions are <code>in</code>.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">runners = ["Kiran", "Ada", "Meera", "John", "Zara"]
+print("Podium:", runners[:3])
+print("Rest:", runners[3:])
+print("Ada" in runners, "Bob" in runners)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">5.3 · P1</span><span class="pt">The midweek slice</span></div>
+        <p class="pd">One print, one slice: pull <code>Tue</code> through <code>Thu</code> out of the week. Mind the excluded end.</p>
+        <div class="want">['Tue', 'Wed', 'Thu']</div>
+        <div class="pyrun" data-id="s3p1" data-expect="['Tue', 'Wed', 'Thu']">
+          <textarea spellcheck="false">week = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>week = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+print(week[1:4])</pre><p>Tue is slot 1; Thu is slot 3, so the end must be 4. Three items — and 4 − 1 = 3 confirms it.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">5.3 · P2</span><span class="pt">Predict: four slices</span></div>
+        <p class="pd">Predict all four lines — the last one is the sneaky one. Then run.</p>
+        <div class="pyrun" data-id="s3p2">
+          <textarea spellcheck="false">nums = [10, 20, 30, 40, 50]
+print(nums[1:3])
+print(nums[:1])
+print(nums[3:])
+print(nums[1:1])</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>[20, 30]
+[10]
+[40, 50]
+[]</pre><p>The last is an <i>empty list</i>: start 1, stop 1, count = 1 − 1 = 0 items. A slice can be empty and that's legal — no error, just <code>[]</code>.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">5.3 · P3</span><span class="pt">Stretch — the guest check</span></div>
+        <p class="pd">Ask <code>Name? </code> and use <code>in</code> with Unit 3's <code>if</code>/<code>else</code>: print <code>Welcome in!</code> if the name is on the list, <code>Not on the list</code> otherwise. Input fixed to <code>Grace</code> — but write both branches; the bouncer meets all kinds.</p>
+        <div class="want">Name? Grace
+Welcome in!</div>
+        <div class="pyrun" data-id="s3p3" data-stdin="Grace" data-stdin-lock data-expect="Name? Grace\nWelcome in!">
+          <textarea spellcheck="false">guests = ["Ada", "Alan", "Grace"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>guests = ["Ada", "Alan", "Grace"]
+name = input("Name? ")
+if name in guests:
+    print("Welcome in!")
+else:
+    print("Not on the list")</pre><p><code>in</code> produces a boolean, and booleans are exactly what <code>if</code> eats. This three-unit handshake — input (U1), membership (U5), branching (U3) — is half of every login screen you've ever seen.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">5.4</span>
+      <h2>Loops meet lists — the payoff</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Unit 4's loops counted numbers. But the things worth repeating over are almost always <i>in a list</i>: print every task, add up every price, count every high score. Writing <code>prices[0]</code>, <code>prices[1]</code>, <code>prices[2]</code> by hand is the five-boxes problem sneaking back in through the window.</p>
+      <p><b>The idea, in plain words.</b> <code>for</code> walks a list directly:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">for price in prices:<br>&nbsp;&nbsp;&nbsp;&nbsp;print(price)</p>
+      <p>Each pass, Python refills the loop box — here <code>price</code> — with the next slot's contents, front to back, and runs the indented body once per slot. No slot numbers, no <code>len()</code>, no way to fall off the end. Name the loop box after <i>one</i> of the things (<code>price</code>, <code>task</code>, <code>mark</code>) and the code reads like English.</p>
+      <p>Bolt this onto Unit 4's accumulator pattern and averages fall out: a running-total box, add each item, divide by <code>len()</code> at the end. And once you've built that with your own hands, a confession: Python ships <code>sum(prices)</code> ready-made, so the average is just <code>sum(prices) / len(prices)</code>. These notes made you earn it first — built-ins mean more when you know what they're quietly doing.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the accumulator walks a list</div>
+      <div class="m">prices = [40, 25, 30]
+total = 0
+for p in prices:
+    total = total + p
+print("Total:", total)</div>
+      <p><b>Setup:</b> <code>total</code> starts at 0.</p>
+      <p><b>Pass 1:</b> <code>p</code> holds 40 → <code>total</code> becomes 40. <b>Pass 2:</b> <code>p</code> refilled with 25 → 65. <b>Pass 3:</b> <code>p</code> refilled with 30 → 95.</p>
+      <p><b>After the loop:</b> the list is walked out, and the print runs once:</p>
+      <div class="m">Total: 95</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      <code>for item in my_list:</code> hands you each slot's contents in order, no indexes needed. Pair it with an accumulator for totals and averages, an <code>if</code> for counting matches — and then let <code>sum()</code>, <code>len()</code> and friends do the routine cases.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> from a list of marks, print the class average and how many scored 80 or above. <b>Thinking:</b> the average is the <code>sum/len</code> one-liner; the count is Unit 3's <code>if</code> inside the loop, ticking a counter only when the test passes. Predict both numbers first — there are five marks.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">marks = [72, 85, 90, 66, 88]
+print("Average:", sum(marks) / len(marks))
+high = 0
+for m in marks:
+    if m >= 80:
+        high = high + 1
+print("Scored 80+:", high)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">5.4 · P1</span><span class="pt">Greet the team</span></div>
+        <p class="pd">One loop, one print inside it: greet every member on their own line, matching the goal exactly (comma-print does the spacing).</p>
+        <div class="want">Hello, Ada
+Hello, Alan
+Hello, Grace</div>
+        <div class="pyrun" data-id="s4p1" data-expect="Hello, Ada\nHello, Alan\nHello, Grace">
+          <textarea spellcheck="false">team = ["Ada", "Alan", "Grace"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>team = ["Ada", "Alan", "Grace"]
+for name in team:
+    print("Hello,", name)</pre><p>Three slots, three passes, three greetings. Add a fourth teammate to the list and the loop needs no editing — that's the whole point.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">5.4 · P2</span><span class="pt">A week of rain</span></div>
+        <p class="pd">Total the week's rainfall with the accumulator pattern — by hand, no <code>sum()</code> this once — and report it in one f-string to match the goal.</p>
+        <div class="want">Total: 15 mm</div>
+        <div class="pyrun" data-id="s4p2" data-expect="Total: 15 mm">
+          <textarea spellcheck="false">rain = [2, 0, 5, 1, 0, 3, 4]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>rain = [2, 0, 5, 1, 0, 3, 4]
+total = 0
+for r in rain:
+    total = total + r
+print(f"Total: {total} mm")</pre><p>Start at zero, add every slot, report once after the loop. (Then whisper <code>sum(rain)</code> to yourself and move on.)</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">5.4 · P3</span><span class="pt">Stretch — numbers for humans</span></div>
+        <p class="pd">Print the menu numbered <b>from 1</b> — people don't order "dish zero". Keep a counter box beside the loop: start it at 1, use it in an f-string, raise it each pass. (This exact pattern powers the build below.)</p>
+        <div class="want">1. dosa
+2. idli
+3. vada</div>
+        <div class="pyrun" data-id="s4p3" data-expect="1. dosa\n2. idli\n3. vada">
+          <textarea spellcheck="false">menu = ["dosa", "idli", "vada"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>menu = ["dosa", "idli", "vada"]
+n = 1
+for item in menu:
+    print(f"{n}. {item}")
+    n = n + 1</pre><p>Python counts slots from 0; humans count from 1. The counter box translates between the two worlds at the print — the display changes, the list doesn't.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">5.5</span>
+      <h2>Your build — to-do list, version 1</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>Two builds, everything from this session in play. First, the <b>to-do list</b>: read three tasks from the keyboard, show them numbered like a human list, cross one off by name, show the list again. That's start-empty-and-append, the numbered-print pattern, and <code>remove</code> — nothing you haven't done above, now in one program. Keep your version somewhere: Unit 7 reorganises it into functions, Unit 9 bulletproofs it, Unit 10 saves it to disk. Second, the <b>top scorer</b>: find the biggest number in a list the honest way, before learning the shortcut.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">5.5 · P1</span><span class="pt">The to-do list</span></div>
+        <p class="pd">Follow the numbered comments: read 3 tasks with a <code>for</code> loop (Unit 4's <code>range(3)</code>), appending each; print <code>Your list:</code> then the tasks numbered from 1; ask <code>Which task is done? </code> and <code>remove</code> that task; print <code>Still to do:</code> and the renumbered list. Inputs fixed: three tasks, then the one to cross off.</p>
+        <div class="want">Add a task: buy milk
+Add a task: study Python
+Add a task: call home
+Your list:
+1. buy milk
+2. study Python
+3. call home
+Which task is done? study Python
+Still to do:
+1. buy milk
+2. call home</div>
+        <div class="pyrun" data-id="s5p1" data-stdin="buy milk\nstudy Python\ncall home\nstudy Python" data-stdin-lock data-expect="Add a task: buy milk\nAdd a task: study Python\nAdd a task: call home\nYour list:\n1. buy milk\n2. study Python\n3. call home\nWhich task is done? study Python\nStill to do:\n1. buy milk\n2. call home">
+          <textarea spellcheck="false">tasks = []
+# 1) read 3 tasks with a for loop, append each
+# 2) print "Your list:" then the tasks, numbered from 1
+# 3) ask which task is done, remove it by name
+# 4) print "Still to do:" then the list again, renumbered
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>tasks = []
+for i in range(3):
+    task = input("Add a task: ")
+    tasks.append(task)
+print("Your list:")
+n = 1
+for task in tasks:
+    print(f"{n}. {task}")
+    n = n + 1
+done = input("Which task is done? ")
+tasks.remove(done)
+print("Still to do:")
+n = 1
+for task in tasks:
+    print(f"{n}. {task}")
+    n = n + 1</pre><p>Ask → append → number → remove → number again. Notice the numbering block appears twice, copy-pasted — feel that itch; Unit 7 exists to scratch it (you'll fold it into a function and call it twice).</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">5.5 · P2</span><span class="pt">The top scorer</span></div>
+        <p class="pd">Find the highest score the manual way: a <code>best</code> box starting at the first score, a loop over the list, and an <code>if</code> that promotes any score that beats the current best. Print <code>Top score:</code> and the winner. No shortcuts — build the machine once.</p>
+        <div class="want">Top score: 92</div>
+        <div class="pyrun" data-id="s5p2" data-expect="Top score: 92">
+          <textarea spellcheck="false">scores = [67, 92, 45, 88, 73]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>scores = [67, 92, 45, 88, 73]
+best = scores[0]
+for s in scores:
+    if s > best:
+        best = s
+print("Top score:", best)</pre><p>The "best-so-far" pattern: seed with the first item, challenge it with every item, keep the winner. And now the confession: <code>max(scores)</code> does exactly this in one call (<code>min()</code> is its twin). You were allowed the shortcut the moment you could build it yourself — that trade is how these notes work.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">5.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~12 min</span></span>
+      <p>The mixed set. Slots, mutation, slices, membership, loops — plus arithmetic from Unit 2 and branching from Unit 3. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">Backwards</span></div>
+        <p class="pd">Print the three words in reverse order, one per line. Two honest routes: negative indexes (5.1), or a <code>while</code> loop counting a slot number down from <code>len(words) - 1</code> (Unit 4). Take either.</p>
+        <div class="want">three
+two
+one</div>
+        <div class="pyrun" data-id="b1" data-expect="three\ntwo\none">
+          <textarea spellcheck="false">words = ["one", "two", "three"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>words = ["one", "two", "three"]
+i = len(words) - 1
+while i &gt;= 0:
+    print(words[i])
+    i = i - 1</pre><p>Start at the last slot, step down to 0. (For three items, three prints with <code>[-1]</code>, <code>[-2]</code>, <code>[-3]</code> also pass — and for the curious, Python has a party trick: the slice <code>words[::-1]</code> is the whole list reversed. File it away.)</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">The shopping bill</span></div>
+        <p class="pd">Total the prices with a loop and an accumulator, and print it with Unit 2's money formatting — two decimals, exactly as the goal shows.</p>
+        <div class="want">Total: 198.75</div>
+        <div class="pyrun" data-id="b2" data-expect="Total: 198.75">
+          <textarea spellcheck="false">prices = [45.50, 120.00, 33.25]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>prices = [45.50, 120.00, 33.25]
+total = 0
+for p in prices:
+    total = total + p
+print(f"Total: {total:.2f}")</pre><p>Accumulator plus <code>:.2f</code> — format at the exit, as always. (<code>sum(prices)</code> earns full marks too.)</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">Is it in stock?</span></div>
+        <p class="pd">Ask <code>Looking for? </code> and answer with an f-string either way: <code>Yes, &lt;item&gt; is in stock</code> or <code>Sorry, no &lt;item&gt; today</code>. Input fixed to <code>tea</code> — write both branches anyway; shops run out.</p>
+        <div class="want">Looking for? tea
+Yes, tea is in stock</div>
+        <div class="pyrun" data-id="b3" data-stdin="tea" data-stdin-lock data-expect="Looking for? tea\nYes, tea is in stock">
+          <textarea spellcheck="false">stock = ["soap", "rice", "tea", "salt"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>stock = ["soap", "rice", "tea", "salt"]
+item = input("Looking for? ")
+if item in stock:
+    print(f"Yes, {item} is in stock")
+else:
+    print(f"Sorry, no {item} today")</pre><p>Membership feeds the <code>if</code>; the f-string reuses the customer's own word in the reply. Four units in one screenful.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — the great divide</span></div>
+        <p class="pd">Split the numbers into two new lists — evens and odds — using Unit 2's <code>%</code> to test each one (<code>n % 2 == 0</code> means even), and print both lists to match the goal. Start-empty-and-append, twice over.</p>
+        <div class="want">Evens: [2, 4, 10]
+Odds: [7, 9, 3]</div>
+        <div class="pyrun" data-id="b4" data-expect="Evens: [2, 4, 10]\nOdds: [7, 9, 3]">
+          <textarea spellcheck="false">nums = [7, 2, 9, 4, 10, 3]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>nums = [7, 2, 9, 4, 10, 3]
+evens = []
+odds = []
+for n in nums:
+    if n % 2 == 0:
+        evens.append(n)
+    else:
+        odds.append(n)
+print("Evens:", evens)
+print("Odds:", odds)</pre><p>One pass, two destinations — the loop reads, the <code>if</code> routes, the appends collect. Sorting things into buckets like this is a shape you'll reuse constantly, all the way into the ML stage.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 6 · Labeled data — dictionaries, tuples &amp; sets</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">Numbered slots are wonderful — until the number stops meaning anything. "Ada's phone number is in slot 3" is one shuffle away from a wrong call. Unit 6 swaps positions for labels: ask for <code>"Ada"</code>, get her number, no counting. That's a <b>dictionary</b> — and alongside it, two cousins with strong opinions: tuples, which refuse to change, and sets, which refuse to repeat.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>The Python Tutorial</b> — <i>§3.1.3 Lists</i>. <span class="why">The official first look at lists — literals, indexing, slicing, append — the same ground as 5.1–5.3.</span> <a href="https://docs.python.org/3/tutorial/introduction.html#lists" rel="noopener">docs.python.org</a></li>
+      <li><b>The Python Tutorial</b> — <i>§5.1 More on Lists</i>. <span class="why">The full toolkit — every list method in one place, including several this unit saved for later.</span> <a href="https://docs.python.org/3/tutorial/datastructures.html" rel="noopener">docs.python.org</a></li>
+      <li><b>Sweigart, A.</b> — <i>Automate the Boring Stuff with Python, ch. 4 (Lists)</i>. <span class="why">Lists hands-on: indexing, slicing, methods, and loops over lists, with plenty of small programs.</span> <a href="https://automatetheboringstuff.com/2e/chapter4/" rel="noopener">book</a></li>
+      <li><b>Python documentation</b> — <i>Sequence Types — list, tuple, range</i>. <span class="why">The reference table of everything sequences can do — skim now, bookmark for the day you wonder "can a list do X?".</span> <a href="https://docs.python.org/3/library/stdtypes.html#sequence-types-list-tuple-range" rel="noopener">docs.python.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit4.html"><span class="k">← Previous</span><span class="t">Unit 4 · Doing it again — loops</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit6.html"><span class="k">Next →</span><span class="t">Unit 6 · Labeled data — dictionaries, tuples &amp; sets</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 5 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"fruits = [\"apple\", \"banana\", \"cherry\"] — what is fruits[1]?",
+   o:["\"apple\"","\"banana\"","\"cherry\"","An IndexError"],
+   a:1,
+   e:"The slot number counts steps from the front, so slot 1 is one step in — the SECOND item, \"banana\". The first item is fruits[0]."},
+  {q:"Which expression reads the LAST item of a list called scores, however long it is?",
+   o:["scores[len(scores)]","scores[-1]","scores[last]","scores[end]"],
+   a:1,
+   e:"Negative indexes count from the back: -1 is the last slot. scores[len(scores)] looks right but is one past the end — an IndexError (the last slot by length is len(scores) - 1)."},
+  {q:"What's the difference between  tasks.append(\"rest\")  and  tasks = [\"rest\"] ?",
+   o:["Nothing — both add an item to the list","append adds a slot to the existing list; = throws the old contents away and stores a new one-slot list","append is only for strings; = works for anything","= is faster, but otherwise they're identical"],
+   a:1,
+   e:"append is mutation — it reaches into the existing box and changes its contents. Assignment replaces the box's contents wholesale: whatever list was there is gone, replaced by a brand-new [\"rest\"]."},
+  {q:"nums = [10, 20, 30, 40] — what is nums[1:3]?",
+   o:["[20, 30]","[20, 30, 40]","[10, 20, 30]","[30, 40]"],
+   a:0,
+   e:"Start included, end excluded: slots 1 and 2, so [20, 30]. The count is always stop − start — here 3 − 1 = 2 items."},
+  {q:"What does  \"milk\" in [\"milk\", \"eggs\"]  give?",
+   o:["\"milk\"","True","1","The slot number, 0"],
+   a:1,
+   e:"Membership is a question with a boolean answer: True here, False if no slot holds the value. That's why it drops straight into an if — booleans are what if runs on."},
+  {q:"letters = [\"a\", \"b\", \"c\"] — what does letters[3] do?",
+   o:["Prints \"c\"","Gives an empty string","Stops with IndexError — the slots are 0, 1 and 2; there is no 3","Wraps around to the start and gives \"a\""],
+   a:2,
+   e:"Three items live in slots 0–2, so 3 is one past the end and Python stops with IndexError: list index out of range. Read the last line of the report first, then recount your slots from zero."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. Numbered slots hold no mysteries for you."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 5.1 and 5.2 carry the load."
+           : " — worth another pass through the practice above before Unit 6.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["List","One labeled box with numbered slots, written in square brackets: [\"a\", \"b\"]. Holds any number of values, in order, and can grow and shrink."],
+  ["Index","A slot number — really a distance from the front, which is why the first item is [0]. Written in square brackets after the list's name."],
+  ["Negative index","Counting from the back: [-1] is the last item, [-2] second-to-last. No len() needed."],
+  ["len()","Counts a list's slots (or a string's characters): len([\"a\", \"b\"]) → 2."],
+  ["IndexError","Python stopping because you asked for a slot that doesn't exist. Almost always an off-by-one — recount from zero."],
+  [".append(x)","Adds x in a new slot at the end of the existing list. Changes the list in place and hands back nothing — never store its answer."],
+  [".insert(i, x)","Squeezes x in at slot i; everything from there on shifts one slot right."],
+  [".remove(x) / .pop(i)","Two ways out: remove deletes the first slot holding the value x; pop takes out slot i and hands you the item (pop() alone takes the last). Slots renumber afterwards."],
+  ["Mutation","Changing a box's contents in place (append, insert, remove, pop) — as opposed to assignment, which replaces the contents wholesale."],
+  ["Slice","A copy of a range of slots: days[1:3] is slots 1 and 2 — start included, end excluded. Omit an end to mean 'from the front' or 'to the back'. The original list is untouched."],
+  ["in / not in","Membership questions: \"Wed\" in days answers True or False — ready to feed straight into an if."],
+  ["sum() / max() / min()","Built-in shortcuts over a whole list: the total, the biggest, the smallest. Earned in this unit by building each by hand first."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

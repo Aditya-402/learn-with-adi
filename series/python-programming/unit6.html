@@ -1,0 +1,894 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Labeled Data — Dictionaries, Tuples &amp; Sets — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u06" data-lwa-title="Unit 6 · Labeled data — dictionaries, tuples &amp; sets">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Beginner — Foundations · Unit 6</div>
+      <h1>Labeled Data — Dictionaries, Tuples &amp; Sets</h1>
+      <p class="standfirst">Unit 5 lined your boxes up in numbered slots. This session swaps the numbers for <i>name-tags</i>: dictionaries that answer by name, tuples that refuse to change, sets that refuse to repeat — and by the end, a contact book you built yourself and a word counter you'll meet again in the ML stage.</p>
+      <div class="facts">
+        <div><b>One session</b>~45 min</div>
+        <div><b>4 concepts + a build</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 2–5 — boxes, if, loops, lists</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">6.1 Labels, not positions</a>
+    <a href="#s2">6.2 Growing &amp; changing</a>
+    <a href="#s3">6.3 Looping a dict</a>
+    <a href="#s4">6.4 Tuples &amp; sets</a>
+    <a href="#s5">6.5 Build: contact book</a>
+    <a href="#s6">6.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 6.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Units 2–5</b>Boxes and f-strings (U2), if/else (U3), for-loops (U4), and lists with their square-bracket indexing (U5). Especially U5 — this unit is its sequel.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm: each concept is a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit6.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>New tags on old boxes</b>The labeled-box picture grows one more level: a dict is a box whose <i>inner slots</i> carry name-tags instead of slot numbers. Every trace here draws those tags.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">6.1</span>
+      <h2>Labels instead of positions — the dictionary</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~9 min</span></span>
+      <p><b>The problem.</b> Store three friends' phone numbers in a list and you can get them back — by slot number. But nobody thinks "Ravi is contact number 1". You think "Ravi". A real phone book looks things up <i>by name</i>. Lists can't do that; what can?</p>
+      <p><b>The idea, in plain words.</b> A <b>dictionary</b> (type <code>dict</code>) is a box whose inner slots have <b>name-tags</b> instead of numbers. Each slot is a pair: a <b>key</b> (the tag) and a <b>value</b> (what's stored under it). You write one in curly braces, tag<code>:</code>value, comma-separated:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">phone = {"Amma": "98450 11111", "Ravi": "72004 22222"}</p>
+      <p>Reading looks exactly like list indexing, except the square brackets take a key, not a position: <code>phone["Ravi"]</code> hands back <code>"72004 22222"</code>. Ask for a tag that isn't there — <code>phone["Zara"]</code> — and Python stops with a <code>KeyError</code>. Same drill as always: read the error report's <b>last line first</b>; it names the missing key in quotes.</p>
+      <p>When you'd rather get a fallback than a crash, there's a politer reader: <code>phone.get("Zara", "not saved")</code> returns the value if the key exists, and your fallback if it doesn't. Nothing stops, nothing changes — <code>.get()</code> only <i>looks</i>.</p>
+      <p><b>When is a dict right and a list wrong?</b> Ask how you'll <i>look things up</i>. Marks in the order students finished? Positions matter — list. Marks <i>by subject name</i>, a price <i>by item</i>, a number <i>by person</i>? You'll always arrive holding a name, never a slot number — dict. The container should match the question you'll ask it.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the tagged box</div>
+      <div class="m">marks = {"maths": 82, "physics": 74}
+print(marks["maths"])
+print(marks["chemistry"])</div>
+      <p><b>Line 1:</b> box <code>marks</code> created. Inside it, two tagged slots: <code>"maths"</code> → 82, <code>"physics"</code> → 74.</p>
+      <p><b>Line 2:</b> <code>marks["maths"]</code> — find the slot tagged <code>"maths"</code>, hand over its contents: 82. Printed.</p>
+      <p><b>Line 3:</b> no slot is tagged <code>"chemistry"</code>. Python stops and reports — and the last line of the report names the culprit:</p>
+      <div class="m">82
+KeyError: 'chemistry'</div>
+      <p>Swap line 3 for <code>print(marks.get("chemistry", 0))</code> and you get a calm <code>0</code> instead of a crash. Use <code>[ ]</code> when the key <i>must</i> be there, <code>.get()</code> when it merely <i>might</i> be.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 232" role="img" aria-label="The same phone numbers stored in a list with numbered slots versus a dict with name-tag keys">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">THE SAME DATA, TWO CONTAINERS</text>
+        <text x="40" y="58" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">a list — numbered slots</text>
+        <text x="95" y="82" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11" fill="#6b7585">0</text>
+        <rect x="40" y="90" width="110" height="44" rx="8" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="95" y="117" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">98450 11111</text>
+        <text x="213" y="82" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11" fill="#6b7585">1</text>
+        <rect x="158" y="90" width="110" height="44" rx="8" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="213" y="117" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">72004 22222</text>
+        <text x="331" y="82" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11" fill="#6b7585">2</text>
+        <rect x="276" y="90" width="110" height="44" rx="8" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="331" y="117" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">99887 33333</text>
+        <text x="213" y="170" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">which slot was Ravi's? you have to remember</text>
+        <text x="490" y="58" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">a dict — name-tagged slots</text>
+        <rect x="490" y="70" width="110" height="38" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="545" y="94" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#3d3170">"Amma"</text>
+        <line x1="600" y1="89" x2="640" y2="89" stroke="#e3e6ee" stroke-width="1.5"/>
+        <rect x="640" y="70" width="140" height="38" rx="8" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="710" y="94" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1d5654">98450 11111</text>
+        <rect x="490" y="116" width="110" height="38" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="545" y="140" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#3d3170">"Ravi"</text>
+        <line x1="600" y1="135" x2="640" y2="135" stroke="#e3e6ee" stroke-width="1.5"/>
+        <rect x="640" y="116" width="140" height="38" rx="8" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="710" y="140" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1d5654">72004 22222</text>
+        <rect x="490" y="162" width="110" height="38" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="545" y="186" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#3d3170">"Meera"</text>
+        <line x1="600" y1="181" x2="640" y2="181" stroke="#e3e6ee" stroke-width="1.5"/>
+        <rect x="640" y="162" width="140" height="38" rx="8" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="710" y="186" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1d5654">99887 33333</text>
+        <text x="635" y="222" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">ask by name — phone["Ravi"] — the slot finds itself</text>
+      </svg>
+      <div class="figcap">Fig. 1 — Same three numbers, two containers. The list answers "what's in slot 1?"; the dict answers "what's Ravi's number?" — and the second is the question you actually have.</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      A dict stores <i>key → value</i> pairs and fetches by key: <code>d[key]</code> crashes on a missing key (read the last line first), <code>d.get(key, fallback)</code> stays calm. Choose a dict whenever you'll look things up by name rather than by position.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a two-person phone book — look up someone who's saved, then someone who isn't, without crashing. <b>Thinking:</b> the sure lookup uses <code>[ ]</code>; the risky one uses <code>.get()</code> with a fallback. Run it, then break it: change the last line to <code>phone["Zara"]</code> and read the report's last line.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">phone = {"Amma": "98450 11111", "Ravi": "72004 22222"}
+print("Ravi:", phone["Ravi"])
+print("Zara:", phone.get("Zara", "not saved yet"))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">6.1 · P1</span><span class="pt">Your first tagged box</span></div>
+        <p class="pd">Create a dict <code>ages</code> with two pairs — <code>"Adi"</code> is <code>24</code>, <code>"Meera"</code> is <code>21</code> — then print Meera's age by key.</p>
+        <div class="want">21</div>
+        <div class="pyrun" data-id="s1p1" data-expect="21">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>ages = {"Adi": 24, "Meera": 21}
+print(ages["Meera"])</pre><p>Keys are quoted strings here, values bare numbers — the same quoting rules as ever. The bracket lookup reads the slot tagged <code>"Meera"</code>.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">6.1 · P2</span><span class="pt">Predict: the missing tag</span></div>
+        <p class="pd">Predict both lines on paper — does anything print before the trouble? Then run and read the report, last line first.</p>
+        <div class="pyrun" data-id="s1p2">
+          <textarea spellcheck="false">menu = {"tea": 12, "coffee": 15}
+print(menu["tea"])
+print(menu["chai"])</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>12
+KeyError: 'chai'</pre><p>Line 2 succeeds and prints before line 3 dies — programs fail mid-flight, not retroactively. The last line of the report hands you the missing key in quotes: <code>'chai'</code>.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">6.1 · P3</span><span class="pt">The polite reader</span></div>
+        <p class="pd">This café program crashes when a customer asks about chai. Keep both print lines, but make the chai lookup return <code>0</code> instead of crashing.</p>
+        <div class="want">Tea: 12
+Chai: 0</div>
+        <div class="pyrun" data-id="s1p3" data-expect="Tea: 12\nChai: 0">
+          <textarea spellcheck="false">menu = {"tea": 12, "coffee": 15}
+print("Tea:", menu["tea"])
+print("Chai:", menu["chai"])</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>menu = {"tea": 12, "coffee": 15}
+print("Tea:", menu["tea"])
+print("Chai:", menu.get("chai", 0))</pre><p><code>.get()</code> with a fallback for the lookup that might miss. The tea lookup keeps <code>[ ]</code> — if <code>"tea"</code> ever went missing, we'd <i>want</i> the loud crash.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">6.1 · P4</span><span class="pt">Stretch — build the lookup</span></div>
+        <p class="pd">Make a dict <code>capitals</code> mapping <code>"India"</code>, <code>"Japan"</code> and <code>"France"</code> to their capitals, then print one f-string sentence about Japan to match the goal.</p>
+        <div class="want">The capital of Japan is Tokyo</div>
+        <div class="pyrun" data-id="s1p4" data-expect="The capital of Japan is Tokyo">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>capitals = {"India": "New Delhi", "Japan": "Tokyo", "France": "Paris"}
+city = capitals["Japan"]
+print(f"The capital of Japan is {city}")</pre><p>Look up into a named box first, then drop the box into the template. (You <i>can</i> write <code>{capitals['Japan']}</code> straight inside the braces — note the single quotes so they don't end the f-string.)</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">6.2</span>
+      <h2>Growing and changing — a dict is alive</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~9 min</span></span>
+      <p><b>The problem.</b> A phone book you can't add to is a museum piece. Real dicts start small and change constantly: new contacts arrive, numbers get corrected, old entries go. How do you edit a tagged box?</p>
+      <p><b>The idea, in plain words.</b> With the same assignment you've used since Unit 2 — aimed at a slot instead of a whole box. <code>phone["Zara"] = "99887 33333"</code> means: find the slot tagged <code>"Zara"</code>; if there isn't one, <b>create it</b>; if there is, <b>replace its contents</b>. One syntax, both jobs. The rest of the toolkit is small:</p>
+      <div class="fig" style="max-width:66ch;padding:6px 18px">
+      <table>
+        <tr><th>you want to</th><th>you write</th><th>notes</th></tr>
+        <tr><td>add <i>or</i> update</td><td><code>d[key] = value</code></td><td>creates the slot, or replaces it</td></tr>
+        <tr><td>remove a pair</td><td><code>del d[key]</code></td><td>KeyError if the tag isn't there</td></tr>
+        <tr><td>ask "is this tag here?"</td><td><code>key in d</code></td><td>True / False — checks <b>keys</b>, not values</td></tr>
+        <tr><td>count the pairs</td><td><code>len(d)</code></td><td>same <code>len()</code> as strings and lists</td></tr>
+      </table>
+      </div>
+      <p>Old friends, new target: <code>in</code> and <code>len()</code> worked on lists in Unit 5 and they work here too — <code>len()</code> counts pairs, and <code>in</code> asks about <i>keys</i> only. <code>"Ravi" in phone</code> asks "is there a tag Ravi?", never "is Ravi's number in here somewhere?".</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — a stockroom's day</div>
+      <div class="m">stock = {"pens": 10}
+stock["pencils"] = 25
+stock["pens"] = 8
+del stock["pencils"]
+print(len(stock), "pens" in stock)</div>
+      <p><b>Line 1:</b> one tagged slot: <code>"pens"</code> → 10.</p>
+      <p><b>Line 2:</b> no slot tagged <code>"pencils"</code> — so one is <b>created</b>: <code>"pencils"</code> → 25. Two pairs now.</p>
+      <p><b>Line 3:</b> identical syntax, but <code>"pens"</code> already exists — so its contents are <b>replaced</b>: 10 becomes 8, no warning, the 10 is gone.</p>
+      <p><b>Line 4:</b> the <code>"pencils"</code> pair is removed entirely — tag and all. One pair left.</p>
+      <p><b>Line 5:</b> <code>len(stock)</code> → 1; <code>"pens" in stock</code> → True:</p>
+      <div class="m">1 True</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>d[key] = value</code> never asks whether the key exists — it <b>creates or replaces, silently</b>. Handy when adding a contact; heartbreaking when a typo like <code>phone["ravi"]</code> quietly creates a <i>second</i> entry next to <code>phone["Ravi"]</code> instead of updating the first (case-sensitivity, back again). When an update <i>must</i> hit an existing entry, check first: <code>if key in d:</code>.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a shopping cart's afternoon — one more soap, a brand-new shampoo, then abandon the soap entirely. <b>Thinking:</b> updating reads the old value first (<code>cart["soap"] + 1</code> — the <code>count = count + 1</code> pattern, aimed at a slot), adding uses the same <code>=</code>, and <code>del</code> takes the pair out. Predict both printed lines before you run.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">cart = {"soap": 2}
+cart["soap"] = cart["soap"] + 1
+cart["shampoo"] = 1
+del cart["soap"]
+print("Different items:", len(cart))
+print("Soap still there?", "soap" in cart)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">6.2 · P1</span><span class="pt">From empty to stocked</span></div>
+        <p class="pd">Start from the empty dict and add two pairs by assignment — <code>"idli"</code> at <code>10</code> and <code>"dosa"</code> at <code>30</code> — so the count comes out right.</p>
+        <div class="want">Items: 2</div>
+        <div class="pyrun" data-id="s2p1" data-expect="Items: 2">
+          <textarea spellcheck="false">prices = {}
+# add the two items here
+
+print("Items:", len(prices))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>prices = {}
+prices["idli"] = 10
+prices["dosa"] = 30
+print("Items:", len(prices))</pre><p><code>{}</code> is a dict with no pairs yet. Each assignment finds no such tag, so it creates the slot. This empty-then-fill shape returns in the build.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">6.2 · P2</span><span class="pt">Predict: create or replace?</span></div>
+        <p class="pd">Two assignments, same syntax, different effects. Predict the three printed values — especially the count — then run.</p>
+        <div class="pyrun" data-id="s2p2">
+          <textarea spellcheck="false">d = {"a": 1}
+d["b"] = 2
+d["a"] = 99
+print(d["a"], d["b"], len(d))</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>99 2 2</pre><p>Line 2 creates <code>"b"</code> (no such tag yet); line 3 replaces <code>"a"</code>'s value (tag exists). Two pairs, not three — replacing never adds a slot.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">6.2 · P3</span><span class="pt">Stretch — the guest list</span></div>
+        <p class="pd">Adi cancels, Ravi joins (he eats veg). Update the dict with <code>del</code> and one assignment so both checks match the goal.</p>
+        <div class="want">Adi coming? False
+Guests: 2</div>
+        <div class="pyrun" data-id="s2p3" data-expect="Adi coming? False\nGuests: 2">
+          <textarea spellcheck="false">guests = {"Adi": "veg", "Meera": "vegan"}
+# Adi cancels, Ravi joins ("veg")
+
+print("Adi coming?", "Adi" in guests)
+print("Guests:", len(guests))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>guests = {"Adi": "veg", "Meera": "vegan"}
+del guests["Adi"]
+guests["Ravi"] = "veg"
+print("Adi coming?", "Adi" in guests)
+print("Guests:", len(guests))</pre><p><code>del</code> removes the whole pair, so <code>in</code> reports False. One out, one in — the count stays at 2.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">6.3</span>
+      <h2>Looping a dict — visiting every pair</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~9 min</span></span>
+      <p><b>The problem.</b> Printing a phone book one lookup at a time means writing one line per contact — the Unit 2 count-up ache all over again. Unit 4's <code>for</code> loop cured that for lists. Does it work on tagged boxes?</p>
+      <p><b>The idea, in plain words.</b> Yes — three ways, depending on what you want handed to you each time around:</p>
+      <ul class="plain">
+        <li><code>for key in d:</code> — the plain loop visits the <b>tags</b>: each pass, the loop box holds one key.</li>
+        <li><code>for value in d.values():</code> — just the <b>contents</b>, when you don't care whose they are (totals, averages).</li>
+        <li><code>for key, value in d.items():</code> — <b>both at once</b>. <code>d.items()</code> hands over each pair, and the two loop boxes before <code>in</code> catch the two halves — the tag lands in the first, the value in the second. This one you'll use most.</li>
+      </ul>
+      <p>And in what order do the pairs arrive? <b>Insertion order</b> — the order the pairs were first added, exactly. Python promises this, these notes rely on it, and every checked problem below counts on it: add <code>"tea"</code> before <code>"coffee"</code> and the loop visits tea first, always.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — both halves of each pair</div>
+      <div class="m">marks = {"maths": 82, "physics": 74}
+for subject, score in marks.items():
+    print(subject, score)</div>
+      <p><b>Pass 1:</b> the first-added pair arrives: <code>subject</code> holds <code>"maths"</code>, <code>score</code> holds 82. The body prints them.</p>
+      <p><b>Pass 2:</b> the next pair: <code>subject</code> → <code>"physics"</code>, <code>score</code> → 74. Printed. No pairs left — the loop ends.</p>
+      <div class="m">maths 82
+physics 74</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      <code>for key, value in d.items():</code> is the workhorse — each pass fills both loop boxes from one pair, in insertion order. Plain <code>for key in d:</code> gives tags only; <code>d.values()</code> gives contents only.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> print a café's menu board line by line, then the cost of ordering everything once. <b>Thinking:</b> the board needs both halves of each pair — <code>.items()</code> with an f-string. The total is Unit 4's accumulator pattern, fed by a dict loop instead of a list.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">menu = {"tea": 12, "coffee": 15, "cake": 40}
+total = 0
+for item, price in menu.items():
+    print(f"{item}: {price}")
+    total = total + price
+print(f"Everything once: {total}")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">6.3 · P1</span><span class="pt">Tags only</span></div>
+        <p class="pd">Print each country name on its own line — the plain dict loop, no <code>.items()</code> needed.</p>
+        <div class="want">India
+Japan</div>
+        <div class="pyrun" data-id="s3p1" data-expect="India\nJapan">
+          <textarea spellcheck="false">capitals = {"India": "New Delhi", "Japan": "Tokyo"}
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>capitals = {"India": "New Delhi", "Japan": "Tokyo"}
+for country in capitals:
+    print(country)</pre><p>Looping a dict directly visits its keys, in insertion order — India was added first, so India prints first.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">6.3 · P2</span><span class="pt">The stock report</span></div>
+        <p class="pd">One <code>.items()</code> loop, one f-string, and the report writes itself — match the goal exactly, colon and all.</p>
+        <div class="want">pens: 10
+pencils: 25</div>
+        <div class="pyrun" data-id="s3p2" data-expect="pens: 10\npencils: 25">
+          <textarea spellcheck="false">stock = {"pens": 10, "pencils": 25}
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>stock = {"pens": 10, "pencils": 25}
+for item, count in stock.items():
+    print(f"{item}: {count}")</pre><p>Each pass fills <code>item</code> with the tag and <code>count</code> with the value; the f-string lays them out with the colon where you typed it.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">6.3 · P3</span><span class="pt">Stretch — values only</span></div>
+        <p class="pd">Total the till: loop over just the prices with <code>.values()</code> and Unit 4's accumulator, then print the goal line.</p>
+        <div class="want">Total: 55</div>
+        <div class="pyrun" data-id="s3p3" data-expect="Total: 55">
+          <textarea spellcheck="false">prices = {"idli": 10, "dosa": 30, "coffee": 15}
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>prices = {"idli": 10, "dosa": 30, "coffee": 15}
+total = 0
+for p in prices.values():
+    total = total + p
+print("Total:", total)</pre><p>The item names never enter the loop — <code>.values()</code> hands over only the numbers, and the accumulator does what it's done since Unit 4.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">6.4</span>
+      <h2>Tuples &amp; sets, briefly — two special-purpose boxes</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p><b>The problem.</b> Two jobs keep coming up that neither lists nor dicts fit well. One: a small fixed record — a point's x and y, a title and its year — that should <i>never</i> grow or shrink. Two: a pile of repeats — every visitor to a page — where you only care <i>who</i>, not how often. Python has a purpose-built container for each.</p>
+      <p><b>The idea, in plain words.</b> A <b>tuple</b> is a list in parentheses that is <b>frozen at birth</b>: <code>point = (3, 4)</code>. You can read slots (<code>point[0]</code>) but never append, remove or replace — try, and Python refuses. That's not a limitation, it's the <i>feature</i>: a tuple says "these travel together and nobody edits them". Its best trick is <b>unpacking</b> — <code>x, y = point</code> pours the two slots into two boxes in one line, the same both-at-once move that <code>.items()</code> loops use (each pair a loop hands you is, in fact, a tuple).</p>
+      <p>A <b>set</b> is a bag of values where duplicates simply don't exist — add something twice, it's in there once. The one-liner that earns sets their keep: <code>set(some_list)</code> collapses a repeat-riddled list into just the distinct values. But a set makes <b>no promise about order</b> — none, not insertion order, nothing. So these notes have a house rule: <b>never print a raw set</b> when the output must be exact — wrap it as <code>sorted(the_set)</code>, which hands back an ordered list you can trust.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — frozen at birth</div>
+      <div class="m">point = (3, 4)
+x, y = point
+print(x + y)
+point.append(5)</div>
+      <p><b>Line 1:</b> a two-slot tuple, sealed. <b>Line 2:</b> unpacking — <code>x</code> gets 3, <code>y</code> gets 4, one line, two boxes filled.</p>
+      <p><b>Line 3:</b> 3 + 4 → 7, printed. <b>Line 4:</b> tuples don't <i>have</i> an append — Python refuses, and the last line of the report says exactly that:</p>
+      <div class="m">7
+AttributeError: 'tuple' object has no attribute 'append'</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>"My set prints in a weird order" — yes, and it always will: <b>sets don't have an order</b>, and what you see can differ between runs and machines. It's not a bug to fix, it's a promise Python never made. When order matters — printing, checking, comparing — convert first: <code>sorted(my_set)</code> gives a list, smallest first, same every time.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a page's visitor log, with repeats — how many <i>distinct</i> people came, and who were they? <b>Thinking:</b> <code>set()</code> deduplicates in one move; <code>len()</code> counts the survivors; and the printout goes through <code>sorted()</code> because of the house rule. Run it twice and notice the sorted line never wavers.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">visitors = ["adi", "meera", "adi", "ravi", "meera", "adi"]
+distinct = set(visitors)
+print("Distinct visitors:", len(distinct))
+print(sorted(distinct))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">6.4 · P1</span><span class="pt">The fixed record</span></div>
+        <p class="pd">A film is a title and a year that travel together. Unpack the tuple into two boxes and print one f-string sentence to match the goal.</p>
+        <div class="want">Interstellar came out in 2014</div>
+        <div class="pyrun" data-id="s4p1" data-expect="Interstellar came out in 2014">
+          <textarea spellcheck="false">movie = ("Interstellar", 2014)
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>movie = ("Interstellar", 2014)
+title, year = movie
+print(f"{title} came out in {year}")</pre><p>Two slots, two boxes, one line. Unpacking needs the counts to match — three boxes for a two-slot tuple is an error.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">6.4 · P2</span><span class="pt">Predict: the edit that isn't</span></div>
+        <p class="pd">Someone tries to move the point. Predict what happens — and whether anything prints first — then run and read the last line.</p>
+        <div class="pyrun" data-id="s4p2">
+          <textarea spellcheck="false">point = (3, 4)
+print("Before:", point[0])
+point[0] = 10
+print("After:", point[0])</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>Before: 3
+TypeError: 'tuple' object does not support item assignment</pre><p>Reading a slot is fine; storing into one is refused — frozen at birth. Line 2 printed before line 3 died. If you need an editable pair, that's just a list: <code>[3, 4]</code>.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">6.4 · P3</span><span class="pt">Stretch — deduplicate and report</span></div>
+        <p class="pd">Collapse the repeats, print the distinct numbers in order, then the count — remember the house rule about raw sets.</p>
+        <div class="want">[1, 2, 4]
+Distinct: 3</div>
+        <div class="pyrun" data-id="s4p3" data-expect="[1, 2, 4]\nDistinct: 3">
+          <textarea spellcheck="false">raw = [4, 1, 4, 2, 1, 4]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>raw = [4, 1, 4, 2, 1, 4]
+distinct = set(raw)
+print(sorted(distinct))
+print("Distinct:", len(distinct))</pre><p><code>set()</code> keeps one of each; <code>sorted()</code> turns the orderless bag into a dependable list. Print the raw set instead and the check may fail on a different day — that's the whole point of the rule.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">6.5</span>
+      <h2>Your build — contact book &amp; word counter</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p>Two small programs, everything from this session. First, a <b>contact book</b>: starts with two saved contacts, takes a new one from the keyboard, looks one up, prints the lot — <code>input()</code>, create-by-assignment, <code>[ ]</code> lookup, and an <code>.items()</code> loop, in one program. We'll keep upgrading this little book in the units ahead as we learn better tools. Second, a <b>word counter</b> — the dict-accumulator pattern that, dressed up only slightly, is how the ML stage turns text into numbers. You're building it today with eight words.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">6.5 · P1</span><span class="pt">Contact book v1</span></div>
+        <p class="pd">Complete the program: ask <code>New contact name? </code> then <code>Their number? </code>, store the new pair, print Ravi's number by key, then print every contact as <code>name: number</code> via an <code>.items()</code> loop. Inputs fixed: <code>Meera</code>, then <code>99887 33333</code>.</p>
+        <div class="want">New contact name? Meera
+Their number? 99887 33333
+Ravi's number: 72004 22222
+All contacts:
+Amma: 98450 11111
+Ravi: 72004 22222
+Meera: 99887 33333</div>
+        <div class="pyrun" data-id="s5p1" data-stdin="Meera\n99887 33333" data-stdin-lock data-expect="New contact name? Meera\nTheir number? 99887 33333\nRavi's number: 72004 22222\nAll contacts:\nAmma: 98450 11111\nRavi: 72004 22222\nMeera: 99887 33333">
+          <textarea spellcheck="false">contacts = {"Amma": "98450 11111", "Ravi": "72004 22222"}
+name = input("New contact name? ")
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>contacts = {"Amma": "98450 11111", "Ravi": "72004 22222"}
+name = input("New contact name? ")
+number = input("Their number? ")
+contacts[name] = number
+print("Ravi's number:", contacts["Ravi"])
+print("All contacts:")
+for person, num in contacts.items():
+    print(f"{person}: {num}")</pre><p>The key line is <code>contacts[name] = number</code> — the key comes out of a <i>box</i>, not a quoted literal. No conversion needed: phone numbers are labels you never do maths on, so text is the honest type. Meera prints last because she was added last — insertion order, as promised.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">6.5 · P2</span><span class="pt">The word counter</span></div>
+        <p class="pd">Count how often each word appears. One new tool on loan from Unit 8: <code>sentence.split()</code> chops a string into a list of its words — <code>"the cat sat"</code> becomes <code>["the", "cat", "sat"]</code>; that's all you need to know today. The counting line is the star: <code>counts.get(word, 0) + 1</code> reads the word's current tally — <i>0 if it's new</i> — adds one, and stores it back. Finish the program: count, then print each pair as <code>word: n</code>.</p>
+        <div class="want">the: 3
+cat: 1
+sat: 1
+on: 1
+mat: 1
+end: 1</div>
+        <div class="pyrun" data-id="s5p2" data-expect="the: 3\ncat: 1\nsat: 1\non: 1\nmat: 1\nend: 1">
+          <textarea spellcheck="false">sentence = "the cat sat on the mat the end"
+counts = {}
+for word in sentence.split():
+    counts[word] = counts.get(word, 0) + 1
+# now print each pair as  word: n
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>sentence = "the cat sat on the mat the end"
+counts = {}
+for word in sentence.split():
+    counts[word] = counts.get(word, 0) + 1
+for word, n in counts.items():
+    print(f"{word}: {n}")</pre><p>First time a word appears, <code>.get()</code> supplies 0 and the assignment <i>creates</i> its slot at 1; every repeat <i>replaces</i> the tally with one more — 6.2's create-or-replace doing honest work. Each word keeps the position of its first appearance, which is why <code>the</code> leads with 3. File this pattern away: counting things with a dict is half of early ML.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">6.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~12 min</span></span>
+      <p>The mixed set. Dicts, tuples, sets — plus loops, if, and input() from earlier units. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">The marks desk</span></div>
+        <p class="pd">Ask <code>Subject? </code> and print that subject's marks — or <code>not taken</code> for a subject that isn't in the dict, without crashing. Input fixed to <code>biology</code>.</p>
+        <div class="want">Subject? biology
+not taken</div>
+        <div class="pyrun" data-id="b1" data-stdin="biology" data-stdin-lock data-expect="Subject? biology\nnot taken">
+          <textarea spellcheck="false">marks = {"maths": 82, "physics": 74, "chemistry": 91}
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>marks = {"maths": 82, "physics": 74, "chemistry": 91}
+subject = input("Subject? ")
+print(marks.get(subject, "not taken"))</pre><p>The key arrives from the keyboard, so it <i>might</i> miss — exactly the case <code>.get()</code> exists for. Try unlocking nothing: with input fixed, ask yourself what <code>maths</code> would have printed instead.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">Under fifty rupees</span></div>
+        <p class="pd">Print the name of every item costing less than 50, one per line, in the dict's own order — a loop over pairs with an <code>if</code> inside (Unit 3 meets 6.3).</p>
+        <div class="want">pen
+eraser
+marker</div>
+        <div class="pyrun" data-id="b2" data-expect="pen\neraser\nmarker">
+          <textarea spellcheck="false">prices = {"pen": 10, "notebook": 60, "eraser": 5, "marker": 45}
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>prices = {"pen": 10, "notebook": 60, "eraser": 5, "marker": 45}
+for item, price in prices.items():
+    if price &lt; 50:
+        print(item)</pre><p>The loop tests the value but prints the key — you'll flip a dict this way constantly: "which <i>names</i> satisfy a condition on their <i>numbers</i>?". The notebook fails the test and is skipped.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">The swap, the Pythonic way</span></div>
+        <p class="pd">Unit 2's B1 swapped two boxes with a third as a temporary shelf. Tuple unpacking retires the shelf: <code>a, b = b, a</code> builds the right side as a tuple <i>first</i>, then unpacks it into the left. Do the swap in <b>one line</b> — no third box.</p>
+        <div class="want">tea coffee</div>
+        <div class="pyrun" data-id="b3" data-expect="tea coffee">
+          <textarea spellcheck="false">a = "coffee"
+b = "tea"
+# swap them here — one line, no temp box
+
+print(a, b)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>a = "coffee"
+b = "tea"
+a, b = b, a
+print(a, b)</pre><p>The right side <code>b, a</code> is bundled into a tuple <i>before</i> any storing happens, so neither value is lost mid-swap. Same interview classic as Unit 2 — now with the answer that makes interviewers smile.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — the visitor report</span></div>
+        <p class="pd">From the raw log: total visits, distinct visitors, then each distinct name on its own line — in sorted order, because the house rule doesn't bend for stretch problems.</p>
+        <div class="want">Visits: 7
+Unique visitors: 4
+adi
+meera
+ravi
+zara</div>
+        <div class="pyrun" data-id="b4" data-expect="Visits: 7\nUnique visitors: 4\nadi\nmeera\nravi\nzara">
+          <textarea spellcheck="false">log = ["adi", "meera", "adi", "zara", "ravi", "meera", "adi"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>log = ["adi", "meera", "adi", "zara", "ravi", "meera", "adi"]
+people = set(log)
+print("Visits:", len(log))
+print("Unique visitors:", len(people))
+for name in sorted(people):
+    print(name)</pre><p>Two <code>len()</code>s, two different questions: the list counts <i>events</i>, the set counts <i>people</i>. The sorted loop prints one name per line in an order the check can rely on.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 7 · Packaging logic — functions</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">Look back at today's build: your programs are getting long, and the same little routines keep reappearing line for line. Time to name a recipe-within-the-recipe and call it in one word. Unit 7 is functions — <code>def</code>, parameters, and <code>return</code> — and once you have them, the contact book stops being a script and starts being a program.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>The Python Tutorial</b> — <i>§5.5 Dictionaries</i>. <span class="why">The official treatment of dicts, keys, and looping with items() — the same ground as 6.1–6.3.</span> <a href="https://docs.python.org/3/tutorial/datastructures.html#dictionaries" rel="noopener">docs.python.org</a></li>
+      <li><b>Sweigart, A.</b> — <i>Automate the Boring Stuff with Python, ch. 5 (Dictionaries and Structuring Data)</i>. <span class="why">Dicts, .get(), and the counting pattern, hands-on with bigger examples.</span> <a href="https://automatetheboringstuff.com/2e/chapter5/" rel="noopener">book</a></li>
+      <li><b>The Python Tutorial</b> — <i>§5.3 Tuples &amp; §5.4 Sets</i>. <span class="why">The short official read on 6.4's two special-purpose containers.</span> <a href="https://docs.python.org/3/tutorial/datastructures.html#tuples-and-sequences" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>Mapping Types — dict</i>. <span class="why">The full reference card for everything a dict can do — skim now, bookmark forever.</span> <a href="https://docs.python.org/3/library/stdtypes.html#mapping-types-dict" rel="noopener">docs.python.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit5.html"><span class="k">← Previous</span><span class="t">Unit 5 · Many things at once — lists</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit7.html"><span class="k">Next →</span><span class="t">Unit 7 · Packaging logic — functions</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 6 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"phone = {\"Amma\": \"98450 11111\"} — how do you read Amma's number back out?",
+   o:["phone[0] — she's the first entry","phone[\"Amma\"] — by her name-tag","phone.find(\"Amma\")","You must loop through the whole dict"],
+   a:1,
+   e:"Dicts fetch by key, not position: phone[\"Amma\"]. Slot numbers belong to lists — a dict's slots have name-tags instead."},
+  {q:"phone[\"Zara\"] when no such key exists — what happens?",
+   o:["Returns None quietly","Returns an empty string","The program stops with a KeyError","Zara is added with an empty value"],
+   a:2,
+   e:"Square brackets are the strict reader: missing key, loud crash — and the report's last line names the key. The polite reader is phone.get(\"Zara\", fallback), which returns your fallback instead."},
+  {q:"d[\"x\"] = 5  when \"x\" is already in the dict — what happens?",
+   o:["An error — the key exists","A second \"x\" slot is created","The old value is replaced with 5, silently","Python asks which one you meant"],
+   a:2,
+   e:"Assignment to a key creates OR replaces, with no warning either way: new tag → new slot, existing tag → contents swapped. One syntax, both jobs."},
+  {q:"In  for a, b in d.items():  what lands in a and b each pass?",
+   o:["Two keys at a time","a gets a key, b gets its value","a gets a value, b gets its key","Both get the same pair as one bundle"],
+   a:1,
+   e:".items() hands over each pair — actually a small tuple — and the two loop boxes unpack it: key into the first, value into the second, in insertion order."},
+  {q:"point = (3, 4)  then  point[0] = 10  — what happens?",
+   o:["point becomes (10, 4)","A TypeError — tuples can't be changed after creation","point becomes (10, 3, 4)","It works, but only for numbers"],
+   a:1,
+   e:"Tuples are frozen at birth: reading slots is fine, storing into them is refused. That permanence is the feature — a tuple is a record nobody edits. Need edits? Use a list."},
+  {q:"What is a set the right tool for?",
+   o:["Keeping values in the order you added them","Storing key → value pairs","Keeping one copy of each value — uniqueness, with no order promises","Storing values that must never change"],
+   a:2,
+   e:"A set holds each value once — set(a_list) deduplicates in one move. But it promises no order at all, which is why these notes always print sorted(the_set), never the raw set."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. Your data has name-tags now."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 6.1 and 6.2 carry the load."
+           : " — worth another pass through the practice above before Unit 7.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Dictionary (dict)","A box whose inner slots have name-tags instead of numbers: key → value pairs in curly braces. Fetches by key."],
+  ["Key","A slot's name-tag. Looked up with d[key]; must be exact — case and all. \"Ravi\" and \"ravi\" are different tags."],
+  ["Value","What a tagged slot holds. Any type — numbers, strings, even lists or other dicts."],
+  ["KeyError","Python stopping because you asked for a tag that isn't there: d[\"missing\"]. The report's last line names the key — read it first."],
+  [".get(key, fallback)","The polite reader: the value if the key exists, your fallback if not. Never crashes, never changes the dict."],
+  ["d[key] = value","Create-or-replace: makes the slot if the tag is new, silently swaps the contents if it isn't. One syntax, both jobs."],
+  ["del d[key]","Removes the whole pair — tag and value. KeyError if the tag isn't there."],
+  ["in (membership)","key in d asks \"is this tag here?\" — True or False. Checks keys only, never values."],
+  [".items() / .keys() / .values()","Three views for looping: both halves of each pair, just the tags, or just the contents. .items() is the workhorse."],
+  ["Insertion order","The order pairs were first added — the order every dict loop visits them. Python promises it; these notes rely on it."],
+  ["Tuple","A list in parentheses, frozen at birth: (3, 4). Read slots, never edit them. The shape of a fixed record."],
+  ["Unpacking","Pouring a tuple's slots into that many boxes at once: x, y = point. Powers items() loops and the one-line swap a, b = b, a."],
+  ["Set","A bag where each value exists once and order is never promised. set(a_list) deduplicates; print sorted(the_set), never the raw set."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,1123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Saving Your Work — Files — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u10" data-lwa-title="Unit 10 · Saving your work — files">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Beginner — Foundations · Unit 10</div>
+      <h1>Saving Your Work — Files</h1>
+      <p class="standfirst">Ten units in, every program ends the same way: the screen clears, the boxes evaporate, and nothing survives to tomorrow. This session gives your programs a memory that outlives them — writing files, reading them back, guarding against the file that isn't there yet, and saving real structure with <code style="font-size:.85em">json</code>. The to-do app finally remembers.</p>
+      <div class="facts">
+        <div><b>One session</b>~45 min</div>
+        <div><b>5 concepts</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 5–9 — lists, functions, strings, errors</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">10.1 Writing files</a>
+    <a href="#s2">10.2 Reading them back</a>
+    <a href="#s3">10.3 Append &amp; guard</a>
+    <a href="#s4">10.4 Structured data: json</a>
+    <a href="#s5">10.5 Build: it remembers</a>
+    <a href="#s6">10.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 10.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Units 5, 7, 8, 9</b>Lists and the to-do app (Units 5 and 7), <code>strip()</code> and the invisible characters (Unit 8), and <code>try</code>/<code>except</code> (Unit 9). All four get their payoff here.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm: each concept is a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit10.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>Honest small print</b>In this page's runner, every ▶ Run starts with a clean disk — files from the previous Run are gone. So every demo here writes <i>and</i> reads within one program. In Colab or on your machine the file genuinely persists between runs — try it there too; that persistence is the whole point.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">10.1</span>
+      <h2>Writing files — a box that outlives the program</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p><b>The problem.</b> The to-do app from Unit 7 works beautifully — until you close it. Every labeled box lives in the program's memory, and that memory is a whiteboard wiped clean the instant the program ends. Add ten tasks today, run the program tomorrow: empty list. Real apps remember. Where do they put things?</p>
+      <p><b>The idea, in plain words.</b> In <b>files</b>. A file is a box that lives on the <i>disk</i> instead of inside the program — it has a label (its name), it holds contents, and crucially it's still there after the program dies, after the computer restarts, after a year. Three lines create one:</p>
+      <ul class="plain">
+        <li><code>f = open("notes.txt", "w")</code> asks the operating system: <i>give me a file called <code>notes.txt</code>, opened for writing</i>. <code>"w"</code> is the <b>mode</b> — write mode hands you a blank page. The box <code>f</code> holds the open door to it.</li>
+        <li><code>f.write("buy milk\n")</code> puts <i>exactly</i> those characters on the page. Unlike <code>print()</code>, <b>write() gives you no free newline</b> — the <code>\n</code> is yours to add, every line. Forget it and your lines fuse into one.</li>
+        <li><code>f.close()</code> closes the door. Until then, your words may still be sitting in a holding area rather than safely on disk.</li>
+      </ul>
+      <p>That's the raw mechanism — and Python offers a better shape for it immediately. Write the same thing as a block, and the closing happens for you:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">with open("notes.txt", "w") as f:<br>&nbsp;&nbsp;&nbsp;&nbsp;f.write("buy milk\n")</p>
+      <p>When the indented block ends, the file is closed — automatically, even if an error strikes mid-write. The full story of <code>with</code> comes in Unit 20; for now the working summary is: <i>it closes the door behind you</i>. These notes use it everywhere from here on, and so should you.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — three writes, one page</div>
+      <div class="m">with open("notes.txt", "w") as f:
+    f.write("buy milk\n")
+    f.write("water plants")
+print("saved")</div>
+      <p><b>Line 1:</b> the operating system hands over a fresh, blank <code>notes.txt</code> — blank even if a <code>notes.txt</code> already existed. <code>f</code> is the open door.</p>
+      <p><b>Line 2:</b> the characters <code>buy milk</code> land on the page, then a line break — because you typed <code>\n</code>.</p>
+      <p><b>Line 3:</b> <code>water plants</code> lands, no <code>\n</code> this time — the page ends mid-line. Block ends, door closes.</p>
+      <p><b>Line 4:</b> the only thing that reaches the <i>screen</i>:</p>
+      <div class="m">saved</div>
+      <p>Files are quiet — writing prints nothing. The file itself now holds two lines: <code>buy milk</code> and <code>water plants</code>. Reading it back is the next section; until then, our problems borrow one peek line.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 250" role="img" aria-label="Boxes in memory vanish when the program ends; files on disk survive">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">WHERE THINGS LIVE — AND WHAT SURVIVES</text>
+        <text x="255" y="56" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">while the program runs</text>
+        <text x="608" y="56" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">after it ends</text>
+        <text x="16" y="102" font-family="Segoe UI,system-ui,sans-serif" font-size="12" font-weight="700" fill="#6b7585">boxes (memory)</text>
+        <rect x="185" y="72" width="230" height="52" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="300" y="93" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">tasks</text>
+        <text x="300" y="112" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">['milk', 'plants']</text>
+        <rect x="560" y="72" width="230" height="52" rx="9" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5" stroke-dasharray="6 5"/>
+        <text x="675" y="97" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12" fill="#6b7585">gone</text>
+        <text x="675" y="115" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">every box evaporates — no warning</text>
+        <text x="16" y="188" font-family="Segoe UI,system-ui,sans-serif" font-size="12" font-weight="700" fill="#6b7585">files (disk)</text>
+        <rect x="185" y="152" width="230" height="66" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="300" y="175" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">notes.txt</text>
+        <text x="300" y="196" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">buy milk / water plants</text>
+        <rect x="560" y="152" width="230" height="66" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="675" y="175" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">notes.txt</text>
+        <text x="675" y="196" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">still there tomorrow</text>
+      </svg>
+      <div class="figcap">Fig. 1 — Memory is a whiteboard, wiped at the end of every program; the disk is a notebook. (One honest caveat: this page's practice runner wipes its little pretend disk between Runs too — Colab and your own machine keep the notebook.)</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Mode <code>"w"</code> wipes the file <b>at the moment of opening</b> — not when you first write. <code>open("diary.txt", "w")</code> followed by nothing at all still leaves you with an empty diary. Opening the same file in <code>"w"</code> twice in one program is therefore a classic self-inflicted wound: the second open erases everything the first one wrote. (The mode that <i>adds</i> instead of wiping is <code>"a"</code> — section 10.3.)</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> save a note the old way, then the better way — and watch <code>"w"</code> wipe. <b>Thinking:</b> the first three lines are the manual open–write–close dance. Then a <code>with</code> block opens the same file in <code>"w"</code> again — blank page — and writes something else. The last line is our borrowed peek (reading proper is next section). Predict what it shows before you run.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">f = open("notes.txt", "w")
+f.write("First note\n")
+f.close()
+
+with open("notes.txt", "w") as f:   # "w" again: blank page, first note gone
+    f.write("Second note\n")
+
+print(open("notes.txt").read().strip())   # the peek — explained in 10.2</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">10.1 · P1</span><span class="pt">Your first save</span></div>
+        <p class="pd">Inside the <code>with</code> block, write two lines to <code>diary.txt</code>: <code>Dear future me</code> and <code>Keep going</code>. The newlines are your job. The peek line at the end is provided — don't touch it.</p>
+        <div class="want">Dear future me
+Keep going</div>
+        <div class="pyrun" data-id="s1p1" data-expect="Dear future me\nKeep going">
+          <textarea spellcheck="false">with open("diary.txt", "w") as f:
+    # write the two lines here
+
+print(open("diary.txt").read().strip())   # the peek</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>with open("diary.txt", "w") as f:
+    f.write("Dear future me\n")
+    f.write("Keep going\n")
+
+print(open("diary.txt").read().strip())</pre><p>Each <code>write()</code> ends with an explicit <code>\n</code> — that's what makes them separate lines on the page.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">10.1 · P2</span><span class="pt">Predict: the fused list</span></div>
+        <p class="pd">Predict what the peek prints — count the lines before you run. Then fix nothing; just understand it.</p>
+        <div class="pyrun" data-id="s1p2">
+          <textarea spellcheck="false">with open("shopping.txt", "w") as f:
+    f.write("milk")
+    f.write("bread")
+    f.write("eggs")
+
+print(open("shopping.txt").read())</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>milkbreadeggs</pre><p>One line, three words fused. <code>write()</code> puts down exactly what you give it — no newline, no space, nothing free. <code>print()</code> spoiled us; files don't.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">10.1 · P3</span><span class="pt">Fix the vanishing first line</span></div>
+        <p class="pd">This story keeps losing its opening line. Run it, see the goal it <i>should</i> produce, and fix the bug — the confusion box above is the whole diagnosis.</p>
+        <div class="want">Once upon a time
+a program forgot to save.</div>
+        <div class="pyrun" data-id="s1p3" data-expect="Once upon a time\na program forgot to save.">
+          <textarea spellcheck="false">with open("story.txt", "w") as f:
+    f.write("Once upon a time\n")
+
+with open("story.txt", "w") as f:
+    f.write("a program forgot to save.\n")
+
+print(open("story.txt").read().strip())</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>with open("story.txt", "w") as f:
+    f.write("Once upon a time\n")
+    f.write("a program forgot to save.\n")
+
+print(open("story.txt").read().strip())</pre><p>The second <code>open(..., "w")</code> wiped the page before writing. One open, both writes — or wait for mode <code>"a"</code> in 10.3.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 10.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">10.2</span>
+      <h2>Reading it back — and the invisible \n returns</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Saving is only half a memory. The program that starts tomorrow needs to <i>read</i> what yesterday's program wrote — the peek line we've been borrowing, explained and owned.</p>
+      <p><b>The idea, in plain words.</b> Open the file without a mode (reading is the default) and you have three tools:</p>
+      <ul class="plain">
+        <li><code>f.read()</code> — the whole file as <b>one string</b>, line breaks and all.</li>
+        <li><code>f.readlines()</code> — a <b>list</b> with one string per line. A file becomes a Unit 5 list; everything you know about lists applies.</li>
+        <li><code>for line in f:</code> — loop over the open file itself, one line per lap. No list built, works for any size — the house favourite.</li>
+      </ul>
+      <p>One catch, and it's Unit 8's invisible-character bug wearing a new coat: <b>every line arrives with its <code>\n</code> still attached</b>. Print it and you get the line's own newline <i>plus</i> print's free one — double-spaced output. The cure you already own: <code>line.strip()</code>. And remember Unit 2's law: everything read from a text file is <b>text</b>. The file says <code>42</code>, the program receives <code>"42"</code> — convert at the door before maths.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — write, then read in the same program</div>
+      <div class="m">with open("menu.txt", "w") as f:
+    f.write("idli\n")
+    f.write("dosa\n")
+
+with open("menu.txt") as f:
+    for line in f:
+        print(line.strip())</div>
+      <p><b>Block 1:</b> the page gets two lines: <code>idli</code> and <code>dosa</code>. Door closes.</p>
+      <p><b>Block 2:</b> the same file, reopened for reading. Lap 1: <code>line</code> holds <code>"idli\n"</code> — four letters <i>and the newline</i>. <code>strip()</code> peels it off; print shows a clean <code>idli</code>. Lap 2: same for <code>"dosa\n"</code>.</p>
+      <div class="m">idli
+dosa</div>
+      <p>Drop the <code>.strip()</code> and each printed line is followed by a blank one — the file's <code>\n</code> plus print's <code>\n</code>. If your file output ever looks double-spaced, this is why. Every time.</p>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Reading a file doesn't empty it — but an open file keeps a <b>bookmark</b>. After <code>f.read()</code> the bookmark sits at the end, so a second <code>f.read()</code> on the same open file returns <code>""</code> — looks like your data vanished. It didn't. Reopen the file (a fresh <code>with</code> block) and the bookmark starts at the top again.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> save a three-line menu, then read it back two ways — as a raw list of lines, and as a clean loop. <b>Thinking:</b> the <code>readlines()</code> print is deliberately ugly: it shows the <code>\n</code> hiding at the end of every item, exactly like Unit 8's invisible characters. The loop with <code>strip()</code> is how you'd actually serve it.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">with open("menu.txt", "w") as f:
+    f.write("idli\ndosa\nvada\n")
+
+with open("menu.txt") as f:
+    lines = f.readlines()
+print(lines)                    # see the \n stowaways
+
+with open("menu.txt") as f:
+    for line in f:
+        print(line.strip())     # the clean read</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">10.2 · P1</span><span class="pt">Cure the double-spacing</span></div>
+        <p class="pd">This program's output is gappy — run it and see. Fix the read loop so it matches the goal. One method call.</p>
+        <div class="want">red
+green
+blue</div>
+        <div class="pyrun" data-id="s2p1" data-expect="red\ngreen\nblue">
+          <textarea spellcheck="false">with open("colors.txt", "w") as f:
+    f.write("red\ngreen\nblue\n")
+
+with open("colors.txt") as f:
+    for line in f:
+        print(line)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>with open("colors.txt", "w") as f:
+    f.write("red\ngreen\nblue\n")
+
+with open("colors.txt") as f:
+    for line in f:
+        print(line.strip())</pre><p>Each line carried its own <code>\n</code>; print added another. <code>strip()</code> removes the stowaway — Unit 8's fix, third appearance, won't be the last.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">10.2 · P2</span><span class="pt">Count, then list</span></div>
+        <p class="pd">The three tasks are already saved. Read them back with <code>readlines()</code>, print the count using <code>len()</code> in an f-string, then each task on its own clean line.</p>
+        <div class="want">3 tasks saved
+water plants
+call grandma
+learn files</div>
+        <div class="pyrun" data-id="s2p2" data-expect="3 tasks saved\nwater plants\ncall grandma\nlearn files">
+          <textarea spellcheck="false">with open("tasks.txt", "w") as f:
+    f.write("water plants\n")
+    f.write("call grandma\n")
+    f.write("learn files\n")
+
+# read tasks.txt back: first the count line, then each task</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>with open("tasks.txt", "w") as f:
+    f.write("water plants\n")
+    f.write("call grandma\n")
+    f.write("learn files\n")
+
+with open("tasks.txt") as f:
+    lines = f.readlines()
+print(f"{len(lines)} tasks saved")
+for line in lines:
+    print(line.strip())</pre><p><code>readlines()</code> turns the file into an ordinary list — so <code>len()</code> and the Unit 5 loop work unchanged.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">10.2 · P3</span><span class="pt">Stretch — predict: text, always text</span></div>
+        <p class="pd">The file holds a number — or does it? Predict all three printed lines, then run. Two of the three results surprise almost everyone.</p>
+        <div class="pyrun" data-id="s2p3">
+          <textarea spellcheck="false">with open("secret.txt", "w") as f:
+    f.write("42\n")
+
+with open("secret.txt") as f:
+    value = f.read()
+
+print(value == "42")
+print(value.strip() == "42")
+print(int(value) + 1)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>False
+True
+43</pre><p>Line 1: <code>value</code> is <code>"42\n"</code> — the newline makes it unequal to <code>"42"</code>. Line 2: stripped, they match. Line 3: <code>int()</code> quietly forgives surrounding whitespace, so the conversion works anyway. Comparisons are strict; conversion is forgiving; <code>strip()</code> makes both honest.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 10.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">10.3</span>
+      <h2>Appending &amp; guarding — mode "a" and the file that isn't there</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Two gaps remain. First: a diary opened in <code>"w"</code> wipes itself every session — a diary should <i>grow</i>. Second: the very first time your app runs, the save file doesn't exist yet — and opening a missing file for reading crashes the program.</p>
+      <p><b>The idea, in plain words.</b> Mode <code>"a"</code> — <b>append</b> — opens the file with the pencil already at the end of the page: old contents untouched, new writes added after them. And if the file doesn't exist, <code>"a"</code> quietly creates it. That's the diary, the visit log, the grocery list across trips.</p>
+      <p>The missing file is Unit 9's territory. <code>open("scores.txt")</code> with no <code>scores.txt</code> on disk raises <code>FileNotFoundError</code> — a crash report you can now read fluently. But here's the shift in thinking: for a program with saved data, a missing file <i>isn't really an error</i>. It just means <b>first run — nothing saved yet</b>. So real apps wrap the load in Unit 9's guard:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">try:<br>&nbsp;&nbsp;&nbsp;&nbsp;with open("scores.txt") as f:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data = f.read()<br>except FileNotFoundError:<br>&nbsp;&nbsp;&nbsp;&nbsp;data = ""&nbsp;&nbsp;&nbsp;# no saved data yet — start fresh</p>
+      <p>Load if you can, start fresh if you can't. Your game's save slot, your browser's history, a streak app on day one — this exact pattern, everywhere.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the first run of an app</div>
+      <div class="m">try:
+    with open("scores.txt") as f:
+        print(f.read().strip())
+except FileNotFoundError:
+    print("no saved data yet - starting fresh")</div>
+      <p><b>Line 2:</b> the runner's disk is clean — no <code>scores.txt</code> anywhere. The open raises <code>FileNotFoundError</code> and the <code>try</code> block stops on the spot.</p>
+      <p><b>Line 4:</b> the guard catches exactly that error, and the program carries on:</p>
+      <div class="m">no saved data yet - starting fresh</div>
+      <p>On this page the except branch runs every time (clean disk, remember). On your machine, it runs once — the first time — and every later run finds the file and takes the <code>try</code> branch. One program, two lives.</p>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      A missing save file isn't a failure — it means <i>first run, start fresh</i>. <code>try</code>/<code>except FileNotFoundError</code> turns the crash into that decision. This is THE pattern real apps use to load their data.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a visit log that grows — two separate "sessions" append to it, then one read shows everything. <b>Thinking:</b> each <code>with open(..., "a")</code> block is a pretend program-run of its own. The first append even creates the file. Change either <code>"a"</code> to <code>"w"</code> and re-run to watch history get eaten.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">with open("log.txt", "a") as f:     # session 1 (creates the file)
+    f.write("visit 1\n")
+
+with open("log.txt", "a") as f:     # session 2 — pencil starts at the end
+    f.write("visit 2\n")
+
+with open("log.txt") as f:
+    for line in f:
+        print(line.strip())</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">10.3 · P1</span><span class="pt">The guestbook</span></div>
+        <p class="pd">Ada already signed the guestbook. Add the line <code>Adi was here</code> <i>without losing Ada's signature</i> — the read-back at the bottom should show both, oldest first.</p>
+        <div class="want">Ada was here
+Adi was here</div>
+        <div class="pyrun" data-id="s3p1" data-expect="Ada was here\nAdi was here">
+          <textarea spellcheck="false">with open("guestbook.txt", "w") as f:
+    f.write("Ada was here\n")
+
+# your signature goes here — mind the mode
+
+with open("guestbook.txt") as f:
+    print(f.read().strip())</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>with open("guestbook.txt", "w") as f:
+    f.write("Ada was here\n")
+
+with open("guestbook.txt", "a") as f:
+    f.write("Adi was here\n")
+
+with open("guestbook.txt") as f:
+    print(f.read().strip())</pre><p>Mode <code>"a"</code> keeps the page and adds at the end. With <code>"w"</code>, Ada's line would be gone before your pen touched the paper.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">10.3 · P2</span><span class="pt">The streak counter</span></div>
+        <p class="pd">A habit app: each run loads the streak, adds a day, saves it back. Replace the <code>streak = 0</code> placeholder in the function with the real load-or-default guard: <code>try</code> to read <code>streak.txt</code> and convert with <code>int()</code>; on <code>FileNotFoundError</code>, start at 0. Calling it twice simulates two days — the second call must find the first call's file.</p>
+        <div class="want">Day 1 of your streak
+Day 2 of your streak</div>
+        <div class="pyrun" data-id="s3p2" data-expect="Day 1 of your streak\nDay 2 of your streak">
+          <textarea spellcheck="false">def bump_streak():
+    streak = 0   # replace: load from streak.txt, or 0 if no file yet
+    streak = streak + 1
+    with open("streak.txt", "w") as f:
+        f.write(str(streak))
+    print(f"Day {streak} of your streak")
+
+bump_streak()   # today
+bump_streak()   # pretend it's tomorrow</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def bump_streak():
+    try:
+        with open("streak.txt") as f:
+            streak = int(f.read())
+    except FileNotFoundError:
+        streak = 0
+    streak = streak + 1
+    with open("streak.txt", "w") as f:
+        f.write(str(streak))
+    print(f"Day {streak} of your streak")
+
+bump_streak()
+bump_streak()</pre><p>First call: no file, guard fires, streak starts at 0 → Day 1, saved. Second call: the file is found, <code>int("1")</code> → 1 → Day 2. On your machine this program genuinely counts real runs — try it in Colab.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">10.3 · P3</span><span class="pt">Stretch — predict: the typo that isn't fatal</span></div>
+        <p class="pd">Predict both printed lines. The filename in the <code>try</code> block has a typo — what exactly happens, and does the program survive?</p>
+        <div class="pyrun" data-id="s3p3">
+          <textarea spellcheck="false">with open("data.txt", "w") as f:
+    f.write("hello\n")
+
+try:
+    with open("dat.txt") as f:
+        print(f.read().strip())
+except FileNotFoundError:
+    print("no file called dat.txt")
+print("still running")</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>no file called dat.txt
+still running</pre><p>To Python, <code>dat.txt</code> is simply a file that doesn't exist — same error as a genuine first run. Filename typos are the number-one source of <code>FileNotFoundError</code> in the wild; when the guard fires unexpectedly, check your spelling before blaming the disk.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 10.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">10.4</span>
+      <h2>Structured data — json, the round trip</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> One-line-per-task worked for the to-do list. But try saving your settings dict from Unit 6, or a list of scores that must come back as <i>numbers</i>, or a task that contains a comma or a line break — plain text starts to buckle. Worse, the obvious shortcut lies to you: <code>f.write(str([90, 85]))</code> writes something that <i>looks</i> exactly like a list, but what you read back is one string, <code>"[90, 85]"</code> — the structure and the types are gone.</p>
+      <p><b>The idea, in plain words.</b> What you need is a text format that both the writer and the reader agree on — an envelope with a standard layout, so the receiving side can unpack it perfectly. Python ships one: <b>json</b> (JavaScript Object Notation — invented elsewhere, adopted everywhere). Two calls do everything:</p>
+      <ul class="plain">
+        <li><code>json.dump(value, f)</code> — write a list, dict, string, number or True/False (nested freely) into an open file.</li>
+        <li><code>value = json.load(f)</code> — read it back, <b>types and structure intact</b>. A list returns as a list, an int as an int.</li>
+      </ul>
+      <p>Put <code>import json</code> at the top of the program (a preview of Unit 11's big idea) and the round trip is yours. The file on disk is still plain text — you could open it in Notepad — it just follows JSON's strict little grammar: double quotes around strings, <code>true</code>/<code>false</code> in lowercase, square brackets and braces where you'd expect.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — a dict does the round trip</div>
+      <div class="m">import json
+
+settings = {"name": "Adi", "volume": 7}
+with open("settings.json", "w") as f:
+    json.dump(settings, f)
+
+print(open("settings.json").read())</div>
+      <p><b>Line 3:</b> an ordinary Unit 6 dict in memory. <b>Lines 4–5:</b> <code>json.dump</code> converts it to JSON text and writes it — one call, formatting handled.</p>
+      <p><b>Line 7:</b> the raw file contents, straight off the disk:</p>
+      <div class="m">{"name": "Adi", "volume": 7}</div>
+      <p>Readable, almost-Python — note the double quotes (JSON's rule) and the space after each colon and comma (json's standard spacing). <code>json.load</code> would now rebuild the exact dict, <code>7</code> arriving as a real int.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 210" role="img" aria-label="json.dump turns a list into text on disk; json.load turns it back into a list">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">THE ROUND TRIP</text>
+        <rect x="30" y="75" width="210" height="70" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="135" y="100" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">tasks — a real list</text>
+        <text x="135" y="124" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">['milk', 'eggs']</text>
+        <line x1="245" y1="110" x2="320" y2="110" stroke="#5b4b9e" stroke-width="1.5"/>
+        <path d="M320 110 l-9 -5 v10 z" fill="#5b4b9e"/>
+        <text x="283" y="95" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#3d3170">json.dump</text>
+        <rect x="325" y="65" width="210" height="90" rx="9" fill="#23262e" stroke="#e3e6ee"/>
+        <text x="430" y="95" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#9aa3b2">todo.json — plain text</text>
+        <text x="430" y="124" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#e8eaf0">["milk", "eggs"]</text>
+        <line x1="540" y1="110" x2="615" y2="110" stroke="#2b7a78" stroke-width="1.5"/>
+        <path d="M615 110 l-9 -5 v10 z" fill="#2b7a78"/>
+        <text x="578" y="95" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1d5654">json.load</text>
+        <rect x="620" y="75" width="210" height="70" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="725" y="100" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">loaded — a list again</text>
+        <text x="725" y="124" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">['milk', 'eggs']</text>
+        <text x="430" y="185" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">the disk only ever holds text — json is the agreement that makes it unpackable</text>
+      </svg>
+      <div class="figcap">Fig. 2 — The round trip. On disk it's text you could edit in Notepad; note JSON's double quotes versus Python's single-quote display of the same list. <code>json.load</code> rebuilds the living value, types intact.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>"If the file is still just text, what did json buy me?" The <i>agreement</i>. <code>str(tasks)</code> also writes text, but nothing promises to read it back — it's a photo of your list, not the list. JSON text follows rules both sides know, so <code>json.load</code> can rebuild the real thing: list stays a list, <code>7</code> stays an int, a task containing a comma doesn't shatter into two. Photograph vs. flat-packed furniture with the assembly manual included.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> round-trip a task list, and inspect every stage: the raw file, the rebuilt list, its type, its first item. <b>Thinking:</b> the two prints in the middle look almost identical — the difference in quotes tells you which one is JSON text (double) and which is a living Python list (single). That tiny detail is your debugging compass forever.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">import json
+
+tasks = ["buy milk", "call grandma"]
+with open("todo.json", "w") as f:
+    json.dump(tasks, f)
+
+print("raw file:", open("todo.json").read())
+
+with open("todo.json") as f:
+    loaded = json.load(f)
+print("loaded:  ", loaded)
+print("type:", type(loaded))
+print("first task:", loaded[0])</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">10.4 · P1</span><span class="pt">Predict: the photo of a list</span></div>
+        <p class="pd">The shortcut this section warned about. Predict all three printed lines — especially the middle one — then run.</p>
+        <div class="pyrun" data-id="s4p1">
+          <textarea spellcheck="false">scores = [90, 85, 77]
+with open("scores.txt", "w") as f:
+    f.write(str(scores))
+
+with open("scores.txt") as f:
+    back = f.read()
+
+print(back)
+print(back[0])
+print(type(back))</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>[90, 85, 77]
+[
+&lt;class 'str'&gt;</pre><p>The first print <i>looks</i> perfect — that's the trap. But <code>back[0]</code> is the character <code>[</code>, not the number 90: the whole thing is one string. <code>str()</code> is a one-way door; json is the revolving one.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">10.4 · P2</span><span class="pt">The profile round trip</span></div>
+        <p class="pd">Save <code>profile</code> to <code>profile.json</code> with <code>json.dump</code>, load it back into a box called <code>loaded</code>, then print the goal line — computing <code>level + 1</code> from the <i>loaded</i> dict. If the maths works, the int survived the trip.</p>
+        <div class="want">Next level: 4</div>
+        <div class="pyrun" data-id="s4p2" data-expect="Next level: 4">
+          <textarea spellcheck="false">import json
+
+profile = {"name": "Mira", "level": 3}
+# save it, load it back as loaded, print the goal line</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import json
+
+profile = {"name": "Mira", "level": 3}
+with open("profile.json", "w") as f:
+    json.dump(profile, f)
+
+with open("profile.json") as f:
+    loaded = json.load(f)
+print(f"Next level: {loaded['level'] + 1}")</pre><p><code>loaded["level"]</code> is a real int — <code>+ 1</code> is honest arithmetic, no <code>int()</code> conversion needed. That's the whole sales pitch: types survive.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">10.4 · P3</span><span class="pt">Stretch — spot the quotes</span></div>
+        <p class="pd">Save the list with <code>json.dump</code>, then print two lines: first the raw file contents, then the result of <code>json.load</code>. They must match the goal exactly — look hard at the quotes to see which is which.</p>
+        <div class="want">["cat", "dog"]
+['cat', 'dog']</div>
+        <div class="pyrun" data-id="s4p3" data-expect="[&quot;cat&quot;, &quot;dog&quot;]\n['cat', 'dog']">
+          <textarea spellcheck="false">import json
+
+pets = ["cat", "dog"]
+# save to pets.json, then print: the raw file, then the loaded list</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import json
+
+pets = ["cat", "dog"]
+with open("pets.json", "w") as f:
+    json.dump(pets, f)
+
+print(open("pets.json").read())
+
+with open("pets.json") as f:
+    print(json.load(f))</pre><p>Line 1 is JSON text — double quotes, json's standard spacing. Line 2 is Python showing a real list — single quotes. Same data, two worlds; the quotes tell you which world you're looking at.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 10.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">10.5</span>
+      <h2>Your build — the to-do list that survives a restart</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>The arc that began in Unit 5 completes here. One program, two phases. <b>Phase 1</b> is a session of the to-do app: add tasks, save with <code>json.dump</code>, say goodbye. Then a divider line — <code>--- program restarts ---</code> — and <b>Phase 2</b> pretends to be tomorrow: memory wiped, list rebuilt from the file, guarded by <code>try</code>/<code>except FileNotFoundError</code>. On your machine these would be two <i>real</i> runs of one program; here we fold them into one so the clean-disk runner can show the whole story. The code is identical either way — that's the point.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">10.5 · P1</span><span class="pt">Phase 1 — save on the way out</span></div>
+        <p class="pd">The session collects two tasks (inputs are fixed). Save <code>tasks</code> to <code>todo.json</code> with <code>json.dump</code>, print the count line using <code>len()</code>, then print the raw file prefixed with <code>On disk: </code> — proof it's really on the page.</p>
+        <div class="want">Add a task: buy milk
+Add a task: water plants
+Saved 2 tasks
+On disk: ["buy milk", "water plants"]</div>
+        <div class="pyrun" data-id="s5p1" data-stdin="buy milk\nwater plants" data-stdin-lock data-expect="Add a task: buy milk\nAdd a task: water plants\nSaved 2 tasks\nOn disk: [&quot;buy milk&quot;, &quot;water plants&quot;]">
+          <textarea spellcheck="false">import json
+
+tasks = []
+tasks.append(input("Add a task: "))
+tasks.append(input("Add a task: "))
+
+# save to todo.json, then print the last two goal lines</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import json
+
+tasks = []
+tasks.append(input("Add a task: "))
+tasks.append(input("Add a task: "))
+
+with open("todo.json", "w") as f:
+    json.dump(tasks, f)
+
+print(f"Saved {len(tasks)} tasks")
+print("On disk:", open("todo.json").read())</pre><p>One <code>json.dump</code> call and the whole list — commas, spaces and all — is safely in the box that outlives the program.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">10.5 · P2</span><span class="pt">Phase 2 — the restart</span></div>
+        <p class="pd">Phase 1 is done for you. After the divider, the app "restarts" with wiped memory. Write the load: <code>try</code> to <code>json.load</code> from <code>todo.json</code>; on <code>FileNotFoundError</code> print <code>No saved list - starting fresh</code> and use an empty list. Then print <code>Welcome back! Your tasks:</code> and each task numbered <code>1.</code>, <code>2.</code> — a counter box does it.</p>
+        <div class="want">Add a task: buy milk
+Add a task: water plants
+Saved 2 tasks. Bye!
+--- program restarts ---
+Welcome back! Your tasks:
+1. buy milk
+2. water plants</div>
+        <div class="pyrun" data-id="s5p2" data-stdin="buy milk\nwater plants" data-stdin-lock data-expect="Add a task: buy milk\nAdd a task: water plants\nSaved 2 tasks. Bye!\n--- program restarts ---\nWelcome back! Your tasks:\n1. buy milk\n2. water plants">
+          <textarea spellcheck="false">import json
+
+# ---- PHASE 1: a session of the app ----
+tasks = []
+tasks.append(input("Add a task: "))
+tasks.append(input("Add a task: "))
+with open("todo.json", "w") as f:
+    json.dump(tasks, f)
+print(f"Saved {len(tasks)} tasks. Bye!")
+
+print("--- program restarts ---")
+
+# ---- PHASE 2: tomorrow. Memory is wiped: ----
+tasks = []
+# load todo.json here, guarded by try/except FileNotFoundError
+# then print the welcome line and the numbered tasks</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import json
+
+# ---- PHASE 1: a session of the app ----
+tasks = []
+tasks.append(input("Add a task: "))
+tasks.append(input("Add a task: "))
+with open("todo.json", "w") as f:
+    json.dump(tasks, f)
+print(f"Saved {len(tasks)} tasks. Bye!")
+
+print("--- program restarts ---")
+
+# ---- PHASE 2: tomorrow. Memory is wiped: ----
+tasks = []
+try:
+    with open("todo.json") as f:
+        tasks = json.load(f)
+except FileNotFoundError:
+    print("No saved list - starting fresh")
+
+print("Welcome back! Your tasks:")
+n = 1
+for t in tasks:
+    print(f"{n}. {t}")
+    n = n + 1</pre><p>Save on exit, load-or-fresh on start. Every app you've ever used that "remembered" you was doing some dressed-up version of these fifteen lines.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">10.5 · P3</span><span class="pt">Stretch — the app, properly shaped</span></div>
+        <p class="pd">The same machine, organised into Unit 7 functions — <code>load_tasks</code>, <code>save_tasks</code>, <code>add_task</code>, <code>show_tasks</code>. Two sessions run back to back; the input field is unlocked, so feed it your own tasks. No check — read it top to bottom until every line feels inevitable, then take it to Colab where the restarts are real.</p>
+        <div class="pyrun" data-id="s5p3" data-stdin="buy milk\nread one page">
+          <textarea spellcheck="false">import json
+
+def load_tasks():
+    try:
+        with open("todo.json") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+
+def save_tasks(tasks):
+    with open("todo.json", "w") as f:
+        json.dump(tasks, f)
+
+def add_task(tasks, item):
+    tasks.append(item)
+
+def show_tasks(tasks):
+    n = 1
+    for t in tasks:
+        print(f"{n}. {t}")
+        n = n + 1
+
+# session 1
+tasks = load_tasks()
+add_task(tasks, input("Add a task: "))
+save_tasks(tasks)
+
+print("--- program restarts ---")
+
+# session 2 — load_tasks() finds session 1's file
+tasks = load_tasks()
+add_task(tasks, input("Add a task: "))
+save_tasks(tasks)
+show_tasks(tasks)</textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 10.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">10.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~12 min</span></span>
+      <p>The mixed set. Writing, reading, appending, guarding, json — plus lists, loops, functions and f-strings from the road behind you. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">Numbered read-back</span></div>
+        <p class="pd">Write <code>red</code>, <code>green</code>, <code>blue</code> to <code>colors.txt</code> — one per line — then read the file back and print each line numbered, exactly as the goal shows. A counter box and <code>strip()</code> do the work.</p>
+        <div class="want">1. red
+2. green
+3. blue</div>
+        <div class="pyrun" data-id="b1" data-expect="1. red\n2. green\n3. blue">
+          <textarea spellcheck="false"># 1) write the three colors to colors.txt, one per line
+# 2) read it back and print them numbered</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>with open("colors.txt", "w") as f:
+    f.write("red\n")
+    f.write("green\n")
+    f.write("blue\n")
+
+n = 1
+with open("colors.txt") as f:
+    for line in f:
+        print(f"{n}. {line.strip()}")
+        n = n + 1</pre><p>Write with your own <code>\n</code>s, read with the loop, strip the stowaway, count as you go.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">The grocery log</span></div>
+        <p class="pd">Two shopping trips, one growing file. Trip one appends <code>milk</code> and <code>bread</code> to <code>grocery.txt</code>; trip two — a <i>separate</i> open — appends <code>eggs</code>. Then read once: print the count line with <code>len()</code>, then each item.</p>
+        <div class="want">3 items:
+milk
+bread
+eggs</div>
+        <div class="pyrun" data-id="b2" data-expect="3 items:\nmilk\nbread\neggs">
+          <textarea spellcheck="false"># trip one: append milk and bread
+# trip two: append eggs (a separate open)
+# then read once and print the goal</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>with open("grocery.txt", "a") as f:
+    f.write("milk\n")
+    f.write("bread\n")
+
+with open("grocery.txt", "a") as f:
+    f.write("eggs\n")
+
+with open("grocery.txt") as f:
+    lines = f.readlines()
+print(f"{len(lines)} items:")
+for line in lines:
+    print(line.strip())</pre><p>Mode <code>"a"</code> creates the file on the first trip and keeps history on the second. Swap either for <code>"w"</code> and count what survives.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">Settings, saved properly</span></div>
+        <p class="pd">Ask <code>Volume? </code> and convert at the door. Build <code>settings = {"volume": ..., "theme": "light"}</code>, save it to <code>settings.json</code>, load it back into <code>loaded</code>, then print the volume line <i>from the loaded dict</i> and the raw file prefixed with <code>On disk: </code>. Input fixed to 7.</p>
+        <div class="want">Volume? 7
+Volume is 7
+On disk: {"volume": 7, "theme": "light"}</div>
+        <div class="pyrun" data-id="b3" data-stdin="7" data-stdin-lock data-expect="Volume? 7\nVolume is 7\nOn disk: {&quot;volume&quot;: 7, &quot;theme&quot;: &quot;light&quot;}">
+          <textarea spellcheck="false">import json
+
+volume = int(input("Volume? "))
+# build the settings dict, save, load back, print the goal lines</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import json
+
+volume = int(input("Volume? "))
+settings = {"volume": volume, "theme": "light"}
+
+with open("settings.json", "w") as f:
+    json.dump(settings, f)
+
+with open("settings.json") as f:
+    loaded = json.load(f)
+
+print(f"Volume is {loaded['volume']}")
+print("On disk:", open("settings.json").read())</pre><p>Convert at the door (Unit 2), dict from Unit 6, round trip from 10.4 — and the volume comes back as a real int because json kept its type.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — the high-score file</span></div>
+        <p class="pd">Arcade logic: each round, load the record from <code>highscore.txt</code> — or 0 if there's no file yet — then compare. A new record gets saved and announced with <code>New high score: &lt;score&gt;!</code>; anything less prints <code>Score &lt;score&gt; - the record is still &lt;best&gt;</code>. Three rounds run back to back; the middle one must lose.</p>
+        <div class="want">New high score: 120!
+Score 90 - the record is still 120
+New high score: 150!</div>
+        <div class="pyrun" data-id="b4" data-expect="New high score: 120!\nScore 90 - the record is still 120\nNew high score: 150!">
+          <textarea spellcheck="false">def play_round(new_score):
+    best = 0   # step 1: replace with the load-or-default guard
+    # step 2: compare — save and announce, or concede
+
+play_round(120)
+play_round(90)
+play_round(150)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def play_round(new_score):
+    try:
+        with open("highscore.txt") as f:
+            best = int(f.read())
+    except FileNotFoundError:
+        best = 0
+    if new_score > best:
+        with open("highscore.txt", "w") as f:
+            f.write(str(new_score))
+        print(f"New high score: {new_score}!")
+    else:
+        print(f"Score {new_score} - the record is still {best}")
+
+play_round(120)
+play_round(90)
+play_round(150)</pre><p>Load-or-default, compare, save-if-better — Units 3, 7, 9 and 10 in twelve lines. Round two finds 120 on disk and concedes; round three beats it and the file updates. This is every saved game you've ever played.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 11 · Borrowing power — modules &amp; the standard library</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">You've been writing every recipe from scratch — and you got a taste of the alternative the moment you typed <code>import json</code>. Python ships with a library of thousands of ready-made tools, tested and free and already on your machine. <code>import</code> is the card that opens it, and <code>random</code>, <code>math</code> and <code>datetime</code> are the first shelves we'll raid.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>The Python Tutorial</b> — <i>§7.2 Reading and Writing Files</i>. <span class="why">The official treatment of open(), modes, read/write and the with statement — the same ground as 10.1–10.3, plus a first look at json.</span> <a href="https://docs.python.org/3/tutorial/inputoutput.html#reading-and-writing-files" rel="noopener">docs.python.org</a></li>
+      <li><b>Sweigart, A.</b> — <i>Automate the Boring Stuff with Python, ch. 9 (Reading and Writing Files)</i>. <span class="why">File paths, reading, writing and saving program data — hands-on and generous with examples.</span> <a href="https://automatetheboringstuff.com/2e/chapter9/" rel="noopener">book</a></li>
+      <li><b>Python documentation</b> — <i>json — JSON encoder and decoder</i>. <span class="why">The full json module: dump, load, and the options behind them. Skim the first screen; bookmark the rest.</span> <a href="https://docs.python.org/3/library/json.html" rel="noopener">docs.python.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit9.html"><span class="k">← Previous</span><span class="t">Unit 9 · When things break — errors &amp; debugging</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit11.html"><span class="k">Next →</span><span class="t">Unit 11 · Borrowing power — modules &amp; the standard library</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 10 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"You open an existing notes.txt with  open(\"notes.txt\", \"w\")  and then do nothing else. What's in the file?",
+   o:["The old contents, untouched","Nothing — \"w\" wiped it the moment it opened","The old contents plus a blank line","Python raises an error to protect the file"],
+   a:1,
+   e:"Mode \"w\" means 'hand me a blank page with this name' — the wipe happens at open, before any write. To keep old contents and add after them, that's mode \"a\"."},
+  {q:"What's the main thing  with open(\"data.txt\") as f:  gives you over  f = open(\"data.txt\") … f.close()?",
+   o:["It runs faster","The file is closed automatically when the block ends — even if an error strikes inside it","It can read and write at the same time","It creates the file if it's missing"],
+   a:1,
+   e:"with closes the door behind you, no matter how the block exits — normally or mid-crash. That guarantee is why these notes use it everywhere. (The full story of with arrives in Unit 20.)"},
+  {q:"A file is opened in \"w\" and the program runs  f.write(\"milk\")  then  f.write(\"bread\") . What does the file hold?",
+   o:["milk and bread on separate lines","milkbread — one fused line","milk bread — with a space","An error — one write per open file"],
+   a:1,
+   e:"write() adds nothing you didn't type — no newline, no space. Unlike print(), the \\n is yours to add: f.write(\"milk\\n\") is what makes a line a line."},
+  {q:"A program tries to read its save file on the very first run and hits FileNotFoundError. What does a well-built program do?",
+   o:["Crash — nothing else is possible","Catch it with try/except and treat it as 'no saved data yet — start fresh'","Open the file in \"r\" mode to create it","Wait until the file appears"],
+   a:1,
+   e:"For a program with saved data, a missing file isn't a failure — it's the first run. try/except FileNotFoundError turns the crash into 'start fresh'. This is THE pattern real apps use to load."},
+  {q:"for line in f: print(line)  prints your file double-spaced. Why?",
+   o:["print() adds a newline and each line already carries its own \\n from the file","The file was accidentally saved twice","readlines() duplicated every line","Python inserts spacing between lines of any file"],
+   a:0,
+   e:"Every line read from a file keeps its trailing \\n, and print() adds another — two line breaks per line. The cure is Unit 8's strip(): print(line.strip())."},
+  {q:"What does  json.dump(tasks, f)  give you that  f.write(str(tasks))  doesn't?",
+   o:["A smaller file","A format json.load can turn back into a real list, with the types intact","An encrypted file","Faster writing"],
+   a:1,
+   e:"str() writes a photo of your list — it comes back as one string. json writes a format both sides agree on, so json.load rebuilds the real structure: lists stay lists, ints stay ints."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. Your programs now have a memory that outlives them."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 10.1 and 10.3 carry the load."
+           : " — worth another pass through the practice above before Unit 11.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["File","A labeled box on disk. Unlike the boxes in memory, it survives the end of the program, a restart, a year."],
+  ["open()","Asks the operating system for a file: open(name, mode). Hands back a file object — the open door."],
+  ["Mode","The second argument to open(): \"r\" read (the default), \"w\" write a fresh page, \"a\" append at the end."],
+  ["\"w\" (write mode)","Blank page, even if the file existed — the wipe happens at the moment of opening, not at the first write."],
+  ["\"a\" (append mode)","Pencil starts at the end: old contents kept, new writes added after. Creates the file if it's missing."],
+  ["with … as","Opens the file and guarantees it closes when the block ends — even if an error strikes mid-block. Full story in Unit 20."],
+  ["write()","Puts exactly the characters you give onto the file — no free newline. The \\n is yours to add, every line."],
+  ["read() / readlines()","The whole file as one string / a list with one string per line. Every line keeps its trailing \\n — strip() it."],
+  ["FileNotFoundError","Raised when opening a missing file to read. Caught with try/except, it usually means: first run, no saved data yet — start fresh."],
+  ["json","A text format for structured data that writer and reader both agree on. The file stays plain text; the agreement makes it unpackable."],
+  ["json.dump() / json.load()","Write a list/dict into an open file; read it back with structure and types intact. Needs import json at the top."],
+  ["Round trip","Save a value, load it back, get the same value — types and all. str() can't make the trip; json can."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>
