@@ -316,7 +316,7 @@ pre .st{color:var(--teal)}
 
     <div class="keyidea">
       <div class="lbl">Key idea</div>
-      <p>We will <em>not</em> use Word2Vec. LLMs produce their own embeddings as part of the input layer, and those embeddings are updated during training — so they end up optimised for the specific task and data at hand, rather than borrowed from a general-purpose model. You'll build that layer in section 2.7.</p>
+      <p>We will <em>not</em> use Word2Vec. LLMs produce their own embeddings as part of the input layer, and those embeddings are updated during training — so they end up optimised for the specific task and data at hand, rather than borrowed from a general-purpose model. You'll build that layer later in this unit.</p>
     </div>
   </section>
 
@@ -324,7 +324,7 @@ pre .st{color:var(--teal)}
   <section id="s2">
     <div class="prose">
       <h2>Splitting text into tokens</h2>
-      <p>Before anything can be embedded, text must be broken into <b>tokens</b> — individual words and special characters, including punctuation. The book uses "The Verdict", a public-domain short story by Edith Wharton, 20,479 characters long.</p>
+      <p>Before anything can be embedded, text must be broken into <b>tokens</b> — individual words and special characters, including punctuation. Our training text is "The Verdict", a public-domain short story by Edith Wharton, 20,479 characters long.</p>
       <p>This unit arrives at its tokenizer by refining a regular expression three times. Rather than read the three versions, run them. Pick a rule below and watch the same sentence split differently.</p>
     </div>
 
@@ -372,7 +372,7 @@ pre .st{color:var(--teal)}
 
     <div class="aside">
       <div class="lbl">Keep the whitespace or drop it?</div>
-      <p>It depends on the application. Dropping it reduces memory and compute, which is why the book drops it here. But keeping it matters for text where exact structure carries meaning — Python source code, where indentation <em>is</em> syntax, is the obvious case. The BPE tokenizer we reach in section 2.5 keeps whitespace.</p>
+      <p>It depends on the application. Dropping it reduces memory and compute, which is why we drop it here. But keeping it matters for text where exact structure carries meaning — Python source code, where indentation <em>is</em> syntax, is the obvious case. The BPE tokenizer we reach further down keeps whitespace.</p>
     </div>
   </section>
 
@@ -416,7 +416,7 @@ pre .st{color:var(--teal)}
         </div>
         <div class="detail" id="enc-detail" aria-live="polite"></div>
       </div>
-      <div class="lab-note">Try typing a word that isn't in the training text above — <code>Hello</code>, for instance. In the book this raises <code>KeyError: 'Hello'</code> and the program stops dead. Section 2.4 fixes it.</div>
+      <div class="lab-note">Try typing a word that isn't in the training text above — <code>Hello</code>, for instance. Run it and Python raises <code>KeyError: 'Hello'</code> and the program stops dead. Section 2.4 fixes it.</div>
     </div>
   </section>
 
@@ -427,7 +427,7 @@ pre .st{color:var(--teal)}
       <p>A crash on an unseen word is not acceptable, so we extend the vocabulary with two special entries:</p>
       <ul class="plain">
         <li><code>&lt;|unk|&gt;</code> — stands in for any word not in the vocabulary, instead of raising an error.</li>
-        <li><code>&lt;|endoftext|&gt;</code> — inserted between unrelated documents. When you concatenate a thousand books into one training stream, this marker tells the model that the text either side is unrelated.</li>
+        <li><code>&lt;|endoftext|&gt;</code> — inserted between unrelated documents. When you concatenate a thousand documents into one training stream, this marker tells the model that the text either side is unrelated.</li>
       </ul>
       <p>Adding both takes the vocabulary from 1,130 to <b>1,132</b>, with <code>&lt;|endoftext|&gt;</code> at ID 1130 and <code>&lt;|unk|&gt;</code> at 1131.</p>
     </div>
@@ -462,7 +462,7 @@ pre .st{color:var(--teal)}
       <h2>Byte pair encoding</h2>
       <p>GPT models don't use <code>&lt;|unk|&gt;</code> at all. They use <b>byte pair encoding</b>, and it handles words it has never seen — perfectly, every time, with no special token.</p>
       <p>The idea: start with a vocabulary of individual characters. Then repeatedly find the most frequent adjacent pair of symbols and merge it into a single new symbol. Do that a few thousand times and you end up with a vocabulary of characters, common subwords, and whole frequent words. An unknown word is simply broken into the largest pieces the vocabulary does contain — falling back to single characters if it must.</p>
-      <p>The book uses OpenAI's <code>tiktoken</code> library and calls a full implementation out of scope. It's worth seeing the algorithm run, though, so the lab below actually performs it.</p>
+      <p>From here on we use OpenAI’s <code>tiktoken</code> library and calls a full implementation out of scope. It's worth seeing the algorithm run, though, so the lab below actually performs it.</p>
     </div>
 
     <div class="lab">
@@ -515,7 +515,7 @@ slow:3</textarea>
     </div>
 
     <div class="aside">
-      <div class="lbl">From the book — GPT-2's tokenizer on real text</div>
+      <div class="lbl">GPT-2’s tokenizer on real text</div>
       <p style="margin-bottom:8px"><code>"Hello, do you like tea? &lt;|endoftext|&gt; In the sunlit terraces of someunknownPlace."</code> encodes to:</p>
       <pre style="font-size:var(--fs-xs)">[15496, 11, 466, 345, 588, 8887, 30, 220, 50256, 554,
  262, 4252, 18250, 8812, 2114, 286, 617, 34680, 27271, 13]</pre>
@@ -523,7 +523,7 @@ slow:3</textarea>
     </div>
 
     <div class="aside">
-      <div class="lbl">Exercise 2.1 from the book</div>
+      <div class="lbl">Try it yourself</div>
       <p>Run the <code>tiktoken</code> GPT-2 tokenizer on the nonsense string <code>"Akwirw ier"</code>. Print the individual token IDs, decode each one separately to see the subwords, then decode the whole list and confirm you get the original string back.</p>
     </div>
   </section>
@@ -539,7 +539,7 @@ slow:3</textarea>
     <div class="lab">
       <div class="lab-head">
         <h4>Lab 6 · Context size and stride</h4>
-        <span class="lab-kicker">Exercise 2.2, made visual</span>
+        <span class="lab-kicker">Every setting, made visual</span>
       </div>
       <div class="lab-body stack">
         <div class="slider-row">
@@ -566,11 +566,11 @@ slow:3</textarea>
 
     <div class="keyidea">
       <div class="lbl">Why stride matters</div>
-      <p>A small stride squeezes more training samples out of the same text, but consecutive samples overlap heavily — and too much overlap increases overfitting. Setting stride equal to context size uses the dataset fully without repeating a single token. That's the setting the book uses for the real data loader.</p>
+      <p>A small stride squeezes more training samples out of the same text, but consecutive samples overlap heavily — and too much overlap increases overfitting. Setting stride equal to context size uses the dataset fully without repeating a single token. That's the setting the real data loader uses.</p>
     </div>
 
     <div class="aside">
-      <div class="lbl">From the book — the real batch</div>
+      <div class="lbl">The real batch</div>
       <p>With <code>batch_size=8</code>, <code>max_length=4</code>, <code>stride=4</code> over "The Verdict", the first input tensor is:</p>
       <pre style="font-size:var(--fs-xs)">tensor([[   40,   367,  2885,  1464],
         [ 1807,  3619,   402,   271],
@@ -616,7 +616,7 @@ slow:3</textarea>
           </div>
         </div>
       </div>
-      <div class="lab-note">These are the exact numbers from the book — a 6-word vocabulary and 3 dimensions under <code>torch.manual_seed(123)</code>. Run listing 2.7 yourself and you'll get this matrix back. Real scale: 50,257 rows × 256 columns for the model we build.</div>
+      <div class="lab-note">A 6-word vocabulary and 3 dimensions under <code>torch.manual_seed(123)</code>. Run listing 2.7 yourself and you'll get this matrix back. Real scale: 50,257 rows × 256 columns for the model we build.</div>
     </div>
 
     <div class="aside">
@@ -722,7 +722,7 @@ slow:3</textarea>
 <footer class="foot">
   <div class="foot-in">
     <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
-    <span>A guided companion to <i>Build a Large Language Model (From Scratch)</i> by Sebastian Raschka — Unit 2 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+    <span>Learn with Adi — Unit 2 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
   </div>
 </footer>
 
@@ -829,7 +829,7 @@ function renderTok(){
   const notes = {
     ws:"Splitting on whitespace alone leaves punctuation stuck to its neighbour — <code>world.</code> stays one token. The model would then have to learn <code>world</code>, <code>world.</code> and <code>world,</code> as three unrelated things.",
     basic:"Commas and periods now break off cleanly. But other punctuation is still attached — try a question mark or a double dash and watch it cling to the word.",
-    full:"Every punctuation mark is now its own token, including the double dash <code>--</code>. This is the rule the book settles on, and it produces 4,690 tokens across the full short story."
+    full:"Every punctuation mark is now its own token, including the double dash <code>--</code>. This is the rule we settle on — it produces 4,690 tokens across the full short story."
   };
   tokDetail.innerHTML =
     "<h5>Rule: "+RULES[tokRule].label+"</h5><p>"+notes[tokRule]+"</p>"+
@@ -883,7 +883,7 @@ function runEncode(){
     ? "<h5>"+unknown.length+" token(s) are not in the vocabulary</h5><p>The words "+
       unknown.map(u=>"<code>"+esc(u)+"</code>").join(", ")+
       " never appeared in the training text, so they have no ID. <code>SimpleTokenizerV1</code> raises <code>KeyError</code> here and the program stops.</p>"+
-      "<div class='spam'><b>The lesson</b>A vocabulary only covers what it was built from. This is exactly why large, diverse training sets matter — and why section 2.4 introduces a fallback token.</div>"
+      "<div class='spam'><b>The lesson</b>A vocabulary only covers what it was built from. This is exactly why large, diverse training sets matter — and why we introduce a fallback token below.</div>"
     : "<h5>Every token was found</h5><p>All "+toks.length+" tokens exist in the vocabulary, so <code>encode</code> succeeds and <code>decode</code> reconstructs the text.</p>"+
       "<div class='spam'><b>Notice the decode step</b>Tokens are rejoined with spaces, then a regular expression removes the space before punctuation — otherwise you would read <code>know ,</code> instead of <code>know,</code>.</div>";
 }
@@ -918,7 +918,7 @@ function renderSpec(){
     ? "<h5>V1 stops at the first unknown word</h5><p>“Hello” never appears in “The Verdict”, so the lookup fails immediately and nothing after it is ever processed.</p>"+
       "<div class='spam'><b>Switch to V2</b>Version 2 substitutes <code>&lt;|unk|&gt;</code> instead of raising, so the whole sequence gets encoded.</div>"
     : "<h5>V2 replaces unknown words and keeps going</h5><p>"+unk+" word(s) were outside the vocabulary and became <code>&lt;|unk|&gt;</code> (ID 1131). The separator became ID 1130.</p>"+
-      "<div class='spam'><b>What decoding reveals</b>Decode this and you get <code>&lt;|unk|&gt;, do you like tea? &lt;|endoftext|&gt; In the sunlit terraces of the &lt;|unk|&gt;.</code> — which tells you “Hello” and “palace” are absent from the training story. Information is genuinely lost; BPE in section 2.5 is the better answer.</div>";
+      "<div class='spam'><b>What decoding reveals</b>Decode this and you get <code>&lt;|unk|&gt;, do you like tea? &lt;|endoftext|&gt; In the sunlit terraces of the &lt;|unk|&gt;.</code> — which tells you “Hello” and “palace” are absent from the training story. Information is genuinely lost; BPE, coming next, is the better answer.</div>";
   document.getElementById("v1btn").setAttribute("aria-pressed", String(specV===1));
   document.getElementById("v2btn").setAttribute("aria-pressed", String(specV===2));
 }
@@ -1061,7 +1061,7 @@ function renderWin(){
     "<div class='spam'><b>The trade-off</b>"+
     (overlap>0
       ? "More samples from the same text, but heavy overlap means the model sees near-duplicate examples, which pushes it toward overfitting."
-      : "Fewer samples, but no repetition. This is what the book uses for the real data loader: <code>stride = max_length</code>.")+
+      : "Fewer samples, but no repetition. This is what the real data loader uses: <code>stride = max_length</code>.")+
     "</div>";
 }
 [winCtx,winStride].forEach(el=>el.addEventListener("input",renderWin));
@@ -1071,7 +1071,7 @@ document.getElementById("win-preset-c").addEventListener("click",()=>{winStride.
 renderWin();
 
 /* ============================================================
-   2.7 — embedding lookup (real numbers from the book)
+   2.7 — embedding lookup (real seed-123 numbers)
    ============================================================ */
 const EMB = [
   [ 0.3374,-0.1778,-0.1690],
@@ -1142,7 +1142,7 @@ const QUIZ = [
    o:["Text files are too large","Text is categorical, and networks need continuous numeric values","Networks can only read lowercase text","Text has no fixed length"],
    a:1,
    e:"Networks do arithmetic on continuous values. Words are discrete categories with no inherent numeric ordering, so they must first be mapped to vectors — that mapping is what an embedding is."},
-  {q:"Why does the book's tokenizer deliberately NOT lowercase the text?",
+  {q:"Why does our tokenizer deliberately NOT lowercase the text?",
    o:["Lowercasing is computationally expensive","Capitalisation helps the model distinguish proper nouns and sentence structure","The regex cannot handle lowercase","It would break the vocabulary sort order"],
    a:1,
    e:"Capitalisation is real information: it separates proper nouns from common ones, marks where sentences start, and lets the model generate correctly capitalised text. Throwing it away would lose all of that."},
@@ -1211,7 +1211,7 @@ QUIZ.forEach((item,qi)=>{
    ============================================================ */
 const GLOSSARY = [
   ["Token","The unit a model reads — a word, a subword, or a punctuation mark. Produced by splitting raw text."],
-  ["Tokenization","Splitting raw text into tokens. The book arrives at a regex that separates words from all punctuation."],
+  ["Tokenization","Splitting raw text into tokens. We arrive at a regex that separates words from all punctuation."],
   ["Vocabulary","The set of all unique tokens, each assigned an integer ID. \"The Verdict\" yields 1,130 entries; GPT-2's BPE vocabulary has 50,257."],
   ["Token ID","The integer a token maps to via the vocabulary."],
   ["encode / decode","The two tokenizer methods: text → token IDs, and token IDs → text."],

@@ -615,7 +615,7 @@ tr:last-child td{border-bottom:none}
 
     <div class="aside">
       <div class="lbl">Transformers vs LLMs — not the same word</div>
-      <p>The terms get used interchangeably, but they don't fully overlap. Not all transformers are LLMs — transformers are also used for computer vision. And not all LLMs are transformers — some are built on recurrent or convolutional architectures, usually to improve computational efficiency. Throughout this book, "LLM" means a transformer-based, GPT-like model.</p>
+      <p>The terms get used interchangeably, but they don't fully overlap. Not all transformers are LLMs — transformers are also used for computer vision. And not all LLMs are transformers — some are built on recurrent or convolutional architectures, usually to improve computational efficiency. Throughout this series, "LLM" means a transformer-based, GPT-like model.</p>
     </div>
   </section>
 
@@ -641,7 +641,7 @@ tr:last-child td{border-bottom:none}
         <div class="bars" id="ds-bars"></div>
         <div class="detail" id="ds-detail" aria-live="polite"></div>
       </div>
-      <div class="lab-note">Figures from table 1.1 of the reference book. "Times seen" is derived: share of the 300B training tokens ÷ tokens available in that source.</div>
+      <div class="lab-note">Figures from GPT-3’s published training-data mix (see References). "Times seen" is derived: share of the 300B training tokens ÷ tokens available in that source.</div>
     </div>
 
     <div class="keyidea">
@@ -655,7 +655,7 @@ tr:last-child td{border-bottom:none}
 
     <div class="aside">
       <div class="lbl">What this means for us</div>
-      <p>We'll write real pretraining code and run it on a small dataset — every computation in this book runs on ordinary consumer hardware. Then we'll load openly available pretrained weights into the architecture we built, which lets us skip the expensive stage and go straight to fine-tuning.</p>
+      <p>We'll write real pretraining code and run it on a small dataset — every computation in this series runs on ordinary consumer hardware. Then we'll load openly available pretrained weights into the architecture we built, which lets us skip the expensive stage and go straight to fine-tuning.</p>
     </div>
   </section>
 
@@ -715,7 +715,7 @@ tr:last-child td{border-bottom:none}
   <!-- ============ 1.7 ============ -->
   <section id="s7">
     <div class="prose">
-      <h2>The plan for the rest of the book</h2>
+      <h2>The plan for the rest of the series</h2>
       <p>We'll take GPT's core idea as a blueprint and build it in three stages. Here's the whole route, so you always know where you are.</p>
     </div>
 
@@ -801,7 +801,7 @@ tr:last-child td{border-bottom:none}
 <footer class="foot">
   <div class="foot-in">
     <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
-    <span>A guided companion to <i>Build a Large Language Model (From Scratch)</i> by Sebastian Raschka — Unit 1 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+    <span>Learn with Adi — Unit 1 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
   </div>
 </footer>
 
@@ -1057,7 +1057,7 @@ const DS_MEASURE = {
   share:{max:()=>60, val:d=>d.share, fmt:d=>d.share+"%",
     note:"<h5>How much of training each source actually made up</h5><p>Now the picture changes. WebText2 holds just 19 billion tokens but accounts for 22% of training. Books2 is nearly three times larger than Books1 yet gets the same 8% share. The proportions were chosen by hand, not by size.</p>"},
   epochs:{max:()=>3.5, val:d=>d.epochs, fmt:d=>d.epochs.toFixed(2)+"×",
-    note:"<h5>How many times the model read each source</h5><p>This is the consequence. Wikipedia and WebText2 were read roughly three times over; CommonCrawl and Books2 were sampled at under half a pass. Higher-quality text was deliberately weighted up. <em>Derived from the table — the reference book reports only tokens and proportions.</em></p>"}
+    note:"<h5>How many times the model read each source</h5><p>This is the consequence. Wikipedia and WebText2 were read roughly three times over; CommonCrawl and Books2 were sampled at under half a pass. Higher-quality text was deliberately weighted up. <em>Derived from the table — the published figures give only tokens and proportions.</em></p>"}
 };
 function renderDS(m){
   const cfg = DS_MEASURE[m], max = cfg.max();
@@ -1213,7 +1213,7 @@ const ROAD = [
    f:"Pretraining from scratch costs millions for a real model, so we train small — then load openly available weights into our own architecture."},
   {t:"Stage 3 — Fine-tuning (Units 6 and 7)",
    b:"Take the pretrained model in two directions. Classification fine-tuning adds a classification head and turns it into a spam detector. Instruction fine-tuning trains it on instruction-and-answer pairs so it behaves like an assistant, then evaluates how well it followed the instructions.",
-   f:"These are the two most common real-world uses of an LLM — and where the book ends."}
+   f:"These are the two most common real-world uses of an LLM — and where the series ends."}
 ];
 const roadDetail = document.getElementById("road-detail");
 function showRoad(i){

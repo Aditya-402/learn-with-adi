@@ -212,7 +212,7 @@ pre .kw{color:var(--accent);font-weight:600}
     <div class="title-block">
       <div class="eyebrow">Build an LLM from Scratch · Unit 3 · Part 1 of 2</div>
       <h1>How Attention Actually Works</h1>
-      <p class="standfirst">The hardest stretch of the whole journey, taken slowly. Attention is three small operations — a dot product, a softmax, and a weighted sum — applied in a particular order. In this first part we build it from nothing: every number is derived by hand on the page, every tensor shape is written down, and every value matches the book's printed output exactly.</p>
+      <p class="standfirst">The hardest stretch of the whole journey, taken slowly. Attention is three small operations — a dot product, a softmax, and a weighted sum — applied in a particular order. In this first part we build it from nothing: every number is derived by hand on the page, every tensor shape is written down, and every value verified against a running PyTorch implementation.</p>
       <div class="facts">
         <div><b>One session</b>~45 min</div>
         <div><b>Part 1 of 2</b>Causal &amp; multi-head → Part 2</div>
@@ -257,7 +257,7 @@ pre .kw{color:var(--accent);font-weight:600}
 
     <div class="prose">
       <h3>The route: one mechanism, five versions</h3>
-      <p>The book builds attention four times, each version one step more real than the last. People get lost in this unit when they stop knowing <em>which version they're inside</em>. This strip appears throughout both parts — glance at it whenever you feel unmoored.</p>
+      <p>We build attention four times, each version one step more real than the last. People get lost in this unit when they stop knowing <em>which version they're inside</em>. This strip appears throughout both parts — glance at it whenever you feel unmoored.</p>
     </div>
     <div class="vtrack" aria-label="Versions of attention built in this unit">
       <div class="vt on"><span class="k">STOP 1</span><div class="t">Simplified</div><div class="d">no trainable weights</div></div>
@@ -268,7 +268,7 @@ pre .kw{color:var(--accent);font-weight:600}
     </div>
     <div class="aside">
       <div class="lbl">Reference material</div>
-      <p>This unit's worked examples and code follow Raschka's <i>Build a Large Language Model (From Scratch)</i>, the reference material for this series — so every number you compute here can be checked against a running PyTorch implementation. The exact mapping, and further reading, live in the <a href="#refs">References</a> at the bottom.</p>
+      <p>Every number on this page is verifiable — the companion Colab notebook reproduces each one in live PyTorch. The reference material behind this series, and further reading, live in the <a href="#refs">References</a> at the bottom.</p>
     </div>
   </section>
 
@@ -299,7 +299,7 @@ pre .kw{color:var(--accent);font-weight:600}
         <div class="toks" id="rnn-toks"></div>
         <div class="detail" id="rnn-detail" aria-live="polite"></div>
       </div>
-      <div class="lab-note">You don't need to know how RNNs work internally to build an LLM — the book says so explicitly. The only thing to carry forward is <em>why</em> they were replaced: one vector is too small a doorway for a whole sentence to fit through.</div>
+      <div class="lab-note">You don't need to know how RNNs work internally to build an LLM. The only thing to carry forward is <em>why</em> they were replaced: one vector is too small a doorway for a whole sentence to fit through.</div>
     </div>
   </section>
 
@@ -326,7 +326,7 @@ pre .kw{color:var(--accent);font-weight:600}
       <h3>What we're computing, in plain words</h3>
       <p>The word “journey” means something slightly different in “your journey starts” than in “a journey of a thousand miles”. Its embedding from Unit 2, though, is <em>fixed</em> — the same vector wherever the word appears. What we want is an <b>upgraded vector for each token that has absorbed its surroundings</b>: mostly “journey”, blended with a bit of every other word in the sentence, in proportion to how relevant each one is. That upgraded vector is called a <span class="term" title="An enriched embedding: the token itself blended with every other token, weighted by relevance">context vector</span>, written z.</p>
       <p>So for each token we need two things: a <em>relevance number</em> for every other token, and a way to <em>blend</em> with those numbers. That's genuinely all attention is.</p>
-      <p>The running example, straight from the book: the sentence <b>“Your journey starts with one step”</b>, already embedded as six 3-dimensional vectors. (Three dimensions is absurdly small — GPT-2 uses 768 — but it fits on a page and your mental arithmetic.)</p>
+      <p>Our running example: the sentence <b>“Your journey starts with one step”</b>, already embedded as six 3-dimensional vectors. (Three dimensions is absurdly small — GPT-2 uses 768 — but it fits on a page and your mental arithmetic.)</p>
     </div>
 
     <div class="listing">
@@ -393,7 +393,7 @@ print(attn_scores_2)</pre>
     <div class="prose">
       <h3>Step 2 of 3 — from scores to weights: softmax</h3>
       <p><b>The problem.</b> The six scores are raw and unbounded — they don't sum to anything meaningful, so you can't yet read them as “how much of my attention goes where”. We want each score converted to a <em>share</em>: all positive, summing to exactly 1.</p>
-      <p><b>The obvious fix</b> is to divide each score by the total. That works — the book shows it produces weights [0.1455, 0.2278, 0.2249, 0.1285, 0.1077, 0.1656] — but it breaks the moment a score is negative (shares below zero make no sense), and it treats scores linearly, which turns out to give poor training signals.</p>
+      <p><b>The obvious fix</b> is to divide each score by the total. That works — it produces weights [0.1455, 0.2278, 0.2249, 0.1285, 0.1077, 0.1656] — but it breaks the moment a score is negative (shares below zero make no sense), and it treats scores linearly, which turns out to give poor training signals.</p>
       <p><b>The real fix: softmax.</b> First push every score through eˣ — this makes everything positive (e to any power is positive) and stretches gaps: bigger scores get disproportionately bigger. <em>Then</em> divide by the total.</p>
     </div>
 
@@ -404,12 +404,12 @@ print(attn_scores_2)</pre>
       <div class="m">e^0.9544=2.597  e^1.4950=4.459  e^1.4754=4.373<br>e^0.8434=2.324  e^0.7070=2.028  e^1.0865=2.964</div>
       <p>Sum = 18.745. Divide each by it:</p>
       <div class="m">weights α = [0.1385, <b>0.2379</b>, 0.2333, 0.1240, 0.1082, 0.1581]   <span class="cm">(sums to 1.0)</span></div>
-      <p>Now the numbers read as percentages: “journey” gives 23.8% of its attention to itself, 23.3% to “starts”, 10.8% to “one”. These are the book's printed values.</p>
+      <p>Now the numbers read as percentages: “journey” gives 23.8% of its attention to itself, 23.3% to “starts”, 10.8% to “one”. Run the notebook cell and PyTorch prints these exact values.</p>
     </div>
 
     <div class="aside">
       <div class="lbl">Why softmax and not plain division?</div>
-      <p>Three reasons the book gives, in increasing order of importance: (1) it works for negative scores; (2) it handles extreme values gracefully; (3) it has favourable gradients during training — softmax's smooth exponential shape gives the training loop a usable slope almost everywhere, which plain division doesn't. In practice you always call <code>torch.softmax</code> rather than writing your own: the naive version overflows on large inputs, and PyTorch's is numerically hardened.</p>
+      <p>Three reasons, in increasing order of importance: (1) it works for negative scores; (2) it handles extreme values gracefully; (3) it has favourable gradients during training — softmax's smooth exponential shape gives the training loop a usable slope almost everywhere, which plain division doesn't. In practice you always call <code>torch.softmax</code> rather than writing your own: the naive version overflows on large inputs, and PyTorch's is numerically hardened.</p>
     </div>
 
     <div class="prose">
@@ -464,7 +464,7 @@ print(attn_scores_2)</pre>
       <div class="dl">Worked by hand — the context vector z(2)</div>
       <div class="m">z(2) = 0.1385·[0.43,0.15,0.89] + 0.2379·[0.55,0.87,0.66]<br>&nbsp;&nbsp;&nbsp;&nbsp; + 0.2333·[0.57,0.85,0.64] + 0.1240·[0.22,0.58,0.33]<br>&nbsp;&nbsp;&nbsp;&nbsp; + 0.1082·[0.77,0.25,0.10] + 0.1581·[0.05,0.80,0.55]</div>
       <div class="m">z(2) = <b>[0.4419, 0.6515, 0.5683]</b></div>
-      <p>Compare with the raw embedding x(2) = [0.55, 0.87, 0.66]: same shape, different values — “journey”, now carrying a blend of its sentence. This exact vector is printed in the book.</p>
+      <p>Compare with the raw embedding x(2) = [0.55, 0.87, 0.66]: same shape, different values — “journey”, now carrying a blend of its sentence. The notebook reproduces this exact vector.</p>
     </div>
 
     <div class="confuse">
@@ -497,7 +497,7 @@ print(attn_scores_2)</pre>
         <div id="sa-panel"></div>
         <div class="detail" id="sa-detail" aria-live="polite"></div>
       </div>
-      <div class="lab-note">Set the query to <b>journey</b> and step through: scores <code>[0.9544, 1.4950, …]</code>, weights <code>[0.1385, 0.2379, …]</code>, context vector <code>[0.4419, 0.6515, 0.5683]</code> — precisely the values derived above and printed in the book. Then try other queries: the <em>mechanism</em> never changes, only the numbers.</div>
+      <div class="lab-note">Set the query to <b>journey</b> and step through: scores <code>[0.9544, 1.4950, …]</code>, weights <code>[0.1385, 0.2379, …]</code>, context vector <code>[0.4419, 0.6515, 0.5683]</code> — precisely the values derived above. Then try other queries: the <em>mechanism</em> never changes, only the numbers.</div>
     </div>
   </section>
 
@@ -632,13 +632,13 @@ tensor([[0.4421, 0.5931, 0.5790],
         <text x="616" y="191" text-anchor="middle" font-size="13" font-weight="700" fill="#6d5514" font-family="Georgia,serif">v(2) — the content</text>
         <text x="616" y="210" text-anchor="middle" font-size="11" fill="#6b7585" font-family="Consolas,monospace">(2,)  [0.3951 1.0037]</text>
       </svg>
-      <div class="figcap">One token, three roles, three trainable projections. Every token in the sentence gets all three. The numbers shown are the real values from the book's <code>torch.manual_seed(123)</code> — you'll compute them below.</div>
+      <div class="figcap">One token, three roles, three trainable projections. Every token in the sentence gets all three. The numbers shown are the real values <code>torch.manual_seed(123)</code> produces — you'll compute them below.</div>
     </div>
 
     <div class="prose">
       <h3>The mechanism, re-run with projections</h3>
       <p>Here's the beautiful part: <b>the three steps do not change.</b> Scores are now query·key instead of input·input; the blend is over <em>values</em> instead of raw inputs; and one new scaling step appears before softmax. Everything else is the machine you already know.</p>
-      <p>The book sets <code>d_in = 3</code> (the embedding size we have) and <code>d_out = 2</code> (the projection size), deliberately different so you can see which is which in the shapes. In real GPTs they're equal.</p>
+      <p>We set <code>d_in = 3</code> (the embedding size we have) and <code>d_out = 2</code> (the projection size), deliberately different so you can see which is which in the shapes. In real GPTs they're equal.</p>
     </div>
 
     <div class="listing">
@@ -657,22 +657,22 @@ W_query = [[0.2961, 0.5166],      W_key = [[0.1366, 0.1025],      W_value = [[0.
     <div class="derive">
       <div class="dl">Worked by hand — q(2), and one score</div>
       <p>Project “journey” through W<sub>query</sub>: <span class="shape">(3,) @ (3, 2) → (2,)</span></p>
-      <div class="m">q(2) = [0.55·0.2961 + 0.87·0.2517 + 0.66·0.0740,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.55·0.5166 + 0.87·0.6886 + 0.66·0.8665]<br>&nbsp;&nbsp;&nbsp;&nbsp; = <b>[0.4306, 1.4551]</b>   <span class="cm">(book: tensor([0.4306, 1.4551]) ✓)</span></div>
+      <div class="m">q(2) = [0.55·0.2961 + 0.87·0.2517 + 0.66·0.0740,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.55·0.5166 + 0.87·0.6886 + 0.66·0.8665]<br>&nbsp;&nbsp;&nbsp;&nbsp; = <b>[0.4306, 1.4551]</b>   <span class="cm">(✓ PyTorch agrees: tensor([0.4306, 1.4551]))</span></div>
       <p>The same projection through W<sub>key</sub> and W<sub>value</sub> gives k(2) = [0.4433, 1.1419] and v(2) = [0.3951, 1.0037]. Score of “journey” against itself is now query·key, not input·input:</p>
-      <div class="m">ω₂₂ = q(2)·k(2) = 0.4306·0.4433 + 1.4551·1.1419 = <b>1.8524</b>   <span class="cm">(book ✓)</span></div>
+      <div class="m">ω₂₂ = q(2)·k(2) = 0.4306·0.4433 + 1.4551·1.1419 = <b>1.8524</b>   <span class="cm">(✓ PyTorch agrees)</span></div>
       <p>Against all six keys: <b>[1.2705, 1.8524, 1.8111, 1.0795, 0.5577, 1.5440]</b>. Scale by √d<sub>k</sub> = √2 (explained next), softmax, and:</p>
-      <div class="m">weights α₂ = [0.1500, 0.2264, 0.2199, 0.1311, 0.0906, 0.1820]<br>z(2) = α₂ @ values = <b>[0.3061, 0.8210]</b>   <span class="cm">(book ✓)</span></div>
+      <div class="m">weights α₂ = [0.1500, 0.2264, 0.2199, 0.1311, 0.0906, 0.1820]<br>z(2) = α₂ @ values = <b>[0.3061, 0.8210]</b>   <span class="cm">(✓ PyTorch agrees)</span></div>
       <p>Note z(2) is now 2-dimensional — the shape follows d_out, because the blend is over <em>value vectors</em>, which live in the projected space. <span class="shape">α₂: (6,) @ values: (6, 2) → z: (2,)</span></p>
     </div>
 
     <div class="lab">
       <div class="lab-head">
-        <h4>Lab 5 · Query, key, value — the book's real weights, editable</h4>
+        <h4>Lab 5 · Query, key, value — the real seed-123 weights, editable</h4>
         <span class="lab-kicker">These are the seed-123 values</span>
       </div>
       <div class="lab-body stack">
         <div class="row" style="align-items:flex-start;gap:22px" id="w-editors"></div>
-        <div class="row"><button class="btn ghost" id="w-reset">Reset to the book's weights</button>
+        <div class="row"><button class="btn ghost" id="w-reset">Reset to the seed-123 weights</button>
           <span style="font-size:var(--fs-sm);color:var(--muted)">d_in = 3 → d_out = 2</span></div>
         <div>
           <div class="lbl-sm" style="margin-bottom:8px">Query token</div>
@@ -681,7 +681,7 @@ W_query = [[0.2961, 0.5166],      W_key = [[0.1366, 0.1025],      W_value = [[0.
         <div class="scroll-x" id="qkv-out"></div>
         <div class="detail" id="qkv-detail" aria-live="polite"></div>
       </div>
-      <div class="lab-note">The matrices start at the <b>actual values</b> PyTorch draws with the book's <code>torch.manual_seed(123)</code> — so with the query on “journey” you'll see score 1.8524, weight 0.2264, and z(2) = [0.3061, 0.8210], matching the book digit for digit. Then edit: zero out W_value and watch the context vector die; perturb W_query and watch only the <em>weighting</em> shift. Training does nothing more than nudge these same numbers, millions of times.</div>
+      <div class="lab-note">The matrices start at the <b>actual values</b> PyTorch draws with <code>torch.manual_seed(123)</code> — so with the query on “journey” you'll see score 1.8524, weight 0.2264, and z(2) = [0.3061, 0.8210], reproducible digit for digit in the Colab notebook. Then edit: zero out W_value and watch the context vector die; perturb W_query and watch only the <em>weighting</em> shift. Training does nothing more than nudge these same numbers, millions of times.</div>
     </div>
   </section>
 
@@ -730,11 +730,11 @@ W_query = [[0.2961, 0.5166],      W_key = [[0.1366, 0.1025],      W_value = [[0.
   <section id="s4c">
     <div class="prose">
       <h2>Packaging it: SelfAttention_v1 and _v2</h2>
-      <p>Everything so far was loose lines of code, good for understanding, useless for building. The book now folds the mechanism into a PyTorch class — the shape it will keep, with additions, for the rest of the track. Read it top to bottom; there is nothing in it you haven't already computed by hand.</p>
+      <p>Everything so far was loose lines of code, good for understanding, useless for building. Now we fold the mechanism into a PyTorch class — the shape it will keep, with additions, for the rest of the track. Read it top to bottom; there is nothing in it you haven't already computed by hand.</p>
     </div>
 
     <div class="listing">
-      <div class="lh">Listing 3.1 (book) · A compact self-attention class — stop 2 on the route <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part1.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <div class="lh">The SelfAttention_v1 class — stop 2 on the route <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part1.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>import torch.nn as nn
 
 class SelfAttention_v1(nn.Module):                        <span class="cm"># nn.Module = PyTorch's building block</span>
@@ -771,7 +771,7 @@ tensor([[0.2996, 0.8053],
     </div>
 
     <div class="listing">
-      <div class="lh">Listing 3.2 (book) · The nn.Linear version — stop 3 on the route <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part1.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <div class="lh">SelfAttention_v2 — the nn.Linear version, stop 3 on the route <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part1.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>class SelfAttention_v2(nn.Module):
     def __init__(self, d_in, d_out, qkv_bias=False):
         super().__init__()
@@ -803,7 +803,7 @@ tensor([[-0.0739,  0.0713],
 
     <div class="confuse">
       <div class="lbl">Common confusion</div>
-      <p><b>“v1 and v2 print completely different numbers — is one of them wrong?”</b> Neither. They implement the identical mechanism; they merely <em>start</em> from different random weights (different seed, different initialisation scheme). Untrained attention outputs are meaningless either way — what matters is the machinery that training will shape. The book's exercise 3.1 makes the point concrete: copy v2's weight matrices into v1 (minding that <code>nn.Linear</code> stores its matrix transposed) and the two produce identical outputs.</p>
+      <p><b>“v1 and v2 print completely different numbers — is one of them wrong?”</b> Neither. They implement the identical mechanism; they merely <em>start</em> from different random weights (different seed, different initialisation scheme). Untrained attention outputs are meaningless either way — what matters is the machinery that training will shape. Try it yourself: copy v2's weight matrices into v1 (minding that <code>nn.Linear</code> stores its matrix transposed) and the two produce identical outputs.</p>
     </div>
 
     <div class="confuse">
@@ -871,7 +871,7 @@ tensor([[-0.0739,  0.0713],
 <footer class="foot">
   <div class="foot-in">
     <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
-    <span>A guided companion to <i>Build a Large Language Model (From Scratch)</i> by Sebastian Raschka — Unit 3 · Part 1 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+    <span>Learn with Adi — Unit 3 · Part 1 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
   </div>
 </footer>
 
@@ -880,7 +880,7 @@ tensor([[-0.0739,  0.0713],
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 const f4=v=>v.toFixed(4), f2=v=>v.toFixed(2);
 
-/* The book's input embeddings for "Your journey starts with one step" */
+/* Input embeddings for "Your journey starts with one step" */
 const TOKENS=["Your","journey","starts","with","one","step"];
 const X=[
  [0.43,0.15,0.89],
@@ -996,9 +996,9 @@ function renderSA(){
         ctx.map(v=>"<td>"+f4(v)+"</td>").join("")+"</tr></table></div>";
     det.innerHTML="<h5>Step 3 — the context vector</h5>"+
       "<p>z<sup>("+(saQ+1)+")</sup> = <b>["+ctx.map(f4).join(", ")+"]</b>. Same shape as the input embedding, but now it carries information from the whole sentence in proportion to the attention weights.</p>"+
-      "<div class='spam'><b>Check against the book</b>"+
-      (saQ===1 ? "This is z<sup>(2)</sup>, printed in the book as <code>tensor([0.4419, 0.6515, 0.5683])</code>. Computed live here — they match."
-       : "Set the query to “journey” to compare against the value printed in the book.")+"</div>";
+      "<div class='spam'><b>Check it in code</b>"+
+      (saQ===1 ? "This is z<sup>(2)</sup> — PyTorch prints <code>tensor([0.4419, 0.6515, 0.5683])</code> for it (run the notebook). Computed live here — they match."
+       : "Set the query to “journey” to compare against the notebook’s output.")+"</div>";
   }
 }
 document.querySelectorAll(".step[data-step]").forEach(b=>
@@ -1063,7 +1063,7 @@ document.querySelectorAll("[data-mat]").forEach(b=>b.addEventListener("click",()
 renderMat();
 document.getElementById("mat-detail").innerHTML="<h5>Hover a cell</h5><p>Rows are queries, columns are keys. Cell (i, j) says how much token i attends to token j.</p>";
 
-/* ============ Lab 5 — Q/K/V with the book's real seed-123 weights ============ */
+/* ============ Lab 5 — Q/K/V with the real seed-123 weights ============ */
 const W0={
  q:[[0.2961,0.5166],[0.2517,0.6886],[0.0740,0.8665]],
  k:[[0.1366,0.1025],[0.1841,0.7264],[0.3153,0.6871]],
@@ -1109,9 +1109,9 @@ function renderQKV(rebuild=true){
     "<h5>Context vector for “"+TOKENS[qkvQ]+"”</h5>"+
     "<div class='vecline'>"+ctx.map(v=>"<span class='vb res'>"+f4(v)+"</span>").join("")+"</div>"+
     (isBook && qkvQ===1
-      ? "<p style='margin-top:9px'>z<sup>(2)</sup> = [0.3061, 0.8210] — <b>exactly the book's printed value</b>, because these are the true seed-123 weights.</p>"
+      ? "<p style='margin-top:9px'>z<sup>(2)</sup> = [0.3061, 0.8210] — <b>exactly what PyTorch prints</b>, because these are the true seed-123 weights.</p>"
       : "<p style='margin-top:9px'>Only the <b>query</b> row belongs to the query token. Every token contributes a <b>key</b> (matched against the query) and a <b>value</b> (blended into the result).</p>")+
-    "<div class='spam'><b>Try this</b>Set every entry of W_value to 0 and the context vector collapses to zero — values carry the actual content. Change W_query instead and only the weighting shifts. Then press reset to return to the book's numbers.</div>";
+    "<div class='spam'><b>Try this</b>Set every entry of W_value to 0 and the context vector collapses to zero — values carry the actual content. Change W_query instead and only the weighting shifts. Then press reset to return to the seed values.</div>";
 }
 document.getElementById("w-reset").addEventListener("click",()=>{W=JSON.parse(JSON.stringify(W0));renderQKV(true);});
 renderQKV(true);
@@ -1149,19 +1149,19 @@ const QUIZ=[
  {q:"What was the fundamental limitation of encoder–decoder RNNs?",
   o:["They were too slow to train","The decoder could not access earlier encoder hidden states, so everything had to fit in one vector","They could not handle punctuation","They required labelled data"],
   a:1,
-  e:"The entire input had to be compressed into a single final hidden state, and the decoder could not reach back. Long-range dependencies were lost — which is exactly what attention was invented to fix (section 3.1)."},
+  e:"The entire input had to be compressed into a single final hidden state, and the decoder could not reach back. Long-range dependencies were lost — which is exactly what attention was invented to fix (the bottleneck section)."},
  {q:"Why is the dot product a sensible way to measure attention?",
   o:["It is the fastest operation on a GPU","It measures alignment — and Unit 2's embeddings encode relatedness as alignment","It always returns a value between 0 and 1","It removes the need for normalisation"],
   a:1,
-  e:"Embeddings place related words in similar directions; the dot product measures exactly that alignment. So it converts 'how related are these tokens?' into a single number (section 3.3, step 1)."},
+  e:"Embeddings place related words in similar directions; the dot product measures exactly that alignment. So it converts 'how related are these tokens?' into a single number (step 1 of the simple mechanism)."},
  {q:"What does the softmax step accomplish?",
   o:["It makes the weights positive and sum to 1, with training-friendly gradients","It removes negative embeddings","It reduces the dimensionality","It sorts tokens by relevance"],
   a:0,
-  e:"Softmax turns arbitrary scores into a proper distribution — all positive, totalling 1 — so they read as shares of attention. Versus plain division it also handles negatives and extremes, and gives far better gradients (section 3.3, step 2)."},
+  e:"Softmax turns arbitrary scores into a proper distribution — all positive, totalling 1 — so they read as shares of attention. Versus plain division it also handles negatives and extremes, and gives far better gradients (step 2 of the simple mechanism)."},
  {q:"Why do we need THREE weight matrices — W_query, W_key, W_value?",
   o:["More parameters always improve a model","Each token plays three different roles — seeker, advertisement, content — and one vector can't be optimised for all three jobs at once","GPUs require three separate multiplications","To make the output three times larger"],
   a:1,
-  e:"A token acts as the searcher (query), as the thing being matched against (key), and as the content that gets blended in (value). Optimising one vector for all three jobs would compromise each — so each job gets its own trainable projection (section 3.4)."},
+  e:"A token acts as the searcher (query), as the thing being matched against (key), and as the content that gets blended in (value). Optimising one vector for all three jobs would compromise each — so each job gets its own trainable projection (the three-jobs argument)."},
  {q:"Why are attention scores divided by the square root of d_k?",
   o:["To keep them under 1","Because dot products grow like √d_k with dimension, and unscaled large scores saturate softmax into a step function whose near-zero gradient stalls training","To correct for the batch size","To make the matrix square"],
   a:1,
@@ -1211,7 +1211,7 @@ const GLOSSARY=[
  ["Value (v)","The projection carrying a token's actual content, blended into the output by attention weight."],
  ["W_query / W_key / W_value","The three trainable matrices that give each token its three role-specific projections."],
  ["Scaled dot-product attention","Self-attention where scores are divided by √d_k before softmax. The standard form used in transformers — what SelfAttention_v1/v2 implement."],
- ["d_in / d_out","Input and output embedding dimensions. Equal in real GPT models; deliberately different (3 and 2) in the book's example so shapes stay legible."],
+ ["d_in / d_out","Input and output embedding dimensions. Equal in real GPT models; deliberately different (3 and 2) in our worked example so shapes stay legible."],
  ["Weight parameters vs attention weights","Weight parameters are learned coefficients frozen after training; attention weights are computed fresh for every input."]
 ];
 document.getElementById("gloss-list").innerHTML=GLOSSARY.map(([t,d])=>

@@ -218,7 +218,7 @@ pre .kw{color:var(--accent);font-weight:600}
     </div>
     <div class="aside">
       <div class="lbl">Numbers on this page</div>
-      <p>Sections 3.5–3.6 of the book keep working with the same six-token sentence, but switch to the attention weights produced by <b><code>SelfAttention_v2</code></b> (seed 789) — not the simple weights from Part 1's Lab 4. Every matrix below is the book's printed matrix.</p>
+      <p>We keep working with the same six-token sentence, but from here every number comes from <b><code>SelfAttention_v2</code></b> (seed 789) — not the simple weights from Part 1’s Lab 4. Every matrix below is reproducible in the unit’s Colab notebook.</p>
     </div>
   </section>
 
@@ -299,20 +299,20 @@ pre .kw{color:var(--accent);font-weight:600}
   <section id="s5b">
     <div class="prose">
       <h2>Two routes to the same mask</h2>
-      <p>The book implements the mask twice — first the obvious way, then the efficient way — and proving to yourself that they agree is half the understanding. Both start from the same attention weights that <code>SelfAttention_v2</code> produced for our sentence.</p>
+      <p>We implement the mask twice — first the obvious way, then the efficient way — and proving to yourself that they agree is half the understanding. Both start from the same attention weights that <code>SelfAttention_v2</code> produced for our sentence.</p>
 
       <h3>Route 1 — softmax, zero, renormalise</h3>
       <p>Take the finished attention weights, multiply by a lower-triangular matrix of ones (<code>torch.tril</code>) to zero out the future, then divide each row by its new sum so it totals 1 again:</p>
     </div>
 
     <div class="derive">
-      <div class="dl">Worked on the book's row 2 — “journey”</div>
+      <div class="dl">Worked on row 2 — “journey”</div>
       <p>Row 2 of the v2 attention weights (all six tokens visible):</p>
       <div class="m">[0.2041, 0.1659, 0.1662, 0.1496, 0.1665, 0.1477]</div>
       <p>Zero the future (positions 3–6):</p>
       <div class="m">[0.2041, 0.1659, 0, 0, 0, 0]     sum = 0.3700</div>
       <p>Divide the survivors by 0.3700:</p>
-      <div class="m">[<b>0.5517, 0.4483</b>, 0, 0, 0, 0]   <span class="cm">(book ✓)</span></div>
+      <div class="m">[<b>0.5517, 0.4483</b>, 0, 0, 0, 0]   <span class="cm">(✓ PyTorch agrees)</span></div>
       <p>“journey” now splits all of its attention between “Your” (55%) and itself (45%). The future contributes nothing.</p>
     </div>
 
@@ -326,7 +326,7 @@ masked_norm   = masked_simple / row_sums              <span class="cm"># rows su
 
     <div class="aside">
       <div class="lbl">“But the masked tokens were inside the softmax — isn't that leakage?”</div>
-      <p>A sharp question, and the book addresses it head on. It <em>looks</em> like future tokens influenced the result, since they sat in softmax's denominator before being zeroed. But renormalising afterwards is mathematically identical to having run softmax over only the visible positions in the first place — the masked positions' contribution cancels out exactly. No information leaks. (You can verify this on the numbers above: softmax over just [0.4656, 0.1723]/√2 gives [0.5517, 0.4483].)</p>
+      <p>A sharp question, worth meeting head on. It <em>looks</em> like future tokens influenced the result, since they sat in softmax's denominator before being zeroed. But renormalising afterwards is mathematically identical to having run softmax over only the visible positions in the first place — the masked positions' contribution cancels out exactly. No information leaks. (You can verify this on the numbers above: softmax over just [0.4656, 0.1723]/√2 gives [0.5517, 0.4483].)</p>
     </div>
 
     <div class="prose">
@@ -364,7 +364,7 @@ after softmax:   [0.5517, 0.4483, 0.0000, 0.0000, 0.0000, 0.0000]   # identical 
         <div id="mask-stages"></div>
         <div class="detail" id="mask-detail" aria-live="polite"></div>
       </div>
-      <div class="lab-note">Both routes produce row 2 = <code>[0.5517, 0.4483, 0, 0, 0, 0]</code>, matching the book. These are the true <code>SelfAttention_v2</code> matrices (seed 789) — the same ones the book masks in section 3.5.</div>
+      <div class="lab-note">Both routes produce row 2 = <code>[0.5517, 0.4483, 0, 0, 0, 0]</code>, matching the notebook output. These are the true <code>SelfAttention_v2</code> matrices (seed 789).</div>
     </div>
   </section>
 
@@ -381,10 +381,10 @@ after softmax:   [0.5517, 0.4483, 0.0000, 0.0000, 0.0000, 0.0000]   # identical 
     </div>
 
     <div class="derive">
-      <div class="dl">The book's demonstration — dropout on a matrix of ones</div>
+      <div class="dl">Watch it happen — dropout on a matrix of ones</div>
       <div class="m">torch.manual_seed(123)<br>dropout = torch.nn.Dropout(0.5)<br>print(dropout(torch.ones(6, 6)))</div>
       <div class="m">tensor([[2., 2., 0., 2., 2., 0.],<br>        [0., 0., 0., 2., 0., 2.],<br>        [2., 2., 2., 2., 0., 2.],<br>        [0., 2., 2., 0., 0., 2.],<br>        [0., 2., 0., 2., 0., 2.],<br>        [0., 2., 2., 2., 2., 0.]])</div>
-      <p>Roughly half the ones became 0; every survivor became 2 — that's the 1/(1−0.5) compensation, visible in the raw numbers. (The exact zero pattern can differ by operating system, as the book notes — randomness in PyTorch is seeded per platform.)</p>
+      <p>Roughly half the ones became 0; every survivor became 2 — that's the 1/(1−0.5) compensation, visible in the raw numbers. (The exact zero pattern can differ by operating system — PyTorch seeds randomness per platform.)</p>
     </div>
 
     <div class="lab">
@@ -403,7 +403,7 @@ after softmax:   [0.5517, 0.4483, 0.0000, 0.0000, 0.0000, 0.0000]   # identical 
         <div class="scroll-x"><table class="mx" id="drop-mx"></table></div>
         <div class="detail" id="drop-detail" aria-live="polite"></div>
       </div>
-      <div class="lab-note">The book uses rate 0.5 here purely for visibility; the actual GPT training in Unit 5 uses a gentle 0.1. Hatched cells = the causal mask (fixed). Struck-through cells = dropout (random, changes every reroll). Keep the two masks separate in your head — they exist for completely different reasons.</div>
+      <div class="lab-note">We use rate 0.5 here purely for visibility; the actual GPT training in Unit 5 uses a gentle 0.1. Hatched cells = the causal mask (fixed). Struck-through cells = dropout (random, changes every reroll). Keep the two masks separate in your head — they exist for completely different reasons.</div>
     </div>
   </section>
 
@@ -413,13 +413,13 @@ after softmax:   [0.5517, 0.4483, 0.0000, 0.0000, 0.0000, 0.0000]   # identical 
       <h2>Stop 4: the CausalAttention class</h2>
       <p>Now everything so far — trainable projections, √d<sub>k</sub> scaling, the −∞ mask, dropout — gets folded into one class. Two genuinely new things appear, both practical rather than conceptual:</p>
       <ul class="plain">
-        <li><b>Batches.</b> Unit 2's data loader delivers <em>batches</em> of sequences, not one sentence. Every tensor gains a leading batch dimension: our input becomes <span class="shape">(2, 6, 3) — 2 texts, 6 tokens, 3 dims</span>. The book simulates this by stacking the same sentence twice: <code>batch = torch.stack((inputs, inputs), dim=0)</code>.</li>
+        <li><b>Batches.</b> Unit 2's data loader delivers <em>batches</em> of sequences, not one sentence. Every tensor gains a leading batch dimension: our input becomes <span class="shape">(2, 6, 3) — 2 texts, 6 tokens, 3 dims</span>. We simulate this by stacking the same sentence twice: <code>batch = torch.stack((inputs, inputs), dim=0)</code>.</li>
         <li><b><code>register_buffer</code>.</b> The mask is a tensor the class needs but must <em>not</em> train. Registering it as a buffer stores it inside the module so it automatically travels with the model — crucially, onto the GPU when the model moves there — without ever being touched by the optimiser.</li>
       </ul>
     </div>
 
     <div class="listing">
-      <div class="lh">Listing 3.3 (book) · CausalAttention — annotated line by line <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part2.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <div class="lh">The CausalAttention class — annotated line by line <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part2.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>class CausalAttention(nn.Module):
     def __init__(self, d_in, d_out, context_length, dropout, qkv_bias=False):
         super().__init__()
@@ -460,7 +460,7 @@ context_vecs.shape: torch.Size([2, 6, 2])   # 2 texts, 6 tokens, each a 2-dim co
 
     <div class="confuse">
       <div class="lbl">Common confusion</div>
-      <p><b>“Why <code>transpose(1, 2)</code> when Part 1 used <code>.T</code>?”</b> Plain <code>.T</code> flips <em>all</em> dimensions — with a batch it would also swap the batch axis into the middle, scrambling everything. <code>transpose(1, 2)</code> says precisely: swap axis 1 (tokens) with axis 2 (dims), and leave axis 0 (batch) alone. Every batched operation in the rest of the book names its axes explicitly like this. When reading transformer code, the axis numbers are never decoration — pause on each one.</p>
+      <p><b>“Why <code>transpose(1, 2)</code> when Part 1 used <code>.T</code>?”</b> Plain <code>.T</code> flips <em>all</em> dimensions — with a batch it would also swap the batch axis into the middle, scrambling everything. <code>transpose(1, 2)</code> says precisely: swap axis 1 (tokens) with axis 2 (dims), and leave axis 0 (batch) alone. Every batched operation in the rest of the series names its axes explicitly like this. When reading transformer code, the axis numbers are never decoration — pause on each one.</p>
     </div>
   </section>
 
@@ -476,7 +476,7 @@ context_vecs.shape: torch.Size([2, 6, 2])   # 2 texts, 6 tokens, each a 2-dim co
     </div>
 
     <div class="listing">
-      <div class="lh">Listing 3.4 (book) · MultiHeadAttentionWrapper <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part2.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <div class="lh">The MultiHeadAttentionWrapper class <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part2.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>class MultiHeadAttentionWrapper(nn.Module):
     def __init__(self, d_in, d_out, context_length, dropout, num_heads, qkv_bias=False):
         super().__init__()
@@ -502,7 +502,7 @@ context_vecs.shape: torch.Size([2, 6, 4])          # d_out × num_heads = 2 × 2
     </div>
 
     <div class="prose">
-      <p>Notice the output width: each head produced 2 dimensions, and two heads concatenated give <b>4</b>. (The book's exercise 3.2 asks: how do you get 2-dimensional final outputs while keeping two heads? Answer to reason out, not read: make each head half as wide — <code>d_out=1</code>.)</p>
+      <p>Notice the output width: each head produced 2 dimensions, and two heads concatenated give <b>4</b>. (A puzzle worth pausing on: how would you get 2-dimensional final outputs while keeping two heads? Reason it out before reading on: make each head half as wide — <code>d_out=1</code>.)</p>
       <p>The wrapper is correct but wasteful: it computes the expensive query/key/value projections <em>once per head</em>, and runs heads sequentially in a Python loop. Real implementations do something cleverer.</p>
     </div>
   </section>
@@ -558,13 +558,13 @@ context_vecs.shape: torch.Size([2, 6, 4])          # d_out × num_heads = 2 × 2
 
     <div class="derive">
       <div class="dl">Why the transpose is not optional</div>
-      <p>PyTorch's <code>@</code> multiplies the <em>last two</em> dimensions and treats everything before them as batch dimensions. The book demonstrates with a (1, 2, 3, 4) tensor <code>a</code>: <code>a @ a.transpose(2, 3)</code> multiplies (3, 4) by (4, 3) separately for each of the 2 “heads”, giving (1, 2, 3, 3) — verified in the book against multiplying each head by hand.</p>
+      <p>PyTorch's <code>@</code> multiplies the <em>last two</em> dimensions and treats everything before them as batch dimensions. Take a (1, 2, 3, 4) tensor <code>a</code>: <code>a @ a.transpose(2, 3)</code> multiplies (3, 4) by (4, 3) separately for each of the 2 “heads”, giving (1, 2, 3, 3) — the notebook verifies this against multiplying each head by hand.</p>
       <div class="m">shape (b, <b>heads</b>, tokens, head_dim)  →  @ works per head ✓<br>shape (b, <b>tokens</b>, heads, head_dim)  →  @ would mix across heads ✗</div>
       <p>That is the entire reason for <code>.transpose(1, 2)</code>: it moves <code>heads</code> into the batch position so every head's attention happens independently and simultaneously.</p>
     </div>
 
     <div class="listing">
-      <div class="lh">Listing 3.5 (book) · MultiHeadAttention — the class Unit 4 will import <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part2.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <div class="lh">MultiHeadAttention — the class Unit 4 will import <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part2.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>class MultiHeadAttention(nn.Module):
     def __init__(self, d_in, d_out, context_length, dropout, num_heads, qkv_bias=False):
         super().__init__()
@@ -617,7 +617,7 @@ context_vecs.shape: torch.Size([2, 6, 2])   # here d_out=2 with 2 heads → head
 
     <div class="aside">
       <div class="lbl">Two small print notes</div>
-      <p><b>out_proj:</b> a final linear layer mixing the concatenated heads. Not strictly necessary (the book points to appendix B), but standard in real LLMs, so it's included. <b>Real scale:</b> GPT-2 small runs 12 heads at d_out = 768 (head_dim 64); GPT-2 XL runs 25 heads at 1,600. The book's exercise 3.3 asks you to configure this class to GPT-2 small's numbers — you now know all three arguments that takes.</p>
+      <p><b>out_proj:</b> a final linear layer mixing the concatenated heads. Not strictly necessary, but standard in real LLMs, so it's included. <b>Real scale:</b> GPT-2 small runs 12 heads at d_out = 768 (head_dim 64); GPT-2 XL runs 25 heads at 1,600. Try configuring this class to GPT-2 small's numbers yourself — you now know all three arguments that takes.</p>
     </div>
 
     <div class="lab">
@@ -707,7 +707,7 @@ context_vecs.shape: torch.Size([2, 6, 2])   # here d_out=2 with 2 heads → head
 <footer class="foot">
   <div class="foot-in">
     <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
-    <span>A guided companion to <i>Build a Large Language Model (From Scratch)</i> by Sebastian Raschka — Unit 3 · Part 2 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+    <span>Learn with Adi — Unit 3 · Part 2 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
   </div>
 </footer>
 
@@ -718,7 +718,7 @@ const f4=v=>v.toFixed(4), f2=v=>v.toFixed(2);
 const TOKENS=["Your","journey","starts","with","one","step"];
 const softmax=a=>{const m=Math.max(...a.filter(v=>v!==-Infinity));const e=a.map(v=>v===-Infinity?0:Math.exp(v-m));const s=e.reduce((p,q)=>p+q,0);return e.map(v=>v/s);};
 
-/* SelfAttention_v2 (seed 789) — full attention scores and weights, as printed in the book */
+/* SelfAttention_v2 (seed 789) — full attention scores and weights, verified in PyTorch */
 const SA2_SCORES=[
  [0.2899,0.0716,0.0760,-0.0138,0.1344,-0.0511],
  [0.4656,0.1723,0.1751,0.0259,0.1771,0.0085],
@@ -761,7 +761,7 @@ function renderMask(){
     "<p>"+(maskMode==="naive"
       ? "Softmax first, zero the upper triangle, then divide each row by its own sum to restore totals of 1."
       : "Because e<sup>−∞</sup> = 0, softmax assigns those positions exactly zero probability and the remaining weights already sum to 1. No renormalisation needed.")+"</p>"+
-    "<div class='spam'><b>Both routes agree</b>Row 2 comes out as <code>[0.5517, 0.4483, 0, 0, 0, 0]</code>, matching the book. Tiny ±0.0001 differences can appear because this page starts from the book's printed 4-decimal values rather than full float precision — in PyTorch the two routes are bit-identical.</div>";
+    "<div class='spam'><b>Both routes agree</b>Row 2 comes out as <code>[0.5517, 0.4483, 0, 0, 0, 0]</code>, matching the notebook. Tiny ±0.0001 differences can appear because this page starts from 4-decimal rounded values rather than full float precision — in PyTorch the two routes are bit-identical.</div>";
   document.querySelectorAll("[data-mask]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mask===maskMode)));
 }
 let maskTimer=null;
