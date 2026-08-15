@@ -175,7 +175,7 @@ pre .kw{color:var(--accent);font-weight:600}
     <div class="title-block">
       <div class="eyebrow">Build an LLM from Scratch · Unit 3 · Part 2 of 2</div>
       <h1>Causal Masking, Dropout &amp; Multi-Head</h1>
-      <p class="standfirst">In <a href="ch03.html">Part 1</a> you built scaled dot-product attention. It has one fatal habit for text generation — it can see the future — and one limitation — it has only one way of looking. This part fixes both, and ends with the exact <code>MultiHeadAttention</code> class that chapter 4 plugs into the GPT.</p>
+      <p class="standfirst">In <a href="ch03.html">Part 1</a> you built scaled dot-product attention. It has one fatal habit for text generation — it can see the future — and one limitation — it has only one way of looking. This part fixes both, and ends with the exact <code>MultiHeadAttention</code> class that Unit 4 plugs into the GPT.</p>
       <div class="facts">
         <div><b>One session</b>~40 min</div>
         <div><b>Part 2 of 2</b>Builds on Part 1</div>
@@ -209,7 +209,7 @@ pre .kw{color:var(--accent);font-weight:600}
       <h2>Where we are on the route</h2>
       <p>Part 1 ended at stop 3: <code>SelfAttention_v2</code>, real scaled dot-product attention with trainable W<sub>q</sub>, W<sub>k</sub>, W<sub>v</sub> built on <code>nn.Linear</code>. Two stops remain, and they're the two that make attention usable inside a GPT.</p>
     </div>
-    <div class="vtrack" aria-label="Versions of attention built in this chapter">
+    <div class="vtrack" aria-label="Versions of attention built in this unit">
       <div class="vt dim"><span class="k">STOP 1</span><div class="t">Simplified</div><div class="d">no trainable weights</div><span class="tag">Part 1</span></div>
       <div class="vt dim"><span class="k">STOP 2</span><div class="t">SelfAttention_v1</div><div class="d">+ W<sub>q</sub>, W<sub>k</sub>, W<sub>v</sub></div><span class="tag">Part 1</span></div>
       <div class="vt dim"><span class="k">STOP 3</span><div class="t">SelfAttention_v2</div><div class="d">nn.Linear version</div><span class="tag">Part 1</span></div>
@@ -403,7 +403,7 @@ after softmax:   [0.5517, 0.4483, 0.0000, 0.0000, 0.0000, 0.0000]   # identical 
         <div class="scroll-x"><table class="mx" id="drop-mx"></table></div>
         <div class="detail" id="drop-detail" aria-live="polite"></div>
       </div>
-      <div class="lab-note">The book uses rate 0.5 here purely for visibility; the actual GPT training in chapter 5 uses a gentle 0.1. Hatched cells = the causal mask (fixed). Struck-through cells = dropout (random, changes every reroll). Keep the two masks separate in your head — they exist for completely different reasons.</div>
+      <div class="lab-note">The book uses rate 0.5 here purely for visibility; the actual GPT training in Unit 5 uses a gentle 0.1. Hatched cells = the causal mask (fixed). Struck-through cells = dropout (random, changes every reroll). Keep the two masks separate in your head — they exist for completely different reasons.</div>
     </div>
   </section>
 
@@ -413,7 +413,7 @@ after softmax:   [0.5517, 0.4483, 0.0000, 0.0000, 0.0000, 0.0000]   # identical 
       <h2>Stop 4: the CausalAttention class</h2>
       <p>Now everything so far — trainable projections, √d<sub>k</sub> scaling, the −∞ mask, dropout — gets folded into one class. Two genuinely new things appear, both practical rather than conceptual:</p>
       <ul class="plain">
-        <li><b>Batches.</b> Chapter 2's data loader delivers <em>batches</em> of sequences, not one sentence. Every tensor gains a leading batch dimension: our input becomes <span class="shape">(2, 6, 3) — 2 texts, 6 tokens, 3 dims</span>. The book simulates this by stacking the same sentence twice: <code>batch = torch.stack((inputs, inputs), dim=0)</code>.</li>
+        <li><b>Batches.</b> Unit 2's data loader delivers <em>batches</em> of sequences, not one sentence. Every tensor gains a leading batch dimension: our input becomes <span class="shape">(2, 6, 3) — 2 texts, 6 tokens, 3 dims</span>. The book simulates this by stacking the same sentence twice: <code>batch = torch.stack((inputs, inputs), dim=0)</code>.</li>
         <li><b><code>register_buffer</code>.</b> The mask is a tensor the class needs but must <em>not</em> train. Registering it as a buffer stores it inside the module so it automatically travels with the model — crucially, onto the GPU when the model moves there — without ever being touched by the optimiser.</li>
       </ul>
     </div>
@@ -512,7 +512,7 @@ context_vecs.shape: torch.Size([2, 6, 4])          # d_out × num_heads = 2 × 2
     <div class="prose">
       <h2>Stop 5: one big projection, split into heads</h2>
       <p><b>The trick:</b> instead of two heads each owning a (3×2) query matrix, make <em>one</em> (3×4) query matrix, project once, and then <em>reinterpret</em> the 4-wide result as two 2-wide heads. Same mathematics — a block-diagonal reshuffle of the same numbers — but one matrix multiplication instead of two, and the per-head attention runs as one batched operation on the GPU.</p>
-      <p>All the apparent complexity of <code>MultiHeadAttention</code> is this reinterpretation, done with two tensor operations. This is the cliff edge of the whole chapter, so here it is drawn rather than described:</p>
+      <p>All the apparent complexity of <code>MultiHeadAttention</code> is this reinterpretation, done with two tensor operations. This is the cliff edge of the whole unit, so here it is drawn rather than described:</p>
     </div>
 
     <div class="fig" role="img" aria-label="Shape-flow diagram of the view and transpose operations in multi-head attention">
@@ -564,7 +564,7 @@ context_vecs.shape: torch.Size([2, 6, 4])          # d_out × num_heads = 2 × 2
     </div>
 
     <div class="listing">
-      <div class="lh">Listing 3.5 (book) · MultiHeadAttention — the class chapter 4 will import <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part2.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <div class="lh">Listing 3.5 (book) · MultiHeadAttention — the class Unit 4 will import <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit03-part2.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>class MultiHeadAttention(nn.Module):
     def __init__(self, d_in, d_out, context_length, dropout, num_heads, qkv_bias=False):
         super().__init__()
@@ -648,8 +648,8 @@ context_vecs.shape: torch.Size([2, 6, 2])   # here d_out=2 with 2 heads → head
     </div>
 
     <div class="keyidea">
-      <div class="lbl">The chapter in one line</div>
-      <p><b>score = q·k → scale by √d<sub>k</sub> → mask the future with −∞ → softmax → dropout → blend the values — repeated across heads, concatenated, mixed.</b> That sequence is the entire engine of a GPT. Chapter 4 builds the car around it: normalisation, feed-forward layers, shortcut connections — and stacks the result twelve times.</p>
+      <div class="lbl">The unit in one line</div>
+      <p><b>score = q·k → scale by √d<sub>k</sub> → mask the future with −∞ → softmax → dropout → blend the values — repeated across heads, concatenated, mixed.</b> That sequence is the entire engine of a GPT. Unit 4 builds the car around it: normalisation, feed-forward layers, shortcut connections — and stacks the result twelve times.</p>
     </div>
   </section>
 
@@ -657,7 +657,7 @@ context_vecs.shape: torch.Size([2, 6, 2])   # here d_out=2 with 2 heads → head
   <section id="quiz">
     <div class="prose">
       <h2>Check yourself</h2>
-      <p>Six questions on Part 2. Together with Part 1's quiz, this is the chapter worth being sure about.</p>
+      <p>Six questions on Part 2. Together with Part 1's quiz, this is the unit worth being sure about.</p>
     </div>
     <div class="stack" id="quiz-box"></div>
     <div class="score" id="quiz-score" hidden></div>
@@ -691,7 +691,7 @@ context_vecs.shape: torch.Size([2, 6, 2])   # here d_out=2 with 2 heads → head
     <div class="next">
       <div class="lbl">Coming next</div>
       <h3>Unit 4 · Assembling a GPT</h3>
-      <p style="font-size:var(--fs-cap);color:var(--slate)">You now have the engine — the exact <code>MultiHeadAttention</code> class the GPT uses. Chapter 4 builds the car around it: layer normalisation, GELU feed-forward networks, shortcut connections, and the transformer block that wraps attention. Stack that block twelve times and you have a 124-million-parameter GPT-2 that generates text.</p>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">You now have the engine — the exact <code>MultiHeadAttention</code> class the GPT uses. Unit 4 builds the car around it: layer normalisation, GELU feed-forward networks, shortcut connections, and the transformer block that wraps attention. Stack that block twelve times and you have a 124-million-parameter GPT-2 that generates text.</p>
     </div>
   </section>
 
@@ -902,7 +902,7 @@ QUIZ.forEach((item,qi)=>{
       card.appendChild(ex);
       if(answered===QUIZ.length){scoreEl.hidden=false;
         scoreEl.textContent="You scored "+correct+" out of "+QUIZ.length+
-          (correct===QUIZ.length?" — the hardest chapter in the book is yours.":
+          (correct===QUIZ.length?" — the hardest stretch of the journey is yours.":
            correct>=4?" — good. Revisit the labs for the ones you missed.":
            " — this material rewards a second pass. Work through labs 7 and 9 again.");}
     });
@@ -946,5 +946,6 @@ addEventListener("resize",syncRail); syncRail();
 </script>
 <script src="../../assets/site-config.js"></script>
 <script src="../../assets/progress.js"></script>
+<script src="../../assets/spark.js" defer></script>
 </body>
 </html>

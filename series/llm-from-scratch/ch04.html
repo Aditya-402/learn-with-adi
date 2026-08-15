@@ -258,7 +258,7 @@ tr:last-child td{border-bottom:none}
 
     <div class="keyidea">
       <div class="lbl">Why GPT-2 and not GPT-3</div>
-      <p>Architecturally they're the same thing; GPT-3 is GPT-2 scaled from 1.5 billion to 175 billion parameters. But OpenAI released GPT-2's weights, so we can load real pretrained values into our own code in chapter 6. GPT-3 also isn't runnable on a laptop — one estimate puts training it on a single V100 at <b>355 years</b>.</p>
+      <p>Architecturally they're the same thing; GPT-3 is GPT-2 scaled from 1.5 billion to 175 billion parameters. But OpenAI released GPT-2's weights, so we can load real pretrained values into our own code in Unit 6. GPT-3 also isn't runnable on a laptop — one estimate puts training it on a single V100 at <b>355 years</b>.</p>
     </div>
   </section>
 
@@ -297,7 +297,7 @@ tr:last-child td{border-bottom:none}
 
     <div class="aside">
       <div class="lbl">Two details in the real class</div>
-      <p>The <code>LayerNorm</code> module adds <b>eps</b> (1e−5) inside the square root to avoid dividing by zero, and two <em>trainable</em> vectors — <b>scale</b> and <b>shift</b> — so the model can learn to undo or adjust the normalisation if that helps. It also uses <code>unbiased=False</code>, dividing by n rather than n−1, to match the original GPT-2 implementation so pretrained weights load correctly in chapter 6.</p>
+      <p>The <code>LayerNorm</code> module adds <b>eps</b> (1e−5) inside the square root to avoid dividing by zero, and two <em>trainable</em> vectors — <b>scale</b> and <b>shift</b> — so the model can learn to undo or adjust the normalisation if that helps. It also uses <code>unbiased=False</code>, dividing by n rather than n−1, to match the original GPT-2 implementation so pretrained weights load correctly in Unit 6.</p>
     </div>
   </section>
 
@@ -490,7 +490,7 @@ tr:last-child td{border-bottom:none}
 
     <div class="keyidea">
       <div class="lbl">The output is gibberish, and that's correct</div>
-      <p>"Hello, I am Featureiman Byeswickattribute argue" is what a <em>correctly built</em> GPT produces before training. The architecture is complete and the weights are still random. Every operation in this chapter is plumbing; chapter 5 supplies the intelligence by adjusting those 163 million numbers.</p>
+      <p>"Hello, I am Featureiman Byeswickattribute argue" is what a <em>correctly built</em> GPT produces before training. The architecture is complete and the weights are still random. Every operation in this unit is plumbing; Unit 5 supplies the intelligence by adjusting those 163 million numbers.</p>
     </div>
   </section>
 
@@ -515,7 +515,7 @@ tr:last-child td{border-bottom:none}
     <div class="next">
       <div class="lbl">Coming next</div>
       <h3>Unit 5 · Pretraining on unlabeled data</h3>
-      <p style="font-size:var(--fs-cap);color:var(--slate)">The model is built but empty. Chapter 5 measures how wrong it is with a loss function, runs the training loop that reduces that loss, and adds temperature scaling and top-k sampling so generation stops being purely greedy. It ends by loading OpenAI's pretrained GPT-2 weights into the architecture you just built.</p>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">The model is built but empty. Unit 5 measures how wrong it is with a loss function, runs the training loop that reduces that loss, and adds temperature scaling and top-k sampling so generation stops being purely greedy. It ends by loading OpenAI's pretrained GPT-2 weights into the architecture you just built.</p>
     </div>
   </section>
   <section class="lwa-refs" id="refs">
@@ -525,11 +525,11 @@ tr:last-child td{border-bottom:none}
     </div>
     <ol>
       <li class="hero"><b>Raschka, S.</b> — <i>Build a Large Language Model (From Scratch), Manning, 2024</i>. <span class="why">The reference material for this series — this unit covers the same ground as its chapter 4 (pages 176–236).</span> <a href="https://www.manning.com/books/build-a-large-language-model-from-scratch" rel="noopener">book</a> · <a href="https://github.com/rasbt/LLMs-from-scratch" rel="noopener">code</a></li>
-      <li><b>Radford, A. et al.</b> — <i>Language Models are Unsupervised Multitask Learners (GPT-2), 2019</i>. <span class="why">The 124M-parameter architecture this chapter reproduces.</span> <a href="https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf" rel="noopener">paper</a></li>
+      <li><b>Radford, A. et al.</b> — <i>Language Models are Unsupervised Multitask Learners (GPT-2), 2019</i>. <span class="why">The 124M-parameter architecture this unit reproduces.</span> <a href="https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf" rel="noopener">paper</a></li>
       <li><b>Ba, J., Kiros, J., Hinton, G.</b> — <i>Layer Normalization, 2016</i>. <span class="why">The normalisation trick of section 4.2.</span> <a href="https://arxiv.org/abs/1607.06450" rel="noopener">arXiv</a></li>
       <li><b>Hendrycks, D., Gimpel, K.</b> — <i>Gaussian Error Linear Units (GELUs), 2016</i>. <span class="why">The activation function of section 4.3.</span> <a href="https://arxiv.org/abs/1606.08415" rel="noopener">arXiv</a></li>
       <li><b>He, K. et al.</b> — <i>Deep Residual Learning for Image Recognition, CVPR 2016</i>. <span class="why">Shortcut connections (section 4.4) come from here.</span> <a href="https://arxiv.org/abs/1512.03385" rel="noopener">arXiv</a></li>
-      <li><b>Karpathy, A.</b> — <i>nanoGPT</i>. <span class="why">A minimal GPT training repo to read once this chapter makes sense.</span> <a href="https://github.com/karpathy/nanoGPT" rel="noopener">code</a></li>
+      <li><b>Karpathy, A.</b> — <i>nanoGPT</i>. <span class="why">A minimal GPT training repo to read once this unit makes sense.</span> <a href="https://github.com/karpathy/nanoGPT" rel="noopener">code</a></li>
     </ol>
   </section>
 
@@ -565,9 +565,9 @@ const ARCH=[
   f:"Identical in structure, different in weights. This is where nearly all the computation happens."},
  {k:"emb",  nm:"Dropout",              sh:"(2, 4, 768)", d:"10% of the embedding values are randomly zeroed during training to reduce overfitting. Disabled at inference.",
   f:"No parameters at all — dropout is an operation, not a layer with weights."},
- {k:"emb",  nm:"+ Positional embedding",sh:"(2, 4, 768)", d:"A 1024 × 768 table indexed by position, added to the token embeddings so word order survives (chapter 2).",
+ {k:"emb",  nm:"+ Positional embedding",sh:"(2, 4, 768)", d:"A 1024 × 768 table indexed by position, added to the token embeddings so word order survives (Unit 2).",
   f:"Only the first 4 rows are used here, because the input is 4 tokens long."},
- {k:"emb",  nm:"Token embedding",      sh:"(2, 4, 768)", d:"A 50,257 × 768 lookup table turning each token ID into a 768-dimensional vector (chapter 2).",
+ {k:"emb",  nm:"Token embedding",      sh:"(2, 4, 768)", d:"A 50,257 × 768 lookup table turning each token ID into a 768-dimensional vector (Unit 2).",
   f:"38,597,376 parameters — nearly a quarter of the whole model sits in this one table."},
  {k:"",     nm:"Token IDs in",         sh:"(2, 4)", d:"Two sequences of four tokens each: “Every effort moves you” and “Every day holds a”, encoded by the BPE tokenizer.",
   f:"Token IDs [[6109, 3626, 6100, 345], [6109, 1110, 6622, 257]]."}
@@ -731,7 +731,7 @@ renderGrad();
 const TB=[
  {c:"shortcut = x",              t:"Save the input",        d:"Before touching anything, keep a copy of the input. This is the residual that gets added back in three steps' time.", s:"(2, 4, 768)"},
  {c:"x = self.norm1(x)",         t:"Normalise",             d:"LayerNorm rescales each token's 768 features to mean 0, variance 1. Pre-LayerNorm: normalisation happens <em>before</em> attention, not after.", s:"(2, 4, 768)"},
- {c:"x = self.att(x)",           t:"Masked multi-head attention", d:"The whole of chapter 3 in one line. 12 heads, causal masking, dropout on the attention weights. This is the only step where tokens see each other.", s:"(2, 4, 768)"},
+ {c:"x = self.att(x)",           t:"Masked multi-head attention", d:"The whole of Unit 3 in one line. 12 heads, causal masking, dropout on the attention weights. This is the only step where tokens see each other.", s:"(2, 4, 768)"},
  {c:"x = self.drop_shortcut(x)", t:"Dropout",               d:"10% of values zeroed during training to reduce overfitting.", s:"(2, 4, 768)"},
  {c:"x = x + shortcut",          t:"Add the input back",    d:"The residual connection. Gradients now have a path that bypasses attention entirely.", s:"(2, 4, 768)"},
  {c:"shortcut = x",              t:"Save again",            d:"Second sub-block, same pattern. Store the current value as the next residual.", s:"(2, 4, 768)"},
@@ -854,7 +854,7 @@ function renderGen(){
     : "<h5>Iteration "+genN+": token "+GENERATED[genN-1].id+"</h5><p>"+GENERATED[genN-1].note+"</p>"+
       "<div class='spam'><b>"+(genN>=6?"Final output":"Context length")+"</b>"+
       (genN>=6
-       ? "The ten token IDs decode to “Hello, I am Featureiman Byeswickattribute argue” — complete gibberish, and exactly what an untrained but correctly built GPT produces. Chapter 5 fixes this by training the weights."
+       ? "The ten token IDs decode to “Hello, I am Featureiman Byeswickattribute argue” — complete gibberish, and exactly what an untrained but correctly built GPT produces. Unit 5 fixes this by training the weights."
        : (START.length+genN)+" tokens. Each new token becomes part of the input for the next prediction — this is the autoregressive loop.")+"</div>";
 }
 document.getElementById("gen-step").addEventListener("click",()=>{if(genN<6){genN++;renderGen();}});
@@ -890,7 +890,7 @@ const QUIZ=[
  {q:"Why does the untrained model output gibberish?",
   o:["The architecture has a bug","The tokenizer is misconfigured","The weights are still random — the architecture is complete but has learned nothing","The context length is too short"],
   a:2,
-  e:"Everything in this chapter is plumbing. The model correctly performs every operation, but its 163 million parameters are random initial values. Gibberish is the expected and correct output at this stage; chapter 5 trains them."}
+  e:"Everything in this unit is plumbing. The model correctly performs every operation, but its 163 million parameters are random initial values. Gibberish is the expected and correct output at this stage; Unit 5 trains them."}
 ];
 const quizBox=document.getElementById("quiz-box"), scoreEl=document.getElementById("quiz-score");
 let answered=0,correct=0;
@@ -912,7 +912,7 @@ QUIZ.forEach((item,qi)=>{
         scoreEl.textContent="You scored "+correct+" out of "+QUIZ.length+
           (correct===QUIZ.length?" — the architecture is yours. On to training.":
            correct>=5?" — solid. Revisit the labs for the ones you missed.":
-           " — worth another pass through labs 5 and 7 before chapter 5.");}
+           " — worth another pass through labs 5 and 7 before Unit 5.");}
     });
     opts.appendChild(b);
   });
@@ -960,5 +960,6 @@ addEventListener("resize",syncRail); syncRail();
 </script>
 <script src="../../assets/site-config.js"></script>
 <script src="../../assets/progress.js"></script>
+<script src="../../assets/spark.js" defer></script>
 </body>
 </html>

@@ -255,7 +255,7 @@ pre .st{color:var(--teal)}
     <div class="title-block">
       <div class="eyebrow">Build an LLM from Scratch · Unit 2</div>
       <h1>From Text to Tensors</h1>
-      <p class="standfirst">A neural network cannot read. It can only multiply numbers. This chapter is the entire pipeline that turns a string of characters into something a GPT can actually consume — and you build every stage of it here.</p>
+      <p class="standfirst">A neural network cannot read. It can only multiply numbers. This unit is the entire pipeline that turns a string of characters into something a GPT can actually consume — and you build every stage of it here.</p>
       <div class="facts">
         <div><b>One session</b>~40 min</div>
         <div><b>8 sections</b>2.1 – 2.8</div>
@@ -325,7 +325,7 @@ pre .st{color:var(--teal)}
     <div class="prose">
       <h2>Splitting text into tokens</h2>
       <p>Before anything can be embedded, text must be broken into <b>tokens</b> — individual words and special characters, including punctuation. The book uses "The Verdict", a public-domain short story by Edith Wharton, 20,479 characters long.</p>
-      <p>The chapter arrives at its tokenizer by refining a regular expression three times. Rather than read the three versions, run them. Pick a rule below and watch the same sentence split differently.</p>
+      <p>This unit arrives at its tokenizer by refining a regular expression three times. Rather than read the three versions, run them. Pick a rule below and watch the same sentence split differently.</p>
     </div>
 
     <div class="lab">
@@ -532,7 +532,7 @@ slow:3</textarea>
   <section id="s6">
     <div class="prose">
       <h2>Sampling with a sliding window</h2>
-      <p>We now have a stream of token IDs. Training needs <b>input–target pairs</b>, and from chapter 1 you already know the rule: the target is the input shifted by one position.</p>
+      <p>We now have a stream of token IDs. Training needs <b>input–target pairs</b>, and from Unit 1 you already know the rule: the target is the input shifted by one position.</p>
       <p>Two settings control how those pairs are cut from the stream. <b>Context size</b> (called <code>max_length</code> in the code) is how many tokens go into one input. <b>Stride</b> is how far the window jumps before taking the next sample. Change them below and watch the batches change.</p>
     </div>
 
@@ -629,7 +629,7 @@ slow:3</textarea>
   <section id="s8">
     <div class="prose">
       <h2>Encoding word positions</h2>
-      <p>There's one flaw left. The embedding layer maps a token ID to the same vector <em>regardless of where it sits</em> in the sequence. And as chapter 3 will show, the self-attention mechanism is itself position-agnostic. So as things stand, "the dog bit the man" and "the man bit the dog" would look disturbingly similar to the model.</p>
+      <p>There's one flaw left. The embedding layer maps a token ID to the same vector <em>regardless of where it sits</em> in the sequence. And as Unit 3 will show, the self-attention mechanism is itself position-agnostic. So as things stand, "the dog bit the man" and "the man bit the dog" would look disturbingly similar to the model.</p>
       <p>The fix is to add a second embedding — one indexed by <em>position</em> rather than by token — and simply add the two vectors together.</p>
     </div>
 
@@ -664,8 +664,8 @@ slow:3</textarea>
     </div>
 
     <div class="keyidea">
-      <div class="lbl">The chapter in one line</div>
-      <p><b>text → tokens → token IDs → token embeddings → + positional embeddings → input embeddings.</b> That last tensor is what chapter 3 feeds into the attention mechanism. Everything in this chapter exists to produce it.</p>
+      <div class="lbl">The unit in one line</div>
+      <p><b>text → tokens → token IDs → token embeddings → + positional embeddings → input embeddings.</b> That last tensor is what Unit 3 feeds into the attention mechanism. Everything in this unit exists to produce it.</p>
     </div>
   </section>
 
@@ -683,7 +683,7 @@ slow:3</textarea>
   <section id="gloss">
     <div class="prose">
       <h2>Glossary</h2>
-      <p>The vocabulary of this chapter — most of it recurs for the rest of the book.</p>
+      <p>The vocabulary of this unit — most of it recurs for the rest of the series.</p>
     </div>
     <dl class="gloss" id="gloss-list"></dl>
   </section>
@@ -692,7 +692,7 @@ slow:3</textarea>
     <div class="next">
       <div class="lbl">Coming next</div>
       <h3>Unit 3 · Coding attention mechanisms</h3>
-      <p style="font-size:var(--fs-cap);color:var(--slate)">You can now turn any text into input embeddings. Chapter 3 takes that tensor and builds the mechanism that made transformers work: self-attention. It starts with a version that has no trainable weights at all, adds them, then adds causal masking so the model can't peek at future words, and finishes with multi-head attention.</p>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">You can now turn any text into input embeddings. Unit 3 takes that tensor and builds the mechanism that made transformers work: self-attention. It starts with a version that has no trainable weights at all, adds them, then adds causal masking so the model can't peek at future words, and finishes with multi-head attention.</p>
     </div>
   </section>
   <section class="lwa-refs" id="refs">
@@ -705,7 +705,7 @@ slow:3</textarea>
       <li><b>Sennrich, R., Haddow, B., Birch, A.</b> — <i>Neural Machine Translation of Rare Words with Subword Units, ACL 2016</i>. <span class="why">The byte pair encoding paper — the algorithm you train in Lab 5.</span> <a href="https://arxiv.org/abs/1508.07909" rel="noopener">arXiv</a></li>
       <li><b>OpenAI</b> — <i>tiktoken — fast BPE tokenizer</i>. <span class="why">The production tokenizer the book (and this course) uses from here on.</span> <a href="https://github.com/openai/tiktoken" rel="noopener">code</a></li>
       <li><b>Mikolov, T. et al.</b> — <i>Efficient Estimation of Word Representations in Vector Space (Word2Vec), 2013</i>. <span class="why">The classic word-embedding method behind Lab 1's intuition.</span> <a href="https://arxiv.org/abs/1301.3781" rel="noopener">arXiv</a></li>
-      <li><b>Karpathy, A.</b> — <i>Let's build the GPT Tokenizer, 2024</i>. <span class="why">A two-hour video building BPE from nothing — perfect companion to this chapter.</span> <a href="https://www.youtube.com/watch?v=zduSFxRajkE" rel="noopener">video</a></li>
+      <li><b>Karpathy, A.</b> — <i>Let's build the GPT Tokenizer, 2024</i>. <span class="why">A two-hour video building BPE from nothing — perfect companion to this unit.</span> <a href="https://www.youtube.com/watch?v=zduSFxRajkE" rel="noopener">video</a></li>
     </ol>
   </section>
 
@@ -1157,7 +1157,7 @@ const QUIZ = [
   {q:"In the sliding window, what does the target sequence consist of?",
    o:["A random token from later in the text","The input shifted one position to the right","The input reversed","A summary of the input"],
    a:1,
-   e:"Target = input shifted by one. Every position's label is simply the token that follows it — the same self-supervision trick from chapter 1, now expressed as tensors."},
+   e:"Target = input shifted by one. Every position's label is simply the token that follows it — the same self-supervision trick from Unit 1, now expressed as tensors."},
   {q:"What happens when stride is set equal to context size?",
    o:["Training becomes twice as fast","Consecutive samples no longer overlap and each token is used once","The model sees each token twice","The batch size doubles"],
    a:1,
@@ -1195,9 +1195,9 @@ QUIZ.forEach((item,qi)=>{
       if(answered===QUIZ.length){
         scoreEl.hidden = false;
         scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
-          (correct===QUIZ.length ? " — the whole pipeline. Chapter 3 awaits."
+          (correct===QUIZ.length ? " — the whole pipeline. Unit 3 awaits."
            : correct>=5 ? " — solid. Revisit the labs for the ones you missed."
-           : " — worth another run through the labs before chapter 3.");
+           : " — worth another run through the labs before Unit 3.");
       }
     });
     opts.appendChild(b);
@@ -1256,5 +1256,6 @@ syncRail();
 </script>
 <script src="../../assets/site-config.js"></script>
 <script src="../../assets/progress.js"></script>
+<script src="../../assets/spark.js" defer></script>
 </body>
 </html>

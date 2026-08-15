@@ -212,7 +212,7 @@ pre .kw{color:var(--accent);font-weight:600}
     <div class="title-block">
       <div class="eyebrow">Build an LLM from Scratch · Unit 3 · Part 1 of 2</div>
       <h1>How Attention Actually Works</h1>
-      <p class="standfirst">The hardest chapter in the book, taken slowly. Attention is three small operations — a dot product, a softmax, and a weighted sum — applied in a particular order. In this first part we build it from nothing: every number is derived by hand on the page, every tensor shape is written down, and every value matches the book's printed output exactly.</p>
+      <p class="standfirst">The hardest stretch of the whole journey, taken slowly. Attention is three small operations — a dot product, a softmax, and a weighted sum — applied in a particular order. In this first part we build it from nothing: every number is derived by hand on the page, every tensor shape is written down, and every value matches the book's printed output exactly.</p>
       <div class="facts">
         <div><b>One session</b>~45 min</div>
         <div><b>Part 1 of 2</b>Causal &amp; multi-head → Part 2</div>
@@ -245,21 +245,21 @@ pre .kw{color:var(--accent);font-weight:600}
   <section id="pre">
     <div class="prose">
       <h2>Before you start</h2>
-      <p>This chapter has a reputation, and it earns it — not because any single step is hard, but because five or six easy steps stack on top of each other and the notation hides how easy each one is. So we take it in two sittings. This page (Part 1) builds attention from nothing up to the real, trainable mechanism used in GPTs. <a href="ch03b.html">Part 2</a> adds the causal mask, dropout, and multiple heads.</p>
-      <p>Four things are assumed. If any feels shaky, spend ten minutes on it first — this chapter repays that tenfold:</p>
+      <p>This unit has a reputation, and it earns it — not because any single step is hard, but because five or six easy steps stack on top of each other and the notation hides how easy each one is. So we take it in two sittings. This page (Part 1) builds attention from nothing up to the real, trainable mechanism used in GPTs. <a href="ch03b.html">Part 2</a> adds the causal mask, dropout, and multiple heads.</p>
+      <p>Four things are assumed. If any feels shaky, spend ten minutes on it first — this unit repays that tenfold:</p>
     </div>
     <div class="prereq">
-      <div class="pq"><b>Vectors &amp; matrix multiplication</b>You should know that a (6×3) matrix times a (3×2) matrix gives a (6×2) matrix, and roughly why. Every step in this chapter is one of these.</div>
-      <div class="pq"><b>Embeddings (chapter 2)</b>Tokens are already vectors, and <em>related tokens point in similar directions</em>. That single fact from <a href="ch02.html">chapter 2</a> is what makes attention work at all.</div>
-      <div class="pq"><b>What “trainable” means</b>A trainable parameter is a number the training loop nudges to reduce the loss (chapter 1's idea; the mechanics arrive in chapter 5). Here you only need the concept.</div>
+      <div class="pq"><b>Vectors &amp; matrix multiplication</b>You should know that a (6×3) matrix times a (3×2) matrix gives a (6×2) matrix, and roughly why. Every step in this unit is one of these.</div>
+      <div class="pq"><b>Embeddings (Unit 2)</b>Tokens are already vectors, and <em>related tokens point in similar directions</em>. That single fact from <a href="ch02.html">Unit 2</a> is what makes attention work at all.</div>
+      <div class="pq"><b>What “trainable” means</b>A trainable parameter is a number the training loop nudges to reduce the loss (Unit 1's idea; the mechanics arrive in Unit 5). Here you only need the concept.</div>
       <div class="pq"><b>A little PyTorch</b><code>tensor</code>, <code>@</code> for matrix multiply, and what an <code>nn.Module</code> is. New to it? The official <a href="https://docs.pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html" rel="noopener">60-minute blitz</a> is enough.</div>
     </div>
 
     <div class="prose">
       <h3>The route: one mechanism, five versions</h3>
-      <p>The book builds attention four times, each version one step more real than the last. People get lost in this chapter when they stop knowing <em>which version they're inside</em>. This strip appears throughout both parts — glance at it whenever you feel unmoored.</p>
+      <p>The book builds attention four times, each version one step more real than the last. People get lost in this unit when they stop knowing <em>which version they're inside</em>. This strip appears throughout both parts — glance at it whenever you feel unmoored.</p>
     </div>
-    <div class="vtrack" aria-label="Versions of attention built in this chapter">
+    <div class="vtrack" aria-label="Versions of attention built in this unit">
       <div class="vt on"><span class="k">STOP 1</span><div class="t">Simplified</div><div class="d">no trainable weights</div></div>
       <div class="vt on"><span class="k">STOP 2</span><div class="t">SelfAttention_v1</div><div class="d">+ W<sub>q</sub>, W<sub>k</sub>, W<sub>v</sub></div></div>
       <div class="vt on"><span class="k">STOP 3</span><div class="t">SelfAttention_v2</div><div class="d">nn.Linear version</div></div>
@@ -324,7 +324,7 @@ pre .kw{color:var(--accent);font-weight:600}
       <p>We start with a deliberately stripped-down version — version 1 on the route strip, with nothing to learn — because it isolates the mechanism. Once you can compute this version by hand, the real one is a small edit.</p>
 
       <h3>What we're computing, in plain words</h3>
-      <p>The word “journey” means something slightly different in “your journey starts” than in “a journey of a thousand miles”. Its embedding from chapter 2, though, is <em>fixed</em> — the same vector wherever the word appears. What we want is an <b>upgraded vector for each token that has absorbed its surroundings</b>: mostly “journey”, blended with a bit of every other word in the sentence, in proportion to how relevant each one is. That upgraded vector is called a <span class="term" title="An enriched embedding: the token itself blended with every other token, weighted by relevance">context vector</span>, written z.</p>
+      <p>The word “journey” means something slightly different in “your journey starts” than in “a journey of a thousand miles”. Its embedding from Unit 2, though, is <em>fixed</em> — the same vector wherever the word appears. What we want is an <b>upgraded vector for each token that has absorbed its surroundings</b>: mostly “journey”, blended with a bit of every other word in the sentence, in proportion to how relevant each one is. That upgraded vector is called a <span class="term" title="An enriched embedding: the token itself blended with every other token, weighted by relevance">context vector</span>, written z.</p>
       <p>So for each token we need two things: a <em>relevance number</em> for every other token, and a way to <em>blend</em> with those numbers. That's genuinely all attention is.</p>
       <p>The running example, straight from the book: the sentence <b>“Your journey starts with one step”</b>, already embedded as six 3-dimensional vectors. (Three dimensions is absurdly small — GPT-2 uses 768 — but it fits on a page and your mental arithmetic.)</p>
     </div>
@@ -346,7 +346,7 @@ inputs = torch.tensor(
     <div class="prose">
       <h3>Step 1 of 3 — a relevance number: the dot product</h3>
       <p><b>The problem.</b> We need a single number that says “how relevant is token j to token i?” — computed from nothing but their two vectors.</p>
-      <p><b>The idea.</b> Chapter 2 gave us the key: embeddings are laid out so that <em>related words point in similar directions</em>. So “how relevant?” can be answered with “how aligned are the two vectors?” — and the standard measure of alignment is the <b>dot product</b>: multiply the vectors element by element, add it all up. Aligned vectors → big positive number. Unrelated vectors → small number.</p>
+      <p><b>The idea.</b> Unit 2 gave us the key: embeddings are laid out so that <em>related words point in similar directions</em>. So “how relevant?” can be answered with “how aligned are the two vectors?” — and the standard measure of alignment is the <b>dot product</b>: multiply the vectors element by element, add it all up. Aligned vectors → big positive number. Unrelated vectors → small number.</p>
     </div>
 
     <div class="derive">
@@ -387,7 +387,7 @@ print(attn_scores_2)</pre>
         <div class="scroll-x"><div id="dot-work"></div></div>
         <div class="detail" id="dot-detail" aria-live="polite"></div>
       </div>
-      <div class="lab-note">Try “journey” against “starts” (their embeddings are nearly parallel — high score) and then against “one” (low score). This is the chapter-2 payoff: because embeddings encode relatedness as direction, a dot product converts relatedness into a number.</div>
+      <div class="lab-note">Try “journey” against “starts” (their embeddings are nearly parallel — high score) and then against “one” (low score). This is the Unit 2 payoff: because embeddings encode relatedness as direction, a dot product converts relatedness into a number.</div>
     </div>
 
     <div class="prose">
@@ -469,7 +469,7 @@ print(attn_scores_2)</pre>
 
     <div class="confuse">
       <div class="lbl">Common confusion</div>
-      <p><b>“Why does z come out the same size as the input embedding?”</b> Because it's a weighted <em>average of vectors</em>, and an average of 3-dimensional vectors is itself 3-dimensional. This matters more than it looks: since context vectors have the same shape as embeddings, the output of attention can be fed into <em>another</em> round of attention. That's why transformer blocks stack — chapter 4 stacks twelve of them.</p>
+      <p><b>“Why does z come out the same size as the input embedding?”</b> Because it's a weighted <em>average of vectors</em>, and an average of 3-dimensional vectors is itself 3-dimensional. This matters more than it looks: since context vectors have the same shape as embeddings, the output of attention can be fed into <em>another</em> round of attention. That's why transformer blocks stack — Unit 4 stacks twelve of them.</p>
     </div>
 
     <div class="lab">
@@ -575,10 +575,10 @@ tensor([[0.4421, 0.5931, 0.5790],
   <section id="s4">
     <div class="prose">
       <h2>Trainable weights — the real mechanism</h2>
-      <p>This is the step where most readers fall off the chapter, so we'll climb it one rung at a time. Nothing about the three-step machine changes — we're only upgrading <em>where the vectors come from</em> before the machine runs.</p>
+      <p>This is the step where most readers fall off the unit, so we'll climb it one rung at a time. Nothing about the three-step machine changes — we're only upgrading <em>where the vectors come from</em> before the machine runs.</p>
 
       <h3>Rung 1 — see the flaw in what we built</h3>
-      <p>The simple version contains not a single learnable number. Walk through what that means: the attention scores were dot products of the <em>raw embeddings</em>, so “how much does journey attend to starts?” is answered entirely by how similar their embeddings happen to be. The attention pattern is <b>frozen at whatever similarity chapter 2 delivered</b>.</p>
+      <p>The simple version contains not a single learnable number. Walk through what that means: the attention scores were dot products of the <em>raw embeddings</em>, so “how much does journey attend to starts?” is answered entirely by how similar their embeddings happen to be. The attention pattern is <b>frozen at whatever similarity Unit 2 delivered</b>.</p>
       <p>And similarity is often the wrong question. Take the sentence <i>“the cat that the dog chased <b>was</b> black”</i>. To predict what follows “was”, the model desperately needs “was” to attend to <b>“cat”</b> — its subject. But “was” and “cat” are not <em>similar</em> words; their embeddings don't especially align. Frozen-similarity attention can never route that connection. Relevance ≠ similarity, and we've built a machine that can only do similarity.</p>
 
       <h3>Rung 2 — one knob: transform before you compare</h3>
@@ -593,7 +593,7 @@ tensor([[0.4421, 0.5931, 0.5790],
         <li>acting as the <b>content</b> — “if you pick me, this is what actually gets blended in” (the value role).</li>
       </ul>
       <p>With a single W, all three jobs share one transformation — tuning it to improve <em>matching</em> would simultaneously corrupt what each token contributes as <em>content</em>. The jobs pull in different directions. So give each job its own knob: <b>W<sub>q</sub></b> transforms a token when it's the seeker (producing its <b>query</b>), <b>W<sub>k</sub></b> when it's being matched against (its <b>key</b>), <b>W<sub>v</sub></b> for what it contributes to the blend (its <b>value</b>). Three matrices, because three jobs. That's the entire reason Q, K and V exist — nothing deeper.</p>
-      <p>And to say it before the maths does: <b>training will touch nothing but these three matrices.</b> The dot products, the softmax, the weighted sum — all fixed machinery. When chapter 5's training loop runs, the only thing being learned in this mechanism is <em>what the three transformations should be</em>.</p>
+      <p>And to say it before the maths does: <b>training will touch nothing but these three matrices.</b> The dot products, the softmax, the weighted sum — all fixed machinery. When Unit 5's training loop runs, the only thing being learned in this mechanism is <em>what the three transformations should be</em>.</p>
     </div>
 
     <div class="aside">
@@ -767,7 +767,7 @@ tensor([[0.2996, 0.8053],
     </div>
 
     <div class="prose">
-      <p>One refinement remains. Initialising weights with plain <code>torch.rand</code> (uniform between 0 and 1) is naive — training converges better from a smarter starting distribution. PyTorch's <code>nn.Linear</code> layer does exactly the same multiplication but with an optimised initialisation scheme (and an optional bias, which GPTs typically switch off). Swapping it in gives version 2 — the form all later chapters use:</p>
+      <p>One refinement remains. Initialising weights with plain <code>torch.rand</code> (uniform between 0 and 1) is naive — training converges better from a smarter starting distribution. PyTorch's <code>nn.Linear</code> layer does exactly the same multiplication but with an optimised initialisation scheme (and an optional bias, which GPTs typically switch off). Swapping it in gives version 2 — the form all later units use:</p>
     </div>
 
     <div class="listing">
@@ -855,7 +855,7 @@ tensor([[-0.0739,  0.0713],
     <div class="next">
       <div class="lbl">Continue</div>
       <h3>Unit 3 · Part 2 — Causal masking, dropout &amp; multi-head</h3>
-      <p style="font-size:var(--fs-cap);color:var(--slate)">The mechanism you just built has one flaw for text generation: when processing “journey” it can peek at “starts with one step”. Part 2 hides the future with a mask, adds dropout, wraps everything into the <code>CausalAttention</code> class, and then runs several attention heads in parallel — arriving at the exact module chapter 4 plugs into the GPT.</p>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">The mechanism you just built has one flaw for text generation: when processing “journey” it can peek at “starts with one step”. Part 2 hides the future with a mask, adds dropout, wraps everything into the <code>CausalAttention</code> class, and then runs several attention heads in parallel — arriving at the exact module Unit 4 plugs into the GPT.</p>
     </div>
   </section>
 
@@ -1151,7 +1151,7 @@ const QUIZ=[
   a:1,
   e:"The entire input had to be compressed into a single final hidden state, and the decoder could not reach back. Long-range dependencies were lost — which is exactly what attention was invented to fix (section 3.1)."},
  {q:"Why is the dot product a sensible way to measure attention?",
-  o:["It is the fastest operation on a GPU","It measures alignment — and chapter 2's embeddings encode relatedness as alignment","It always returns a value between 0 and 1","It removes the need for normalisation"],
+  o:["It is the fastest operation on a GPU","It measures alignment — and Unit 2's embeddings encode relatedness as alignment","It always returns a value between 0 and 1","It removes the need for normalisation"],
   a:1,
   e:"Embeddings place related words in similar directions; the dot product measures exactly that alignment. So it converts 'how related are these tokens?' into a single number (section 3.3, step 1)."},
  {q:"What does the softmax step accomplish?",
@@ -1204,7 +1204,7 @@ const GLOSSARY=[
  ["Context vector (z)","The output of attention for one token — an enriched embedding blending the whole sentence, weighted by attention. Same shape as a value vector, which is what lets attention layers stack."],
  ["Attention score (ω)","The raw dot product between a query and a key, before normalisation. Unbounded."],
  ["Attention weight (α)","A score after scaling and softmax: positive, and summing to 1 across each row."],
- ["Dot product","Element-wise multiply two vectors and sum. Measures alignment — which, thanks to chapter 2's embeddings, means relatedness."],
+ ["Dot product","Element-wise multiply two vectors and sum. Measures alignment — which, thanks to Unit 2's embeddings, means relatedness."],
  ["Softmax","exp each value, divide by the total: turns any list of numbers into positive shares summing to 1, with gradients that training can use."],
  ["Query (q)","The projection of the token currently seeking context — 'what am I looking for?'"],
  ["Key (k)","The projection each token offers to be matched against queries — its advertisement, like a database index."],
@@ -1232,5 +1232,6 @@ addEventListener("resize",syncRail); syncRail();
 </script>
 <script src="../../assets/site-config.js"></script>
 <script src="../../assets/progress.js"></script>
+<script src="../../assets/spark.js" defer></script>
 </body>
 </html>
