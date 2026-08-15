@@ -51,7 +51,7 @@ a:hover{text-decoration-color:var(--accent)}
 code,kbd{font-family:var(--mono);font-size:.9em}
 
 .masthead{background:var(--panel);border-bottom:1px solid var(--line)}
-.masthead-in{max-width:1180px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
 .brandbar{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
 .brandbar img{height:34px;width:auto;display:block}
 .brand-tag{font-size:var(--fs-xs);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
@@ -77,7 +77,7 @@ h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:15ch}
 .pipestrip .k{font-family:var(--mono);font-size:var(--fs-xs);color:var(--accent);font-weight:700}
 .pipestrip .n{font-size:var(--fs-sm);color:var(--ink);font-weight:600}
 
-.shell{max-width:1180px;margin:0 auto;padding:46px 28px 90px;display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
 .rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
 .rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
 .rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
@@ -223,18 +223,26 @@ pre .st{color:var(--teal)}
 .gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
 
 .foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
-.foot-in{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
 .foot img{height:26px;opacity:.75}
 .next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
 .next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
 .next h3{font-size:var(--fs-xl);margin:0 0 8px}
 
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+p{text-wrap:pretty}
 @media (max-width:940px){
   .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
   .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
   .rail-h{display:none}
   .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
   .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
   h1{font-size:2rem}
   .masthead-in{padding:18px 20px 0}
   .slider-row{grid-template-columns:96px minmax(0,1fr) 44px}
@@ -276,6 +284,7 @@ pre .st{color:var(--teal)}
 
 <div class="shell">
   <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
     <div class="rail-h">Contents</div>
     <a href="#s1" class="on">2.1 Word embeddings</a>
     <a href="#s2">2.2 Tokenizing text</a>
@@ -1253,6 +1262,17 @@ addEventListener("scroll",()=>{
 },{passive:true});
 addEventListener("resize",syncRail);
 syncRail();
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+
 </script>
 <script src="../../assets/site-config.js"></script>
 <script src="../../assets/progress.js"></script>
