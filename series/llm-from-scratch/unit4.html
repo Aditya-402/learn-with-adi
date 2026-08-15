@@ -326,7 +326,7 @@ p{text-wrap:pretty}
     </div>
 
     <div class="listing">
-      <div class="lh">Route 1 in code <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit4.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <div class="lh">Route 1 in code <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/llm-from-scratch/unit4.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>mask_simple   = torch.tril(torch.ones(6, 6))          <span class="cm"># 1s on/below diagonal, 0s above</span>
 masked_simple = attn_weights * mask_simple            <span class="cm"># erase the future</span>
 row_sums      = masked_simple.sum(dim=-1, keepdim=True)
@@ -344,7 +344,7 @@ masked_norm   = masked_simple / row_sums              <span class="cm"># rows su
     </div>
 
     <div class="listing">
-      <div class="lh">Route 2 in code — the version every real implementation uses <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit4.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <div class="lh">Route 2 in code — the version every real implementation uses <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/llm-from-scratch/unit4.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>mask   = torch.triu(torch.ones(6, 6), diagonal=1)     <span class="cm"># 1s strictly ABOVE the diagonal</span>
 masked = attn_scores.masked_fill(mask.bool(), -torch.inf)
 attn_weights = torch.softmax(masked / keys.shape[-1]**0.5, dim=-1)</pre>
@@ -428,7 +428,7 @@ after softmax:   [0.5517, 0.4483, 0.0000, 0.0000, 0.0000, 0.0000]   # identical 
     </div>
 
     <div class="listing">
-      <div class="lh">The CausalAttention class — annotated line by line <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit4.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <div class="lh">The CausalAttention class — annotated line by line <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/llm-from-scratch/unit4.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>class CausalAttention(nn.Module):
     def __init__(self, d_in, d_out, context_length, dropout, qkv_bias=False):
         super().__init__()
@@ -485,7 +485,7 @@ context_vecs.shape: torch.Size([2, 6, 2])   # 2 texts, 6 tokens, each a 2-dim co
     </div>
 
     <div class="listing">
-      <div class="lh">The MultiHeadAttentionWrapper class <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit4.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <div class="lh">The MultiHeadAttentionWrapper class <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/llm-from-scratch/unit4.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>class MultiHeadAttentionWrapper(nn.Module):
     def __init__(self, d_in, d_out, context_length, dropout, num_heads, qkv_bias=False):
         super().__init__()
@@ -573,7 +573,7 @@ context_vecs.shape: torch.Size([2, 6, 4])          # d_out × num_heads = 2 × 2
     </div>
 
     <div class="listing">
-      <div class="lh">MultiHeadAttention — the class Unit 5 will import <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit4.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <div class="lh">MultiHeadAttention — the class Unit 5 will import <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/llm-from-scratch/unit4.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>class MultiHeadAttention(nn.Module):
     def __init__(self, d_in, d_out, context_length, dropout, num_heads, qkv_bias=False):
         super().__init__()

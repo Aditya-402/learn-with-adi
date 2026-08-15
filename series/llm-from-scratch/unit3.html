@@ -339,7 +339,7 @@ p{text-wrap:pretty}
     </div>
 
     <div class="listing">
-      <div class="lh">The input — six tokens, embedded <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit3.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <div class="lh">The input — six tokens, embedded <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/llm-from-scratch/unit3.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>import torch
 inputs = torch.tensor(
   [[0.43, 0.15, 0.89], <span class="cm"># Your     x(1)</span>
@@ -368,7 +368,7 @@ inputs = torch.tensor(
     </div>
 
     <div class="listing">
-      <div class="lh">The same thing in code <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit3.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <div class="lh">The same thing in code <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/llm-from-scratch/unit3.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>query = inputs[1]                            <span class="cm"># x(2), "journey" — Python counts from 0</span>
 attn_scores_2 = torch.empty(inputs.shape[0])
 for i, x_i in enumerate(inputs):
@@ -545,7 +545,7 @@ print(attn_scores_2)</pre>
     </div>
 
     <div class="listing">
-      <div class="lh">Three lines replace all the loops <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit3.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <div class="lh">Three lines replace all the loops <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/llm-from-scratch/unit3.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>attn_scores  = inputs @ inputs.T                      <span class="cm"># (6,3) @ (3,6) → (6,6), all-pairs dots</span>
 attn_weights = torch.softmax(attn_scores, dim=-1)     <span class="cm"># softmax each ROW (dim=-1 = last dim)</span>
 all_context  = attn_weights @ inputs                  <span class="cm"># (6,6) @ (6,3) → (6,3), six blends</span></pre>
@@ -651,7 +651,7 @@ tensor([[0.4421, 0.5931, 0.5790],
     </div>
 
     <div class="listing">
-      <div class="lh">Initialising the three matrices — and their actual values <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit3.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <div class="lh">Initialising the three matrices — and their actual values <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/llm-from-scratch/unit3.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>torch.manual_seed(123)
 W_query = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
 W_key   = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
@@ -743,7 +743,7 @@ W_query = [[0.2961, 0.5166],      W_key = [[0.1366, 0.1025],      W_value = [[0.
     </div>
 
     <div class="listing">
-      <div class="lh">The SelfAttention_v1 class — stop 2 on the route <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit3.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <div class="lh">The SelfAttention_v1 class — stop 2 on the route <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/llm-from-scratch/unit3.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>import torch.nn as nn
 
 class SelfAttention_v1(nn.Module):                        <span class="cm"># nn.Module = PyTorch's building block</span>
@@ -780,7 +780,7 @@ tensor([[0.2996, 0.8053],
     </div>
 
     <div class="listing">
-      <div class="lh">SelfAttention_v2 — the nn.Linear version, stop 3 on the route <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/unit3.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
+      <div class="lh">SelfAttention_v2 — the nn.Linear version, stop 3 on the route <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/llm-from-scratch/unit3.ipynb" rel="noopener" title="Open this unit's companion notebook in Google Colab — free, zero setup">▶ Run in Colab</a></div>
       <pre>class SelfAttention_v2(nn.Module):
     def __init__(self, d_in, d_out, qkv_bias=False):
         super().__init__()
