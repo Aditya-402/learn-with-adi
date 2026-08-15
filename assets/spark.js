@@ -12,8 +12,67 @@
   if (!document.body.hasAttribute("data-lwa-course")) return; // unit pages only
 
   const KEY_LS = "lwa-gemini-key";
-  const MODEL = "gemini-2.5-flash";
+  const CFG_LS = "lwa-spark-settings";
   const UNIT_TITLE = document.body.getAttribute("data-lwa-title") || document.title;
+
+  /* ---- student-tunable settings ----
+     Answers vary via the system prompt (level & length). The model IS choosable —
+     Google deprecates models over time, so the dropdown is populated LIVE from the
+     ListModels API with the student's key; the default is always the cheapest
+     (flash-lite family) available to that key. */
+  const FALLBACK_MODELS = ["gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-2.5-pro"];
+  const MODELS_LS = "lwa-gemini-models";
+
+  function modelRank(name) { // lower = cheaper = preferred default
+    const v = (name.match(/(\d+(?:\.\d+)?)/) || [0, 0])[1];
+    const ver = parseFloat(v) || 0;
+    if (/flash-lite/.test(name)) return 0 - ver / 100;
+    if (/flash/.test(name)) return 1 - ver / 100;
+    if (/pro/.test(name)) return 2 - ver / 100;
+    return 3 - ver / 100;
+  }
+  function cheapestOf(list) { return list.slice().sort((a, b) => modelRank(a) - modelRank(b))[0]; }
+  function cachedModels() {
+    try { const l = JSON.parse(localStorage.getItem(MODELS_LS)); if (Array.isArray(l) && l.length) return l; } catch {}
+    return FALLBACK_MODELS.slice();
+  }
+  async function fetchModels() {
+    const key = getKey(); if (!key) return cachedModels();
+    try {
+      const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=50&key=" + encodeURIComponent(key));
+      if (!res.ok) throw 0;
+      const data = await res.json();
+      const list = (data.models || [])
+        .filter(m => (m.supportedGenerationMethods || []).includes("generateContent"))
+        .map(m => m.name.replace(/^models\//, ""))
+        .filter(n => /^gemini/.test(n) && !/(embedding|aqa|tts|image|live|audio|exp|preview)/.test(n));
+      if (list.length) { try { localStorage.setItem(MODELS_LS, JSON.stringify(list)); } catch {} return list; }
+    } catch {}
+    return cachedModels();
+  }
+  const LEVELS = {
+    explorer:  { name: "Little explorer", hint: "explain like I'm five",
+      prompt: "Explain as if to a curious five-year-old: everyday objects and stories only (toys, paint, queues at a shop), zero jargon, zero equations. One idea at a time, warm and playful." },
+    school:    { name: "High-schooler", hint: "simple words, everyday analogies",
+      prompt: "Explain for a high-school student: simple words, everyday analogies, at most arithmetic-level maths. Define any technical word the moment you use it." },
+    graduate:  { name: "Fresh graduate", hint: "the notes' default voice",
+      prompt: "Explain for a fresh engineering graduate: plain words, a concrete analogy or tiny numeric example over abstraction, light maths is fine." },
+    practitioner: { name: "Practitioner", hint: "precise and technical",
+      prompt: "Explain for a working ML engineer: precise technical language, refer to tensor shapes and the code directly, minimal hand-holding, analogies only when they genuinely sharpen the point." },
+    expert:    { name: "Expert", hint: "terse and dense",
+      prompt: "Explain for an expert: terse, dense, assume strong ML background, use standard terminology freely, skip analogies unless asked. Get to the core mechanism immediately." }
+  };
+  const LENGTHS = {
+    brief:    { name: "Brief", hint: "~2–3 sentences", prompt: "Keep answers very short — around 50 words, never more than 80.", maxTokens: 600 },
+    balanced: { name: "Balanced", hint: "~a paragraph", prompt: "Keep answers short — usually under 120 words.", maxTokens: 1500 },
+    detailed: { name: "Detailed", hint: "step by step", prompt: "Answer thoroughly — walk through it step by step, up to ~300 words when the question deserves it.", maxTokens: 3000 }
+  };
+  const DEFAULT_CFG = { level: "graduate", length: "balanced" };
+  function getCfg() {
+    try { const c = JSON.parse(localStorage.getItem(CFG_LS)) || {}; return Object.assign({}, DEFAULT_CFG, c); }
+    catch { return Object.assign({}, DEFAULT_CFG); }
+  }
+  function setCfg(c) { try { localStorage.setItem(CFG_LS, JSON.stringify(c)); } catch {} }
 
   /* ================= styles ================= */
   const css = `
@@ -67,6 +126,16 @@
   .spk-setup .go:hover{background:#3d3170}
   .spk-setup .note{font-size:11.5px;color:#6b7585;background:#f0f1f7;border-radius:8px;padding:8px 11px}
   .spk-setup a{color:#5b4b9e}
+  .spk-lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#6b7585;margin-top:2px}
+  .spk-pills{display:flex;flex-wrap:wrap;gap:6px}
+  .spk-pills button{flex:1 1 30%;min-width:96px;border:1px solid #e3e6ee;background:#f6f7fb;border-radius:10px;
+    padding:7px 9px;cursor:pointer;text-align:left;font-family:inherit}
+  .spk-pills button b{display:block;font-size:12px;color:#1f2733}
+  .spk-pills button span{font-size:10.5px;color:#6b7585}
+  .spk-pills button[aria-pressed="true"]{border-color:#5b4b9e;background:#ecebf6}
+  .spk-pills button[aria-pressed="true"] b{color:#3d3170}
+  .spk-model{border:1px solid #e3e6ee;border-radius:10px;padding:8px 10px;font:inherit;font-size:12.5px;background:#f6f7fb;color:#1f2733}
+  .spk-model:focus{outline:2px solid #5b4b9e;background:#fff}
   .spk-ask{position:absolute;z-index:399;background:#5b4b9e;color:#fff;border:none;border-radius:99px;
     padding:6px 13px;font-size:12.5px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(91,75,158,.35);
     font-family:'Segoe UI',sans-serif}
@@ -144,6 +213,9 @@
   const history = []; // {role:"user"|"model", text}
 
   async function askGemini(question, highlight) {
+    const cfg = getCfg();
+    const level = LEVELS[cfg.level] || LEVELS.graduate;
+    const length = LENGTHS[cfg.length] || LENGTHS.balanced;
     const sys =
 `You are Spark, the friendly study buddy built into "Learn with Adi" — free personal study notes where graduate engineers learn how LLMs work by building one.
 The student is currently reading: "${UNIT_TITLE}".
@@ -154,8 +226,9 @@ STRICT GROUNDING RULES:
 - Never invent numbers. The worked numbers in the unit are authoritative.
 
 STYLE:
-- Plain words for a fresh graduate; short — usually under 120 words. Explain like a patient friend, not a textbook.
-- Prefer a concrete analogy or a tiny numeric example over abstraction.
+- ${level.prompt}
+- ${length.prompt}
+- Explain like a patient friend, not a textbook.
 - When one of the page's interactive labs demonstrates the point, tell the student to try it ("open Lab 5 and set W_value to zero").
 - Plain text only: no markdown headers or bullets, no LaTeX. Keep symbols simple (q·k, √d_k).
 
@@ -167,13 +240,16 @@ ${relevantContext(question, highlight)}`;
       : "") + question;
 
     history.push({ role: "user", text: userText });
+    const model = cfg.model || cheapestOf(cachedModels());
+    const genCfg = { temperature: 0.4, maxOutputTokens: length.maxTokens };
+    if (/2\.5-flash/.test(model)) genCfg.thinkingConfig = { thinkingBudget: 0 }; // skip "thinking" tokens where supported
     const body = {
       system_instruction: { parts: [{ text: sys }] },
       contents: history.slice(-10).map(m => ({ role: m.role, parts: [{ text: m.text }] })),
-      generationConfig: { temperature: 0.4, maxOutputTokens: 1500, thinkingConfig: { thinkingBudget: 0 } }
+      generationConfig: genCfg
     };
     const res = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/" + MODEL + ":generateContent?key=" + encodeURIComponent(getKey()),
+      "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + encodeURIComponent(getKey()),
       { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     if (!res.ok) {
       history.pop();
@@ -245,21 +321,21 @@ ${relevantContext(question, highlight)}`;
     panel.innerHTML = `
       <div class="spk-head">${CHAR("")}
         <div><b>Spark</b><div class="st">grounded in this unit only</div></div><div class="sp"></div>
-        <button type="button" class="spk-key" title="Change your API key">key</button>
+        <button type="button" class="spk-set" title="Spark settings — key, model, level, length">⚙ settings</button>
         <button type="button" class="spk-x" aria-label="Close">✕</button>
       </div>
       <div class="spk-body" style="display:contents"></div>`;
     document.body.appendChild(panel);
     panel.querySelector(".spk-x").onclick = togglePanel;
-    panel.querySelector(".spk-key").onclick = () => renderSetup(true);
+    panel.querySelector(".spk-set").onclick = () => renderSetup(true);
     if (getKey()) renderChat(); else renderSetup(false);
   }
 
   function bodyEl() { return panel.querySelector(".spk-body"); }
 
   function renderSetup(changing) {
-    bodyEl().innerHTML = `
-      <div class="spk-setup">
+    const cfg = getCfg();
+    const intro = changing ? "" : `
         <h4>Hi, I'm Spark ✨</h4>
         <p style="margin:0">I'm the study buddy for these notes. Highlight anything on the page and ask me about it — typing or speaking — and I'll explain it differently. I only know <b>this unit</b>; I won't wander off.</p>
         <p style="margin:0">I think with Google's Gemini using <b>your own free API key</b>, so the (tiny) cost is yours and nothing passes through anyone else's server:</p>
@@ -267,17 +343,53 @@ ${relevantContext(question, highlight)}`;
           <li>Open <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Google AI Studio → API keys</a> (free Google account)</li>
           <li>Click <b>Create API key</b> and copy it</li>
           <li>Paste it here:</li>
-        </ol>
-        <input type="password" class="spk-keyin" placeholder="AIza…" autocomplete="off" ${changing ? "" : ""}>
-        <button type="button" class="go">Save key &amp; start</button>
-        <div class="note">Your key is stored only in this browser (localStorage) and sent only to Google together with your questions and the relevant parts of this unit. Remove it any time with the “key” button. Gemini's free tier comfortably covers studying.</div>
+        </ol>`;
+    bodyEl().innerHTML = `
+      <div class="spk-setup">
+        ${intro || "<h4>Spark settings</h4>"}
+        <label class="spk-lbl">Your Gemini API key</label>
+        <input type="password" class="spk-keyin" placeholder="AIza…" autocomplete="off">
+        ${changing ? '<div class="note" style="padding:5px 11px">Need a key? <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Google AI Studio → Create API key</a> (free). Clear the field and save to remove your key from this browser.</div>' : ""}
+        <label class="spk-lbl">Explain things for…</label>
+        <div class="spk-pills" data-set="level">${Object.entries(LEVELS).map(([k, v]) =>
+          `<button type="button" data-v="${k}" aria-pressed="${k === cfg.level}"><b>${v.name}</b><span>${v.hint}</span></button>`).join("")}</div>
+        <label class="spk-lbl">Answer length</label>
+        <div class="spk-pills" data-set="length">${Object.entries(LENGTHS).map(([k, v]) =>
+          `<button type="button" data-v="${k}" aria-pressed="${k === cfg.length}"><b>${v.name}</b><span>${v.hint}</span></button>`).join("")}</div>
+        <label class="spk-lbl">Model</label>
+        <select class="spk-model"><option value="">loading models…</option></select>
+        <div class="note" style="padding:5px 11px">The list comes live from Google for <i>your</i> key, so it stays current as models come and go. Default = the cheapest available (flash-lite family) — students don't need a pro model; the level &amp; length settings above shape the answers.</div>
+        <button type="button" class="go">${changing ? "Save settings" : "Save key & start"}</button>
+        <div class="note">Everything here is stored only in this browser (localStorage). The key is sent only to Google, together with your questions and the relevant parts of this unit. Gemini's free tier comfortably covers studying.</div>
       </div>`;
     const inp = bodyEl().querySelector(".spk-keyin");
-    if (changing && getKey()) inp.value = getKey();
+    if (getKey()) inp.value = getKey();
+    // populate the model dropdown live (falls back to a static list without a key)
+    const sel = bodyEl().querySelector(".spk-model");
+    function fillModels(list) {
+      const def = cheapestOf(list);
+      const cur = cfg.model && list.includes(cfg.model) ? cfg.model : (cfg.model || def);
+      const all = list.includes(cur) ? list : [cur].concat(list);
+      sel.innerHTML = all.map(m =>
+        `<option value="${m}" ${m === cur ? "selected" : ""}>${m}${m === def ? " — cheapest (default)" : ""}</option>`).join("");
+    }
+    fillModels(cachedModels());
+    fetchModels().then(fillModels);
+    inp.addEventListener("change", () => { const k = inp.value.trim(); if (k.length >= 20) { setKey(k); fetchModels().then(fillModels); } });
+    bodyEl().querySelectorAll(".spk-pills").forEach(g =>
+      g.addEventListener("click", e => {
+        const b = e.target.closest("button"); if (!b) return;
+        g.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", "false"));
+        b.setAttribute("aria-pressed", "true");
+      }));
     bodyEl().querySelector(".go").onclick = () => {
       const k = inp.value.trim();
-      if (k.length < 20) { inp.style.outline = "2px solid #a35a33"; return; }
-      setKey(k); renderChat();
+      if (!changing && k.length < 20) { inp.style.outline = "2px solid #a35a33"; return; }
+      if (k.length >= 20) setKey(k);
+      else if (changing && k === "") { try { localStorage.removeItem(KEY_LS); } catch {} }
+      const pick = set => { const b = bodyEl().querySelector(`.spk-pills[data-set=${set}] button[aria-pressed=true]`); return b ? b.dataset.v : DEFAULT_CFG[set]; };
+      setCfg({ level: pick("level"), length: pick("length"), model: sel.value || undefined });
+      if (getKey()) renderChat(); else renderSetup(false);
     };
   }
 
