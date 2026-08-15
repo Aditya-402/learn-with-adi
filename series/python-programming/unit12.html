@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Pythonic Loop — Comprehensions — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u12" data-lwa-title="Unit 12 · The Pythonic loop — comprehensions">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Beginner — Foundations · Unit 12</div>
+      <h1>The Pythonic Loop — Comprehensions</h1>
+      <p class="standfirst">Eleven units ago your first program said hello. Now you've written the same four-line loop so many times your fingers do it unsupervised — and Python has been waiting for exactly this moment to fold it into one readable line. This closing session of the Beginner level teaches the comprehension, the judgment of when <i>not</i> to use it, and ends with a checkpoint build that harvests everything you own.</p>
+      <div class="facts">
+        <div><b>One session</b>~45 min</div>
+        <div><b>5 concepts</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 3–11 — the whole Beginner level</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">12.1 The pattern</a>
+    <a href="#s2">12.2 The condition clause</a>
+    <a href="#s3">12.3 Dict &amp; set versions</a>
+    <a href="#s4">12.4 The judgment</a>
+    <a href="#s5">12.5 Build: marks report</a>
+    <a href="#s6">12.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 12.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need the whole level</b>Lists and loops (Units 4–6), functions (Unit 7), f-strings and their alignment tricks (Unit 8). This unit deliberately harvests all of it — that's the point of a checkpoint.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm: each concept is a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit12.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>The last Beginner unit</b>The build at 12.5 is bigger than usual — a proper checkpoint project. Every earlier unit shows up in it. Finish this page and the Beginner level is complete.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">12.1</span>
+      <h2>The pattern behind the loop</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Count how many times you've typed this exact shape: make an empty list, loop over an old list, append something to the new one. Here it is three times in a row — read all three before you continue:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:8px;padding:12px 16px;white-space:pre;overflow-x:auto"># double each number
+doubled = []
+for n in numbers:
+    doubled.append(n * 2)
+
+# grab each word's length
+lengths = []
+for w in words:
+    lengths.append(len(w))
+
+# SHOUT each name
+shouted = []
+for name in names:
+    shouted.append(name.upper())</p>
+      <p>Squint. Every version is the same machine with one part swapped: the expression inside the <code>append</code>. Everything else — the empty list, the <code>for</code> line, the <code>.append(...)</code> wrapper — is scaffolding you rebuild by hand every single time.</p>
+      <p><b>The idea, in plain words.</b> Python lets you state the finished list directly and skip the scaffolding:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">doubled = [n * 2 for n in numbers]</p>
+      <p>This is a <b>list comprehension</b>, and there is a house way to read it aloud: <i>"a list of n-times-two, for each n in numbers."</i> Say it that way every time and the syntax stops looking like punctuation soup. The square brackets say "I am a list"; the expression before <code>for</code> is what each item <i>becomes</i>; the <code>for n in numbers</code> part is the exact same <code>for</code> line you've written since Unit 4. Same meaning, same result, one line — nothing new is happening in memory, only on your screen.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the folded loop, unfolded</div>
+      <div class="m">numbers = [3, 8, 12]
+doubled = [n * 2 for n in numbers]
+print(doubled)</div>
+      <p><b>Line 2</b>, right side first, exactly as the loop would run: <code>n</code> takes 3 → <code>3 * 2</code> → 6 lands in the new list. <code>n</code> takes 8 → 16 lands. <code>n</code> takes 12 → 24 lands. The finished list <code>[6, 16, 24]</code> is stored into the box <code>doubled</code>. The box <code>numbers</code> is untouched — a comprehension always builds a <i>new</i> list.</p>
+      <div class="m">[6, 16, 24]</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 250" role="img" aria-label="The four-line accumulate loop and the one-line comprehension, with matching parts colored the same">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">SAME MACHINE, FOLDED — MATCHING PARTS, MATCHING COLORS</text>
+        <rect x="30" y="46" width="360" height="150" rx="10" fill="#f0f1f7" stroke="#e3e6ee"/>
+        <text x="52" y="76" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#6b7585">doubled = []</text>
+        <text x="52" y="102" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1d5654" font-weight="700">for n in numbers:</text>
+        <text x="52" y="128" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#6b7585">    doubled.append(</text>
+        <text x="209" y="128" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#3d3170" font-weight="700">n * 2</text>
+        <text x="252" y="128" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#6b7585">)</text>
+        <text x="52" y="168" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">grey parts = scaffolding, rebuilt by hand every time</text>
+        <path d="M400 121 L470 121" stroke="#5b4b9e" stroke-width="1.6" fill="none"/>
+        <path d="M470 121 l-9 -5 v10 z" fill="#5b4b9e"/>
+        <text x="435" y="110" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#3d3170">folds to</text>
+        <rect x="480" y="86" width="356" height="70" rx="10" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="500" y="128" font-family="Cascadia Mono,Consolas,monospace" font-size="14" fill="#1f2733">[</text>
+        <text x="510" y="128" font-family="Cascadia Mono,Consolas,monospace" font-size="14" fill="#3d3170" font-weight="700">n * 2</text>
+        <text x="558" y="128" font-family="Cascadia Mono,Consolas,monospace" font-size="14" fill="#1d5654" font-weight="700">for n in numbers</text>
+        <text x="712" y="128" font-family="Cascadia Mono,Consolas,monospace" font-size="14" fill="#1f2733">]</text>
+        <text x="533" y="180" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#3d3170">what each item becomes</text>
+        <path d="M534 168 L534 138" stroke="#5b4b9e" stroke-width="1.2" fill="none"/>
+        <text x="640" y="210" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">the same for-line from Unit 4</text>
+        <path d="M640 198 L636 140" stroke="#2b7a78" stroke-width="1.2" fill="none"/>
+        <text x="30" y="232" font-family="Segoe UI,system-ui,sans-serif" font-size="12" fill="#6b7585">read aloud: "a list of n-times-two, for each n in numbers"</text>
+      </svg>
+      <div class="figcap">Fig. 1 — The accumulate loop and the comprehension are one machine in two spellings. Only the colored parts carry meaning; the grey scaffolding is what the comprehension deletes.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>The order feels backwards at first: the <i>result</i> expression comes before the <code>for</code>, and there's no colon and no <code>append</code>. Don't try to memorise the syntax — memorise the sentence: <i>"a list of &lt;what each becomes&gt;, for each &lt;item&gt; in &lt;source&gt;."</i> Write the sentence, then transcribe it. And no colon means no colon: <code>[n * 2 for n in numbers:]</code> is a SyntaxError.</p>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      A comprehension is the accumulate-a-new-list loop folded into one expression. If you can write the loop, you already know the comprehension — the skill is translating both directions, fluently.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> rewrite all three loops from the top of this section as comprehensions and print the results. <b>Thinking:</b> for each, say the sentence first — "a list of len-of-w, for each w in words" — then transcribe. Run it and compare with what the loops would have produced (identical, always).</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">numbers = [3, 8, 12]
+words = ["tea", "samosa", "idli"]
+names = ["ada", "bob"]
+
+doubled = [n * 2 for n in numbers]
+lengths = [len(w) for w in words]
+shouted = [name.upper() for name in names]
+
+print(doubled)
+print(lengths)
+print(shouted)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">12.1 · P1</span><span class="pt">Loop → comprehension</span></div>
+        <p class="pd">This loop computes half-price sale tags. Rewrite it as <b>one comprehension line</b> plus the print. The check only sees the output — but the point is the shape, so hold yourself to one line.</p>
+        <div class="want">[20, 45, 60]</div>
+        <div class="pyrun" data-id="s1p1" data-expect="[20, 45, 60]">
+          <textarea spellcheck="false">prices = [40, 90, 120]
+sale = []
+for p in prices:
+    sale.append(p // 2)
+print(sale)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>prices = [40, 90, 120]
+sale = [p // 2 for p in prices]
+print(sale)</pre><p>"A list of p-floor-divided-by-two, for each p in prices." Four lines became one, and it reads like the sentence.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">12.1 · P2</span><span class="pt">Comprehension → loop</span></div>
+        <p class="pd">Translation runs both ways or it isn't fluency. Rewrite this comprehension as the full four-line accumulate loop — empty list, <code>for</code>, <code>append</code>, print — producing the same output.</p>
+        <div class="want">['m', 'a', 'p']</div>
+        <div class="pyrun" data-id="s1p2" data-expect="['m', 'a', 'p']">
+          <textarea spellcheck="false">fruits = ["mango", "apple", "plum"]
+firsts = [w[0] for w in fruits]
+print(firsts)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>fruits = ["mango", "apple", "plum"]
+firsts = []
+for w in fruits:
+    firsts.append(w[0])
+print(firsts)</pre><p>Unfolding is the debugging skill: when a comprehension confuses you, write it back out as the loop and trace it with the boxes picture.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">12.1 · P3</span><span class="pt">Predict: what happens to the original?</span></div>
+        <p class="pd">Two prints. Predict both on paper — especially the first one. Does building <code>result</code> change <code>nums</code>?</p>
+        <div class="pyrun" data-id="s1p3">
+          <textarea spellcheck="false">nums = [1, 2, 3]
+result = [n + 10 for n in nums]
+print(nums)
+print(result)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>[1, 2, 3]
+[11, 12, 13]</pre><p>A comprehension reads the source and builds a <i>new</i> list in a new box. <code>nums</code> is exactly as it was — same rule as the copy in Unit 2's trace: new value, new box, original untouched.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">12.1 · P4</span><span class="pt">Stretch — f-strings inside</span></div>
+        <p class="pd">The transform slot takes <i>any</i> expression — including an f-string (Unit 8, reporting for duty). From <code>nums = [1, 2, 3]</code>, build the list of hashtags in one comprehension line and print it.</p>
+        <div class="want">['#1', '#2', '#3']</div>
+        <div class="pyrun" data-id="s1p4" data-expect="['#1', '#2', '#3']">
+          <textarea spellcheck="false">nums = [1, 2, 3]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>nums = [1, 2, 3]
+tags = [f"#{n}" for n in nums]
+print(tags)</pre><p>"A list of hash-then-n, for each n in nums." Anything that produces a value can sit in the transform slot.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 12.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">12.2</span>
+      <h2>The condition clause — keep only some</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p><b>The problem.</b> Half your accumulate loops had an <code>if</code> inside: keep the passing scores, keep the even numbers, keep the long words. Does the folded version have room for the <code>if</code>?</p>
+      <p><b>The idea, in plain words.</b> Yes — it bolts on at the end:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">passed = [x for x in scores if x &gt;= 50]</p>
+      <p>Read aloud: <i>"a list of x, for each x in scores, if x is at least 50."</i> Each item is tested at the gate; only the ones that pass get transformed and kept. That gives you three moves with one syntax:</p>
+      <ul class="plain">
+        <li><b>Transform only</b> — <code>[x * 2 for x in nums]</code>: every item, changed.</li>
+        <li><b>Filter only</b> — <code>[x for x in scores if x &gt;= 50]</code>: some items, unchanged. (The transform slot just says <code>x</code> — "keep it as it is".)</li>
+        <li><b>Both</b> — <code>[x * 2 for x in nums if x % 2 == 0]</code>: test first, then transform the survivors.</li>
+      </ul>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — every item visits the gate</div>
+      <div class="m">nums = [7, 12, 5, 20]
+picked = [n * 2 for n in nums if n % 2 == 0]
+print(picked)</div>
+      <p>Same trace table as always, one column per question:</p>
+      <table>
+        <tr><th>item</th><th>passes <code>n % 2 == 0</code>?</th><th>lands in list as</th></tr>
+        <tr><td><code>7</code></td><td>no (remainder 1)</td><td>— skipped entirely</td></tr>
+        <tr><td><code>12</code></td><td>yes</td><td><code>24</code></td></tr>
+        <tr><td><code>5</code></td><td>no</td><td>— skipped entirely</td></tr>
+        <tr><td><code>20</code></td><td>yes</td><td><code>40</code></td></tr>
+      </table>
+      <div class="m">[24, 40]</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Items that fail the <code>if</code> don't land in the list as <code>False</code>, <code>None</code>, or <code>0</code> — they are simply <b>not there</b>. A filtered list is usually <i>shorter</i> than its source, and nothing marks the gaps. If your list came out length 2 from a source of length 4, that's the filter doing its job, not data going missing.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> from a list of exam scores, keep the passes (50 or more) and report how many made it. <b>Thinking:</b> the filter-only shape — transform slot is just <code>s</code> — then <code>len()</code> on both lists for the summary line. Notice the comprehension slots straight into an f-string-fed report.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">scores = [34, 67, 88, 45, 91]
+passed = [s for s in scores if s >= 50]
+print(passed)
+print(len(passed), "out of", len(scores), "passed")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">12.2 · P1</span><span class="pt">Filter only</span></div>
+        <p class="pd">A week of temperatures. In one comprehension line, keep only the hot days — 30 or above — and print the list.</p>
+        <div class="want">[31, 35, 40]</div>
+        <div class="pyrun" data-id="s2p1" data-expect="[31, 35, 40]">
+          <textarea spellcheck="false">temps = [31, 24, 35, 28, 40]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>temps = [31, 24, 35, 28, 40]
+hot = [t for t in temps if t >= 30]
+print(hot)</pre><p>Filter-only: the transform slot keeps <code>t</code> as-is, the gate does the choosing.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">12.2 · P2</span><span class="pt">Filter and transform together</span></div>
+        <p class="pd">One line: double <i>only the even</i> numbers. Trace it with the gate table on paper first if the answer isn't obvious — which items even reach the doubling?</p>
+        <div class="want">[8, 20]</div>
+        <div class="pyrun" data-id="s2p2" data-expect="[8, 20]">
+          <textarea spellcheck="false">nums = [3, 4, 7, 10, 13]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>nums = [3, 4, 7, 10, 13]
+doubled_evens = [n * 2 for n in nums if n % 2 == 0]
+print(doubled_evens)</pre><p>Only 4 and 10 pass the gate; they become 8 and 20. The odd numbers never meet the <code>* 2</code>.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">12.2 · P3</span><span class="pt">Predict: who gets left out?</span></div>
+        <p class="pd">Predict the exact printed list — length included. Count each word's letters before you commit.</p>
+        <div class="pyrun" data-id="s2p3">
+          <textarea spellcheck="false">words = ["tea", "samosa", "chai", "idli"]
+long_words = [w for w in words if len(w) > 3]
+print(long_words)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>['samosa', 'chai', 'idli']</pre><p><code>"tea"</code> has exactly 3 letters, and the gate demands <i>more than</i> 3 — so it's skipped entirely, leaving a three-item list. Off-by-one at the gate (<code>&gt;</code> vs <code>&gt;=</code>) is the classic filter bug; it's also quiz material below.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 12.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">12.3</span>
+      <h2>Dict &amp; set comprehensions — the braces family</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p><b>The problem.</b> Lists aren't the only thing you accumulate. Unit 6 had you building dicts in loops — and sometimes what you really want is just the <i>unique</i> values, cleaned up. Do those loops fold too?</p>
+      <p><b>The idea, in plain words.</b> Same folding, different brackets. Curly braces with a <code>key: value</code> pair build a <b>dict comprehension</b>:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">{name: len(name) for name in names}</p>
+      <p>Read aloud: <i>"a dict of name-to-its-length, for each name in names."</i> And curly braces with a single expression build a <b>set comprehension</b> — a collection that keeps one copy of each value and no particular order:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">{w.lower() for w in words}</p>
+      <p>That one line is the classic dedup-and-normalise move: lowercase everything, and the set silently discards repeats. One house rule, because sets have no order you can rely on: <b>always wrap a set in <code>sorted()</code> before printing it</b> — <code>sorted()</code> hands back an ordered list, so your output is the same on every run (and checkable).</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — one dict, one set</div>
+      <div class="m">names = ["Ada", "Bob", "Cara"]
+lengths = {name: len(name) for name in names}
+print(lengths)
+
+words = ["Tea", "tea", "CHAI", "chai"]
+unique = {w.lower() for w in words}
+print(sorted(unique))</div>
+      <p><b>Line 2:</b> pairs land in insertion order — <code>"Ada"</code>→3, <code>"Bob"</code>→3, <code>"Cara"</code>→4.</p>
+      <p><b>Line 6:</b> lowercase each: <code>"tea"</code>, <code>"tea"</code> (duplicate, discarded), <code>"chai"</code>, <code>"chai"</code> (discarded). Two survivors; <code>sorted()</code> lines them up alphabetically for the print.</p>
+      <div class="m">{'Ada': 3, 'Bob': 3, 'Cara': 4}
+['chai', 'tea']</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Curly braces are doing double duty: <code>{k: v for ...}</code> (with a colon) is a dict, <code>{v for ...}</code> (no colon) is a set. And the empty case breaks the pattern: <code>{}</code> is an empty <b>dict</b>, not an empty set — an empty set needs <code>set()</code>. When output surprises you, <code>type(x)</code> settles it, as always.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> Unit 6's word counter, revisited in comprehension spirit — count each distinct word in a line of text. <b>Thinking:</b> split, dedup with <code>set()</code>, sort for stable order, and let <code>.count()</code> do the tallying in a dict comprehension. Honest note in the solution below the run: the Unit 6 loop is still the better counter — this version re-scans the whole list once per distinct word, where the loop with <code>.get()</code> touches each word exactly once. Not everything should compress; keep both tools.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">text = "the tea the chai the tea"
+words = text.split()
+counts = {w: words.count(w) for w in sorted(set(words))}
+print(counts)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">12.3 · P1</span><span class="pt">The squares dict</span></div>
+        <p class="pd">One dict comprehension: each number maps to its square. Say the sentence first — "a dict of n-to-n-squared, for each n in nums" — then transcribe and print.</p>
+        <div class="want">{1: 1, 2: 4, 3: 9}</div>
+        <div class="pyrun" data-id="s3p1" data-expect="{1: 1, 2: 4, 3: 9}">
+          <textarea spellcheck="false">nums = [1, 2, 3]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>nums = [1, 2, 3]
+squares = {n: n * n for n in nums}
+print(squares)</pre><p>Key expression, colon, value expression — then the familiar for-clause. Insertion order means the print is predictable.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">12.3 · P2</span><span class="pt">Dedup and normalise</span></div>
+        <p class="pd">Four messy city entries, two real cities. One set comprehension with <code>.strip().title()</code> in the transform slot, then print it <code>sorted()</code> — the house rule.</p>
+        <div class="want">['Delhi', 'Mumbai']</div>
+        <div class="pyrun" data-id="s3p2" data-expect="['Delhi', 'Mumbai']">
+          <textarea spellcheck="false">cities = [" delhi", "Delhi ", "MUMBAI", " mumbai"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>cities = [" delhi", "Delhi ", "MUMBAI", " mumbai"]
+clean = {c.strip().title() for c in cities}
+print(sorted(clean))</pre><p>Normalise <i>inside</i> the set comprehension so the set sees identical spellings and can discard the repeats. Then <code>sorted()</code> for a printable, checkable order.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">12.3 · P3</span><span class="pt">Stretch — flip a dict</span></div>
+        <p class="pd">Unit 6's <code>.items()</code> unpacking, now inside a comprehension: build the reverse dict, grade → name. One line plus the print.</p>
+        <div class="want">{'A': 'Ada', 'B': 'Bob'}</div>
+        <div class="pyrun" data-id="s3p3" data-expect="{'A': 'Ada', 'B': 'Bob'}">
+          <textarea spellcheck="false">grades = {"Ada": "A", "Bob": "B"}
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>grades = {"Ada": "A", "Bob": "B"}
+flipped = {g: name for name, g in grades.items()}
+print(flipped)</pre><p>Two names unpack each pair — exactly as in Unit 6's loops — and the comprehension swaps their roles around the colon. (Only safe when the values are unique; repeated values would overwrite each other.)</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 12.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">12.4</span>
+      <h2>The judgment — when NOT to fold</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p><b>The problem.</b> New tool, new temptation: once comprehensions click, every loop starts looking like a candidate. Some aren't — and a comprehension forced onto the wrong loop is <i>worse</i> code wearing a clever hat. How do you tell?</p>
+      <p><b>The idea, in plain words.</b> Ask the two questions, in order:</p>
+      <ul class="plain">
+        <li><b>Is it a transform or a filter?</b> A comprehension does exactly two things: change items, choose items. If the loop's body <i>does</i> something — prints, asks for input, updates a running total where each step needs the previous one — it isn't a transform, and it should stay a loop. Never put <code>print()</code> inside a comprehension; a comprehension's job is to <i>produce a value</i>, not to act.</li>
+        <li><b>Does it fit on one honest line?</b> Honest means you can still say the sentence aloud without breathing twice. The moment a comprehension nests inside another — <code>[[r * c for c in row] for row in grid]</code> is legal — reading it becomes archaeology. Two levels in, unfold back to loops.</li>
+      </ul>
+      <p>One more piece of machinery, shown because you'll meet it in other people's code: the transform slot can hold a <b>conditional expression</b> — <code>"pass" if s &gt;= 50 else "fail"</code> — a value-producing if/else. Note where it lives: <i>before</i> the <code>for</code>, choosing what each item becomes; the trailing <code>if</code> chooses <i>whether</i> the item appears at all. Powerful, and precisely where readability starts to strain — use it when the sentence still reads aloud, not to show off.</p>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      The two-question test: <i>Is it a pure transform/filter? Does it fit on one honest line?</i> Two yeses → comprehension. Any no → the loop was already the right tool. Choosing the loop is not a failure; it's the judgment this section exists to build.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> label each score "pass" or "fail" — once as the plain loop, once folded with a conditional expression. <b>Thinking:</b> both are legitimate here (it <i>is</i> a pure transform, and the line reads aloud: "a list of pass-if-fifty-else-fail, for each s"). Run it, confirm they agree, and notice which one your eyes prefer today. Both answers are allowed.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">scores = [34, 67, 88]
+
+labels = []
+for s in scores:
+    if s >= 50:
+        labels.append("pass")
+    else:
+        labels.append("fail")
+print(labels)
+
+labels2 = ["pass" if s >= 50 else "fail" for s in scores]
+print(labels2)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">12.4 · P1</span><span class="pt">Do NOT convert this one</span></div>
+        <p class="pd">Run it, predict the list first if you can — then apply the two-question test and answer (in your head, not in code): why must this stay a loop? <b>You are explicitly asked not to convert it.</b></p>
+        <div class="pyrun" data-id="s4p1">
+          <textarea spellcheck="false">deposits = [5, 10, 20]
+balance = 0
+history = []
+for d in deposits:
+    balance = balance + d
+    history.append(balance)
+print(history)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>[5, 15, 35]</pre><p>A running balance: each item's result depends on the <i>previous</i> step's result, carried in the <code>balance</code> box. That fails question one — it's not a per-item transform, it's a chain — so the loop is the right tool, full stop. A comprehension forced onto this becomes a puzzle; the loop is a sentence.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">12.4 · P2</span><span class="pt">Undo the clever</span></div>
+        <p class="pd">Someone used a comprehension to <i>do</i> something instead of to <i>build</i> something. Run it as-is and study the last line of output — that's <code>print()</code>'s return value, collected three times. Then rewrite it as the honest loop so the output matches the goal exactly.</p>
+        <div class="want">1
+2
+3</div>
+        <div class="pyrun" data-id="s4p2" data-expect="1\n2\n3">
+          <textarea spellcheck="false">results = [print(n) for n in [1, 2, 3]]
+print(results)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>for n in [1, 2, 3]:
+    print(n)</pre><p>The as-is run ends with <code>[None, None, None]</code> — <code>print()</code> displays things but <i>produces</i> nothing, so the comprehension dutifully collected three nothings. Side effects belong in loops; comprehensions are for values.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 12.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">12.5</span>
+      <h2>Your build — the marks report</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>This is the Beginner checkpoint — the victory lap. One program, and every unit you've done reports for duty: Unit 3's grade bands, Unit 4–5's loops and lists, Unit 6's dicts, Unit 7's functions, Unit 8's aligned f-strings, and today's comprehensions doing the harvesting. Take a second to notice that <code>print("Hello, world")</code> was eleven units ago.</p>
+      <p>One new tool first, promised since Unit 6's <code>.items()</code> unpacking: <b><code>zip()</code></b>. You have two parallel lists — names and scores — where position pairs them: the first name goes with the first score, the second with the second. <code>zip(names, scores)</code> closes them like a zipper: loop over it and you get the pairs, ready for the same two-name unpacking you already know: <code>for name, score in zip(names, scores)</code>. That's the whole tool.</p>
+    </div>
+    <div class="aside">
+      <div class="lbl">Fine print on zip</div>
+      If the lists have different lengths, <code>zip()</code> quietly stops at the shorter one — no error, just missing pairs. For this build the lists are the same length; in real data, check <code>len()</code> first.
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">12.5 · P1</span><span class="pt">Stage 1 — zip the lists</span></div>
+        <p class="pd">Loop over <code>zip(names, scores)</code> with two-name unpacking and print each pair with a comma-print, one line per person.</p>
+        <div class="want">Ada 91
+Bob 45
+Cara 78
+Dev 85
+Esha 62</div>
+        <div class="pyrun" data-id="s5p1" data-expect="Ada 91\nBob 45\nCara 78\nDev 85\nEsha 62">
+          <textarea spellcheck="false">names = ["Ada", "Bob", "Cara", "Dev", "Esha"]
+scores = [91, 45, 78, 85, 62]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>names = ["Ada", "Bob", "Cara", "Dev", "Esha"]
+scores = [91, 45, 78, 85, 62]
+for name, score in zip(names, scores):
+    print(name, score)</pre><p>The zipper pairs by position; the two names unpack each pair — the exact move you learned on <code>.items()</code>.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">12.5 · P2</span><span class="pt">Stage 2 — the comprehension harvest</span></div>
+        <p class="pd">Three statistics: the average (sum ÷ count, shown with <code>:.2f</code>); the passing <i>scores</i> (50 or more) as a plain filter; the distinction <i>names</i> (85 or more) — that one needs <code>zip</code> inside the comprehension, unpacking pairs and keeping the name while testing the score.</p>
+        <div class="want">Average: 72.20
+[91, 78, 85, 62]
+['Ada', 'Dev']</div>
+        <div class="pyrun" data-id="s5p2" data-expect="Average: 72.20\n[91, 78, 85, 62]\n['Ada', 'Dev']">
+          <textarea spellcheck="false">names = ["Ada", "Bob", "Cara", "Dev", "Esha"]
+scores = [91, 45, 78, 85, 62]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>names = ["Ada", "Bob", "Cara", "Dev", "Esha"]
+scores = [91, 45, 78, 85, 62]
+average = sum(scores) / len(scores)
+passed = [s for s in scores if s >= 50]
+distinction = [name for name, s in zip(names, scores) if s >= 85]
+print(f"Average: {average:.2f}")
+print(passed)
+print(distinction)</pre><p>The distinction line is the unit in miniature: pair with zip, unpack, filter on one half, keep the other. Say it aloud — "a list of name, for each name-and-s pair, if s is at least 85."</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">12.5 · P3</span><span class="pt">Stage 3 — the full report</span></div>
+        <p class="pd">Assemble everything. Write a <code>grade()</code> function using the Unit 3 bands (85+ → A, 70+ → B, 50+ → C, else F); build a name→grade dict with a dict comprehension over <code>zip</code>; then print the report — a header, one aligned line per person using <code>f"{name:&lt;6}{score:&gt;3}  {grades[name]}"</code>, and the three summary lines from Stage 2. Match the goal byte for byte; the alignment specs do the column work.</p>
+        <div class="want">=== MARKS REPORT ===
+Ada    91  A
+Bob    45  F
+Cara   78  B
+Dev    85  A
+Esha   62  C
+Average: 72.20
+Passed: 4 of 5
+Distinction: ['Ada', 'Dev']</div>
+        <div class="pyrun" data-id="s5p3" data-expect="=== MARKS REPORT ===\nAda    91  A\nBob    45  F\nCara   78  B\nDev    85  A\nEsha   62  C\nAverage: 72.20\nPassed: 4 of 5\nDistinction: ['Ada', 'Dev']">
+          <textarea spellcheck="false">def grade(score):
+    if score >= 85:
+        return "A"
+    elif score >= 70:
+        return "B"
+    elif score >= 50:
+        return "C"
+    else:
+        return "F"
+
+names = ["Ada", "Bob", "Cara", "Dev", "Esha"]
+scores = [91, 45, 78, 85, 62]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def grade(score):
+    if score >= 85:
+        return "A"
+    elif score >= 70:
+        return "B"
+    elif score >= 50:
+        return "C"
+    else:
+        return "F"
+
+names = ["Ada", "Bob", "Cara", "Dev", "Esha"]
+scores = [91, 45, 78, 85, 62]
+
+grades = {name: grade(s) for name, s in zip(names, scores)}
+average = sum(scores) / len(scores)
+passed = [s for s in scores if s >= 50]
+distinction = [name for name, s in zip(names, scores) if s >= 85]
+
+print("=== MARKS REPORT ===")
+for name, score in zip(names, scores):
+    print(f"{name:&lt;6}{score:&gt;3}  {grades[name]}")
+print(f"Average: {average:.2f}")
+print(f"Passed: {len(passed)} of {len(scores)}")
+print(f"Distinction: {distinction}")</pre><p>Look at what each line owes to which unit: the function to 7, the bands to 3, the dict comprehension to 6 and today, the alignment to 8, the loop to 4. The report loop itself stays a loop — it prints, so the two-question test says so. That's the whole level, in one screen of code you understand completely.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 12.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">12.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~10 min</span></span>
+      <p>The mixed set — comprehensions in all three bracket flavours, plus friends from the whole level. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">Squares, one line</span></div>
+        <p class="pd">The squares of 1 through 10, one comprehension over <code>range(1, 11)</code>, printed as a list.</p>
+        <div class="want">[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]</div>
+        <div class="pyrun" data-id="b1" data-expect="[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print([n * n for n in range(1, 11)])</pre><p>Comprehensions loop over anything a for-loop can — <code>range()</code> included. One line, and it reads aloud.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">Clean the messy list</span></div>
+        <p class="pd">Real data arrives dirty. One comprehension chaining <code>.strip()</code> and <code>.title()</code> in the transform slot turns this mess into a clean list — order preserved, so no set needed here.</p>
+        <div class="want">['Ada', 'Bob', 'Cara']</div>
+        <div class="pyrun" data-id="b2" data-expect="['Ada', 'Bob', 'Cara']">
+          <textarea spellcheck="false">raw = ["  Ada ", "bob", " CARA"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>raw = ["  Ada ", "bob", " CARA"]
+clean = [s.strip().title() for s in raw]
+print(clean)</pre><p>Method chaining from the strings unit, riding in the transform slot. This exact line, or one like it, opens nearly every real data-cleaning script you'll ever write.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">Prices with tax</span></div>
+        <p class="pd">From a price dict, build a new dict with 5% tax added — same keys, values times <code>1.05</code>, rounded with <code>round(..., 2)</code>. One dict comprehension over <code>.items()</code>.</p>
+        <div class="want">{'tea': 12.6, 'samosa': 18.9, 'cake': 47.25}</div>
+        <div class="pyrun" data-id="b3" data-expect="{'tea': 12.6, 'samosa': 18.9, 'cake': 47.25}">
+          <textarea spellcheck="false">prices = {"tea": 12, "samosa": 18, "cake": 45}
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>prices = {"tea": 12, "samosa": 18, "cake": 45}
+taxed = {k: round(v * 1.05, 2) for k, v in prices.items()}
+print(taxed)</pre><p>Keys pass through untouched; values get transformed. Note <code>round()</code> here trims the value itself (floats being floats, per Unit 2's 0.1 + 0.2 story) — where <code>:.2f</code> would only dress the display.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — FizzBuzz, harvested</span></div>
+        <p class="pd">The interview classic, Beginner-level style: write a helper function <code>fizzbuzz(n)</code> returning <code>"FizzBuzz"</code> for multiples of 15, <code>"Fizz"</code> for 3, <code>"Buzz"</code> for 5, else <code>str(n)</code> — then ask <code>Up to? </code>, convert at the door, and print the whole list via one comprehension. Input fixed to 15. (The messy if/elif logic lives in the function; the comprehension stays a clean sentence — that division of labour is the lesson.)</p>
+        <div class="want">Up to? 15
+['1', '2', 'Fizz', '4', 'Buzz', 'Fizz', '7', '8', 'Fizz', 'Buzz', '11', 'Fizz', '13', '14', 'FizzBuzz']</div>
+        <div class="pyrun" data-id="b4" data-stdin="15" data-stdin-lock data-expect="Up to? 15\n['1', '2', 'Fizz', '4', 'Buzz', 'Fizz', '7', '8', 'Fizz', 'Buzz', '11', 'Fizz', '13', '14', 'FizzBuzz']">
+          <textarea spellcheck="false">def fizzbuzz(n):
+    # your bands here, most specific first
+    return str(n)
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def fizzbuzz(n):
+    if n % 15 == 0:
+        return "FizzBuzz"
+    elif n % 3 == 0:
+        return "Fizz"
+    elif n % 5 == 0:
+        return "Buzz"
+    else:
+        return str(n)
+
+limit = int(input("Up to? "))
+print([fizzbuzz(n) for n in range(1, limit + 1)])</pre><p>Test 15 first or it matches 3 and never reaches FizzBuzz — Unit 3's most-specific-first rule. When a transform grows an if/elif ladder, don't cram it into the slot: name it as a function and let the comprehension call it. That's the two tools sharing the work.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 13 · Classes I — why objects</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">Stop and take the bow: the Beginner level is <b>complete</b> — from <code>print("Hello, world")</code> to a data report written at one idea per line, and you understood every character of it. Now the Intermediate door opens with a secret that's been hiding in plain sight: everything you've been using — strings with their <code>.title()</code>, lists with their <code>.append()</code>, dicts with their <code>.items()</code> — has been an <i>object</i> all along, a bundle of data and the abilities that come with it. Unit 13 hands you the machinery to build your own.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>The Python Tutorial</b> — <i>§5.1.3 List Comprehensions</i>. <span class="why">The official treatment of 12.1 and 12.2, including the nested cases we advised against — see why.</span> <a href="https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions" rel="noopener">docs.python.org</a></li>
+      <li><b>The Python Tutorial</b> — <i>§5.5 Dictionaries (Data Structures)</i>. <span class="why">Dict comprehensions in their natural habitat, alongside everything else dicts do.</span> <a href="https://docs.python.org/3/tutorial/datastructures.html#dictionaries" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>Built-in Functions: zip()</i>. <span class="why">The full story on 12.5's pairing tool, including the unequal-lengths fine print.</span> <a href="https://docs.python.org/3/library/functions.html#zip" rel="noopener">docs.python.org</a></li>
+      <li><b>Sweigart, A.</b> — <i>Automate the Boring Stuff with Python, ch. 4 (Lists)</i>. <span class="why">The list operations this whole unit compresses — good ground to re-walk with new eyes.</span> <a href="https://automatetheboringstuff.com/2e/chapter4/" rel="noopener">book</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit11.html"><span class="k">← Previous</span><span class="t">Unit 11 · Borrowing power — modules &amp; the standard library</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit13.html"><span class="k">Next →</span><span class="t">Unit 13 · Classes I — why objects</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 12 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"How do you read  [w.upper() for w in words]  aloud?",
+   o:["\"For each w in words, check if w is uppercase\"","\"A list of w-uppercased, for each w in words\"","\"Uppercase the list words, in place\"","\"While words has a w, upper it\""],
+   a:1,
+   e:"The house sentence: a list of <what each becomes>, for each <item> in <source>. It builds a NEW list of uppercased copies; words itself is untouched."},
+  {q:"In  [s * 2 for s in scores if s >= 50]  — which statement is true?",
+   o:["The if tests the doubled values, keeping those where s * 2 >= 50","Each s is tested first; only the passers get doubled and kept","The if must be written before the for","Items that fail the if land in the list as False"],
+   a:1,
+   e:"The trailing if is a gate on the RAW items: test first, then transform the survivors. Failures are skipped entirely — they don't appear as False or None."},
+  {q:"Which line builds a dict mapping each name to its length?",
+   o:["[name: len(name) for name in names]","{name: len(name) for name in names}","{len(name) for name in names}","(name: len(name)) for name in names"],
+   a:1,
+   e:"Curly braces plus a key: value pair = dict comprehension. Braces without the colon build a set of lengths; square brackets with a colon are a SyntaxError."},
+  {q:"When should the four-line loop STAY a loop?",
+   o:["Never — one line is always better","When the body has side effects (like print) or each step depends on the previous one","Whenever the list has more than ten items","When the list holds strings instead of numbers"],
+   a:1,
+   e:"The two-question test: comprehensions are for pure transform/filter that fits one honest line. Printing, input, and running totals fail question one — the loop is the right tool, and choosing it is good judgment, not defeat."},
+  {q:"Looping over  zip(names, scores)  gives you…",
+   o:["One long list — all the names, then all the scores","Pairs — first name with first score, second with second, and so on","A name→score dict, automatically","An error unless both lists are sorted"],
+   a:1,
+   e:"zip closes the two lists like a zipper, pairing by position. Unpack with  for name, score in zip(...)  — the same two-name move as .items(). (If you want the dict, that's dict(zip(names, scores)) — your call, not automatic.)"},
+  {q:"nums = [3, 8, 5, 12]. What does  [n for n in nums if n > 6]  leave OUT, and where do the left-outs go?",
+   o:["3 and 5 — they simply aren't in the new list, which is [8, 12]","3 and 5 — they appear in the list as None","3 and 5 — they appear in the list as False","Nothing; failing items appear as 0"],
+   a:0,
+   e:"Filtered items vanish without a trace: the result is [8, 12], length two from a source of length four. Nothing marks the gaps — a filtered list is usually shorter, and that's the feature."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — a clean sweep to close the level. The Beginner foundations are yours."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 12.2's gate and 12.4's judgment carry the load."
+           : " — worth another pass through the practice above before stepping into Unit 13.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["List comprehension","[transform for item in source] — the accumulate-a-new-list loop folded into one expression. Builds a NEW list; the source is untouched."],
+  ["Transform slot","The expression before the for — what each surviving item becomes. Any value-producing expression fits: n * 2, len(w), f\"#{n}\", a function call."],
+  ["Condition clause (if)","The trailing gate: [x for x in L if test]. Items failing the test are skipped entirely — no False, no None, just absent."],
+  ["Dict comprehension","{key_expr: value_expr for ...} — the folded dict-building loop. The colon between key and value is what makes it a dict."],
+  ["Set comprehension","{expr for ...} — collects unique values, no reliable order. The one-line dedup-and-normalise tool."],
+  ["Conditional expression","A value-producing if: \"pass\" if s >= 50 else \"fail\". Lives in the transform slot (choosing what), never to be confused with the trailing if (choosing whether)."],
+  ["zip()","Pairs two (or more) lists position by position, like closing a zipper. Unpack with for a, b in zip(...). Quietly stops at the shorter list."],
+  ["Side effect","Something a line does besides producing a value — printing, asking for input, writing a file. Comprehensions must not have them; that's what loops are for."],
+  ["sorted()","Hands back a new, ordered list from anything loopable. The house rule: always sorted() a set before printing it, so output is stable and checkable."],
+  ["Pythonic","Code shaped the way experienced Python programmers expect — clear, direct, using the language's own idioms. The comprehension, used with judgment, is exhibit A."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

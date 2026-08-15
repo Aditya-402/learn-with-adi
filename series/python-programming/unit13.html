@@ -1,0 +1,1240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classes I — Why Objects — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u13" data-lwa-title="Unit 13 · Classes I — why objects">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Intermediate — Object-oriented Python · Unit 13</div>
+      <h1>Classes I — Why Objects</h1>
+      <p class="standfirst">Welcome to the Intermediate level. You have written <code style="font-size:.85em">"hi".upper()</code> a hundred times without asking who wrote <code style="font-size:.85em">upper</code>. This session answers that — and then hands you the pen. By the end you'll have built a class of your own: data and the abilities that belong to it, travelling together.</p>
+      <div class="facts">
+        <div><b>One session</b>~50 min</div>
+        <div><b>5 concepts</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 1–12 — the whole Beginner level</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">13.1 Objects all along</a>
+    <a href="#s2">13.2 Your first class</a>
+    <a href="#s3">13.3 Methods &amp; self</a>
+    <a href="#s4">13.4 Answer vs act</a>
+    <a href="#s5">13.5 Build: BankAccount</a>
+    <a href="#s6">13.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 13.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>Beginner complete — welcome up</b>Units 1–12 are assumed from here: boxes, if/else, loops, lists, dicts, functions, files. Nothing new in this unit contradicts them; everything in it stands on them.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm as always: each concept is a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit13.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>Unit 7 is the ancestor</b>A method is a function that lives inside a class and knows which object it was called on. If <code>def</code>, arguments and <code>return</code> feel shaky, ten minutes back in Unit 7 will pay for this whole session.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">13.1</span>
+      <h2>You've been using objects all along</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p><b>The problem.</b> Twelve units in, something has been quietly odd and nobody said it out loud. You write <code>len(word)</code> — a function with the thing in brackets. But you also write <code>word.upper()</code> — the thing first, then a dot, then the ability. Two shapes for what looks like the same job. Why?</p>
+      <p><b>The idea, in plain words.</b> Because <code>word</code> is not just data sitting in a box. It is data <i>with abilities attached</i>. The dot means "reach inside this particular thing and use one of its own abilities". A string knows how to shout (<code>.upper()</code>), a list knows how to sort itself (<code>.sort()</code>), a dictionary knows how to hand over its pairs (<code>.items()</code>). Nobody passes the data in — the data <i>is</i> the thing you called the ability on.</p>
+      <p>A bundle like that — some data, plus the abilities that belong to it — is called an <b>object</b>. And every object was stamped out from a blueprint called a <b>class</b>. Ask any value what class it came from and it will tell you:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">print(type("hi"))   →   &lt;class 'str'&gt;</p>
+      <p>Read that carefully, because it's the reveal of this unit. <code>str</code> is a <i>class</i>. So is <code>list</code>. So is <code>dict</code>. Someone sat down and wrote them — decided what a string holds and what a string can do — and ever since, every quoted piece of text you've typed has been an object stamped from their blueprint. That's all a class is. And from the next section on, you write your own.</p>
+      <ul class="plain">
+        <li><b>Attribute</b> — a piece of data that belongs to an object, reached with a dot: <code>account.balance</code>.</li>
+        <li><b>Method</b> — an ability that belongs to an object, reached with a dot and called with brackets: <code>word.upper()</code>.</li>
+        <li>Same dot, two uses. Brackets tell you which one you're looking at.</li>
+      </ul>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the dot at work</div>
+      <div class="m">nums = [4, 1, 3]
+nums.append(2)
+nums.sort()
+print(nums)
+print(type(nums))</div>
+      <p><b>Line 1:</b> the box <code>nums</code> holds a list object: the data <code>[4, 1, 3]</code> <i>and</i> every list ability, riding along with it.</p>
+      <p><b>Line 2:</b> <code>nums.append(2)</code> — no list is passed in, because <code>nums</code> is the list. The object changes itself: <code>[4, 1, 3, 2]</code>.</p>
+      <p><b>Line 3:</b> <code>nums.sort()</code> — again, it sorts <i>itself</i>. Now <code>[1, 2, 3, 4]</code>. Note the empty brackets: no arguments needed, but brackets still required, because calling is what brackets mean.</p>
+      <p><b>Lines 4–5:</b> the contents, then the blueprint it came from:</p>
+      <div class="m">[1, 2, 3, 4]
+&lt;class 'list'&gt;</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      An object is data plus the abilities that belong to that data, travelling together. A class is the blueprint the object was stamped from. <code>str</code>, <code>list</code> and <code>dict</code> are classes someone wrote — nothing about them is magic, and nothing stops you writing your own.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> take three values you've used since Unit 2 and make each one confess what it is and what it can do. <b>Thinking:</b> <code>type()</code> for the blueprint, the dot for the abilities. Watch how the same dot serves three completely different classes.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">word = "hello"
+nums = [3, 1, 2]
+ages = {"ada": 36, "alan": 41}
+
+print(word.upper())
+nums.sort()
+print(nums)
+print(list(ages.items()))
+
+print(type(word))
+print(type(nums))
+print(type(ages))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">13.1 · P1</span><span class="pt">Chain the abilities</span></div>
+        <p class="pd">The box holds a messy name. Using only string methods and one <code>print</code>, trim the stray spaces off both ends and capitalise each word. (Two abilities, one after the other — the result of the first is itself a string, so the second dot works straight onto it.)</p>
+        <div class="want">Ada Lovelace</div>
+        <div class="pyrun" data-id="s1p1" data-expect="Ada Lovelace">
+          <textarea spellcheck="false">name = "  ada lovelace  "
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>name = "  ada lovelace  "
+print(name.strip().title())</pre><p><code>name.strip()</code> hands back a new string object — which has abilities of its own, so <code>.title()</code> attaches directly to it. Left to right, each dot acting on whatever the previous step produced.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">13.1 · P2</span><span class="pt">Predict: five blueprints</span></div>
+        <p class="pd">Write down all five lines of output before you run — the exact wording, angle brackets and quotes included. Then run and reconcile. Every one of those names is a class somebody wrote.</p>
+        <div class="pyrun" data-id="s1p2">
+          <textarea spellcheck="false">print(type(7))
+print(type(7.0))
+print(type("7"))
+print(type([7]))
+print(type({"a": 7}))</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>&lt;class 'int'&gt;
+&lt;class 'float'&gt;
+&lt;class 'str'&gt;
+&lt;class 'list'&gt;
+&lt;class 'dict'&gt;</pre><p>Five values, five blueprints. <code>7</code> and <code>"7"</code> look alike on screen and come from different classes — which is exactly why Unit 2's showdown happened. <code>type()</code> has been telling you about classes since then; you just didn't have the word yet.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">13.1 · P3</span><span class="pt">Stretch — the dictionary's own ability</span></div>
+        <p class="pd">Loop over the dictionary using its <code>.items()</code> method and print one line per pair, exactly as the goal shows. No indexing, no key lookups — let the object hand you both halves.</p>
+        <div class="want">ada scored 9
+alan scored 7</div>
+        <div class="pyrun" data-id="s1p3" data-expect="ada scored 9
+alan scored 7">
+          <textarea spellcheck="false">scores = {"ada": 9, "alan": 7}
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>scores = {"ada": 9, "alan": 7}
+for name, points in scores.items():
+    print(f"{name} scored {points}")</pre><p><code>.items()</code> is an ability that belongs to the dictionary — it knows its own insides, so it can hand you key and value together. Dictionaries keep insertion order, so <code>ada</code> comes first every time.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 13.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">13.2</span>
+      <h2>Your first class — <code>class Player:</code></h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> You want to track two players in a game: each has a name and a health number. With what you know today, that's four loose boxes — <code>p1_name</code>, <code>p1_health</code>, <code>p2_name</code>, <code>p2_health</code> — and a permanent low-level anxiety that you'll damage the wrong one. Add a third player and it's six boxes. A dictionary per player helps, but nothing stops you spelling a key wrong, and nothing keeps the <i>abilities</i> near the data.</p>
+      <p><b>The idea, in plain words.</b> Write the blueprint once. A class is a description of what one player <i>has</i> and what one player <i>can do</i>. Then stamp out as many players as you like, each carrying its own copy of the data.</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">class Player:
+    def __init__(self, name, health):
+        self.name = name
+        self.health = health
+
+p1 = Player("Ada", 100)</p>
+      <p>Four things are happening there, and each is worth its own sentence.</p>
+      <ul class="plain">
+        <li><code>class Player:</code> starts the blueprint. Class names get a Capital Letter by long convention — that's how a reader tells <code>Player</code> the blueprint from <code>player</code> the thing.</li>
+        <li><code>__init__</code> is a special method that Python runs <b>automatically</b> the moment an object is created. Its job is to fill in the new object's starting data. You never call it yourself; you just write <code>Player("Ada", 100)</code> and Python calls it for you. (Those double underscores mean "Python knows this name" — Unit 14 is entirely about that family.)</li>
+        <li><code>self</code> is the new object being built, handed to the method as its first parameter. More on it in 13.3; for now, read <code>self</code> as "this particular one".</li>
+        <li><code>self.name = name</code> is Unit 2's store-into arrow, aimed <i>inside</i> the object: take the value that arrived as <code>name</code> and put it in a box called <code>name</code> that belongs to this object. That's an <b>attribute</b>.</li>
+      </ul>
+      <p>And here's the payoff: <code>p1 = Player("Ada", 100)</code> and <code>p2 = Player("Alan", 80)</code> create two <i>separate</i> objects, each with its own <code>name</code> box and its own <code>health</code> box. Change one and the other doesn't flinch. The labeled box from Unit 2 hasn't gone anywhere — an object is simply a box of boxes, with abilities attached to the outside.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — two objects, four boxes</div>
+      <div class="m">class Player:
+    def __init__(self, name, health):
+        self.name = name
+        self.health = health
+
+p1 = Player("Ada", 100)
+p2 = Player("Alan", 80)
+p1.health = 60
+print(p1.health, p2.health)</div>
+      <p><b>The class block:</b> nothing runs. Python reads the blueprint and files it away, exactly as it files a <code>def</code> without running it.</p>
+      <p><b><code>p1 = Player("Ada", 100)</code>:</b> Python makes a blank new object, calls <code>__init__</code> with <code>self</code> = that new object, <code>name</code> = <code>"Ada"</code>, <code>health</code> = <code>100</code>. Two boxes get filled <i>inside</i> the object. The finished object is stored in <code>p1</code>.</p>
+      <p><b><code>p2 = Player("Alan", 80)</code>:</b> the whole thing happens again, from scratch, into a <i>different</i> object. Two more boxes, unrelated to the first two.</p>
+      <p><b><code>p1.health = 60</code>:</b> store-into, aimed at one box inside one object. <code>p2</code> is untouched — it was never involved.</p>
+      <div class="m">60 80</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 258" role="img" aria-label="One class blueprint stamping out two Player objects, each holding its own name and health boxes">
+        <text x="16" y="24" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">ONE BLUEPRINT, TWO OBJECTS, FOUR BOXES</text>
+        <rect x="24" y="46" width="212" height="150" rx="12" fill="#f0f1f7" stroke="#5b4b9e" stroke-width="1.6" stroke-dasharray="7 5"/>
+        <text x="130" y="72" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#3d3170">class Player</text>
+        <text x="130" y="96" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">the cookie cutter</text>
+        <text x="44" y="126" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">has: name, health</text>
+        <text x="44" y="148" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">runs: __init__</text>
+        <text x="44" y="176" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">holds no data itself</text>
+        <path d="M244 104 L316 78" stroke="#5b4b9e" stroke-width="1.6" fill="none" marker-end="url(#ah13)"/>
+        <path d="M244 132 L316 176" stroke="#5b4b9e" stroke-width="1.6" fill="none" marker-end="url(#ah13)"/>
+        <defs><marker id="ah13" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto"><path d="M0 0 L7 3.2 L0 6.4 z" fill="#5b4b9e"/></marker></defs>
+        <text x="278" y="98" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="10.5" fill="#5b4b9e">stamp</text>
+        <rect x="330" y="42" width="238" height="82" rx="11" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.6"/>
+        <text x="344" y="64" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">p1 — a Player object</text>
+        <rect x="344" y="74" width="100" height="38" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.2"/>
+        <text x="394" y="90" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11" font-weight="700" fill="#3d3170">name</text>
+        <text x="394" y="105" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">"Ada"</text>
+        <rect x="454" y="74" width="100" height="38" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.2"/>
+        <text x="504" y="90" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11" font-weight="700" fill="#3d3170">health</text>
+        <text x="504" y="105" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">100</text>
+        <rect x="330" y="140" width="238" height="82" rx="11" fill="#ffffff" stroke="#2b7a78" stroke-width="1.6"/>
+        <text x="344" y="162" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">p2 — a Player object</text>
+        <rect x="344" y="172" width="100" height="38" rx="8" fill="#e3efee" stroke="#2b7a78" stroke-width="1.2"/>
+        <text x="394" y="188" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11" font-weight="700" fill="#1d5654">name</text>
+        <text x="394" y="203" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">"Alan"</text>
+        <rect x="454" y="172" width="100" height="38" rx="8" fill="#e3efee" stroke="#2b7a78" stroke-width="1.2"/>
+        <text x="504" y="188" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11" font-weight="700" fill="#1d5654">health</text>
+        <text x="504" y="203" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">80</text>
+        <text x="596" y="70" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#4a5a72">Each object owns its own</text>
+        <text x="596" y="88" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#4a5a72">boxes. A box of boxes —</text>
+        <text x="596" y="106" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#4a5a72">Unit 2's picture, one level up.</text>
+        <text x="596" y="150" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#a35a33">p1.health = 60</text>
+        <text x="596" y="170" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">touches one box in one</text>
+        <text x="596" y="188" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">object. p2 never notices.</text>
+      </svg>
+      <div class="figcap">Fig. 1 — The class holds no data; it is the shape. Every <code>Player(...)</code> call stamps out a fresh object with its own boxes inside. This is the state-of-memory picture from Unit 2, nested one level deeper.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><b>Class vs instance</b> — the distinction that trips everyone for about a week. The class is the <i>cookie cutter</i>; an instance is a <i>cookie</i>. The cutter has a shape but no dough in it; you can't eat it, and asking a cutter what flavour it is makes no sense. <code>Player</code> has no name and no health — <code>Player.health</code> is meaningless. <code>p1</code>, stamped out by that cutter, holds <code>"Ada"</code> and <code>100</code>. One cutter, unlimited cookies, each with its own filling. "Instance" and "object" mean the same thing here; these notes use both.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> write the <code>Player</code> blueprint and stamp out two players, then prove they're independent. <b>Thinking:</b> the class block first (it defines, it doesn't run), then the creations, then a change to one and a read of both. Predict the last line before you run it.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">class Player:
+    def __init__(self, name, health):
+        self.name = name
+        self.health = health
+
+p1 = Player("Ada", 100)
+p2 = Player("Alan", 80)
+
+print(p1.name, p1.health)
+print(p2.name, p2.health)
+
+p1.health = 60
+print(p1.health, p2.health)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">13.2 · P1</span><span class="pt">Write the Dog blueprint</span></div>
+        <p class="pd">Write a class <code>Dog</code> whose <code>__init__</code> takes <code>name</code> and <code>breed</code> and stores both as attributes. Then create the two dogs already named in the starter and print one line each, using f-strings, to match the goal.</p>
+        <div class="want">Rex is a beagle
+Nala is a pug</div>
+        <div class="pyrun" data-id="s2p1" data-expect="Rex is a beagle
+Nala is a pug">
+          <textarea spellcheck="false">class Dog:
+    # your __init__ here
+
+
+d1 = Dog("Rex", "beagle")
+d2 = Dog("Nala", "pug")
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Dog:
+    def __init__(self, name, breed):
+        self.name = name
+        self.breed = breed
+
+d1 = Dog("Rex", "beagle")
+d2 = Dog("Nala", "pug")
+print(f"{d1.name} is a {d1.breed}")
+print(f"{d2.name} is a {d2.breed}")</pre><p>Two arguments in, two attributes stored, twice over. The blueprint was written once; the boxes were filled twice.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">13.2 · P2</span><span class="pt">Predict: do they share?</span></div>
+        <p class="pd">Two cups get created, one gets emptied and refilled. Predict both printed lines before running. If you expect them to be the same, say why on paper first — being wrong on purpose is the fastest way to fix this idea.</p>
+        <div class="pyrun" data-id="s2p2">
+          <textarea spellcheck="false">class Cup:
+    def __init__(self, contents):
+        self.contents = contents
+
+a = Cup("tea")
+b = Cup("coffee")
+
+a.contents = "water"
+print(a.contents)
+print(b.contents)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>water
+coffee</pre><p>Each <code>Cup(...)</code> call built a separate object with its own <code>contents</code> box. Assigning into <code>a</code>'s box says nothing at all about <code>b</code>'s. Two cookies from one cutter never share their filling.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">13.2 · P3</span><span class="pt">Stretch — a sensible default</span></div>
+        <p class="pd"><code>__init__</code> is an ordinary function underneath, so Unit 7's default arguments work here too. Write <code>Student</code> so that <code>marks</code> defaults to <code>0</code> when nobody supplies it, then print both students to match the goal.</p>
+        <div class="want">Ada: 95
+Alan: 0</div>
+        <div class="pyrun" data-id="s2p3" data-expect="Ada: 95
+Alan: 0">
+          <textarea spellcheck="false">class Student:
+    # __init__ with name, and marks defaulting to 0
+
+
+a = Student("Ada", 95)
+b = Student("Alan")
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Student:
+    def __init__(self, name, marks=0):
+        self.name = name
+        self.marks = marks
+
+a = Student("Ada", 95)
+b = Student("Alan")
+print(f"{a.name}: {a.marks}")
+print(f"{b.name}: {b.marks}")</pre><p>A default in <code>__init__</code> means "a fresh one starts here unless told otherwise" — the pattern behind <code>BankAccount(owner, balance=0)</code> in 13.5. Defaults still must come after the non-default parameters.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 13.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">13.3</span>
+      <h2>Methods &amp; <code>self</code> — abilities that know whose they are</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p><b>The problem.</b> Your players have data. Now they need to <i>do</i> things — take damage, heal, report. You could write a plain function <code>take_damage(player, amount)</code> and pass the player in every time. It works. But then the ability lives somewhere else, far from the data, and the whole point of an object was that they travel together.</p>
+      <p><b>The idea, in plain words.</b> Move the function <i>inside</i> the class. A function written inside a class is called a <b>method</b>, and it gets one privilege: its first parameter, by universal convention named <code>self</code>, arrives already holding the object it was called on.</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">    def take_damage(self, amount):
+        self.health = self.health - amount</p>
+      <p>Two parameters in the <code>def</code>. But you call it with one argument:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">p1.take_damage(10)</p>
+      <p>Where did <code>self</code> come from? From the dot. Everything to the left of the dot is quietly handed in as the first argument. <code>p1.take_damage(10)</code> means, in full, "run <code>Player</code>'s <code>take_damage</code> with <code>self</code> = <code>p1</code> and <code>amount</code> = <code>10</code>". Call it on <code>p2</code> instead and the exact same code touches <code>p2</code>'s boxes. One method definition, correct for every object ever stamped.</p>
+      <p>So read <code>self</code> as <b>"this particular one"</b>. Inside a method, <code>self.health</code> means "the health box of whichever object I was called on". Without the <code>self.</code>, <code>health</code> would just be an ordinary local box that vanishes when the method ends — a real and common bug.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — one method, two objects</div>
+      <div class="m">class Player:
+    def __init__(self, name, health):
+        self.name = name
+        self.health = health
+
+    def take_damage(self, amount):
+        self.health = self.health - amount
+        print(f"{self.name} is now on {self.health}")
+
+p1 = Player("Ada", 100)
+p2 = Player("Alan", 100)
+p1.take_damage(30)
+p2.take_damage(10)
+p1.take_damage(25)</div>
+      <p><b><code>p1.take_damage(30)</code>:</b> <code>self</code> = <code>p1</code>, <code>amount</code> = 30. Right side first: <code>self.health - amount</code> → 100 − 30 → 70, stored back into <code>p1</code>'s health box. Then the print reads <code>p1</code>'s two boxes.</p>
+      <p><b><code>p2.take_damage(10)</code>:</b> identical code, different <code>self</code>. 100 − 10 → 90, into <code>p2</code>'s box. <code>p1</code> is still on 70.</p>
+      <p><b><code>p1.take_damage(25)</code>:</b> <code>self</code> = <code>p1</code> again, whose health is now 70. 70 − 25 → 45.</p>
+      <div class="m">Ada is now on 70
+Alan is now on 90
+Ada is now on 45</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 190" role="img" aria-label="How the dot supplies self: p1.take_damage(10) passes p1 as the first argument">
+        <text x="16" y="24" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">WHERE SELF COMES FROM</text>
+        <rect x="24" y="44" width="330" height="46" rx="10" fill="#23262e"/>
+        <text x="44" y="73" font-family="Cascadia Mono,Consolas,monospace" font-size="15" fill="#f0f1f7">p1<tspan fill="#e0b24a">.</tspan>take_damage<tspan fill="#8fd0c8">(10)</tspan></text>
+        <text x="44" y="112" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">what you write</text>
+        <path d="M368 68 L432 68" stroke="#5b4b9e" stroke-width="1.8" fill="none" marker-end="url(#ah13b)"/>
+        <defs><marker id="ah13b" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto"><path d="M0 0 L7 3.2 L0 6.4 z" fill="#5b4b9e"/></marker></defs>
+        <text x="400" y="58" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="10.5" fill="#5b4b9e">means</text>
+        <rect x="444" y="44" width="396" height="46" rx="10" fill="#23262e"/>
+        <text x="464" y="73" font-family="Cascadia Mono,Consolas,monospace" font-size="15" fill="#f0f1f7">take_damage<tspan fill="#8fd0c8">(</tspan><tspan fill="#e0b24a">p1</tspan><tspan fill="#8fd0c8">, 10)</tspan></text>
+        <text x="464" y="112" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">what Python runs</text>
+        <rect x="24" y="128" width="816" height="46" rx="10" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.2"/>
+        <text x="44" y="149" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#3d3170">def take_damage(self, amount):</text>
+        <text x="330" y="149" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#4a5a72">— the whole thing left of the dot lands in <tspan font-family="Cascadia Mono,Consolas,monospace" fill="#a35a33">self</tspan>.</text>
+        <text x="44" y="167" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">That is the entire mechanism. There is nothing else hidden in it.</text>
+      </svg>
+      <div class="figcap">Fig. 2 — The dot is an argument-passer. Two parameters in the definition, one argument at the call site, and the gap is filled by whatever sits to the left of the dot.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><b>Forgetting <code>self</code> in the <code>def</code>.</b> Write <code>def add(amount):</code> inside a class, call <code>t.add(5)</code>, and Python says: <code>TypeError: add() takes 1 positional argument but 2 were given</code>. That message reads like nonsense — you passed one argument! Decode it with Fig. 2: the dot silently added <code>t</code> as a first argument, so Python really did receive two, while your <code>def</code> only has room for one. Whenever a method complains about "one too many" arguments, the missing <code>self</code> is the answer. Every time.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> give <code>Player</code> the ability to take damage, and prove one definition serves every object. <b>Thinking:</b> the method goes inside the class, indented to the same level as <code>__init__</code>, with <code>self</code> first. Every box it touches gets a <code>self.</code> in front — that's what makes it <i>this</i> player's health rather than a passing local value.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">class Player:
+    def __init__(self, name, health):
+        self.name = name
+        self.health = health
+
+    def take_damage(self, amount):
+        self.health = self.health - amount
+        print(f"{self.name} takes {amount}, now on {self.health}")
+
+p1 = Player("Ada", 100)
+p2 = Player("Alan", 100)
+
+p1.take_damage(30)
+p2.take_damage(10)
+p1.take_damage(25)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">13.3 · P1</span><span class="pt">Add a greet method</span></div>
+        <p class="pd">Give <code>Person</code> a method <code>greet(self)</code> that prints a greeting using the object's own name. The two calls at the bottom must produce the goal exactly — same method, two different objects.</p>
+        <div class="want">Hi, I'm Ada
+Hi, I'm Alan</div>
+        <div class="pyrun" data-id="s3p1" data-expect="Hi, I'm Ada
+Hi, I'm Alan">
+          <textarea spellcheck="false">class Person:
+    def __init__(self, name):
+        self.name = name
+
+    # add greet here
+
+
+a = Person("Ada")
+b = Person("Alan")
+a.greet()
+b.greet()</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Person:
+    def __init__(self, name):
+        self.name = name
+
+    def greet(self):
+        print(f"Hi, I'm {self.name}")
+
+a = Person("Ada")
+b = Person("Alan")
+a.greet()
+b.greet()</pre><p>No arguments at the call site, but <code>self</code> still arrives — supplied by the dot. The f-string uses double quotes, so the apostrophe inside needs no ceremony.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">13.3 · P2</span><span class="pt">Decode the TypeError</span></div>
+        <p class="pd">Run this first and read the last line of the report. Count the arguments Python thinks it received, and work out where the extra one came from. Then fix it with one word so the program prints the goal.</p>
+        <div class="want">15</div>
+        <div class="pyrun" data-id="s3p2" data-expect="15">
+          <textarea spellcheck="false">class Timer:
+    def __init__(self, minutes):
+        self.minutes = minutes
+
+    def add(amount):
+        self.minutes = self.minutes + amount
+
+t = Timer(10)
+t.add(5)
+print(t.minutes)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Timer:
+    def __init__(self, minutes):
+        self.minutes = minutes
+
+    def add(self, amount):
+        self.minutes = self.minutes + amount
+
+t = Timer(10)
+t.add(5)
+print(t.minutes)</pre><p>The error said <i>takes 1 positional argument but 2 were given</i> because <code>t.add(5)</code> really passes two: <code>t</code> and <code>5</code>. Adding <code>self</code> gives the first one somewhere to land — and it also gives <code>self.minutes</code> inside the body something to mean.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">13.3 · P3</span><span class="pt">Two methods, one object</span></div>
+        <p class="pd">Write <code>Thermostat</code>: <code>__init__</code> stores a <code>temp</code>, <code>warmer(self, degrees)</code> raises it, <code>cooler(self, degrees)</code> lowers it. The script at the bottom must then print the goal.</p>
+        <div class="want">Now 20 degrees</div>
+        <div class="pyrun" data-id="s3p3" data-expect="Now 20 degrees">
+          <textarea spellcheck="false">class Thermostat:
+    # __init__, warmer, cooler
+
+
+t = Thermostat(22)
+t.warmer(3)
+t.cooler(5)
+print(f"Now {t.temp} degrees")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Thermostat:
+    def __init__(self, temp):
+        self.temp = temp
+
+    def warmer(self, degrees):
+        self.temp = self.temp + degrees
+
+    def cooler(self, degrees):
+        self.temp = self.temp - degrees
+
+t = Thermostat(22)
+t.warmer(3)
+t.cooler(5)
+print(f"Now {t.temp} degrees")</pre><p>22 + 3 = 25, then 25 − 5 = 20. Each call reads the box's <i>current</i> contents and stores back — Unit 2's <code>count = count + 1</code>, now living inside an object.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">13.3 · P4</span><span class="pt">Stretch — a method that protects its data</span></div>
+        <p class="pd">A battery can't go below zero. Write <code>Battery</code> with <code>__init__(self, level=100)</code>, a <code>use(self, amount)</code> that drains the level but clamps it at <code>0</code> (an <code>if</code> inside the method), and <code>report(self)</code> that prints the level as a percentage. Match the goal.</p>
+        <div class="want">Battery: 0%</div>
+        <div class="pyrun" data-id="s3p4" data-expect="Battery: 0%">
+          <textarea spellcheck="false">class Battery:
+    # __init__ (level defaults to 100), use, report
+
+
+b = Battery()
+b.use(30)
+b.use(90)
+b.report()</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Battery:
+    def __init__(self, level=100):
+        self.level = level
+
+    def use(self, amount):
+        self.level = self.level - amount
+        if self.level &lt; 0:
+            self.level = 0
+
+    def report(self):
+        print(f"Battery: {self.level}%")
+
+b = Battery()
+b.use(30)
+b.use(90)
+b.report()</pre><p>100 → 70 → would be −20, clamped to 0. This is the real reason to keep data inside an object: the rule about what the data is allowed to be lives right next to the data, and nobody can drain the battery past empty by accident.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 13.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">13.4</span>
+      <h2>Methods that answer vs methods that act</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Your game needs to ask a question — "is this player still alive?" — and act on the answer with an <code>if</code>. You could write a method that prints "alive" or "dead", but an <code>if</code> can't read your screen. Printing is for humans; deciding needs a value.</p>
+      <p><b>The idea, in plain words.</b> This is Unit 7's return-versus-print rhythm, replayed one level up. Methods come in two flavours, and knowing which you're writing is half of designing a class well.</p>
+      <ul class="plain">
+        <li><b>Methods that act</b> — they change the object's state and hand back nothing. <code>take_damage()</code>, <code>heal()</code>, <code>deposit()</code>. You call them on a line of their own.</li>
+        <li><b>Methods that answer</b> — they compute something from the object's state and <code>return</code> it, changing nothing. <code>is_alive()</code>, <code>area()</code>, <code>total()</code>. You call them <i>inside</i> something else: an <code>if</code>, an f-string, a sum.</li>
+      </ul>
+      <p>A method that answers is written exactly like a plain function that answers:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">    def is_alive(self):
+        return self.health &gt; 0</p>
+      <p>Note what's <i>not</i> there: no <code>if</code>, no <code>True</code>/<code>False</code> written by hand. <code>self.health &gt; 0</code> already <i>is</i> a True or a False (Unit 3), so returning the comparison directly is both shorter and clearer. Then <code>if p.is_alive():</code> reads like English, and that is the whole aim.</p>
+      <p>A naming habit worth stealing: methods that answer a yes/no question start with <code>is_</code> or <code>has_</code>. A reader then knows, without opening the method, that calling it is safe and that the answer is what matters.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — asking, then acting</div>
+      <div class="m">p = Player("Ada", 30)
+p.take_damage(40)
+print(p.is_alive())
+if not p.is_alive():
+    p.heal(50)
+print(p.health, p.is_alive())</div>
+      <p><b>Line 2:</b> a method that acts. 30 − 40 → health is now <b>−10</b>. Nothing comes back; the line's whole purpose was the change.</p>
+      <p><b>Line 3:</b> a method that answers. <code>−10 &gt; 0</code> → <code>False</code>. That value travels out of the method and into <code>print</code>, which shows <code>False</code> — capital F, as always.</p>
+      <p><b>Line 4:</b> the same answer, this time feeding an <code>if</code>. <code>not False</code> → True, so the body runs.</p>
+      <p><b>Line 5:</b> acts again. −10 + 50 → <b>40</b>.</p>
+      <p><b>Line 6:</b> reads the attribute directly and asks the question again — <code>40 &gt; 0</code> → True:</p>
+      <div class="m">False
+40 True</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><b>A method that prints hands back <code>None</code>.</b> Write <code>def area(self): print(self.side * self.side)</code> and then <code>total = s.area() + 10</code> explodes with <code>TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'</code>. The number was shown on screen and then thrown away — printing is not returning. Unit 7 warned you; the warning does not expire just because the function moved inside a class. Rule of thumb: if anything other than a human might want the value, <code>return</code> it.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a <code>Player</code> with two acting methods and one answering method, driven by an <code>if</code>. <b>Thinking:</b> <code>take_damage</code> and <code>heal</code> change state and return nothing; <code>is_alive</code> returns the comparison itself and changes nothing. Watch how the answering method slots straight into the <code>if</code>.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">class Player:
+    def __init__(self, name, health):
+        self.name = name
+        self.health = health
+
+    def take_damage(self, amount):
+        self.health = self.health - amount
+
+    def heal(self, amount):
+        self.health = self.health + amount
+
+    def is_alive(self):
+        return self.health > 0
+
+p = Player("Ada", 30)
+p.take_damage(40)
+print(p.is_alive())
+
+if not p.is_alive():
+    p.heal(50)
+
+print(p.health, p.is_alive())</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">13.4 · P1</span><span class="pt">Write is_empty</span></div>
+        <p class="pd">The <code>drink</code> method is written for you. Add <code>is_empty(self)</code> — it must <b>return</b> True when the bottle has nothing left, not print anything. The script at the bottom then produces the goal.</p>
+        <div class="want">False
+True
+Refill time</div>
+        <div class="pyrun" data-id="s4p1" data-expect="False
+True
+Refill time">
+          <textarea spellcheck="false">class Bottle:
+    def __init__(self, ml):
+        self.ml = ml
+
+    def drink(self, ml):
+        self.ml = self.ml - ml
+
+    # add is_empty here
+
+
+b = Bottle(500)
+b.drink(200)
+print(b.is_empty())
+b.drink(300)
+print(b.is_empty())
+if b.is_empty():
+    print("Refill time")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>    def is_empty(self):
+        return self.ml &lt;= 0</pre><p>500 − 200 = 300, so not empty; then 300 − 300 = 0, so empty. <code>&lt;=</code> rather than <code>==</code> because a bottle drunk past zero is certainly empty too — a small piece of defensive thinking that costs one character.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">13.4 · P2</span><span class="pt">Predict: print vs return, five lines</span></div>
+        <p class="pd">Two methods that compute the same number, one printing and one returning. Predict all five output lines on paper — especially the last one — then run. This is the single most useful prediction in the unit.</p>
+        <div class="pyrun" data-id="s4p2">
+          <textarea spellcheck="false">class Square:
+    def __init__(self, side):
+        self.side = side
+
+    def area_print(self):
+        print(self.side * self.side)
+
+    def area_return(self):
+        return self.side * self.side
+
+s = Square(4)
+s.area_print()
+print(s.area_return())
+total = s.area_return() + 10
+print(total)
+oops = s.area_print()
+print(oops)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>16
+16
+26
+16
+None</pre><p>Lines 1 and 2 look identical on screen and are completely different underneath. <code>area_return()</code> hands the 16 back, so it can be added to. <code>area_print()</code> shows 16 and hands back <code>None</code> — which is why <code>oops</code> holds nothing at all. The screen is an output device, not a value.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">13.4 · P3</span><span class="pt">Stretch — an answer inside an f-string</span></div>
+        <p class="pd">Give <code>Temperature</code> a method <code>to_fahrenheit(self)</code> that <i>returns</i> the converted number (celsius × 9 / 5 + 32). Call it straight inside the f-string, formatted to one decimal place, to match the goal.</p>
+        <div class="want">37C is 98.6F</div>
+        <div class="pyrun" data-id="s4p3" data-expect="37C is 98.6F">
+          <textarea spellcheck="false">class Temperature:
+    def __init__(self, celsius):
+        self.celsius = celsius
+
+    # add to_fahrenheit here
+
+
+t = Temperature(37)
+print(f"{t.celsius}C is {t.to_fahrenheit():.1f}F")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Temperature:
+    def __init__(self, celsius):
+        self.celsius = celsius
+
+    def to_fahrenheit(self):
+        return self.celsius * 9 / 5 + 32
+
+t = Temperature(37)
+print(f"{t.celsius}C is {t.to_fahrenheit():.1f}F")</pre><p>Method calls are allowed inside braces, brackets and all — the returned number then meets <code>:.1f</code> and gets dressed for the exit. Format at the exit, as always; the method itself hands back the honest float.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 13.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">13.5</span>
+      <h2>Your build — a bank account and a small battle</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>Two builds, because objects only really click when you've made the same idea twice in different clothes. First a <code>BankAccount</code> — an owner, a balance, and three abilities that guard it. Then a two-player skirmish using everything from 13.3 and 13.4.</p>
+      <p>Keep the <code>BankAccount</code> tidy: it comes back in Units 15 and 16, first learning to print itself properly and later inheriting a whole family of accounts. What you write here is a foundation, not a throwaway.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">13.5 · P1</span><span class="pt">Build 1 — BankAccount</span></div>
+        <p class="pd">Write the class: <code>__init__(self, owner, balance=0)</code>; <code>deposit(self, amount)</code> adds to the balance; <code>withdraw(self, amount)</code> subtracts it, but if the amount is more than the balance it prints <code>Insufficient funds</code> and changes nothing; <code>report(self)</code> prints the owner and balance with exactly two decimals. The script below is fixed — don't change it.</p>
+        <div class="want">Insufficient funds
+Ada: 380.00
+Alan: 200.00</div>
+        <div class="pyrun" data-id="s5p1" data-expect="Insufficient funds
+Ada: 380.00
+Alan: 200.00">
+          <textarea spellcheck="false">class BankAccount:
+    # __init__, deposit, withdraw, report
+
+
+a = BankAccount("Ada")
+a.deposit(500)
+a.withdraw(120)
+a.withdraw(1000)
+a.report()
+
+b = BankAccount("Alan", 250)
+b.withdraw(50)
+b.report()</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance = self.balance + amount
+
+    def withdraw(self, amount):
+        if amount &gt; self.balance:
+            print("Insufficient funds")
+        else:
+            self.balance = self.balance - amount
+
+    def report(self):
+        print(f"{self.owner}: {self.balance:.2f}")</pre><p>Ada: 0 → 500 → 380, then the 1000 is refused and the balance stays put. Alan starts at 250 and ends at 200. The <code>:.2f</code> makes an int balance print as money — and note the guard lives <i>inside</i> <code>withdraw</code>, so no caller anywhere can ever overdraw the account.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">13.5 · P2</span><span class="pt">Build 2 — the tiny battle</span></div>
+        <p class="pd">Rebuild <code>Player</code> from memory — <code>name</code>, <code>health</code>, <code>take_damage</code>, <code>heal</code>, <code>is_alive</code> — and let the fixed script below run the skirmish. Health is allowed to go negative here; the question <code>is_alive</code> asks is simply whether it's still above zero.</p>
+        <div class="want">Ada 70 True
+Alan -10 False
+Alan revived at 30</div>
+        <div class="pyrun" data-id="s5p2" data-expect="Ada 70 True
+Alan -10 False
+Alan revived at 30">
+          <textarea spellcheck="false">class Player:
+    # __init__, take_damage, heal, is_alive
+
+
+p1 = Player("Ada", 100)
+p2 = Player("Alan", 60)
+
+p1.take_damage(30)
+p2.take_damage(70)
+
+print(p1.name, p1.health, p1.is_alive())
+print(p2.name, p2.health, p2.is_alive())
+
+if not p2.is_alive():
+    p2.heal(40)
+    print(f"{p2.name} revived at {p2.health}")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Player:
+    def __init__(self, name, health):
+        self.name = name
+        self.health = health
+
+    def take_damage(self, amount):
+        self.health = self.health - amount
+
+    def heal(self, amount):
+        self.health = self.health + amount
+
+    def is_alive(self):
+        return self.health &gt; 0</pre><p>Ada: 100 − 30 = 70, alive. Alan: 60 − 70 = −10, not alive — so the <code>if</code> fires and heals him to 30. One class, two objects, three methods, and a program that reads like a description of what's happening. That's the whole argument for objects.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 13.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">13.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~15 min</span></span>
+      <p>The mixed set: blueprints, attributes, methods that act, methods that answer — plus loops, lists and <code>input()</code> from the Beginner level. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">The Book class</span></div>
+        <p class="pd">Write <code>Book</code> with <code>title</code>, <code>author</code> and a <code>describe(self)</code> method that prints one line. Then build a second book from typed input — proving that objects don't care where their data came from. Inputs are fixed to <code>The Hobbit</code> and <code>Tolkien</code>.</p>
+        <div class="want">Dune by Frank Herbert
+Title? The Hobbit
+Author? Tolkien
+The Hobbit by Tolkien</div>
+        <div class="pyrun" data-id="b1" data-stdin="The Hobbit
+Tolkien" data-stdin-lock data-expect="Dune by Frank Herbert
+Title? The Hobbit
+Author? Tolkien
+The Hobbit by Tolkien">
+          <textarea spellcheck="false">class Book:
+    # __init__ and describe
+
+
+b1 = Book("Dune", "Frank Herbert")
+b1.describe()
+
+title = input("Title? ")
+author = input("Author? ")
+b2 = Book(title, author)
+b2.describe()</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Book:
+    def __init__(self, title, author):
+        self.title = title
+        self.author = author
+
+    def describe(self):
+        print(f"{self.title} by {self.author}")</pre><p>The class never asks whether its data was typed by a human or written into the code. That indifference is what makes objects reusable.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">Rectangle, and answers that add up</span></div>
+        <p class="pd">Write <code>Rectangle</code> with <code>width</code> and <code>height</code>, plus <code>area(self)</code> and <code>perimeter(self)</code> — both must <b>return</b>, not print, because the last line adds two areas together. Match the goal.</p>
+        <div class="want">Area: 28
+Perimeter: 22
+Total area: 53</div>
+        <div class="pyrun" data-id="b2" data-expect="Area: 28
+Perimeter: 22
+Total area: 53">
+          <textarea spellcheck="false">class Rectangle:
+    # __init__, area, perimeter
+
+
+r = Rectangle(4, 7)
+print(f"Area: {r.area()}")
+print(f"Perimeter: {r.perimeter()}")
+
+s = Rectangle(5, 5)
+print(f"Total area: {r.area() + s.area()}")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Rectangle:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+    def area(self):
+        return self.width * self.height
+
+    def perimeter(self):
+        return 2 * (self.width + self.height)</pre><p>4 × 7 = 28, 2 × (4 + 7) = 22, and 28 + 25 = 53. Had <code>area</code> printed instead of returned, the last line would have died on <code>None + None</code> — the exact failure from 13.4's confusion box.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">Counter — Unit 2's ache, cured</span></div>
+        <p class="pd">Remember Unit 2, where raising a count meant typing <code>count = count + 1</code> three times? Write <code>Counter</code> with <code>__init__(self)</code> taking no extra arguments and starting <code>total</code> at <code>0</code>, a <code>click(self)</code> that adds one, and a <code>reset(self)</code> that returns it to zero. The script below then does the rest.</p>
+        <div class="want">5
+5 1
+0 1</div>
+        <div class="pyrun" data-id="b3" data-expect="5
+5 1
+0 1">
+          <textarea spellcheck="false">class Counter:
+    # __init__, click, reset
+
+
+c = Counter()
+for i in range(5):
+    c.click()
+print(c.total)
+
+d = Counter()
+d.click()
+print(c.total, d.total)
+
+c.reset()
+print(c.total, d.total)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Counter:
+    def __init__(self):
+        self.total = 0
+
+    def click(self):
+        self.total = self.total + 1
+
+    def reset(self):
+        self.total = 0</pre><p>An <code>__init__</code> with only <code>self</code> is perfectly ordinary — some objects need no ingredients, just a sensible starting state. And two counters count separately without a single extra line of bookkeeping: that's the four-loose-boxes problem solved for good.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — the Playlist holds a list</span></div>
+        <p class="pd">An attribute can hold anything, including a list. Write <code>Playlist</code>: <code>__init__(self, name)</code> stores the name and starts an empty <code>songs</code> list; <code>add(self, song)</code> appends to it; <code>show(self)</code> prints a header with the count, then every song numbered from <b>1</b>. Match the goal exactly.</p>
+        <div class="want">Study (3 songs)
+1. Nightcall
+2. Clair de Lune
+3. Weightless</div>
+        <div class="pyrun" data-id="b4" data-expect="Study (3 songs)
+1. Nightcall
+2. Clair de Lune
+3. Weightless">
+          <textarea spellcheck="false">class Playlist:
+    # __init__, add, show
+
+
+p = Playlist("Study")
+p.add("Nightcall")
+p.add("Clair de Lune")
+p.add("Weightless")
+p.show()</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Playlist:
+    def __init__(self, name):
+        self.name = name
+        self.songs = []
+
+    def add(self, song):
+        self.songs.append(song)
+
+    def show(self):
+        print(f"{self.name} ({len(self.songs)} songs)")
+        for i, song in enumerate(self.songs, start=1):
+            print(f"{i}. {song}")</pre><p>Note that <code>self.songs = []</code> lives in <code>__init__</code>, so every playlist gets its <i>own</i> fresh list. <code>enumerate(..., start=1)</code> hands over position and song together, counting from 1 for humans while the list itself stays 0-based underneath. (A <code>range(len(...))</code> loop with <code>i + 1</code> works too — enumerate just says it more plainly.)</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later — and Units 14 to 16 lean on all of them.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 14 · Classes II — objects that feel native</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">Try <code>print(player)</code> on one of today's objects and Python answers with something like <code>&lt;__main__.Player object at 0x7f3a…&gt;</code> — technically true, humanly useless. Meanwhile <code>print([1, 2])</code> prints a tidy list and <code>len("hi")</code> just works. Unit 14 shows you why: the double-underscore methods, the ones Python calls on your behalf. Teach your class <code>__str__</code>, <code>__eq__</code> and <code>__len__</code> and it stops being a foreign object in your program — <code>print</code>, <code>==</code> and <code>len</code> start speaking to it exactly as they speak to a string or a list.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>The Python Tutorial</b> — <i>§9 Classes</i>. <span class="why">The official walk through class syntax, instances, <code>__init__</code>, methods and what <code>self</code> really is — the same ground as 13.2 to 13.4, in the language's own words. Read §9.3 first; the rest can wait for Units 15–16.</span> <a href="https://docs.python.org/3/tutorial/classes.html" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>Glossary</i>. <span class="why">Short, precise definitions of <i>class</i>, <i>object</i>, <i>attribute</i>, <i>method</i> and <i>instance</i>. Worth a skim whenever a word in these notes feels slippery.</span> <a href="https://docs.python.org/3/glossary.html" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>The Python Data Model (intro)</i>. <span class="why">The deep answer to 13.1's reveal: every value in Python is an object, and this page is the specification of what that means. Dense — read the first few paragraphs now, return after Unit 14.</span> <a href="https://docs.python.org/3/reference/datamodel.html" rel="noopener">docs.python.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit12.html"><span class="k">← Previous</span><span class="t">Unit 12 · The Pythonic loop — comprehensions</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit14.html"><span class="k">Next →</span><span class="t">Unit 14 · Classes II — objects that feel native</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 13 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"A class is to an instance as…",
+   o:["a cookie is to a cookie cutter","a cookie cutter is to a cookie","one cookie is to another cookie","a cookie cutter is to a second cookie cutter"],
+   a:1,
+   e:"The class is the cutter: a shape, holding no data. Each instance is a cookie stamped from it, with its own filling. Player has no health; p1 does."},
+  {q:"When does __init__ run?",
+   o:["Every time you call a method on the object","Automatically, once, at the moment the object is created","Only if you call obj.__init__() yourself","When the program ends"],
+   a:1,
+   e:"Writing Player(\"Ada\", 100) makes a blank object and Python immediately calls __init__ on it to fill in its starting data. You never call it by hand."},
+  {q:"Inside a method, what is self?",
+   o:["The class itself","A copy of the object, so changes are lost","The particular object the method was called on","A keyword Python requires but ignores"],
+   a:2,
+   e:"self is 'this particular one'. p1.take_damage(10) runs with self = p1, so self.health touches p1's box. Call it on p2 and the same code touches p2's box instead."},
+  {q:"a = Cup(\"tea\") and b = Cup(\"coffee\"), then a.contents = \"water\". What does print(b.contents) show?",
+   o:["water","coffee","tea","None"],
+   a:1,
+   e:"Each instance owns its own attribute boxes, filled by its own __init__ call. Assigning into a's box says nothing about b's."},
+  {q:"You want  if account.is_rich():  to work. What must is_rich do?",
+   o:["print True or False","return True or False","store the answer in an attribute","print the balance"],
+   a:1,
+   e:"An if can't read the screen. A method that answers must return its value — usually the comparison itself, e.g. return self.balance > 100000. A method that only prints hands back None."},
+  {q:"def add(amount): inside a class, called as t.add(5), gives 'TypeError: add() takes 1 positional argument but 2 were given'. Why two?",
+   o:["Because 5 is counted twice","Because the dot passes t in as the first argument, on top of the 5","Because add is a reserved name","Because __init__ also ran"],
+   a:1,
+   e:"The dot is an argument-passer: t.add(5) really means add(t, 5). The def only has room for one parameter, so Python complains. The fix is def add(self, amount)."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. You now write blueprints, not just use them."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 13.2 and 13.3 carry the load."
+           : " — worth another pass through the practice above before Unit 14.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Object","Data plus the abilities that belong to it, travelling together. Every value in Python is one — including every string, list and dict you've used since Unit 2."],
+  ["Class","The blueprint an object is stamped from: what it has and what it can do. Named with a Capital Letter by convention. str, list and dict are classes someone wrote."],
+  ["Instance","One object made from a class. The cutter is the class; the cookie is the instance. 'Instance' and 'object' are used interchangeably here."],
+  ["Instantiation","Creating an instance: Player(\"Ada\", 100). Python makes a blank object, runs __init__ on it, and hands it back."],
+  ["Attribute","A piece of data belonging to an object, reached with a dot: p1.health. Each instance owns its own — changing one says nothing about another's."],
+  ["Method","A function defined inside a class. Called with a dot and brackets: p1.take_damage(10). Its first parameter, self, arrives filled in by the dot."],
+  ["self","'This particular one' — the object the method was called on, handed in as the first argument automatically. Inside a method, self.x means this object's x."],
+  ["__init__","The special method Python runs automatically the moment an object is created, to set up its starting attributes. Never called by hand."],
+  ["Dot notation","obj.thing — reach inside this object. No brackets means an attribute (data); brackets mean a method call (an ability)."],
+  ["State","Everything an object currently holds in its attributes. Methods that act change the state; methods that answer read it and return a value."],
+  ["Method that answers","Returns a value and changes nothing: is_alive(), area(). Usable inside an if or an f-string. Yes/no ones are named is_ or has_ by habit."],
+  ["Method that acts","Changes the object's state and returns nothing: deposit(), heal(). Called on a line of its own — a print inside it is not a return."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

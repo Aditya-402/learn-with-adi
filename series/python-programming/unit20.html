@@ -1,0 +1,1321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decorators &amp; Context Managers — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u20" data-lwa-title="Unit 20 · Decorators &amp; context managers">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Advanced — The subtle machinery · Unit 20</div>
+      <h1>Decorators &amp; Context Managers</h1>
+      <p class="standfirst">The last unit of the language. Unit 19 taught you that a function is a value you can pass around and wrap; this session turns that into the two pieces of machinery professional Python is built from — the <code style="font-size:.85em">@</code> line that adds behaviour to a function without touching it, and the <code style="font-size:.85em">with</code> block that promises to clean up even when everything goes wrong. Unit 10's oldest IOU gets paid in full.</p>
+      <div class="facts">
+        <div><b>One session</b>~55 min</div>
+        <div><b>5 concepts</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Unit 19 (closures, *args), 18, 13–16, 10, 9</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">20.1 Wrapping by hand</a>
+    <a href="#s2">20.2 The @ syntax</a>
+    <a href="#s3">20.3 Count &amp; transform</a>
+    <a href="#s4">20.4 Context managers</a>
+    <a href="#s5">20.5 Build: report runner</a>
+    <a href="#s6">20.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 20.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Unit 19</b>Functions as values, the inner function that carries its captured box in a <i>packed lunchbox</i>, and <code>*args</code> / <code>**kwargs</code>. Every line of this unit stands on it.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm to the very end: short read, then practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit20.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>An old promise</b>Unit 10 used <code>with open(...)</code> and said "the full story of <code>with</code> comes later". Later is 20.4. Bring Unit 9's try/except and Units 13–16's dunder methods with you.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">20.1</span>
+      <h2>Wrapping a function by hand</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> You have twelve functions that work. Now someone wants every one of them to announce itself — print a line before it runs and a line after. You could paste two prints into all twelve bodies, and then paste them again into the thirteenth next week, and then hunt them all down when the wording changes. There must be a way to add behaviour <i>around</i> a function without opening it up.</p>
+      <p><b>The idea, in plain words.</b> Don't change the function. Build a <b>new</b> function that does the extra bit, calls the old one in the middle, and hands back whatever the old one returned. The original stays untouched; the new one wears it like a coat. Unit 19 already gave you every tool this needs — a function can take a function as an argument, define a function inside itself, and return that inner function as a value.</p>
+      <p>Here is the whole pattern, and it is worth reading twice:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px;white-space:pre">def announce(func):
+    def inner(*args, **kwargs):
+        print("-- starting --")
+        result = func(*args, **kwargs)
+        print("-- finished --")
+        return result
+    return inner</p>
+      <p>Read it from the outside in. <code>announce</code> takes one thing: a function. It defines <code>inner</code>, which prints, calls <code>func</code>, prints again, and returns <code>func</code>'s answer. Then — and this is the line beginners skip — <code>announce</code> <b>returns inner without calling it</b>. No parentheses. It hands back a function, ready to be called later.</p>
+      <p>Two details do a lot of quiet work. <code>*args, **kwargs</code> means <code>inner</code> accepts <i>any</i> arguments and forwards them untouched, so the same wrapper fits a function of one argument, five arguments, or keyword arguments — you don't have to know. And <code>return result</code> means the wrapper passes the answer through instead of eating it; forget that line and every wrapped function starts returning <code>None</code>.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the coat goes on</div>
+      <div class="m">def add(a, b):
+    return a + b
+
+loud_add = announce(add)
+print(loud_add(2, 3))</div>
+      <p><b>Line 1–2:</b> a box called <code>add</code> holds a function. Nothing else happens.</p>
+      <p><b>Line 4:</b> <code>announce(add)</code> <i>runs now</i>. Inside it, the parameter <code>func</code> holds the add-function. It defines <code>inner</code> and returns it. The box <code>loud_add</code> now holds that inner function — and crucially, that inner function walked out of <code>announce</code> carrying <code>func</code> in its <b>packed lunchbox</b>. That's Unit 19's closure, and this is what it was for.</p>
+      <p><b>Line 5:</b> <code>loud_add(2, 3)</code> calls <code>inner</code>. <code>args</code> becomes <code>(2, 3)</code>. It prints, opens its lunchbox to find <code>func</code> — still the original add — calls <code>func(2, 3)</code> → 5, prints again, returns 5. The outer <code>print</code> shows it.</p>
+      <div class="m">-- starting --
+-- finished --
+5</div>
+      <p>The original <code>add</code> is untouched. It never learned it was wearing a coat.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 260" role="img" aria-label="State of memory before and after loud_add = announce(add): a new inner function holds func in its lunchbox, pointing back at the original add">
+        <text x="16" y="24" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">THE STATE OF MEMORY — WHAT announce(add) ACTUALLY BUILDS</text>
+        <text x="30" y="56" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">after the two defs</text>
+        <rect x="24" y="68" width="180" height="52" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="114" y="90" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">announce</text>
+        <text x="114" y="110" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1f2733">a function</text>
+        <rect x="24" y="134" width="180" height="52" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="114" y="156" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">add</text>
+        <text x="114" y="176" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1f2733">a + b</text>
+        <path d="M214 128 L286 128" stroke="#5b4b9e" stroke-width="1.6" fill="none" marker-end="url(#ah20)"/>
+        <defs><marker id="ah20" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b4b9e"/></marker></defs>
+        <text x="250" y="118" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11" fill="#3d3170">announce(add)</text>
+        <text x="250" y="146" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">runs once, right now</text>
+        <text x="316" y="56" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">after loud_add = announce(add)</text>
+        <rect x="310" y="68" width="230" height="118" rx="11" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.8"/>
+        <text x="425" y="92" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">loud_add  →  inner</text>
+        <rect x="330" y="106" width="190" height="62" rx="9" fill="#f5f0df" stroke="#8a6d1c" stroke-width="1.4" stroke-dasharray="5 4"/>
+        <text x="425" y="126" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" font-weight="700" fill="#8a6d1c" letter-spacing="1">THE PACKED LUNCHBOX</text>
+        <text x="425" y="150" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">func  =  the original add</text>
+        <path d="M330 150 C 250 210, 130 210, 114 190" stroke="#2b7a78" stroke-width="1.6" fill="none" stroke-dasharray="4 4" marker-end="url(#ah20t)"/>
+        <defs><marker id="ah20t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2b7a78"/></marker></defs>
+        <rect x="576" y="68" width="262" height="118" rx="11" fill="#23262e" stroke="#23262e"/>
+        <text x="596" y="94" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#c8ccd6">loud_add(2, 3)</text>
+        <text x="596" y="116" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#8fd7a8">-- starting --</text>
+        <text x="596" y="136" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#8fd7a8">-- finished --</text>
+        <text x="596" y="156" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#8fd7a8">5</text>
+        <text x="707" y="206" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">the answer still comes through</text>
+        <text x="425" y="212" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">the coat remembers what it is wearing over</text>
+        <text x="114" y="212" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">add itself never changed</text>
+        <text x="16" y="244" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">Two functions exist afterwards, not one: the original, and a new one that knows about it.</text>
+      </svg>
+      <div class="figcap">Fig. 1 — A decorator is a function factory. It runs once, builds a new function, and that new function leaves with the original tucked in its lunchbox. Every decorator in this unit is this picture.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>return inner</code> versus <code>return inner()</code>. With parentheses you would <i>call</i> inner immediately and return whatever it printed back — usually <code>None</code>, and at the wrong moment. Without parentheses you return the function itself, unrun, for someone to call later. Unit 19's rule holds: parentheses mean "do it now"; a bare name means "the thing itself".</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> build <code>announce</code> and wrap <code>add</code> by hand — no new syntax at all, only Unit 19 tools. <b>Thinking:</b> take a function in, define an inner that sandwiches a call to it, return the inner. Then store the result in a new name and call that. Watch the order of the three output lines: both prints happen <i>inside</i> the call, before <code>print(loud_add(2, 3))</code> gets anything to show.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">def announce(func):
+    def inner(*args, **kwargs):
+        print("-- starting --")
+        result = func(*args, **kwargs)
+        print("-- finished --")
+        return result
+    return inner
+
+def add(a, b):
+    return a + b
+
+loud_add = announce(add)
+print(loud_add(2, 3))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">20.1 · P1</span><span class="pt">Wrap a different function</span></div>
+        <p class="pd">The wrapper is written for you. Add a <code>greet(name)</code> that <b>returns</b> <code>f"Hello, {name}"</code>, wrap it by hand into a box called <code>loud_greet</code>, and print the result of calling it with <code>"Adi"</code>.</p>
+        <div class="want">-- starting --
+-- finished --
+Hello, Adi</div>
+        <div class="pyrun" data-id="s1p1" data-expect="-- starting --\n-- finished --\nHello, Adi">
+          <textarea spellcheck="false">def announce(func):
+    def inner(*args, **kwargs):
+        print("-- starting --")
+        result = func(*args, **kwargs)
+        print("-- finished --")
+        return result
+    return inner
+
+# your greet, your wrapping, your print
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def announce(func):
+    def inner(*args, **kwargs):
+        print("-- starting --")
+        result = func(*args, **kwargs)
+        print("-- finished --")
+        return result
+    return inner
+
+def greet(name):
+    return f"Hello, {name}"
+
+loud_greet = announce(greet)
+print(loud_greet("Adi"))</pre><p>The same wrapper fitted a one-argument function without a single change — that's <code>*args</code> earning its keep.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">20.1 · P2</span><span class="pt">Predict: the forgotten return</span></div>
+        <p class="pd">This wrapper is one line short. Predict all three output lines <i>on paper</i> — especially the last one — then run it.</p>
+        <div class="pyrun" data-id="s1p2">
+          <textarea spellcheck="false">def wrap(func):
+    def inner(*args, **kwargs):
+        print("in")
+        func(*args, **kwargs)
+        print("out")
+    return inner
+
+def double(n):
+    return n * 2
+
+d = wrap(double)
+print(d(5))</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>in
+out
+None</pre><p><code>double(5)</code> did return 10 — but <code>inner</code> never passed it on, and a function that falls off its end returns <code>None</code>. A wrapper that swallows return values is the single most common decorator bug. Always <code>result = func(...)</code> then <code>return result</code>.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">20.1 · P3</span><span class="pt">Stretch — keyword arguments survive too</span></div>
+        <p class="pd">Wrap <code>order(item, qty=1)</code> and call the wrapped version with <code>"dosa"</code> positionally and <code>qty=3</code> by keyword. You should not need to touch the wrapper at all — that's the point.</p>
+        <div class="want">-- starting --
+-- finished --
+3 x dosa</div>
+        <div class="pyrun" data-id="s1p3" data-expect="-- starting --\n-- finished --\n3 x dosa">
+          <textarea spellcheck="false">def announce(func):
+    def inner(*args, **kwargs):
+        print("-- starting --")
+        result = func(*args, **kwargs)
+        print("-- finished --")
+        return result
+    return inner
+
+def order(item, qty=1):
+    return f"{qty} x {item}"
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>loud_order = announce(order)
+print(loud_order("dosa", qty=3))</pre><p><code>args</code> caught <code>("dosa",)</code>, <code>kwargs</code> caught <code>{"qty": 3}</code>, and <code>func(*args, **kwargs)</code> unpacked both back into their proper places. A wrapper written this way fits any function you will ever write.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 20.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">20.2</span>
+      <h2>The @ syntax — one line of sugar</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Wrapping by hand works, but look at what it costs: you define <code>add</code>, then two lines later you write <code>loud_add = announce(add)</code>, and now there are two names floating about and everyone calling your code has to remember which one is the good one. The wrapping is written far away from the function it applies to.</p>
+      <p><b>The idea, in plain words.</b> Python gives you a shorthand that puts the wrapping <i>right on top of the def</i>, where you can't miss it:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px;white-space:pre">@announce
+def add(a, b):
+    return a + b</p>
+      <p>And that is <b>exactly</b>, precisely, character-for-character equivalent to:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px;white-space:pre">def add(a, b):
+    return a + b
+
+add = announce(add)</p>
+      <p>Nothing more. No magic, no hidden machinery, no new concept — the <code>@</code> line is <i>syntax sugar</i> for one assignment. Python defines the function, passes it to <code>announce</code>, and stores whatever comes back under the same name <code>add</code>. From then on, the name <code>add</code> refers to the wrapper, and the original function survives only inside the wrapper's lunchbox. A function used this way has a name: it is a <b>decorator</b>.</p>
+      <p>Because the wrapper receives the function it decorates, it can also read facts about it. Every function knows its own name in <code>func.__name__</code> — the same dunder territory as Units 13–16 — which makes a genuinely useful logging decorator about six lines long.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — when does the @ line run?</div>
+      <div class="m">def noisy(func):
+    print("decorating now")
+    def inner(*args, **kwargs):
+        print("running now")
+        return func(*args, **kwargs)
+    return inner
+
+@noisy
+def hello():
+    print("hello")
+
+print("--- defined ---")
+hello()</div>
+      <p><b>The def, with its @:</b> Python builds <code>hello</code>, then immediately calls <code>noisy(hello)</code>. So <code>decorating now</code> prints <i>here</i>, at definition time, before your program has really started doing anything.</p>
+      <p><b>Then</b> <code>--- defined ---</code> prints. <b>Then</b> the single call to <code>hello()</code> runs <code>inner</code>: <code>running now</code>, then the real body's <code>hello</code>.</p>
+      <div class="m">decorating now
+--- defined ---
+running now
+hello</div>
+      <p>Call <code>hello()</code> ten more times and <code>decorating now</code> never appears again. The decorator ran <b>once</b>; the wrapper it built runs every time.</p>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      <code>@announce</code> above <code>def add</code> means <code>add = announce(add)</code>. One assignment, applied at definition time. If you can say that sentence, you understand decorators — everything else is what you choose to put inside the wrapper.
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>The <code>@</code> line does <b>not</b> run on every call. It runs once, when Python reaches the <code>def</code>. Put a <code>print</code> in the decorator's body (outside <code>inner</code>) and you'll see it fire exactly once no matter how many times the function is called afterwards. Anything you want to happen per call must live inside <code>inner</code>.</p>
+    </div>
+    <div class="aside">
+      <div class="lbl">The polite habit — functools.wraps</div>
+      A wrapped function quietly loses its identity: <code>add.__name__</code> becomes <code>"inner"</code>, because the name <code>add</code> now points at the wrapper. Putting <code>@functools.wraps(func)</code> on <code>inner</code> (after <code>import functools</code>) copies the original's name and documentation across, so tools and error messages keep telling the truth. It's one line, it costs nothing, and real code always includes it. Shown here once; use it from now on.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a logging decorator that reports which function was called, with what arguments, and what it gave back. <b>Thinking:</b> the wrapper already holds <code>func</code>, so <code>func.__name__</code> is free; <code>args</code> is a tuple and drops straight into an f-string. Note that <code>12</code> prints twice — once by the logger, once by the outer <code>print</code>.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">def logged(func):
+    def inner(*args, **kwargs):
+        print(f"calling {func.__name__} with {args}")
+        result = func(*args, **kwargs)
+        print(f"{func.__name__} returned {result}")
+        return result
+    return inner
+
+@logged
+def area(w, h):
+    return w * h
+
+print(area(3, 4))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">20.2 · P1</span><span class="pt">Sugar it</span></div>
+        <p class="pd">Rewrite 20.1's hand-wrapping with an <code>@</code> line, so that the name <code>add</code> is the loud version and there is no <code>loud_add</code> anywhere. Then print <code>add(10, 7)</code>.</p>
+        <div class="want">-- starting --
+-- finished --
+17</div>
+        <div class="pyrun" data-id="s2p1" data-expect="-- starting --\n-- finished --\n17">
+          <textarea spellcheck="false">def announce(func):
+    def inner(*args, **kwargs):
+        print("-- starting --")
+        result = func(*args, **kwargs)
+        print("-- finished --")
+        return result
+    return inner
+
+def add(a, b):
+    return a + b
+
+print(add(10, 7))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>@announce
+def add(a, b):
+    return a + b
+
+print(add(10, 7))</pre><p>One line added, one line deleted. The decorated behaviour is now impossible to overlook — it sits directly above the function it changes.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">20.2 · P2</span><span class="pt">Predict: once, or every time?</span></div>
+        <p class="pd">Write down the exact six output lines before running — in order. The trap is <code>decorating now</code>: how many times does it appear, and where?</p>
+        <div class="pyrun" data-id="s2p2">
+          <textarea spellcheck="false">def noisy(func):
+    print("decorating now")
+    def inner(*args, **kwargs):
+        print("running now")
+        return func(*args, **kwargs)
+    return inner
+
+@noisy
+def hello():
+    print("hello")
+
+print("--- defined ---")
+hello()
+hello()</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>decorating now
+--- defined ---
+running now
+hello
+running now
+hello</pre><p>The decorator fires once, at the <code>def</code> — before <code>--- defined ---</code>, which is written earlier in the file only in the sense of reading order, not running order. The wrapper then fires per call.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">20.2 · P3</span><span class="pt">Stretch — give the function its name back</span></div>
+        <p class="pd">Run this as it stands and read the printed name — it's a lie. Now add <code>import functools</code> at the top and <code>@functools.wraps(func)</code> directly above <code>def inner</code>, and run again.</p>
+        <div class="want">area</div>
+        <div class="pyrun" data-id="s2p3" data-expect="area">
+          <textarea spellcheck="false">def logged(func):
+    def inner(*args, **kwargs):
+        return func(*args, **kwargs)
+    return inner
+
+@logged
+def area(w, h):
+    return w * h
+
+print(area.__name__)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import functools
+
+def logged(func):
+    @functools.wraps(func)
+    def inner(*args, **kwargs):
+        return func(*args, **kwargs)
+    return inner
+
+@logged
+def area(w, h):
+    return w * h
+
+print(area.__name__)</pre><p>Without it you get <code>inner</code> — every decorated function in your program answering to the same name, which makes debugging miserable. <code>functools.wraps</code> is itself a decorator, applied to <code>inner</code>. Decorators all the way down.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 20.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">20.3</span>
+      <h2>Decorators that count and transform</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Announcing and logging only <i>watch</i>. A wrapper sits in a position of real power: it sees every call going in and every answer coming out. What can it do with that — remember things between calls, or change the answer on its way out?</p>
+      <p><b>The idea, in plain words.</b> Both, and neither needs a new concept.</p>
+      <p><b>Remembering between calls.</b> A counter has to survive from one call to the next, and it can't be an ordinary variable inside <code>inner</code> — that box is created fresh every call and thrown away at the end. It can't simply be a variable in the enclosing function either: reading the lunchbox is free, but <i>assigning</i> to a name inside <code>inner</code> makes a brand-new local box instead of updating the captured one (Unit 19's sharpest edge). The honest, readable way out is to hang the counter on the function object itself — functions are values, and values can carry attributes:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px;white-space:pre">inner.count = 0        # a box stuck onto the function
+inner.count = inner.count + 1   # inside inner, per call</p>
+      <p>Because <code>inner.count</code> is a box <i>on an object</i>, not a plain name, assigning to it changes the object rather than creating a local — the same reason <code>self.total = ...</code> worked in Unit 13. (A list captured in the lunchbox — <code>calls = [0]</code>, then <code>calls[0] = calls[0] + 1</code> — works for the same reason and is worth recognising when you meet it, but the attribute reads better.)</p>
+      <p><b>Changing the answer.</b> Even easier: catch the result, alter it, return the altered version. The caller sees only what the wrapper hands back — a wrapper that returns <code>result.upper() + "!"</code> turns every polite function into an enthusiastic one without the function knowing.</p>
+      <p>These two moves cover most real decorators. Timing a function, retrying it three times if it fails, checking whether the user is logged in before letting the call through — all of them are this same shape: do something, call <code>func</code>, do something, return the result.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — a counter that survives</div>
+      <div class="m">@call_counter
+def ping():
+    print("pong")
+
+ping()
+ping()</div>
+      <p><b>At the def:</b> <code>call_counter(ping)</code> runs, builds <code>inner</code>, sets <code>inner.count = 0</code>, returns <code>inner</code>. The name <code>ping</code> now holds that wrapper, with a <code>count</code> box attached reading 0.</p>
+      <p><b>First call:</b> <code>inner.count</code> goes 0 → 1, prints <code>call #1</code>, then the real body prints <code>pong</code>.</p>
+      <p><b>Second call:</b> the <i>same</i> wrapper object is still there with its <code>count</code> box — 1 → 2. Nothing was reset, because the decorator never ran again.</p>
+      <div class="m">call #1
+pong
+call #2
+pong</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Stacking decorators reads bottom-up. <code>@excited</code> above <code>@call_counter</code> above <code>def cheer</code> means <code>cheer = excited(call_counter(cheer))</code> — the one nearest the <code>def</code> is applied first, so it ends up <i>innermost</i>, closest to the real function. At call time the outermost wrapper runs first and the innermost last. Read the stack downwards to see who wraps whom, upwards to see who speaks first.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a decorator that numbers every call to whatever it wraps. <b>Thinking:</b> the count must live somewhere that outlives a single call, so it goes on <code>inner</code> itself, initialised <i>after</i> <code>def inner</code> and <i>before</i> <code>return inner</code>. Predict the six lines before running.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">def call_counter(func):
+    def inner(*args, **kwargs):
+        inner.count = inner.count + 1
+        print(f"call #{inner.count}")
+        return func(*args, **kwargs)
+    inner.count = 0
+    return inner
+
+@call_counter
+def ping():
+    print("pong")
+
+ping()
+ping()
+ping()</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">20.3 · P1</span><span class="pt">The excited decorator</span></div>
+        <p class="pd">Write <code>excited</code>: it calls the wrapped function, then returns the result <b>uppercased with an exclamation mark added</b>. The <code>greet</code> function below must not be edited — all the enthusiasm comes from the wrapper.</p>
+        <div class="want">HELLO, ADI!</div>
+        <div class="pyrun" data-id="s3p1" data-expect="HELLO, ADI!">
+          <textarea spellcheck="false">def excited(func):
+    # your wrapper here
+    pass
+
+@excited
+def greet(name):
+    return f"hello, {name}"
+
+print(greet("adi"))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def excited(func):
+    def inner(*args, **kwargs):
+        result = func(*args, **kwargs)
+        return result.upper() + "!"
+    return inner</pre><p>The wrapper intercepted the answer on its way out. <code>greet</code> still returns its quiet lowercase string — it just never reaches the caller unaltered.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">20.3 · P2</span><span class="pt">Count a function that returns</span></div>
+        <p class="pd">Apply <code>call_counter</code> to <code>square(n)</code> and call it twice, printing each answer. Watch the interleaving: the counter line comes out before the answer line, every time.</p>
+        <div class="want">call #1
+9
+call #2
+25</div>
+        <div class="pyrun" data-id="s3p2" data-expect="call #1\n9\ncall #2\n25">
+          <textarea spellcheck="false">def call_counter(func):
+    def inner(*args, **kwargs):
+        inner.count = inner.count + 1
+        print(f"call #{inner.count}")
+        return func(*args, **kwargs)
+    inner.count = 0
+    return inner
+
+def square(n):
+    return n * n
+
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>@call_counter
+def square(n):
+    return n * n
+
+print(square(3))
+print(square(5))</pre><p><code>print(square(3))</code> can't print anything until <code>square(3)</code> has finished — and the counter line is printed <i>during</i> that call. Inside always finishes before outside starts printing.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">20.3 · P3</span><span class="pt">Stretch — stack them</span></div>
+        <p class="pd">Put <b>both</b> decorators on one function: <code>@excited</code> on top, <code>@call_counter</code> underneath, on <code>cheer(team)</code> which returns <code>f"go {team}"</code>. Predict the two output lines first, then check.</p>
+        <div class="want">call #1
+GO TIGERS!</div>
+        <div class="pyrun" data-id="s3p3" data-expect="call #1\nGO TIGERS!">
+          <textarea spellcheck="false">def excited(func):
+    def inner(*args, **kwargs):
+        result = func(*args, **kwargs)
+        return result.upper() + "!"
+    return inner
+
+def call_counter(func):
+    def inner(*args, **kwargs):
+        inner.count = inner.count + 1
+        print(f"call #{inner.count}")
+        return func(*args, **kwargs)
+    inner.count = 0
+    return inner
+
+def cheer(team):
+    return f"go {team}"
+
+print(cheer("tigers"))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>@excited
+@call_counter
+def cheer(team):
+    return f"go {team}"
+
+print(cheer("tigers"))</pre><p>Desugared: <code>cheer = excited(call_counter(cheer))</code>. The call travels inward through <code>excited</code> then <code>call_counter</code> (which prints) then the real body, and the answer travels back out through <code>call_counter</code> untouched and through <code>excited</code>, which shouts it. Swap the two <code>@</code> lines and the output is identical here — but only because neither wrapper cares what the other did.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 20.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">20.4</span>
+      <h2>Context managers — what <code>with</code> really does</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Some things must be paired. Open a file, close it. Print a heading, print a footer. Start a database transaction, finish it. And the pairing has to hold <i>even when the work in the middle explodes</i> — a file left open because line 4 raised an error is exactly the bug that ruins a program at three in the morning. Wrapping every such block in try/except by hand is possible and nobody does it reliably.</p>
+      <p><b>The idea, in plain words.</b> Back in Unit 10 you wrote <code>with open("notes.txt") as f:</code> and these notes promised the full story later. Here it is, and it is smaller than you expect. <code>with X as y:</code> does three things:</p>
+      <ul class="plain">
+        <li><b>Going in</b>, it calls <code>X.__enter__()</code>. Whatever that method <i>returns</i> is what lands in <code>y</code>.</li>
+        <li><b>Then</b> it runs the indented block.</li>
+        <li><b>Going out</b>, it calls <code>X.__exit__(...)</code> — <b>always</b>. Normal finish, early <code>return</code>, or an exception tearing through the middle of the block: <code>__exit__</code> runs. That guarantee is the entire reason <code>with</code> exists.</li>
+      </ul>
+      <p>An object with those two dunder methods is called a <b>context manager</b>. That's it — no registration, no special base class. Units 13–16 taught you that <code>__init__</code>, <code>__str__</code> and friends are hooks Python calls at the right moment; <code>__enter__</code> and <code>__exit__</code> are two more hooks, called at the two edges of a <code>with</code> block. <code>open()</code> returns an object that has them; so can yours, in eight lines.</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px;white-space:pre">class Section:
+    def __init__(self, name):
+        self.name = name
+    def __enter__(self):
+        print(f"--- BEGIN {self.name} ---")
+        return self
+    def __exit__(self, exc_type, exc_value, traceback):
+        print(f"--- END {self.name} ---")</p>
+      <p><code>__exit__</code> takes three extra parameters, and they're a courtesy: if the block blew up, Python passes in the type of exception, the exception itself, and its traceback, so a context manager <i>can</i> react to failure — logging it, rolling back a transaction. If the block finished cleanly, all three are <code>None</code>. You are free to ignore them, as we do here, and simply run your cleanup either way.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the promise under fire</div>
+      <div class="m">try:
+    with Section("Risky"):
+        print("about to fail")
+        raise ValueError("bad data")
+        print("never reached")
+except ValueError as e:
+    print("caught outside:", e)</div>
+      <p><b>Going in:</b> <code>Section("Risky")</code> is built, then <code>__enter__</code> runs and prints the BEGIN line. (There's no <code>as</code> here — the returned object simply has nowhere to land, which is fine.)</p>
+      <p><b>The block:</b> <code>about to fail</code> prints. Then <code>raise</code> fires. The line after it never runs — the block is abandoned mid-flight.</p>
+      <p><b>Going out:</b> before that exception is allowed to travel any further, Python calls <code>__exit__</code> — so the END line prints. <i>Then</i> the exception continues on its way and Unit 9's <code>except</code> catches it outside.</p>
+      <div class="m">--- BEGIN Risky ---
+about to fail
+--- END Risky ---
+caught outside: bad data</div>
+      <p>Read that output again. The END line appears <b>after</b> the failure and <b>before</b> the catch. Nothing you can do inside the block can skip it.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 300" role="img" aria-label="Two paths through a with block: the clean path and the exception path both pass through __exit__">
+        <text x="16" y="24" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">TWO PATHS THROUGH A with BLOCK — BOTH GO THROUGH __exit__</text>
+        <rect x="300" y="44" width="250" height="42" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.6"/>
+        <text x="425" y="70" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">__enter__()  → lands in y</text>
+        <path d="M425 86 L425 108" stroke="#5b4b9e" stroke-width="1.6" marker-end="url(#a4)"/>
+        <defs><marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b4b9e"/></marker></defs>
+        <rect x="300" y="108" width="250" height="46" rx="9" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.6"/>
+        <text x="425" y="136" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">the indented block</text>
+        <path d="M300 131 L172 131 L172 196" stroke="#2b7a78" stroke-width="1.6" fill="none" marker-end="url(#a4t)"/>
+        <defs><marker id="a4t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2b7a78"/></marker></defs>
+        <text x="176" y="118" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#1d5654">finishes cleanly</text>
+        <path d="M550 131 L678 131 L678 196" stroke="#a35a33" stroke-width="1.6" fill="none" marker-end="url(#a4c)"/>
+        <defs><marker id="a4c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#a35a33"/></marker></defs>
+        <text x="682" y="118" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#a35a33">raises an error</text>
+        <rect x="60" y="196" width="740" height="46" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="2"/>
+        <text x="430" y="224" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#3d3170">__exit__(exc_type, exc_value, traceback)   —   ALWAYS RUNS</text>
+        <text x="172" y="266" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">all three arguments are None</text>
+        <text x="678" y="266" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">arguments describe the error, which then continues outward</text>
+        <text x="16" y="292" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">Cleanup is not something you remember to do — it is something the block cannot avoid.</text>
+      </svg>
+      <div class="figcap">Fig. 2 — Every exit from a <code>with</code> block passes through <code>__exit__</code>. That single guarantee is why <code>with open(...)</code> was safe back in Unit 10, and why you never had to write <code>f.close()</code>.</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      <code>with X as y:</code> is <code>y = X.__enter__()</code>, then your block, then <code>X.__exit__(...)</code> — and the last step happens whether the block succeeds, returns, or raises. Pair anything that must be paired by putting it in those two methods.
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Running <code>__exit__</code> does <b>not</b> swallow the error. The cleanup happens, and then the exception carries on outward exactly as if the <code>with</code> weren't there — you still need a <code>try/except</code> if you want to handle it. (A context manager <i>can</i> suppress an exception by having <code>__exit__</code> return <code>True</code>, which is a sharp tool used rarely and never by accident. Return nothing, as we do, and errors pass through politely.)</p>
+    </div>
+    <div class="aside">
+      <div class="lbl">The short way — contextlib</div>
+      Writing a whole class for two print statements feels heavy, and Python agrees. Decorate a generator function that has exactly one <code>yield</code> with <code>@contextmanager</code> from the <code>contextlib</code> module: everything before the <code>yield</code> is the <code>__enter__</code> half, everything after it is the <code>__exit__</code> half. Unit 18's generators and this unit's decorators, shaking hands. Try it in P3 below.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> build <code>Section</code> and prove the guarantee by breaking the block on purpose. <b>Thinking:</b> two dunder methods, a deliberate <code>raise</code> in the middle, and Unit 9's try/except outside to catch what comes out — so the program ends tidily and you can read the order for yourself.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">class Section:
+    def __init__(self, name):
+        self.name = name
+
+    def __enter__(self):
+        print(f"--- BEGIN {self.name} ---")
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        print(f"--- END {self.name} ---")
+
+with Section("Calm"):
+    print("everything is fine")
+
+try:
+    with Section("Risky"):
+        print("about to fail")
+        raise ValueError("bad data")
+        print("never reached")
+except ValueError as e:
+    print("caught outside:", e)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">20.4 · P1</span><span class="pt">Write the two hooks</span></div>
+        <p class="pd">Finish <code>Section</code>: <code>__enter__</code> prints the BEGIN line and returns <code>self</code>; <code>__exit__</code> prints the END line. Then use it around two prints.</p>
+        <div class="want">--- BEGIN Report ---
+line one
+line two
+--- END Report ---</div>
+        <div class="pyrun" data-id="s4p1" data-expect="--- BEGIN Report ---\nline one\nline two\n--- END Report ---">
+          <textarea spellcheck="false">class Section:
+    def __init__(self, name):
+        self.name = name
+
+    # __enter__ and __exit__ go here
+
+with Section("Report"):
+    print("line one")
+    print("line two")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Section:
+    def __init__(self, name):
+        self.name = name
+
+    def __enter__(self):
+        print(f"--- BEGIN {self.name} ---")
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        print(f"--- END {self.name} ---")</pre><p><code>__exit__</code> must accept those three parameters even if it ignores them — Python always passes them. Leave them out and you get a TypeError at the end of the block, which is a confusing place to meet one.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">20.4 · P2</span><span class="pt">Prove the guarantee</span></div>
+        <p class="pd">Make the block fail on purpose. Inside <code>with Section("Load"):</code> print <code>reading file</code> and then <code>raise ValueError("file missing")</code>; catch it outside with try/except and print <code>caught:</code> and the message. Note where the END line lands.</p>
+        <div class="want">--- BEGIN Load ---
+reading file
+--- END Load ---
+caught: file missing</div>
+        <div class="pyrun" data-id="s4p2" data-expect="--- BEGIN Load ---\nreading file\n--- END Load ---\ncaught: file missing">
+          <textarea spellcheck="false">class Section:
+    def __init__(self, name):
+        self.name = name
+
+    def __enter__(self):
+        print(f"--- BEGIN {self.name} ---")
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        print(f"--- END {self.name} ---")
+
+# your try / with / raise / except
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>try:
+    with Section("Load"):
+        print("reading file")
+        raise ValueError("file missing")
+except ValueError as e:
+    print("caught:", e)</pre><p>END before the catch — the cleanup runs while the exception is still travelling. This is precisely why Unit 10's files were never left open, no matter what went wrong while reading them.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">20.4 · P3</span><span class="pt">Stretch — the same thing in three lines</span></div>
+        <p class="pd">Run this and compare it with the class you just wrote. A generator with one <code>yield</code>, plus a decorator from the standard library, and you have a context manager. Then change the name, add a line after the <code>yield</code>, and watch where your new line appears.</p>
+        <div class="pyrun" data-id="s4p3">
+          <textarea spellcheck="false">from contextlib import contextmanager
+
+@contextmanager
+def section(name):
+    print(f"--- BEGIN {name} ---")
+    yield
+    print(f"--- END {name} ---")
+
+with section("Quick"):
+    print("inside the block")</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>--- BEGIN Quick ---
+inside the block
+--- END Quick ---</pre><p>The generator runs up to the <code>yield</code> and pauses — that's <code>__enter__</code>. Your block runs. Then Python resumes the generator, which runs the rest — that's <code>__exit__</code>. Unit 18's pause-and-resume, doing structural work. (For the error-proof version you'd wrap the <code>yield</code> in try/finally; the class version is safe as written.)</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 20.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">20.5</span>
+      <h2>Your build — the report runner</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>This is the last build of the language, so let's make it count. A small <b>report runner</b>: report functions that each print a summary, a <code>@logged</code> decorator that narrates every call, and <code>Section</code> blocks that frame each day's output — with one report that refuses bad data and blows up, caught politely so the framing still closes.</p>
+      <p>Look at what goes into thirty lines. Functions as values and closures (the decorator). <code>*args</code>/<code>**kwargs</code> (the wrapper). Dunder protocols and classes (the context manager). Dictionaries and loops (the totals). Error handling (the failing report). f-strings with <code>:.2f</code> (the money). That is nearly the whole series, cooperating.</p>
+      <p>Three stages. Build them in order and read every line of output before moving on.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">20.5 · P1</span><span class="pt">Stage 1 — the logged report</span></div>
+        <p class="pd">Write <code>logged</code>: it prints <code>[log] calling &lt;name&gt;</code>, calls the function, prints <code>[log] &lt;name&gt; done</code>, and returns the result. Apply it to <code>sales_summary</code>, which prints the item count and the total. Mind the two leading spaces on the report's own lines.</p>
+        <div class="want">[log] calling sales_summary
+  items: 3
+  total: 87.75
+[log] sales_summary done</div>
+        <div class="pyrun" data-id="s5p1" data-expect="[log] calling sales_summary\n  items: 3\n  total: 87.75\n[log] sales_summary done">
+          <textarea spellcheck="false">def logged(func):
+    # print the calling line, call func, print the done line, return the result
+    pass
+
+def sales_summary(items):
+    total = 0
+    for price in items.values():
+        total = total + price
+    print(f"  items: {len(items)}")
+    print(f"  total: {total:.2f}")
+
+sales_summary({"tea": 12.5, "cake": 45.25, "dosa": 30.0})</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def logged(func):
+    def inner(*args, **kwargs):
+        print(f"[log] calling {func.__name__}")
+        result = func(*args, **kwargs)
+        print(f"[log] {func.__name__} done")
+        return result
+    return inner
+
+@logged
+def sales_summary(items):
+    ...</pre><p>12.5 + 45.25 + 30.0 = 87.75. The report function has no idea it is being logged, which means you can log the next twelve reports by typing one line above each.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">20.5 · P2</span><span class="pt">Stage 2 — frame it</span></div>
+        <p class="pd">Bring <code>Section</code> back and run the logged report <i>inside</i> a <code>with Section("Daily report"):</code> block. Six lines of output, nested two deep — predict their order before you run.</p>
+        <div class="want">--- BEGIN Daily report ---
+[log] calling sales_summary
+  items: 3
+  total: 87.75
+[log] sales_summary done
+--- END Daily report ---</div>
+        <div class="pyrun" data-id="s5p2" data-expect="--- BEGIN Daily report ---\n[log] calling sales_summary\n  items: 3\n  total: 87.75\n[log] sales_summary done\n--- END Daily report ---">
+          <textarea spellcheck="false">def logged(func):
+    def inner(*args, **kwargs):
+        print(f"[log] calling {func.__name__}")
+        result = func(*args, **kwargs)
+        print(f"[log] {func.__name__} done")
+        return result
+    return inner
+
+class Section:
+    def __init__(self, name):
+        self.name = name
+
+    def __enter__(self):
+        print(f"--- BEGIN {self.name} ---")
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        print(f"--- END {self.name} ---")
+
+@logged
+def sales_summary(items):
+    total = 0
+    for price in items.values():
+        total = total + price
+    print(f"  items: {len(items)}")
+    print(f"  total: {total:.2f}")
+
+# run it inside a Section named "Daily report"
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>with Section("Daily report"):
+    sales_summary({"tea": 12.5, "cake": 45.25, "dosa": 30.0})</pre><p>Three layers of framing, each closing in the right order: section, log, report, log, section. Nothing in the report function knows about either layer.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">20.5 · P3</span><span class="pt">Stage 3 — the whole machine</span></div>
+        <p class="pd">Two reports now, run over two days. Tuesday has no sales, so <code>top_seller</code> raises. Fill in the last block: a <code>with Section("Tuesday"):</code> that calls <code>top_seller(tuesday)</code>, wrapped in a try/except printing <code>report skipped:</code> and the message. Then read the expected output very carefully — one of the <code>[log] ... done</code> lines is <b>missing</b>, and you should be able to say why before you run it.</p>
+        <div class="want">--- BEGIN Monday ---
+[log] calling sales_summary
+  3 items, total 87.75
+[log] sales_summary done
+[log] calling top_seller
+  best: cake at 45.25
+[log] top_seller done
+--- END Monday ---
+--- BEGIN Tuesday ---
+[log] calling top_seller
+--- END Tuesday ---
+report skipped: no sales to rank</div>
+        <div class="pyrun" data-id="s5p3" data-expect="--- BEGIN Monday ---\n[log] calling sales_summary\n  3 items, total 87.75\n[log] sales_summary done\n[log] calling top_seller\n  best: cake at 45.25\n[log] top_seller done\n--- END Monday ---\n--- BEGIN Tuesday ---\n[log] calling top_seller\n--- END Tuesday ---\nreport skipped: no sales to rank">
+          <textarea spellcheck="false">def logged(func):
+    def inner(*args, **kwargs):
+        print(f"[log] calling {func.__name__}")
+        result = func(*args, **kwargs)
+        print(f"[log] {func.__name__} done")
+        return result
+    return inner
+
+class Section:
+    def __init__(self, name):
+        self.name = name
+
+    def __enter__(self):
+        print(f"--- BEGIN {self.name} ---")
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        print(f"--- END {self.name} ---")
+
+@logged
+def sales_summary(items):
+    total = 0
+    for price in items.values():
+        total = total + price
+    print(f"  {len(items)} items, total {total:.2f}")
+
+@logged
+def top_seller(items):
+    if not items:
+        raise ValueError("no sales to rank")
+    best = ""
+    best_price = 0
+    for name, price in items.items():
+        if price > best_price:
+            best = name
+            best_price = price
+    print(f"  best: {best} at {best_price:.2f}")
+
+monday = {"tea": 12.5, "cake": 45.25, "dosa": 30.0}
+tuesday = {}
+
+with Section("Monday"):
+    sales_summary(monday)
+    top_seller(monday)
+
+# your Tuesday block here
+</textarea>
+        </div>
+        <details><summary>Show solution &amp; the missing line</summary><pre>try:
+    with Section("Tuesday"):
+        top_seller(tuesday)
+except ValueError as e:
+    print("report skipped:", e)</pre><p>The missing line is <code>[log] top_seller done</code> for Tuesday. The <code>raise</code> happened <i>inside</i> <code>func(*args, **kwargs)</code>, so the wrapper's next line never ran — a plain decorator offers no guarantee at all when things fail. The <code>--- END Tuesday ---</code> line, by contrast, printed anyway, because <code>__exit__</code> does. That contrast, in one program, is the whole unit: decorators wrap behaviour, context managers guarantee cleanup, and you need both.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 20.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">20.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~14 min</span></span>
+      <p>The last mixed set of the language. Wrappers that transform, wrappers that repeat, blocks that pair, and a final exam in reading output order. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">The shout decorator</span></div>
+        <p class="pd">Write <code>shout</code>: it uppercases whatever the wrapped function returns and adds three exclamation marks. <code>greet</code> must stay exactly as it is.</p>
+        <div class="want">GOOD MORNING, ADI!!!</div>
+        <div class="pyrun" data-id="b1" data-expect="GOOD MORNING, ADI!!!">
+          <textarea spellcheck="false">def shout(func):
+    pass
+
+@shout
+def greet(name):
+    return f"good morning, {name}"
+
+print(greet("Adi"))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def shout(func):
+    def inner(*args, **kwargs):
+        return func(*args, **kwargs).upper() + "!!!"
+    return inner</pre><p>Transform on the way out. Note the wrapper never prints — it returns, and the caller prints. Wrappers that print when they should return are hard to reuse.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">Do it twice, keep both</span></div>
+        <p class="pd">Write <code>repeat_twice</code>: it calls the wrapped function <b>twice</b> and returns a list of the two results. The function's own printing should therefore appear twice.</p>
+        <div class="want">rolling
+rolling
+[6, 6]</div>
+        <div class="pyrun" data-id="b2" data-expect="rolling\nrolling\n[6, 6]">
+          <textarea spellcheck="false">def repeat_twice(func):
+    pass
+
+@repeat_twice
+def roll():
+    print("rolling")
+    return 6
+
+print(roll())</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def repeat_twice(func):
+    def inner(*args, **kwargs):
+        first = func(*args, **kwargs)
+        second = func(*args, **kwargs)
+        return [first, second]
+    return inner</pre><p>A wrapper is under no obligation to call the function exactly once. Call it twice, call it zero times, call it again if it fails — that last one is the retry decorator every networked program has.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">Indent — a pairing you can see</span></div>
+        <p class="pd">Write an <code>Indent</code> context manager: <code>__enter__</code> prints <code>&gt;&gt;</code> and returns <code>self</code>, <code>__exit__</code> prints <code>&lt;&lt;</code>. Then nest one <code>with</code> inside another as shown and check the pairing — every <code>&gt;&gt;</code> gets its <code>&lt;&lt;</code>, innermost first.</p>
+        <div class="want">&gt;&gt;
+outer work
+&gt;&gt;
+inner work
+&lt;&lt;
+back outside
+&lt;&lt;</div>
+        <div class="pyrun" data-id="b3" data-expect="&gt;&gt;\nouter work\n&gt;&gt;\ninner work\n&lt;&lt;\nback outside\n&lt;&lt;">
+          <textarea spellcheck="false">class Indent:
+    pass
+
+with Indent():
+    print("outer work")
+    with Indent():
+        print("inner work")
+    print("back outside")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Indent:
+    def __enter__(self):
+        print("&gt;&gt;")
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        print("&lt;&lt;")</pre><p>No <code>__init__</code> needed — a context manager only owes Python those two methods. The inner block closes before the outer one continues, which is exactly how nested brackets, nested tags and nested function calls behave. Same shape everywhere.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — the final exam in reading order</span></div>
+        <p class="pd">A decorated function, called inside a context manager, after an <code>input()</code>. Before you touch Run: write the seven output lines in order on paper — every one, including the input echo. Then check. If you get all seven, the machinery is genuinely yours. Input is fixed to <code>adi</code>.</p>
+        <div class="want">Name? adi
+=== open ===
+[in]
+ADI
+[out]
+=== close ===
+done</div>
+        <div class="pyrun" data-id="b4" data-stdin="adi" data-stdin-lock data-expect="Name? adi\n=== open ===\n[in]\nADI\n[out]\n=== close ===\ndone">
+          <textarea spellcheck="false">def logged(func):
+    def inner(*args, **kwargs):
+        print("[in]")
+        result = func(*args, **kwargs)
+        print("[out]")
+        return result
+    return inner
+
+class Frame:
+    def __enter__(self):
+        print("=== open ===")
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        print("=== close ===")
+
+@logged
+def announce(text):
+    print(text.upper())
+
+name = input("Name? ")
+with Frame():
+    announce(name)
+print("done")</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>Name? adi
+=== open ===
+[in]
+ADI
+[out]
+=== close ===
+done</pre><p>Outermost first on the way in, outermost last on the way out: the <code>with</code> opens, the wrapper speaks, the real function does its work, the wrapper closes, the <code>with</code> closes, and only then does the program move on. Layers unwind in reverse order — the single most useful thing to know when reading unfamiliar Python.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most — and the last six of the language. Wrong answers are worth more than right ones here; read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again — and you will, in every real Python codebase you open.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Stop. Look back. The Advanced level is complete — and so is the language.</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">Say it properly, because it deserves saying: <b>you have finished the Python language.</b> Unit 1 opened with <code>print("Hello, world")</code> and an honest warning that the machine takes you literally. Twenty units later you are writing your own decorators and your own context managers — the exact machinery that the libraries you're about to use are built out of. Variables, decisions, loops, strings, lists, dictionaries, files, functions, errors, classes, dunder methods, generators, closures, decorators, <code>with</code>. There is no secret twenty-first chapter of Python that the professionals have and you don't. That's the whole language, and it's yours.</p>
+      <p style="font-size:var(--fs-cap);color:var(--slate);margin-top:12px">Now the honest road ahead. Next come the <b>Bridge units</b> — NumPy, pandas, matplotlib and seaborn, scikit-learn, PyTorch, Keras. Not new grammar; new vocabulary. They are the tools the machine-learning world talks in, and every one of them will feel familiar because they are written in the language you just learned: objects with dunder methods, functions taking functions, context managers keeping things tidy. After those, the <b>Projects gallery</b>. Both arrive after a deliberate review pause — these notes would rather you consolidate than sprint.</p>
+      <p style="font-size:var(--fs-cap);color:var(--slate);margin-top:12px">So use the pause. Go and build something nobody asked you for — a script that renames your photos, a scorekeeper for a game you play, a tiny tool that saves you four minutes a week. Break it, read the last line of the error, fix it. That's the whole method now. And keep whatever you build: the gallery is going to want it.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>Python documentation</b> — <i>Glossary: decorator</i>. <span class="why">The official one-paragraph definition, with the desugaring spelled out exactly as 20.2 does.</span> <a href="https://docs.python.org/3/glossary.html" rel="noopener">docs.python.org</a></li>
+      <li><b>Python Language Reference</b> — <i>The with statement</i>. <span class="why">The precise rules for <code>__enter__</code> / <code>__exit__</code>, including what returning True from <code>__exit__</code> does. Dense, but short and definitive.</span> <a href="https://docs.python.org/3/reference/compound_stmts.html#the-with-statement" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>contextlib</i>. <span class="why">The <code>@contextmanager</code> decorator from 20.4's stretch, plus a shelf of ready-made context managers worth knowing exist.</span> <a href="https://docs.python.org/3/library/contextlib.html" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>functools.wraps</i>. <span class="why">The one-line politeness from 20.2, and what it actually copies across.</span> <a href="https://docs.python.org/3/library/functools.html#functools.wraps" rel="noopener">docs.python.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit19.html"><span class="k">← Previous</span><span class="t">Unit 19 · Functions as values</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="index.html"><span class="k">Next →</span><span class="t">Advanced complete — back to the series</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 20 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"Writing  @announce  directly above  def add(a, b):  is exactly the same as writing what?",
+   o:["announce(add)","add = announce(add)","add = announce()","announce = add"],
+   a:1,
+   e:"The @ line is syntax sugar for one assignment: define the function, pass it to the decorator, store the result back under the same name. Nothing else happens."},
+  {q:"A decorated function is called five times. How many times does the decorator function itself run?",
+   o:["Once, when the def is reached","Five times — once per call","Six times","Never; only inner runs"],
+   a:0,
+   e:"The decorator runs once, at definition time, and builds the wrapper. The wrapper runs per call. A print inside the decorator but outside inner fires exactly once."},
+  {q:"After  loud_add = announce(add)  — what does the returned inner function carry in its lunchbox?",
+   o:["A copy of add's source code","Nothing; it looks add up again each call","func — pointing at the original add function","The arguments 2 and 3"],
+   a:2,
+   e:"That's Unit 19's closure: inner was defined inside announce, so it leaves carrying the captured name func, which holds the original function. Without that, inner would have nothing to call."},
+  {q:"Why is the wrapper almost always written as  def inner(*args, **kwargs):  ?",
+   o:["It makes the wrapper run faster","So one wrapper fits any function, whatever arguments it takes","Because decorators are not allowed named parameters","To stop the function returning None"],
+   a:1,
+   e:"*args and **kwargs catch any positional and keyword arguments and func(*args, **kwargs) forwards them untouched — so the same decorator fits a function of one argument or of five."},
+  {q:"In  with Section(\"Daily\") as s:  — what ends up in s?",
+   o:["The Section object always, automatically","Whatever __enter__ returns","The string \"Daily\"","Whatever __exit__ returns"],
+   a:1,
+   e:"with calls __enter__() and binds its RETURN VALUE to the name after 'as'. Our __enter__ returns self, so s is the Section — but a context manager can return anything it likes (open() returns the file object)."},
+  {q:"An exception is raised in the middle of a with block. What happens to __exit__?",
+   o:["It is skipped — the block never finished","It runs, and then the exception continues outward","It runs only if you wrote a try/except","It runs and silently swallows the exception"],
+   a:1,
+   e:"__exit__ ALWAYS runs — that guarantee is the whole point of with. It does not swallow the error, though: after the cleanup the exception carries on outward, so you still need try/except to handle it."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — all six, on the last unit of the language. Go and build something."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 20.2 and 20.4 carry the load."
+           : " — worth another pass through 20.1 and 20.4 before you close the Advanced level.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Decorator","A function that takes a function and returns a new function wrapping it. Applied with an @ line above a def."],
+  ["@ (decorator syntax)","Sugar for one assignment: @deco above def f means f = deco(f), performed once at definition time."],
+  ["Wrapper (inner)","The new function a decorator builds and returns. It runs per call: extra work, call the original, extra work, return the result."],
+  ["Definition time","When Python reaches the def and runs the @ line. Contrast with call time, when the wrapper runs. Decorators fire once; wrappers fire always."],
+  ["*args / **kwargs in a wrapper","Catch any positional and keyword arguments and forward them with func(*args, **kwargs) — what makes one decorator fit every function."],
+  ["Function attribute","A box hung on a function object, e.g. inner.count = 0. Survives between calls, so wrappers can remember things."],
+  ["functools.wraps","A decorator applied to inner that copies the original's __name__ and docs across, so the wrapped function keeps its identity."],
+  ["Context manager","An object with __enter__ and __exit__. Anything that must be paired — open/close, begin/end — belongs in those two methods."],
+  ["__enter__","Run going into a with block. Its return value is bound to the name after 'as'."],
+  ["__exit__","Run going out of a with block — always, including when the block raises. Receives the exception type, value and traceback, or three Nones."],
+  ["with statement","with X as y: → y = X.__enter__(), then the block, then X.__exit__(...). The guaranteed-cleanup construct."],
+  ["contextlib.contextmanager","Turns a generator with a single yield into a context manager: before the yield is entering, after it is exiting."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

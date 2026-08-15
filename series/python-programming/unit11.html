@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Borrowing Power — Modules &amp; the Standard Library — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u11" data-lwa-title="Unit 11 · Borrowing power — modules &amp; the standard library">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Beginner — Foundations · Unit 11</div>
+      <h1>Borrowing Power — Modules &amp; the Standard Library</h1>
+      <p class="standfirst">Ten units in, everything your programs know is what you typed. This session hands you a library card: <code style="font-size:.85em">import</code> opens shelves of tools other people already built — square roots and dice rolls, calendars and clocks — and teaches you to read the catalogue so no shelf stays closed for long.</p>
+      <div class="facts">
+        <div><b>One session</b>~40 min</div>
+        <div><b>4 concepts + a build</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 2, 4, 5 &amp; 8 — f-strings, loops, lists, strings</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">11.1 import &amp; math</a>
+    <a href="#s2">11.2 random</a>
+    <a href="#s3">11.3 datetime</a>
+    <a href="#s4">11.4 Reading the library</a>
+    <a href="#s5">11.5 Build: dice duel</a>
+    <a href="#s6">11.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 11.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Units 2, 5 &amp; 8</b><code>:.2f</code> money formatting from Unit 2, lists from Unit 5 (we'll pick from them and shuffle them), and strings from Unit 8. A loop from Unit 4 sneaks into the stretch.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm: each concept is a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit11.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>A flag worth planting</b>One line in this unit — <code>random.seed(42)</code> — is the exact trick machine-learning people use to make experiments repeatable. You'll meet it again in the ML stage; today you learn why it exists.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">11.1</span>
+      <h2>import &amp; math — your library card</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~9 min</span></span>
+      <p><b>The problem.</b> You need a square root. You could write the maths yourself — guess, refine, loop — but somebody solved this decades ago, tested it against everything, and shipped it with Python. Where is it, and how do you get at it?</p>
+      <p><b>The idea, in plain words.</b> Python comes with a library attached — hundreds of shelves of pre-built tools, called the <b>standard library</b>. Each shelf is a <b>module</b>: a file of functions somebody wrote so you don't have to. The line <code>import math</code> is you flashing your library card at the maths shelf: Python fetches the shelf once and gives you a single new name, <code>math</code>, through which everything on it is reached.</p>
+      <p>Reached how? With a dot: <code>math.sqrt(16)</code> reads as "from the <code>math</code> shelf, the <code>sqrt</code> tool, applied to 16". Think of the module as one big labeled box that holds <i>other</i> labeled things — the dot opens the box and picks one. A few residents of the maths shelf:</p>
+      <div class="fig" style="max-width:66ch;padding:6px 18px">
+      <table>
+        <tr><th>tool</th><th>does</th><th>example</th><th>gives</th></tr>
+        <tr><td><code>math.sqrt(x)</code></td><td>square root — always a float</td><td><code>math.sqrt(16)</code></td><td><code>4.0</code></td></tr>
+        <tr><td><code>math.pi</code></td><td>π, ready-made (a value, not a function — no parentheses)</td><td><code>math.pi</code></td><td><code>3.141592653589793</code></td></tr>
+        <tr><td><code>math.floor(x)</code></td><td>round <i>down</i> to a whole number</td><td><code>math.floor(4.7)</code></td><td><code>4</code></td></tr>
+        <tr><td><code>math.ceil(x)</code></td><td>round <i>up</i> to a whole number</td><td><code>math.ceil(4.2)</code></td><td><code>5</code></td></tr>
+      </table>
+      </div>
+      <p>There is a second form: <code>from math import sqrt</code> pulls one tool off the shelf and lets you write bare <code>sqrt(16)</code>. Handy — but in these notes we prefer the dotted form while you're learning: <code>math.sqrt</code> tells every reader exactly which shelf the tool came from, and your own names can never collide with borrowed ones. Use <code>from … import</code> when a name is long and used constantly; you'll see us do exactly that with dates in 11.3.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the shelf in action</div>
+      <div class="m">import math
+side = math.sqrt(2)
+print(math.floor(side), math.ceil(side))
+print(f"{side:.4f}")</div>
+      <p><b>Line 1:</b> the <code>math</code> shelf is fetched; one new box, <code>math</code>, now exists.</p>
+      <p><b>Line 2:</b> <code>math.sqrt(2)</code> → 1.4142135623730951 (a float, as always). Stored in <code>side</code>.</p>
+      <p><b>Line 3:</b> floor rounds down → 1; ceil rounds up → 2. Comma-print, one space between.</p>
+      <p><b>Line 4:</b> Unit 2's formatting, still on duty: four decimal places, rounded.</p>
+      <div class="m">1 2
+1.4142</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 240" role="img" aria-label="Importing the math module: your program gets one name, math, and reaches tools through the dot">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">THE LIBRARY CARD — WHAT import ACTUALLY DOES</text>
+        <rect x="30" y="52" width="270" height="150" rx="10" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="46" y="78" font-family="Segoe UI,system-ui,sans-serif" font-size="12" font-weight="700" fill="#6b7585">YOUR PROGRAM</text>
+        <rect x="46" y="90" width="238" height="30" rx="6" fill="#f0f1f7"/>
+        <text x="56" y="110" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#3d3170">import math</text>
+        <rect x="46" y="128" width="238" height="30" rx="6" fill="#f0f1f7"/>
+        <text x="56" y="148" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">math.sqrt(16)</text>
+        <text x="46" y="188" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#2b7a78">one new name arrives: math</text>
+        <path d="M300 105 L 388 105" stroke="#5b4b9e" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+        <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b4b9e"/></marker></defs>
+        <text x="344" y="94" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#5b4b9e">library card</text>
+        <rect x="390" y="52" width="220" height="170" rx="10" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="500" y="78" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#3d3170">the math shelf</text>
+        <rect x="408" y="90" width="184" height="26" rx="6" fill="#ffffff" stroke="#e3e6ee"/>
+        <text x="418" y="108" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">sqrt</text>
+        <rect x="408" y="122" width="184" height="26" rx="6" fill="#ffffff" stroke="#e3e6ee"/>
+        <text x="418" y="140" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">pi</text>
+        <rect x="408" y="154" width="184" height="26" rx="6" fill="#ffffff" stroke="#e3e6ee"/>
+        <text x="418" y="172" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">floor · ceil · …</text>
+        <text x="500" y="210" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#3d3170">a box of labeled tools</text>
+        <rect x="640" y="52" width="190" height="170" rx="10" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="735" y="78" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12" font-weight="700" fill="#6b7585">MORE SHELVES</text>
+        <text x="656" y="106" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#4a5a72">random</text>
+        <text x="656" y="130" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#4a5a72">datetime</text>
+        <text x="656" y="154" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#4a5a72">json · csv · os</text>
+        <text x="656" y="178" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#4a5a72">… hundreds more</text>
+        <text x="735" y="210" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#2b7a78">same card opens them all</text>
+      </svg>
+      <div class="figcap">Fig. 1 — <code>import math</code> doesn't copy code into your file; it fetches the shelf once and hands you one name. The dot in <code>math.sqrt</code> is you reaching into that box for one tool. Every other shelf works the same way.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>After <code>import math</code>, writing bare <code>sqrt(16)</code> dies with <code>NameError: name 'sqrt' is not defined</code>. The import gave you <b>one</b> name — <code>math</code> — not a bag of loose tools. Either keep the dot (<code>math.sqrt</code>) or import the tool itself (<code>from math import sqrt</code>). Mixing the two habits is the classic slip.</p>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      Imports go once, at the top of the file. From then on <code>module.name</code> reaches any tool on that shelf — and the dot tells every reader exactly where the tool came from.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a square plot of land covers 240 square metres — how long is each side, and between which two whole-metre lengths does it fall? <b>Thinking:</b> side = √240, which is <code>math.sqrt</code>; the whole-metre brackets are <code>floor</code> and <code>ceil</code>; <code>:.2f</code> keeps the display civilised. Run and study.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">import math
+
+area = 240
+side = math.sqrt(area)
+print(f"Each side: {side:.2f} m")
+print(f"Between {math.floor(side)} and {math.ceil(side)} whole metres")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">11.1 · P1</span><span class="pt">First trip to the shelf</span></div>
+        <p class="pd">Import <code>math</code>, then print the square root of 144 and π shown to two decimals — two f-string prints, matching the goal exactly.</p>
+        <div class="want">Square root: 12.0
+Pi, 2 decimals: 3.14</div>
+        <div class="pyrun" data-id="s1p1" data-expect="Square root: 12.0\nPi, 2 decimals: 3.14">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import math
+
+print(f"Square root: {math.sqrt(144)}")
+print(f"Pi, 2 decimals: {math.pi:.2f}")</pre><p><code>sqrt</code> always hands back a float — hence <code>12.0</code>, not <code>12</code> (Unit 2's division rule, same spirit). And <code>math.pi</code> is a value, not a function: no parentheses.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">11.1 · P2</span><span class="pt">Predict: floor vs ceil</span></div>
+        <p class="pd">Four predictions on paper first — which way does each one round, and what happens when there's nothing to round? Then run and reconcile.</p>
+        <div class="pyrun" data-id="s1p2">
+          <textarea spellcheck="false">import math
+print(math.floor(4.7))
+print(math.ceil(4.2))
+print(math.floor(9.99))
+print(math.ceil(9.0))</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>4
+5
+9
+9</pre><p><code>floor</code> always goes down, <code>ceil</code> always goes up — no "nearest" about it, so 9.99 floors all the way to 9. And 9.0 is already whole: ceiling of 9.0 is 9. Both return ints, ready for counting things.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">11.1 · P3</span><span class="pt">Fix the missing dot</span></div>
+        <p class="pd">This program flashes its library card and then forgets which shelf it borrowed from. Run it, read the last line of the report, fix it to match the goal.</p>
+        <div class="want">5.0</div>
+        <div class="pyrun" data-id="s1p3" data-expect="5.0">
+          <textarea spellcheck="false">import math
+print(sqrt(25))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import math
+print(math.sqrt(25))</pre><p><code>NameError: name 'sqrt' is not defined</code> — the import created the name <code>math</code>, nothing else. The dot is how you reach into the box.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">11.1 · P4</span><span class="pt">Stretch — the other door</span></div>
+        <p class="pd">Rewrite this program using the <code>from math import sqrt, pi</code> form, so the two prints use <b>bare</b> <code>sqrt</code> and <code>pi</code> — same output, different door. Both forms are legal; feel the trade.</p>
+        <div class="want">1.4142
+3.1416</div>
+        <div class="pyrun" data-id="s1p4" data-expect="1.4142\n3.1416">
+          <textarea spellcheck="false">import math
+print(f"{math.sqrt(2):.4f}")
+print(f"{math.pi:.4f}")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>from math import sqrt, pi
+
+print(f"{sqrt(2):.4f}")
+print(f"{pi:.4f}")</pre><p>Shorter at the call site, but a reader must scroll to the top to learn where <code>sqrt</code> came from. That's the whole trade — brevity vs traceability. While learning, we keep the dots.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 11.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">11.2</span>
+      <h2>random — dice, draws &amp; the replay switch</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p><b>The problem.</b> Everything you've built so far is a machine on rails: same inputs, same output, every single run. But games need dice, quizzes need surprise questions, and — flag planted in the prereq card — machine learning needs shuffled data. How does a rail-riding machine produce surprise?</p>
+      <p><b>The idea, in plain words.</b> The <code>random</code> shelf. Three tools cover most of daily life:</p>
+      <ul class="plain">
+        <li><code>random.randint(a, b)</code> — a whole number between <code>a</code> and <code>b</code>, <b>both ends included</b>. A die is <code>random.randint(1, 6)</code> — and yes, it can roll a 6.</li>
+        <li><code>random.choice(some_list)</code> — one item picked from a list (Unit 5's lists, new party trick).</li>
+        <li><code>random.shuffle(some_list)</code> — rearranges the list <i>in place</i>, like riffling a deck. It returns nothing; the list itself changes.</li>
+      </ul>
+      <p>Now the honest part. The computer can't truly roll dice — it's a rail-rider to its bones. What <code>random</code> gives you is a mathematical recipe that spits out numbers so thoroughly scrambled they <i>behave</i> random. Each run starts the recipe from a different point (the clock, roughly), which is why every run differs. And that's exactly the lever: <code>random.seed(42)</code> pins the starting point, so the recipe replays the <b>same</b> scrambled sequence every run. Same seed, same "random" numbers, forever.</p>
+      <p>Why would anyone want predictable randomness? Because <i>repeatable</i> beats <i>surprising</i> whenever you need to check work: testing a game, debugging a simulation — and, one day soon, training a model where you shuffle the data, get 94% accuracy, and need tomorrow's rerun to mean the same thing. Every serious ML experiment sets a seed for exactly this reason. Series 01 readers have seen <code>seed(42)</code> in the wild; this is where it comes from.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — one possible run</div>
+      <div class="m">import random
+print(random.randint(1, 6))
+print(random.randint(1, 6))</div>
+      <p><b>Line 2:</b> the recipe hands over its next scrambled number, squeezed into 1–6. Say it's a 4. <b>Line 3:</b> the <i>next</i> number from the recipe — say a 1. One possible run:</p>
+      <div class="m">4
+1</div>
+      <p>Run it again and you'll almost certainly see different numbers — the recipe started somewhere else. Now add <code>random.seed(42)</code> as line 2 and run twice more: <b>identical output both times</b>, whatever the numbers turn out to be. The seed is a replay switch, not a number-chooser.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 230" role="img" aria-label="Without a seed, each run produces a different number stream; with seed 42, every run replays the identical stream">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">THE REPLAY SWITCH — WHAT seed() PINS DOWN</text>
+        <text x="40" y="60" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#a35a33">no seed</text>
+        <rect x="40" y="72" width="330" height="44" rx="9" fill="#f7ebe4" stroke="#a35a33" stroke-width="1.2"/>
+        <text x="52" y="99" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#5c3f28">run 1 →  3 · 6 · 2 · 5 · …</text>
+        <rect x="40" y="126" width="330" height="44" rx="9" fill="#f7ebe4" stroke="#a35a33" stroke-width="1.2"/>
+        <text x="52" y="153" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#5c3f28">run 2 →  1 · 4 · 4 · 2 · …</text>
+        <text x="40" y="200" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">different start point every run — streams never match</text>
+        <text x="470" y="60" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#2b7a78">random.seed(42)</text>
+        <rect x="470" y="72" width="330" height="44" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.2"/>
+        <text x="482" y="99" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1d5654">run 1 →  n₁ · n₂ · n₃ · n₄ · …</text>
+        <rect x="470" y="126" width="330" height="44" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.2"/>
+        <text x="482" y="153" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1d5654">run 2 →  n₁ · n₂ · n₃ · n₄ · …</text>
+        <text x="470" y="200" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">pinned start point — the identical stream, every run</text>
+      </svg>
+      <div class="figcap">Fig. 2 — The seed doesn't choose nicer numbers; it pins where the scrambling recipe starts, so every run replays the same stream. Repeatable "randomness" is what makes experiments — games today, ML models later — checkable.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>random.randint(1, 6)</code> includes <b>both</b> ends — it can return 6. But Unit 4's <code>range(1, 6)</code> stops at 5. Python's two famous "between" tools disagree about the right-hand end, and every programmer has been bitten once. Dice: <code>randint(1, 6)</code>. Six loop turns: <code>range(6)</code>.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a lunch spinner — pick today's lunch from a list, roll a die for who pays. <b>Thinking:</b> <code>choice</code> for the pick, <code>randint</code> for the die. No seed, so it's a genuine surprise: run it three or four times and watch both answers change.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">import random
+
+menu = ["dosa", "noodles", "rajma rice", "sandwich"]
+lunch = random.choice(menu)
+payer = random.randint(1, 6)
+print(f"Today's lunch: {lunch}")
+print(f"Die says player {payer} pays!")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">11.2 · P1</span><span class="pt">The snack oracle</span></div>
+        <p class="pd">Make a list of five snacks you actually like, then print one chosen by <code>random.choice</code> in the sentence <code>The oracle says: eat &lt;snack&gt;</code>. Run it at least three times — no check here, the changing answer <i>is</i> the lesson.</p>
+        <div class="pyrun" data-id="s2p1">
+          <textarea spellcheck="false">import random
+
+snacks = ["murukku", "banana chips", "peanuts", "biscuits", "mango"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import random
+
+snacks = ["murukku", "banana chips", "peanuts", "biscuits", "mango"]
+pick = random.choice(snacks)
+print(f"The oracle says: eat {pick}")</pre><p><code>choice</code> takes the whole list and hands back one item — the list itself is untouched.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">11.2 · P2</span><span class="pt">Riffle the playlist</span></div>
+        <p class="pd">Shuffle this playlist and print it, then run a few times to see fresh orders. One trap to dodge: <code>shuffle</code> rearranges the list where it stands and returns nothing — so <code>songs = random.shuffle(songs)</code> would leave you holding <code>None</code>. Shuffle first, print after.</p>
+        <div class="pyrun" data-id="s2p2">
+          <textarea spellcheck="false">import random
+
+songs = ["Track A", "Track B", "Track C", "Track D"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import random
+
+songs = ["Track A", "Track B", "Track C", "Track D"]
+random.shuffle(songs)
+print(songs)</pre><p>Two lines, in that order. <code>shuffle</code> is Unit 5's "lists can change in place" idea taken to its logical extreme.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">11.2 · P3</span><span class="pt">Stretch — the replay experiment</span></div>
+        <p class="pd">Run this three times and watch it print the <i>same</i> three rolls every run. Then change 42 to 7 and run three more times: a <i>different</i> trio, but again pinned. Finally delete the seed line: chaos restored. That's the whole idea of reproducibility, felt in your fingers.</p>
+        <div class="pyrun" data-id="s2p3">
+          <textarea spellcheck="false">import random
+
+random.seed(42)
+print(random.randint(1, 6))
+print(random.randint(1, 6))
+print(random.randint(1, 6))</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>(the same three numbers, every single run)</pre><p>The seed pins the recipe's starting point, so the stream of numbers replays exactly. Different seed, different stream — but just as pinned. Unseeded, the start point comes from the clock and every run wanders off on its own.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 11.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">11.3</span>
+      <h2>datetime — the calendar shelf</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~9 min</span></span>
+      <p><b>The problem.</b> "How many days until the exam?" You could count on your knuckles past month lengths and a possible leap year — or you could let the shelf that knows every calendar rule since 1582 do it.</p>
+      <p><b>The idea, in plain words.</b> The <code>datetime</code> module holds date-and-time machinery; the piece we need today is <code>date</code>. Because <code>datetime.date</code> is a mouthful you'd type forty times, this is the promised moment where <code>from … import</code> earns its keep:</p>
+      <ul class="plain">
+        <li><code>from datetime import date</code> — pull the <code>date</code> tool off the shelf, once, at the top.</li>
+        <li><code>date(2026, 8, 15)</code> — build a date: year, month, day, in that order. It checks you: <code>date(2026, 2, 30)</code> is refused, because February 30th doesn't exist.</li>
+        <li><code>date.today()</code> — ask the machine's clock for the current date. Different tomorrow, by design.</li>
+        <li>Subtracting two dates gives a <i>gap</i> object; its <code>.days</code> is the whole-day count between them — leap years, month lengths, all handled.</li>
+      </ul>
+      <p>One honesty note about <code>date.today()</code>: any program that uses it prints something different next week. Perfect for real life, useless for a checked exercise — so in this unit, <code>today()</code> problems are run-only, and every checked answer is built from fixed dates. (Sound familiar? It's the seed idea again, worn by a calendar.)</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — days to New Year</div>
+      <div class="m">from datetime import date
+
+newyear = date(2027, 1, 1)
+today = date(2026, 8, 15)
+gap = newyear - today
+print(f"{gap.days} days to New Year")</div>
+      <p><b>Lines 3–4:</b> two date boxes — no clock involved, both fixed.</p>
+      <p><b>Line 5:</b> date minus date → a gap (a <code>timedelta</code>, to give it its docs name) stored in <code>gap</code>. It knows August has 31 days and 2026 isn't a leap year, so nothing for you to knuckle-count.</p>
+      <p><b>Line 6:</b> <code>.days</code> reads the whole-day count out of the gap — an int, f-string-ready:</p>
+      <div class="m">139 days to New Year</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>print(newyear - today)</code> does not print <code>139</code> — it prints <code>139 days, 0:00:00</code>, the gap object's long-winded self-description. The number you want lives inside it: <code>(newyear - today).days</code>. Subtracting dates gives a <i>gap</i>, and <code>.days</code> is how you read it.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a live countdown — how many days from <i>actual today</i> until next New Year. <b>Thinking:</b> <code>date.today()</code> supplies the moving part, the subtraction does the maths. Run-only, proudly: it will answer differently next week, and that's the point.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">from datetime import date
+
+today = date.today()
+newyear = date(today.year + 1, 1, 1)
+gap = newyear - today
+print(f"Today is {today}")
+print(f"{gap.days} days until {newyear.year}!")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">11.3 · P1</span><span class="pt">Days left in the year</span></div>
+        <p class="pd">Fixed dates only: from <code>date(2026, 8, 15)</code> to New Year's Eve, <code>date(2026, 12, 31)</code> — subtract, read <code>.days</code>, print the goal exactly.</p>
+        <div class="want">Days left in 2026: 138</div>
+        <div class="pyrun" data-id="s3p1" data-expect="Days left in 2026: 138">
+          <textarea spellcheck="false">from datetime import date
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>from datetime import date
+
+today = date(2026, 8, 15)
+last_day = date(2026, 12, 31)
+gap = last_day - today
+print(f"Days left in 2026: {gap.days}")</pre><p>16 left in August, then 30 + 31 + 30 + 31 — the module counted so you didn't have to. Note <code>.days</code>, not the bare gap.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">11.3 · P2</span><span class="pt">New Year to Independence Day</span></div>
+        <p class="pd">How many days from <code>date(2026, 1, 1)</code> to <code>date(2026, 8, 15)</code>? Build both dates, subtract, and print the goal exactly — mind the word <code>days</code> at the end of the sentence.</p>
+        <div class="want">From New Year to Independence Day: 226 days</div>
+        <div class="pyrun" data-id="s3p2" data-expect="From New Year to Independence Day: 226 days">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>from datetime import date
+
+newyear = date(2026, 1, 1)
+iday = date(2026, 8, 15)
+gap = iday - newyear
+print(f"From New Year to Independence Day: {gap.days} days")</pre><p>Aug 15 is day 227 of the year, and 227 − 1 = 226 days <i>between</i> them. Fence-posts: the gap counts steps, not dates touched.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">11.3 · P3</span><span class="pt">Stretch — Python's age in days</span></div>
+        <p class="pd">Python was first released on 20 February 1991. Using the fixed "today" of <code>date(2026, 8, 15)</code>, print how many days old Python is — one subtraction across 35 years and nine leap days, done in a blink.</p>
+        <div class="want">Python is 12960 days old</div>
+        <div class="pyrun" data-id="s3p3" data-expect="Python is 12960 days old">
+          <textarea spellcheck="false">from datetime import date
+
+born = date(1991, 2, 20)
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>from datetime import date
+
+born = date(1991, 2, 20)
+today = date(2026, 8, 15)
+age = today - born
+print(f"Python is {age.days} days old")</pre><p>Every leap year from 1992 to 2024 is silently accounted for. This is the standard library's whole pitch: decades of edge cases, pre-handled.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 11.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">11.4</span>
+      <h2>Reading the library — docs, help() &amp; the pip shelf</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~6 min</span></span>
+      <p><b>The problem.</b> Three shelves down, hundreds to go — and no set of notes can walk you through them all. The skill that actually scales isn't memorising tools; it's reading the catalogue. What does a documentation page say, and how do you decode it?</p>
+      <p><b>The idea, in plain words.</b> Every entry in Python's docs has the same three-part shape. Here is a real one, from the <code>random</code> page:</p>
+      <div class="fig" style="max-width:66ch;padding:14px 18px">
+        <div style="font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:8px;padding:12px 16px;color:var(--ink)">random.randint(a, b)</div>
+        <p style="font-size:var(--fs-cap);color:var(--slate);margin:10px 4px 0">Return a random integer N such that a &lt;= N &lt;= b.</p>
+        <div class="figcap">The shape of every docs entry: a <b>signature</b> (the tool's name and the blanks you fill — <code>a</code> and <code>b</code> are placeholders, not magic words), a one-line <b>description</b> (note it settles our inclusive-ends question in nine words), and usually an <b>example</b> below. Read signature → description → example, in that order, and any entry opens up.</div>
+      </div>
+      <p>You can also interrogate a shelf without leaving your code. <code>dir(math)</code> lists every name on the shelf — a table of contents. <code>help(math.sqrt)</code> prints that tool's docs entry right into the output. Between the two, you can explore a module you've never seen, which is precisely how programmers meet new shelves.</p>
+    </div>
+    <div class="aside">
+      <div class="lbl">And the shelves beyond — pip, in one paragraph</div>
+      The standard library ships with Python; but there's a bigger building next door: hundreds of thousands of shared libraries written by everyone — the tools behind data science and ML included. <code>pip</code> is the installer that fetches one onto your machine (<code>pip install requests</code>, typed in a terminal, not in Python), after which you <code>import</code> it like any shelf. It can't run inside this page — but it works in Colab and on your own machine, and the local-setup appendix walks you through it when the time comes. For now: standard library = included; pip = the shelf of everyone's libraries.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> explore the <code>math</code> shelf without opening a browser. <b>Thinking:</b> <code>dir</code> for the table of contents, <code>help</code> for one entry. The output is long — that's what real exploring looks like. Skim it, spot <code>factorial</code> in the list; you'll use it in P1.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">import math
+
+print(dir(math))
+help(math.sqrt)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">11.4 · P1</span><span class="pt">Use a tool you learned from the docs</span></div>
+        <p class="pd">The docs entry reads: <code>math.factorial(n)</code> — <i>Return n factorial as an integer.</i> (Factorial of 5 = 5 × 4 × 3 × 2 × 1.) You've never used it; the entry is all you get. Import the shelf and print the factorial of 5.</p>
+        <div class="want">120</div>
+        <div class="pyrun" data-id="s4p1" data-expect="120">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import math
+print(math.factorial(5))</pre><p>Signature says one blank, <code>n</code>; description says it returns an integer. That's genuinely all you needed — this is what "knowing a library" actually means.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">11.4 · P2</span><span class="pt">Stretch — meet a stranger</span></div>
+        <p class="pd">Run <code>dir(random)</code> and skim the list for a name you don't know — try <code>uniform</code>. Then <code>help(random.uniform)</code> to read its entry, and finally call it: <code>random.uniform(1, 10)</code> a couple of times. Run-only — you're exploring, not answering.</p>
+        <div class="pyrun" data-id="s4p2">
+          <textarea spellcheck="false">import random
+
+print(dir(random))
+help(random.uniform)
+print(random.uniform(1, 10))</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>(the shelf's contents, one docs entry, then a random
+decimal between 1 and 10 — different every run)</pre><p><code>uniform</code> is <code>randint</code>'s decimal cousin. You just learned a tool nobody taught you — the docs-reading loop (dir → help → try it) is the real takeaway of this section.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 11.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">11.5</span>
+      <h2>Your build — the dice duel</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p>Everything from this session in one small arcade: two players roll dice, a winner is declared, a lucky draw picks a prize-winner — and because the first two are <i>checked</i>, they run on the replay switch. Stage 3 pulls the seed out and lets the dice be dice.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">11.5 · P1</span><span class="pt">Stage 1 — the duel, seeded</span></div>
+        <p class="pd">Seed with <code>42</code>, then roll two dice for Player 1 and two for Player 2 (<code>randint(1, 6)</code>, four calls, <b>in that order</b>). Report each player's rolls and total with f-strings, then declare the result with if/elif/else: <code>Player 1 wins!</code>, <code>Player 2 wins!</code> or <code>It's a tie!</code>. The seed makes your output checkable — that's it doing its job.</p>
+        <div class="want">Player 1 rolls 6 and 1 (total 7)
+Player 2 rolls 1 and 6 (total 7)
+It's a tie!</div>
+        <div class="pyrun" data-id="s5p1" data-expect="Player 1 rolls 6 and 1 (total 7)\nPlayer 2 rolls 1 and 6 (total 7)\nIt's a tie!">
+          <textarea spellcheck="false">import random
+
+random.seed(42)
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import random
+
+random.seed(42)
+p1a = random.randint(1, 6)
+p1b = random.randint(1, 6)
+p2a = random.randint(1, 6)
+p2b = random.randint(1, 6)
+p1 = p1a + p1b
+p2 = p2a + p2b
+print(f"Player 1 rolls {p1a} and {p1b} (total {p1})")
+print(f"Player 2 rolls {p2a} and {p2b} (total {p2})")
+if p1 > p2:
+    print("Player 1 wins!")
+elif p2 > p1:
+    print("Player 2 wins!")
+else:
+    print("It's a tie!")</pre><p>Four seeded rolls always land the same way, so the duel replays identically every run — which is exactly why the checker can mark it. Order matters: the seed pins the <i>stream</i>, and each <code>randint</code> takes the next number from it.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">11.5 · P2</span><span class="pt">Stage 2 — the lucky draw</span></div>
+        <p class="pd">Fresh seed of <code>42</code> (seed again — it restarts the stream), then <code>random.choice</code> from the six names in the starter list, and announce the winner exactly as the goal shows.</p>
+        <div class="want">The lucky winner is Farhan!</div>
+        <div class="pyrun" data-id="s5p2" data-expect="The lucky winner is Farhan!">
+          <textarea spellcheck="false">import random
+
+random.seed(42)
+names = ["Adi", "Bela", "Chitra", "Dev", "Esha", "Farhan"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import random
+
+random.seed(42)
+names = ["Adi", "Bela", "Chitra", "Dev", "Esha", "Farhan"]
+winner = random.choice(names)
+print(f"The lucky winner is {winner}!")</pre><p>Same seed, same pick, every run. Re-seeding rewinds the tape to the start — without line 3, the choice would continue the stream from wherever the last random call left it.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">11.5 · P3</span><span class="pt">Stage 3 — dice set free</span></div>
+        <p class="pd">The same duel with the seed deleted. Run it five times; feel how the game only became a <i>game</i> once the replay switch came out. No check — chance doesn't sit exams.</p>
+        <div class="pyrun" data-id="s5p3">
+          <textarea spellcheck="false">import random
+
+p1 = random.randint(1, 6) + random.randint(1, 6)
+p2 = random.randint(1, 6) + random.randint(1, 6)
+print(f"Player 1 total: {p1}")
+print(f"Player 2 total: {p2}")
+if p1 > p2:
+    print("Player 1 wins!")
+elif p2 > p1:
+    print("Player 2 wins!")
+else:
+    print("It's a tie!")</textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 11.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">11.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~12 min</span></span>
+      <p>The mixed set: three shelves, the seed, the docs habit — plus f-strings, lists and a loop from earlier units. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">The circle, properly</span></div>
+        <p class="pd">Ask <code>Radius? </code> (convert at the door — Unit 2 habits die hard), compute the circle's area with <code>math.pi</code> (area = π × r²), and print it with <code>:.2f</code>. Input fixed to 5.</p>
+        <div class="want">Radius? 5
+Area: 78.54</div>
+        <div class="pyrun" data-id="b1" data-stdin="5" data-stdin-lock data-expect="Radius? 5\nArea: 78.54">
+          <textarea spellcheck="false">import math
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import math
+
+r = int(input("Radius? "))
+area = math.pi * r ** 2
+print(f"Area: {area:.2f}")</pre><p>π × 25 = 78.5398… and <code>:.2f</code> rounds the display to 78.54 while the box keeps full precision — format at the exit, as always.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">The exam countdown</span></div>
+        <p class="pd">Fixed dates: from <code>date(2026, 8, 15)</code> to the exam on <code>date(2026, 12, 1)</code>. Subtract, read <code>.days</code>, print the goal exactly.</p>
+        <div class="want">Days to prepare: 108</div>
+        <div class="pyrun" data-id="b2" data-expect="Days to prepare: 108">
+          <textarea spellcheck="false">from datetime import date
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>from datetime import date
+
+today = date(2026, 8, 15)
+exam = date(2026, 12, 1)
+gap = exam - today
+print(f"Days to prepare: {gap.days}")</pre><p>16 + 30 + 31 + 30 + 1 — but you never had to know that. Build dates, subtract, <code>.days</code>. That's the whole recipe.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">The seeded shuffle</span></div>
+        <p class="pd">Seed with <code>42</code>, shuffle the four names, print the list itself (yes, with its brackets and quotes — that's what printing a list looks like, from Unit 5). The seed makes even a shuffle checkable.</p>
+        <div class="want">['Chitra', 'Bela', 'Dev', 'Adi']</div>
+        <div class="pyrun" data-id="b3" data-expect="['Chitra', 'Bela', 'Dev', 'Adi']">
+          <textarea spellcheck="false">import random
+
+random.seed(42)
+order = ["Adi", "Bela", "Chitra", "Dev"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import random
+
+random.seed(42)
+order = ["Adi", "Bela", "Chitra", "Dev"]
+random.shuffle(order)
+print(order)</pre><p>Shuffle in place, then print the list — remember <code>shuffle</code> returns nothing, so it can't live inside the print. Seeded, the "random" order is the same every run: reproducibility again, now rearranging lists.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — password of the day</span></div>
+        <p class="pd">Build an 8-character password by looping 8 times (Unit 4) and gluing on one <code>random.choice</code> from the letters-and-digits string (Unit 8 — a string is a sequence, so <code>choice</code> happily picks from it). Keep the seed line and the same password comes back every run — swap the seed for a new day, new password. Run-only: try a few seeds.</p>
+        <div class="pyrun" data-id="b4">
+          <textarea spellcheck="false">import random
+
+random.seed(42)
+letters = "abcdefghijklmnopqrstuvwxyz0123456789"
+password = ""
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>import random
+
+random.seed(42)
+letters = "abcdefghijklmnopqrstuvwxyz0123456789"
+password = ""
+for i in range(8):
+    password = password + random.choice(letters)
+print(f"Password of the day: {password}")</pre><p>Four units shake hands: a loop builds up a string one random pick at a time, and the seed turns "random" into "same for everyone with the same seed" — which is why it's a password of the <i>day</i>, not of the moment.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 12 · The Pythonic loop — comprehensions</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">One last Foundations move. There's a loop you've now written a dozen times — walk a list, transform each item, collect the results — and Python noticed long before you did: it gave that loop a one-line form of its own. Comprehensions are Python at its most Pythonic, and they close the Beginner level in style.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>The Python Tutorial</b> — <i>§6 Modules &amp; §10 Brief Tour of the Standard Library</i>. <span class="why">The official story of import and a guided stroll past the shelves — math, random and datetime included.</span> <a href="https://docs.python.org/3/tutorial/modules.html" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>random — Generate pseudo-random numbers</i>. <span class="why">The full random shelf — and a working example of the docs shape from 11.4. Practise reading it.</span> <a href="https://docs.python.org/3/library/random.html" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>datetime — Basic date and time types</i>. <span class="why">Everything dates and times can do, far beyond today's slice.</span> <a href="https://docs.python.org/3/library/datetime.html" rel="noopener">docs.python.org</a></li>
+      <li><b>Sweigart, A.</b> — <i>Automate the Boring Stuff with Python, ch. 2</i>. <span class="why">The importing-modules section, with random.randint as the running example — same ground, second voice.</span> <a href="https://automatetheboringstuff.com/2e/chapter2/" rel="noopener">book</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit10.html"><span class="k">← Previous</span><span class="t">Unit 10 · Saving your work — files</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit12.html"><span class="k">Next →</span><span class="t">Unit 12 · The Pythonic loop — comprehensions</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 11 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"What does the line  import math  actually do?",
+   o:["Copies all the maths code into your file","Loads the module once and gives you ONE new name, math, through which every tool on that shelf is reached","Downloads the maths library from the internet","Runs every function in the maths library"],
+   a:1,
+   e:"import fetches the shelf and hands you a single name. Nothing is copied into your file and nothing is downloaded — the standard library shipped with Python. You reach the tools through the dot: math.sqrt, math.pi."},
+  {q:"After  import math , which line prints the square root of 25?",
+   o:["print(sqrt(25))","print(math.sqrt(25))","print(math/sqrt(25))","print(sqrt.math(25))"],
+   a:1,
+   e:"The dotted form module.name is how you reach into the box: math.sqrt. Bare sqrt is a NameError unless you used the other door — from math import sqrt."},
+  {q:"Why does random.seed(42) exist?",
+   o:["It makes the numbers more random","It makes randint run faster","It pins the starting point of the number recipe, so every run replays the SAME sequence — reproducible results","It limits the output to numbers near 42"],
+   a:2,
+   e:"The seed is a replay switch. Same seed, same 'random' stream, every run — which is how tests stay checkable and how ML experiments stay reproducible. 42 is just a popular choice of number."},
+  {q:"random.randint(1, 6) can return…",
+   o:["1 to 5 — the end is excluded, like range","2 to 6","1 to 6 — BOTH ends included","0 to 6"],
+   a:2,
+   e:"The docs say it exactly: a <= N <= b, both ends in. This is the famous disagreement with range(1, 6), which stops at 5 — dice use randint, loop counts use range."},
+  {q:"What is pip?",
+   o:["A module for making sounds","The installer that fetches shared libraries written by everyone onto your machine, so you can import them","A faster version of print","The part of Python that runs your loops"],
+   a:1,
+   e:"The standard library ships with Python; pip is the door to the bigger building next door — hundreds of thousands of community libraries. You run pip in a terminal (not inside Python), then import the new shelf like any other."},
+  {q:"A docs entry reads:  random.randint(a, b) — Return a random integer N such that a <= N <= b.  What are a and b?",
+   o:["Magic words you must type literally","Placeholders in the signature — blanks you fill with your own values, in that order","Two modules that must be imported first","Variables Python creates automatically"],
+   a:1,
+   e:"The signature names the blanks; the description tells you what they mean. You call it with your own values — random.randint(1, 6) — never with the letters a and b themselves. Learning to read that shape unlocks every page of the docs."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. The library is open; you hold the card."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 11.1's dot and 11.2's seed carry the load."
+           : " — worth another pass through the practice above before Unit 12.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Module","One shelf of the library: a file of ready-made tools you fetch with import. math, random and datetime are modules."],
+  ["Standard library","The hundreds of modules that ship with Python itself — no installing, just import."],
+  ["import","Your library card: fetches a module once (at the top of the file) and gives you one name through which its tools are reached."],
+  ["Dotted form (module.name)","How you reach into the module's box: math.sqrt, random.randint. The dot says exactly which shelf the tool came from."],
+  ["from … import","The other door: from math import sqrt pulls one tool out for bare use. Shorter to call, harder to trace — we save it for mouthfuls like datetime.date."],
+  ["random.seed(n)","The replay switch: pins where the number-scrambling recipe starts, so every run produces the identical 'random' stream. The heart of reproducible experiments."],
+  ["randint(a, b)","A whole number from a to b, BOTH ends included — unlike range, which excludes its end."],
+  ["choice / shuffle","choice(lst) hands back one item from a list; shuffle(lst) rearranges the list in place and returns nothing."],
+  ["date","From datetime: date(2026, 8, 15) builds a calendar date (year, month, day); date.today() asks the clock."],
+  ["timedelta","The gap object you get from subtracting two dates. Its .days is the whole-day count — leap years included."],
+  ["help() / dir()","In-code explorers: dir(module) lists a shelf's contents; help(tool) prints its docs entry."],
+  ["pip","The installer for everyone's shared libraries — run in a terminal, then import the result. The standard library needs no pip; it's already here."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

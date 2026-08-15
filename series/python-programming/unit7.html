@@ -1,0 +1,1061 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Packaging Logic — Functions — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u07" data-lwa-title="Unit 7 · Packaging logic — functions">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Beginner — Foundations · Unit 7</div>
+      <h1>Packaging Logic — Functions</h1>
+      <p class="standfirst">Six units in, your programs are getting long — and you've surely noticed yourself writing the same lines twice. This session fixes that forever: name a block of code once, use it anywhere, feed it ingredients, and get an answer handed back. By the end, Unit 5's to-do list gets rebuilt the way real programs are built.</p>
+      <div class="facts">
+        <div><b>One session</b>~50 min</div>
+        <div><b>4 concepts + a build</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 2–6 — especially 4 (loops) &amp; 5 (lists)</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">7.1 Naming a recipe</a>
+    <a href="#s2">7.2 Ingredients</a>
+    <a href="#s3">7.3 return vs print</a>
+    <a href="#s4">7.4 Scope, gently</a>
+    <a href="#s5">7.5 Build: the refactor</a>
+    <a href="#s6">7.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 7.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Units 4 &amp; 5</b>Loops and lists carry this unit's build — we're rebuilding Unit 5's to-do list, properly. Units 2 and 3 (boxes, if/else) are assumed without ceremony.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm: each concept is a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit7.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>One warning up front</b>The single biggest stumble in this unit is that <i>defining</i> a function does nothing visible. Hold onto that sentence; 7.1 exists to make it feel obvious.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">7.1</span>
+      <h2>Naming a recipe — def, the body, the call</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~9 min</span></span>
+      <p><b>The problem.</b> You want to greet three visitors, and the greeting is two lines long. So far your only option is to write those two lines three times — six lines, and if the wording ever changes you must fix it in three places and hope you found them all. Copy-paste is how bugs breed.</p>
+      <p><b>The idea, in plain words.</b> Give the block of code a <i>name</i>, once, and then use the name. Our literal-minded kitchen helper already works this way: you don't re-explain how to make tea every time — you wrote a <b>recipe card</b> once, filed it in the cookbook, and now "make tea" is a single instruction. In Python, writing the card looks like this:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">def greet():<br>&nbsp;&nbsp;&nbsp;&nbsp;print("Hello! Welcome.")<br>&nbsp;&nbsp;&nbsp;&nbsp;print("Grab a chair.")</p>
+      <ul class="plain">
+        <li><b><code>def</code></b> means "define" — <i>here comes a recipe card</i>. Then the function's name (same rules as box labels), parentheses, and a colon.</li>
+        <li><b>The body</b> is every indented line under it — the steps on the card. Same indentation rule as <code>if</code> and <code>for</code>: the indent marks what belongs inside.</li>
+        <li><b>Calling</b> — <code>greet()</code>, with the parentheses — means <i>do it now</i>. Python jumps into the body, runs the steps, and comes back to the line after the call.</li>
+      </ul>
+      <p>And the part everyone trips on: <b>defining runs nothing.</b> When Python reads a <code>def</code> block, it files the card in the cookbook and moves on — not one line of the body runs. The body runs only when the name is called, and it runs once per call: the same greeting three times means <i>one</i> function called three times.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the card is filed, not cooked</div>
+      <div class="m">def cheer():
+    print("Hip hip hooray!")
+
+print("before")
+cheer()
+print("after")</div>
+      <p><b>Lines 1–2:</b> a recipe card named <code>cheer</code> goes into the cookbook. Nothing prints — Python only <i>read</i> the card.</p>
+      <p><b>Line 4:</b> <code>before</code> appears. <b>Line 5:</b> the call — Python jumps into the body, prints <code>Hip hip hooray!</code>, and comes back. <b>Line 6:</b> <code>after</code> appears.</p>
+      <div class="m">before
+Hip hip hooray!
+after</div>
+      <p>Cover line 5 with a finger and the program prints only <code>before</code> and <code>after</code> — a filed recipe nobody asks for is never cooked.</p>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>def</code> is <b>writing the recipe card; calling is cooking.</b> Beginners write a beautiful <code>def</code> block, run the program, see nothing, and conclude Python is broken. It isn't — nobody ordered the dish. If a function's output is missing, the first thing to check is whether you actually <i>called</i> it: <code>greet()</code>, parentheses and all. (Writing just <code>greet</code> without parentheses names the card without cooking it — no error, no output.)</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> greet three visitors with a two-line greeting — without writing the greeting three times. <b>Thinking:</b> one recipe card, three calls. Before running, predict how many lines print and in what order; then change the wording <i>once</i> and watch all three greetings update.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">def greet():
+    print("Hello! Welcome to the club.")
+    print("Grab a chair.")
+
+greet()
+greet()
+greet()</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">7.1 · P1</span><span class="pt">The menu board</span></div>
+        <p class="pd">Define <code>show_menu()</code> that prints the two menu lines below, then call it twice — a café hangs its board at both doors. The goal shows the full output.</p>
+        <div class="want">== Adi's Cafe ==
+Tea . . . . 12
+== Adi's Cafe ==
+Tea . . . . 12</div>
+        <div class="pyrun" data-id="s1p1" data-expect="== Adi's Cafe ==\nTea . . . . 12\n== Adi's Cafe ==\nTea . . . . 12">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def show_menu():
+    print("== Adi's Cafe ==")
+    print("Tea . . . . 12")
+
+show_menu()
+show_menu()</pre><p>Two lines written once, printed twice. Change a price and both boards update — that's the whole sales pitch for functions.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">7.1 · P2</span><span class="pt">Predict: the silent alarm</span></div>
+        <p class="pd">Predict the output on paper first — every line of it. Then run. If your prediction included beeping, reread the confusion box above.</p>
+        <div class="pyrun" data-id="s1p2">
+          <textarea spellcheck="false">def alarm():
+    print("BEEP BEEP")
+    print("BEEP BEEP")
+
+print("Good night")</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>Good night</pre><p>The alarm never rings — the recipe card is filed, but nobody calls <code>alarm()</code>. Add the call at the bottom and it beeps after the goodnight.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">7.1 · P3</span><span class="pt">Fix: cooking before the card exists</span></div>
+        <p class="pd">This program dies with a <code>NameError</code>. Run it, read the last line of the report, and fix it <i>without changing any line's text</i> — only where the lines sit. Python reads top to bottom: at the moment of the call, does the cookbook have the card yet?</p>
+        <div class="want">La la la</div>
+        <div class="pyrun" data-id="s1p3" data-expect="La la la">
+          <textarea spellcheck="false">sing()
+
+def sing():
+    print("La la la")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def sing():
+    print("La la la")
+
+sing()</pre><p>The call on line 1 ran before the <code>def</code> was read — the cookbook was still empty. Define first, call after; that's why real programs put their <code>def</code> blocks at the top.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">7.1 · P4</span><span class="pt">Stretch — the ruled line</span></div>
+        <p class="pd">Define <code>ruled_line()</code> that prints ten dashes, and use it (twice) to sandwich the word <code>RECEIPT</code>. One card, reused for both borders — Unit 1's banner problem, grown up.</p>
+        <div class="want">----------
+RECEIPT
+----------</div>
+        <div class="pyrun" data-id="s1p4" data-expect="----------\nRECEIPT\n----------">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def ruled_line():
+    print("----------")
+
+ruled_line()
+print("RECEIPT")
+ruled_line()</pre><p>The calls interleave with ordinary prints — a function call is just another statement, runnable wherever you need it.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">7.2</span>
+      <h2>Ingredients — parameters &amp; arguments</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~9 min</span></span>
+      <p><b>The problem.</b> <code>greet()</code> says the same thing to everyone. A real greeting needs the visitor's <i>name</i> — and a recipe that can't take ingredients can only ever cook one dish.</p>
+      <p><b>The idea, in plain words.</b> Recipe cards have blanks: "make tea for <i>___</i> people". A function gets blanks the same way — names inside the parentheses of the <code>def</code> line:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">def greet(name):<br>&nbsp;&nbsp;&nbsp;&nbsp;print(f"Hello, {name}!")</p>
+      <p>Two words you'll meet everywhere, worth getting straight on day one:</p>
+      <ul class="plain">
+        <li>A <b>parameter</b> is the <i>slot on the card</i> — <code>name</code> in the <code>def</code> line. It's a labeled box that exists inside the function.</li>
+        <li>An <b>argument</b> is <i>what you pass in</i> when calling — <code>greet("Ada")</code> puts <code>"Ada"</code> into the <code>name</code> box for the duration of that call.</li>
+      </ul>
+      <p>Multiple slots work exactly as you'd hope — <code>def order(item, count):</code> — and arguments fill them <b>left to right</b>, fresh on every call. One more comfort: a slot can carry a <b>default value</b>. Write <code>def greet(name, punctuation="!"):</code> and callers who don't supply punctuation get <code>"!"</code> for free, while callers who do supply one override it. Defaults are how one recipe serves both the common case and the fussy one.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — slots filled per call</div>
+      <div class="m">def order(item, count):
+    print(f"{count} x {item}")
+
+order("dosa", 2)
+order("tea", 1)</div>
+      <p><b>First call:</b> <code>"dosa"</code> → slot <code>item</code>, <code>2</code> → slot <code>count</code> (left to right). The body prints <code>2 x dosa</code>.</p>
+      <p><b>Second call:</b> the slots are refilled from scratch — <code>"tea"</code>, <code>1</code> — and the body runs again:</p>
+      <div class="m">2 x dosa
+1 x tea</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Parameter vs argument, once and for all: the <b>parameter</b> is the slot (<code>name</code> in the <code>def</code> line), the <b>argument</b> is what you drop into it (<code>"Ada"</code> at the call). And because arguments fill slots <i>by position</i>, swapping them swaps meanings — <code>order(2, "dosa")</code> would happily try to serve "dosa copies of 2". Python doesn't read minds; it reads order.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> one greeter for three moods — normal, questioning, trailing off. <b>Thinking:</b> two slots, one with a default. The first call leans on the default; the others override it. Predict all three lines before running.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">def greet(name, punctuation="!"):
+    print(f"Hello, {name}{punctuation}")
+
+greet("Ada")
+greet("Rhea", "?")
+greet("Sam", "...")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">7.2 · P1</span><span class="pt">The birthday card</span></div>
+        <p class="pd">Write <code>birthday(name, age)</code> that prints one f-string line, then call it for Meera (8) and Zoya (30) to match the goal exactly.</p>
+        <div class="want">Happy birthday Meera, you are 8!
+Happy birthday Zoya, you are 30!</div>
+        <div class="pyrun" data-id="s2p1" data-expect="Happy birthday Meera, you are 8!\nHappy birthday Zoya, you are 30!">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def birthday(name, age):
+    print(f"Happy birthday {name}, you are {age}!")
+
+birthday("Meera", 8)
+birthday("Zoya", 30)</pre><p>Two slots, filled left to right on each call. The f-string does the sentence work — Unit 2's tool, still earning its keep.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">7.2 · P2</span><span class="pt">Predict: swapped ingredients</span></div>
+        <p class="pd">Predict the exact output — no error is coming, which is precisely the lesson. Then run, then fix the call (not the function) so the sentence makes sense.</p>
+        <div class="pyrun" data-id="s2p2">
+          <textarea spellcheck="false">def intro(name, city):
+    print(f"{name} lives in {city}")
+
+intro("Chennai", "Adi")</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>Chennai lives in Adi</pre><p>Arguments fill slots by position, so <code>"Chennai"</code> landed in <code>name</code>. Python saw nothing wrong — two strings arrived for two slots. Order bugs produce nonsense, not errors, which makes them sneakier than crashes.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">7.2 · P3</span><span class="pt">Stretch — the default multiplier</span></div>
+        <p class="pd">Write <code>repeat(word, times=2)</code> that prints the word repeated <code>times</code> times using string multiplication (Unit 2's bonus rule: <code>"ha" * 3</code> → <code>hahaha</code>). Call it once relying on the default and once with <code>4</code>.</p>
+        <div class="want">haha
+hahahaha</div>
+        <div class="pyrun" data-id="s2p3" data-expect="haha\nhahahaha">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def repeat(word, times=2):
+    print(word * times)
+
+repeat("ha")
+repeat("ha", 4)</pre><p>The first call leaves the <code>times</code> slot to its default; the second overrides it. One card, two behaviours, zero copies.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">7.3</span>
+      <h2>return vs print — the handover</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~11 min</span></span>
+      <p><b>The problem.</b> Your functions can <i>show</i> things. But suppose a function computes a room's area and you want to <i>add two areas together</i>. Showing the number on screen doesn't help — the screen is for you, not for the program. The program needs the value <b>handed back</b>, so it can store it in a box and keep working with it.</p>
+      <p><b>The idea, in plain words.</b> That handover is <code>return</code>. Think of the kitchen helper again: <code>print</code> is the helper <i>shouting the answer across the kitchen</i> — you hear it, and it's gone. <code>return</code> is the helper <i>bringing the dish to your counter</i> — now it's yours to store, taste, or cook with further:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">def area(width, height):<br>&nbsp;&nbsp;&nbsp;&nbsp;return width * height<br><br>room = area(4, 3)&nbsp;&nbsp;&nbsp;<span style="color:var(--muted)"># the call *becomes* 12, stored in a box</span></p>
+      <p>Read the call like arithmetic: <code>area(4, 3)</code> <i>becomes</i> its returned value, right there in the line. That's why it can sit on the right of an <code>=</code>, inside an f-string, or in the middle of a sum. Two more facts complete the picture:</p>
+      <ul class="plain">
+        <li><b><code>return</code> ends the call immediately.</b> It's the function's exit door; lines after it never run.</li>
+        <li><b>A function with no <code>return</code> hands back <code>None</code></b> — Python's word for "nothing here". A function that only prints is such a function: the text appears, and the caller receives <code>None</code>.</li>
+      </ul>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — shout vs handover</div>
+      <div class="m">def shout(word):
+    print(word + "!")
+
+def louder(word):
+    return word + "!"
+
+result1 = shout("hey")
+result2 = louder("hey")
+print(result1)
+print(result2)</div>
+      <p><b>Line 7:</b> <code>shout("hey")</code> runs the body — <code>hey!</code> appears <i>now</i>. The function has no <code>return</code>, so the call becomes <code>None</code>, and that's what lands in <code>result1</code>.</p>
+      <p><b>Line 8:</b> <code>louder("hey")</code> prints nothing — it quietly hands back <code>"hey!"</code>, which lands in <code>result2</code>.</p>
+      <p><b>Lines 9–10:</b> the boxes are read out:</p>
+      <div class="m">hey!
+None
+hey!</div>
+      <p>Same word, same exclamation mark — but only one version left the caller holding something usable.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 250" role="img" aria-label="Call diagram: arguments 4 and 3 flow into parameter slots width and height; the body computes 12; the return value flows back into the box room">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">ONE CALL, START TO FINISH</text>
+        <!-- call site -->
+        <rect x="30" y="60" width="240" height="52" rx="9" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="150" y="82" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">room = area(4, 3)</text>
+        <text x="150" y="101" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">the call site</text>
+        <!-- function panel -->
+        <rect x="360" y="48" width="330" height="120" rx="12" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="376" y="72" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">def area(width, height):</text>
+        <rect x="392" y="84" width="110" height="44" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.2"/>
+        <text x="447" y="102" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" font-weight="700" fill="#3d3170">width</text>
+        <text x="447" y="120" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">4</text>
+        <rect x="516" y="84" width="110" height="44" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.2"/>
+        <text x="571" y="102" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" font-weight="700" fill="#3d3170">height</text>
+        <text x="571" y="120" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">3</text>
+        <text x="392" y="154" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">return width * height&nbsp;&nbsp;→ 12</text>
+        <!-- arrows in -->
+        <path d="M272 74 C 320 66, 340 90, 390 100" fill="none" stroke="#2b7a78" stroke-width="1.8" marker-end="url(#arr7)"/>
+        <text x="316" y="66" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#1d5654">arguments in</text>
+        <!-- arrow back -->
+        <path d="M420 178 C 300 218, 200 190, 140 122" fill="none" stroke="#a35a33" stroke-width="1.8" marker-end="url(#arr7b)"/>
+        <text x="272" y="216" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#a35a33">the return value flows back — the call becomes 12</text>
+        <!-- result box -->
+        <rect x="46" y="150" width="130" height="52" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="111" y="172" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">room</text>
+        <text x="111" y="192" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">12</text>
+        <defs>
+          <marker id="arr7" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#2b7a78"/></marker>
+          <marker id="arr7b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#a35a33"/></marker>
+        </defs>
+      </svg>
+      <div class="figcap">Fig. 1 — The full journey of <code>room = area(4, 3)</code>: arguments flow into the parameter slots, the body computes, and the returned value flows back to the call site, where it's stored like any other value.</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      <code>print</code> shows a value to a <i>human</i> and forgets it; <code>return</code> hands the value back to the <i>program</i>. If any later line needs the result, the function must return it.
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>"But I saw the answer on screen — why is my box <code>None</code>?" Because seeing isn't keeping. A function that prints its result still returns <code>None</code>, and <code>None</code> is what gets stored. The tell-tale symptom is <code>None</code> appearing somewhere in your output, or a <code>TypeError</code> mentioning <code>NoneType</code> when you try to compute with it. The fix is always the same: <code>return</code> the value, and let the <i>caller</i> decide whether to print it.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a flat has a hall of 9×5 metres and a kitchen of 3×4 — print each area and the total floor space. <b>Thinking:</b> one <code>area</code> function, called twice; because it <i>returns</i>, the results land in boxes we can add. Try replacing the <code>return</code> with a <code>print</code> and watch the arithmetic collapse.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">def area(width, height):
+    return width * height
+
+hall = area(9, 5)
+kitchen = area(3, 4)
+total = hall + kitchen
+print(f"Hall: {hall}")
+print(f"Kitchen: {kitchen}")
+print(f"Total: {total}")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">7.3 · P1</span><span class="pt">Predict: the vanishing sum</span></div>
+        <p class="pd">Predict both output lines before running. The second one is the whole lesson of this section.</p>
+        <div class="pyrun" data-id="s3p1">
+          <textarea spellcheck="false">def add(a, b):
+    print(a + b)
+
+total = add(2, 3)
+print(total)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>5
+None</pre><p>The <code>5</code> is the function shouting during the call. But <code>add</code> returns nothing, so <code>None</code> lands in <code>total</code> — and that's what the second print shows. Seen on screen ≠ handed back.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">7.3 · P2</span><span class="pt">Fix: return it instead</span></div>
+        <p class="pd">This program crashes with a <code>TypeError</code> about <code>NoneType</code>. Change exactly one line inside the function so the program prints the goal. (Note the lone <code>5</code> disappears too — the caller now controls all printing.)</p>
+        <div class="want">10</div>
+        <div class="pyrun" data-id="s3p2" data-expect="10">
+          <textarea spellcheck="false">def add(a, b):
+    print(a + b)
+
+total = add(2, 3)
+print(total * 2)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def add(a, b):
+    return a + b
+
+total = add(2, 3)
+print(total * 2)</pre><p><code>print</code> → <code>return</code>, and suddenly <code>total</code> holds a real <code>5</code> that arithmetic can use. Compute inside, return, and format at the exit — the house rule, now with functions.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">7.3 · P3</span><span class="pt">Returned values compute</span></div>
+        <p class="pd">Write <code>half(n)</code> that <i>returns</i> <code>n / 2</code>, then print <code>half(10) + half(4)</code> in one line. Before running, recall Unit 2: what does <code>/</code> always produce?</p>
+        <div class="want">7.0</div>
+        <div class="pyrun" data-id="s3p3" data-expect="7.0">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def half(n):
+    return n / 2
+
+print(half(10) + half(4))</pre><p>Each call becomes its returned value — 5.0 and 2.0 — and they add like any floats. Only returning functions can be composed like this.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">7.3 · P4</span><span class="pt">Stretch — predict: the exit door</span></div>
+        <p class="pd">Predict the full output. How many of the function's three lines actually run?</p>
+        <div class="pyrun" data-id="s3p4">
+          <textarea spellcheck="false">def deliver():
+    print("Packing...")
+    return "package"
+    print("I never run")
+
+print(deliver())</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>Packing...
+package</pre><p><code>return</code> is the exit door — the moment it runs, the call is over, and the line after it is unreachable. <code>Packing...</code> printed during the call; <code>package</code> is the returned value, printed by the caller.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">7.4</span>
+      <h2>Scope, gently — boxes on a workbench</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~7 min</span></span>
+      <p><b>The problem.</b> Functions create boxes — parameters, and any box the body makes. If every one of those joined the program's boxes permanently, ten calls would leave forty stray boxes and no way to tell whose was whose. Something must keep a function's mess contained.</p>
+      <p><b>The idea, in plain words.</b> Each call gets its own <b>workbench</b>. Boxes created inside a function — parameters included — live on that bench, and when the call ends, <i>the bench is cleared</i>. Ask for one of those boxes afterwards and you get a <code>NameError</code>: it's simply gone. Two rules cover everything you need for now:</p>
+      <ul class="plain">
+        <li><b>Reading an outer box works.</b> The bench can see the main room: if the program has <code>greeting = "hello"</code>, a function body may <code>print(greeting)</code> freely.</li>
+        <li><b>A same-named local shadows the outer box.</b> If the body creates its own <code>snack</code>, that bench box hides the room's <code>snack</code> for the rest of the call — and the room's box is untouched throughout.</li>
+      </ul>
+      <p>You may wonder how a function can ever change the outer world, then. It doesn't need to reach out and rearrange the room — it <b>gives results back with <code>return</code></b>, and the caller stores them wherever it likes. That handover is the clean channel; keep to it and scope will never surprise you.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the bench and the room</div>
+      <div class="m">snack = "biscuit"
+
+def picnic():
+    snack = "mango"
+    print("Inside:", snack)
+
+picnic()
+print("Outside:", snack)</div>
+      <p><b>Line 1:</b> the room's box <code>snack</code> holds <code>"biscuit"</code>. <b>Lines 3–5:</b> the card is filed; nothing runs.</p>
+      <p><b>Line 7:</b> the call opens a workbench. Line 4 makes a <i>bench</i> box <code>snack</code> holding <code>"mango"</code> — the room's box is now shadowed, not changed. Line 5 prints the bench box. Call ends; bench cleared; the mango box is gone.</p>
+      <p><b>Line 8:</b> back in the room, <code>snack</code> is the biscuit it always was:</p>
+      <div class="m">Inside: mango
+Outside: biscuit</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 220" role="img" aria-label="Scope diagram: the main room keeps its snack box; the function call's workbench holds a shadowing snack box that is cleared when the call ends">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">THE ROOM AND THE WORKBENCH, DURING picnic()</text>
+        <!-- room -->
+        <rect x="30" y="46" width="330" height="150" rx="12" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="46" y="72" font-family="Segoe UI,system-ui,sans-serif" font-size="12" font-weight="700" fill="#4a5a72">the main room — the program's boxes</text>
+        <rect x="46" y="88" width="150" height="56" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="121" y="110" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">snack</text>
+        <text x="121" y="132" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">"biscuit"</text>
+        <text x="121" y="176" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">untouched the whole time</text>
+        <!-- bench -->
+        <rect x="470" y="46" width="360" height="150" rx="12" fill="#f0f1f7" stroke="#2b7a78" stroke-width="1.5" stroke-dasharray="7 5"/>
+        <text x="486" y="72" font-family="Segoe UI,system-ui,sans-serif" font-size="12" font-weight="700" fill="#1d5654">picnic()'s workbench — this call only</text>
+        <rect x="486" y="88" width="150" height="56" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="561" y="110" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">snack</text>
+        <text x="561" y="132" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">"mango"</text>
+        <text x="658" y="110" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#a35a33">shadows the room's box</text>
+        <text x="658" y="128" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#a35a33">while the call runs</text>
+        <text x="486" y="180" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">cleared the instant the call ends — all bench boxes vanish</text>
+      </svg>
+      <div class="figcap">Fig. 2 — Why the trace prints mango then biscuit: two boxes with one name, on two different surfaces. The dashed bench exists only for the duration of the call.</div>
+    </div>
+    <div class="aside">
+      <div class="lbl">Aside — those little labels you'll see everywhere</div>
+      In real code you'll soon meet <code>def</code> lines like <code>def area(w: int, h: int) -&gt; int:</code>. The <code>: int</code> and <code>-&gt; int</code> are <b>type hints</b> — labels for humans and tools saying what types are expected in and out. Python doesn't enforce them (pass a string and Python will still try); editors and checkers use them to catch mistakes early. Just read past them for now — you'll meet them everywhere in real code, and we'll start writing them ourselves in the Intermediate units.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> compute a discounted bill. <b>Thinking:</b> the function makes two bench boxes, <code>discount</code> and <code>final</code>, does its work, and returns one value. After the call, try adding <code>print(discount)</code> at the bottom — you'll get a <code>NameError</code>, and now you know exactly why: the bench is cleared; only the returned value survives, safely stored in <code>bill</code>.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">def price_after_discount(price, percent):
+    discount = price * percent / 100
+    final = price - discount
+    return final
+
+bill = price_after_discount(500, 10)
+print(f"You pay: {bill:.2f}")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">7.4 · P1</span><span class="pt">Predict: the cleared bench</span></div>
+        <p class="pd">Predict the full output — including what the final line does. Then run and read the report, last line first.</p>
+        <div class="pyrun" data-id="s4p1">
+          <textarea spellcheck="false">def bake():
+    temperature = 180
+    print("Baking at", temperature)
+
+bake()
+print(temperature)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>Baking at 180
+NameError: name 'temperature' is not defined</pre><p>Inside the call, the bench box exists and prints fine. The call ends, the bench is cleared, and the room has never heard of <code>temperature</code>. Want the value outside? Return it.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">7.4 · P2</span><span class="pt">Rescue the result</span></div>
+        <p class="pd">This function does the work and then lets the answer die on the bench — the program prints <code>None</code>. Add one line inside the function so the goal appears. (Don't touch the last two lines.)</p>
+        <div class="want">14</div>
+        <div class="pyrun" data-id="s4p2" data-expect="14">
+          <textarea spellcheck="false">def double(n):
+    answer = n * 2
+
+result = double(7)
+print(result)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def double(n):
+    answer = n * 2
+    return answer
+
+result = double(7)
+print(result)</pre><p><code>return answer</code> hands the bench box's contents back before the bench is cleared. The value crosses over; the box doesn't.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">7.5</span>
+      <h2>Your build — the refactor</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>Remember Unit 5's to-do list? It worked — and it was a tangle: one <code>while</code> loop doing four different jobs, with the adding code, the numbered-listing code and the removing code all elbowing each other inside one long chain of <code>elif</code>s. Adding a feature meant scrolling through everything; testing "remove" meant running the whole program. That tangle is what functions were invented for.</p>
+      <p>Today we <b>refactor</b> it — change the code's shape without changing what it does. Each job becomes a named recipe — <code>add_task</code>, <code>show_tasks</code>, <code>remove_task</code> — and the loop shrinks to a readable dispatcher: read a command, call the matching function. Same session, same output, byte for byte; that's the definition of a successful refactor. Then a second build from scratch: a menu-driven calculator where each operation is a small returning function.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">7.5 · P1</span><span class="pt">The to-do list, packaged</span></div>
+        <p class="pd">Below is the Unit 5 build, exactly as it stood. Refactor it into three functions — <code>add_task(tasks, name)</code>, <code>show_tasks(tasks)</code>, <code>remove_task(tasks, name)</code> — with the loop reduced to reading commands and calling them. The scripted session (add two tasks, show, remove one, show, quit) is locked; your refactor passes when the output is <i>identical</i> to the original's. Run the starter first to see the target behaviour.</p>
+        <div class="want">Command? add
+Task? buy milk
+Added: buy milk
+Command? add
+Task? call grandma
+Added: call grandma
+Command? show
+1. buy milk
+2. call grandma
+Command? remove
+Task? buy milk
+Removed: buy milk
+Command? show
+1. call grandma
+Command? quit
+Bye!</div>
+        <div class="pyrun" data-id="s5p1" data-stdin="add\nbuy milk\nadd\ncall grandma\nshow\nremove\nbuy milk\nshow\nquit" data-stdin-lock data-expect="Command? add\nTask? buy milk\nAdded: buy milk\nCommand? add\nTask? call grandma\nAdded: call grandma\nCommand? show\n1. buy milk\n2. call grandma\nCommand? remove\nTask? buy milk\nRemoved: buy milk\nCommand? show\n1. call grandma\nCommand? quit\nBye!">
+          <textarea spellcheck="false"># The Unit 5 version — works, but it's a tangle. Refactor me.
+tasks = []
+running = True
+while running:
+    command = input("Command? ")
+    if command == "add":
+        name = input("Task? ")
+        tasks.append(name)
+        print(f"Added: {name}")
+    elif command == "show":
+        if len(tasks) == 0:
+            print("Nothing to do!")
+        else:
+            n = 1
+            for task in tasks:
+                print(f"{n}. {task}")
+                n = n + 1
+    elif command == "remove":
+        name = input("Task? ")
+        if name in tasks:
+            tasks.remove(name)
+            print(f"Removed: {name}")
+        else:
+            print(f"Not found: {name}")
+    elif command == "quit":
+        running = False
+        print("Bye!")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def add_task(tasks, name):
+    tasks.append(name)
+    print(f"Added: {name}")
+
+def show_tasks(tasks):
+    if len(tasks) == 0:
+        print("Nothing to do!")
+    else:
+        n = 1
+        for task in tasks:
+            print(f"{n}. {task}")
+            n = n + 1
+
+def remove_task(tasks, name):
+    if name in tasks:
+        tasks.remove(name)
+        print(f"Removed: {name}")
+    else:
+        print(f"Not found: {name}")
+
+tasks = []
+running = True
+while running:
+    command = input("Command? ")
+    if command == "add":
+        add_task(tasks, input("Task? "))
+    elif command == "show":
+        show_tasks(tasks)
+    elif command == "remove":
+        remove_task(tasks, input("Task? "))
+    elif command == "quit":
+        running = False
+        print("Bye!")</pre><p>The loop now reads like the menu it is, and each job can be read — or fixed — on its own. One subtlety worth savouring: the functions receive the <i>same list</i>, not a copy (a list argument is another label on the same box, as Unit 5 showed), so <code>append</code> and <code>remove</code> inside the function change the list the loop sees.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">7.5 · P2</span><span class="pt">The menu calculator</span></div>
+        <p class="pd">From scratch this time. Write four returning functions — <code>add</code>, <code>subtract</code>, <code>multiply</code>, <code>divide</code> — each taking two numbers. Then: print the menu line shown in the goal, read the choice, read two numbers with <code>float(input(...))</code> (convert at the door), pick the right function with if/elif, and print the result with <code>:.2f</code>. Inputs fixed: choice 4, then 7 and 2.</p>
+        <div class="want">1 add  2 subtract  3 multiply  4 divide
+Choice? 4
+First number? 7
+Second number? 2
+Result: 3.50</div>
+        <div class="pyrun" data-id="s5p2" data-stdin="4\n7\n2" data-stdin-lock data-expect="1 add  2 subtract  3 multiply  4 divide\nChoice? 4\nFirst number? 7\nSecond number? 2\nResult: 3.50">
+          <textarea spellcheck="false"># define add, subtract, multiply, divide — then the menu below
+print("1 add  2 subtract  3 multiply  4 divide")
+choice = input("Choice? ")
+a = float(input("First number? "))
+b = float(input("Second number? "))
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def add(a, b):
+    return a + b
+
+def subtract(a, b):
+    return a - b
+
+def multiply(a, b):
+    return a * b
+
+def divide(a, b):
+    return a / b
+
+print("1 add  2 subtract  3 multiply  4 divide")
+choice = input("Choice? ")
+a = float(input("First number? "))
+b = float(input("Second number? "))
+if choice == "1":
+    result = add(a, b)
+elif choice == "2":
+    result = subtract(a, b)
+elif choice == "3":
+    result = multiply(a, b)
+else:
+    result = divide(a, b)
+print(f"Result: {result:.2f}")</pre><p>Because every operation <i>returns</i>, one <code>result</code> box and one formatted print serve all four paths — the payoff of 7.3. (Note <code>choice</code> stays a string: we compare it with <code>"4"</code>, we never do maths on it.)</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">7.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~12 min</span></span>
+      <p>The mixed set: defining, returning, defaults, and functions calling functions — with loops and conditions from earlier units woven in. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">The even test</span></div>
+        <p class="pd">Write <code>is_even(n)</code> that returns <code>True</code> or <code>False</code> using <code>%</code> (Unit 2's remainder, Unit 3's comparisons — a comparison already <i>is</i> a True/False value, so return it directly). The checking loop is written for you; don't change it.</p>
+        <div class="want">7 is odd
+10 is even</div>
+        <div class="pyrun" data-id="b1" data-expect="7 is odd\n10 is even">
+          <textarea spellcheck="false"># write is_even(n) here
+
+for number in [7, 10]:
+    if is_even(number):
+        print(f"{number} is even")
+    else:
+        print(f"{number} is odd")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def is_even(n):
+    return n % 2 == 0
+
+for number in [7, 10]:
+    if is_even(number):
+        print(f"{number} is even")
+    else:
+        print(f"{number} is odd")</pre><p>No <code>if</code> needed inside the function — <code>n % 2 == 0</code> already evaluates to <code>True</code> or <code>False</code>, so return it as-is. Functions returning True/False read beautifully at the call site: <code>if is_even(number)</code>.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">Tax, with a default</span></div>
+        <p class="pd">Write <code>price_with_tax(price, rate=5)</code> that returns the price plus <code>rate</code> percent tax. Print the result for 200 at the default rate, then for 200 at 18 percent — both through <code>:.2f</code>.</p>
+        <div class="want">210.00
+236.00</div>
+        <div class="pyrun" data-id="b2" data-expect="210.00\n236.00">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def price_with_tax(price, rate=5):
+    return price + price * rate / 100
+
+print(f"{price_with_tax(200):.2f}")
+print(f"{price_with_tax(200, 18):.2f}")</pre><p>The first call leans on the default; the second overrides it. The division makes the result a float either way, and <code>:.2f</code> dresses it as money — format at the exit.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">Functions calling functions</span></div>
+        <p class="pd">Keep <code>price_with_tax</code> from B2, and add <code>net_price(price, discount)</code>: subtract the discount, then hand the reduced price to <code>price_with_tax</code> (default rate) and return what it returns. Ask for the price and the discount with the prompts shown, convert with <code>float()</code>, and print the result. Inputs fixed: 500, then 100.</p>
+        <div class="want">Price? 500
+Discount? 100
+Net: 420.00</div>
+        <div class="pyrun" data-id="b3" data-stdin="500\n100" data-stdin-lock data-expect="Price? 500\nDiscount? 100\nNet: 420.00">
+          <textarea spellcheck="false">def price_with_tax(price, rate=5):
+    return price + price * rate / 100
+
+# write net_price(price, discount) here, then the asking lines
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def price_with_tax(price, rate=5):
+    return price + price * rate / 100
+
+def net_price(price, discount):
+    reduced = price - discount
+    return price_with_tax(reduced)
+
+price = float(input("Price? "))
+discount = float(input("Discount? "))
+print(f"Net: {net_price(price, discount):.2f}")</pre><p>500 − 100 → 400, plus 5% tax → 420.0. One recipe using another is the normal state of real code: small functions, each doing one job, composed like sentences.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — greatest of three</span></div>
+        <p class="pd">Write <code>max2(a, b)</code> that returns the larger of two values, then <code>max3(a, b, c)</code> that finds the largest of three <i>by calling <code>max2</code> twice</i> — first on <code>a</code> and <code>b</code>, then on that winner and <code>c</code>. Print <code>max3(7, 21, 9)</code> and <code>max3(4, 2, 3)</code>. (Yes, Python has a built-in <code>max</code> — today we're building the muscle, not reaching for the shelf.)</p>
+        <div class="want">21
+4</div>
+        <div class="pyrun" data-id="b4" data-expect="21\n4">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def max2(a, b):
+    if a > b:
+        return a
+    return b
+
+def max3(a, b, c):
+    return max2(max2(a, b), c)
+
+print(max3(7, 21, 9))
+print(max3(4, 2, 3))</pre><p>Two things to relish: <code>max2</code> needs no <code>else</code> — if the first <code>return</code> fires, the call is already over; and <code>max3</code> is one line because a call <i>becomes</i> its returned value, so calls nest like brackets. A tournament of two matches finds the champion of three.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 8 · Words &amp; text — strings properly</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">Text has been along for the whole ride — since <code>print("Hello, world")</code>, in fact — but we've never given it a session of its own. Time to take strings seriously: the everyday methods that clean, search and change text, splitting and joining, and formatting that obeys you. Your new functions will be doing the packaging.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>The Python Tutorial</b> — <i>§4.7 Defining Functions &amp; §4.8 More on Defining Functions</i>. <span class="why">The official treatment of def, return and default argument values — the same ground as 7.1–7.3, plus previews of what's ahead.</span> <a href="https://docs.python.org/3/tutorial/controlflow.html#defining-functions" rel="noopener">docs.python.org</a></li>
+      <li><b>Sweigart, A.</b> — <i>Automate the Boring Stuff with Python, ch. 3 (Functions)</i>. <span class="why">Parameters, return values, None and scope, hands-on — a fine second pass over this whole unit.</span> <a href="https://automatetheboringstuff.com/2e/chapter3/" rel="noopener">book</a></li>
+      <li><b>Python documentation</b> — <i>Built-in Functions</i>. <span class="why">The functions Python ships with — print(), input(), len(), max() and friends are all recipes someone else wrote. Skim to see how many you already know.</span> <a href="https://docs.python.org/3/library/functions.html" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>typing — Support for type hints</i>. <span class="why">The full story behind 7.4's aside, for the curious — read the first paragraph and bookmark the rest.</span> <a href="https://docs.python.org/3/library/typing.html" rel="noopener">docs.python.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit6.html"><span class="k">← Previous</span><span class="t">Unit 6 · Labeled data — dictionaries, tuples &amp; sets</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit8.html"><span class="k">Next →</span><span class="t">Unit 8 · Words &amp; text — strings properly</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 7 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"A program consists of ONLY these lines:  def greet(): print(\"Hi\")  — what does running it print?",
+   o:["Hi","Hi, twice","Nothing at all","An error — the function is never used"],
+   a:2,
+   e:"def writes the recipe card; calling is cooking. The body runs only when greet() is called — and nobody called it, so nothing prints and nothing is wrong."},
+  {q:"In  def greet(name):  and the call  greet(\"Ada\")  — which word is which?",
+   o:["name is the argument, \"Ada\" is the parameter","name is the parameter (the slot on the card), \"Ada\" is the argument (what you pass in)","Both are parameters","Both are arguments"],
+   a:1,
+   e:"The parameter is the slot in the def line; the argument is the value dropped into it at the call. Arguments fill parameter slots left to right, fresh on every call."},
+  {q:"def add(a, b): print(a + b)  — after  total = add(2, 3)  what is in the box total?",
+   o:["5","\"5\"","None","2 and 3"],
+   a:2,
+   e:"The 5 was printed — shown to a human and forgotten. The function has no return, so the call hands back None, and None is what gets stored. Seeing isn't keeping."},
+  {q:"What does return actually do?",
+   o:["Prints the value with nicer formatting","Hands the value back to the caller and ends the call immediately","Saves the value so it survives in every later function","Runs the function again from the top"],
+   a:1,
+   e:"return is the handover and the exit door in one: the call becomes the returned value at the call site, and no line after the return runs."},
+  {q:"Inside bake() we set  temperature = 180.  After bake() finishes, what does  print(temperature)  do?",
+   o:["Prints 180","Prints None","NameError — the box vanished when the call ended","Prints \"temperature\""],
+   a:2,
+   e:"Boxes made inside a function live on that call's workbench, and the bench is cleared the instant the call ends. Want the value outside? Give it back with return."},
+  {q:"def greet(name, punctuation=\"!\"): print(f\"Hello, {name}{punctuation}\")  — what does  greet(\"Ada\")  print?",
+   o:["An error — an argument is missing","Hello, Ada!","Hello, Ada","Hello, Ada?"],
+   a:1,
+   e:"punctuation has a default value, so callers may skip it and get \"!\" for free. Supplying a second argument — greet(\"Ada\", \"?\") — overrides the default for that call."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. Your logic now comes in named, reusable pieces."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 7.1 and 7.3 carry the load."
+           : " — worth another pass through the practice above before Unit 8.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Function","A named block of code — a recipe card in the cookbook. Defined once with def, cooked any number of times by calling it."],
+  ["def","The keyword that defines a function: name, parentheses, colon, indented body. Reading a def runs nothing — it only files the card."],
+  ["Calling","Running a function: its name with parentheses, greet(). Python jumps into the body, runs it, and comes back to the line after the call."],
+  ["Parameter","A slot on the recipe card — a name in the def line's parentheses. It becomes a local box holding whatever the caller passes in."],
+  ["Argument","The value passed in at the call — greet(\"Ada\"). Arguments fill parameter slots left to right, fresh on every call."],
+  ["return","The handover: hands a value back to the caller and ends the call immediately. The call itself becomes the returned value."],
+  ["None","Python's word for 'nothing here'. A function with no return hands back None — the tell-tale sign that something printed instead of returning."],
+  ["Default value","A fallback written into the def line — def greet(name, punctuation=\"!\"). Used when the caller skips that argument; overridden when they supply one."],
+  ["Local variable","A box created inside a function — parameters included. Lives on the call's workbench and vanishes when the call ends."],
+  ["Scope","Where a name can be seen. A function can read the room's boxes, but its own boxes are bench-only — invisible and gone after the call."],
+  ["Shadowing","A local box with the same name as an outer one hides it for the duration of the call. The outer box is untouched throughout."],
+  ["Type hint","Optional labels in a def line — def area(w: int, h: int) -> int. For humans and tools; Python doesn't enforce them."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

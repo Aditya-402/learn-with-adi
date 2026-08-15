@@ -1,0 +1,1148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Iterators &amp; the Iteration Protocol — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u17" data-lwa-title="Unit 17 · Iterators &amp; the iteration protocol">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Advanced — The subtle machinery · Unit 17</div>
+      <h1>Iterators &amp; the Iteration Protocol</h1>
+      <p class="standfirst">You have written <code style="font-size:.85em">for</code> loops since Unit 4 without ever asking what <code style="font-size:.85em">for</code> <i>does</i>. It turns out to be two function calls in a trench coat — and once you see them, you can build a class of your own that Python's own <code style="font-size:.85em">for</code> loop will happily walk through. That is the payoff of four units of classes, cashed in.</p>
+      <div class="facts">
+        <div><b>One session</b>~50 min</div>
+        <div><b>5 concepts</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 13–16 — classes &amp; dunder methods</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">17.1 What for really does</a>
+    <a href="#s2">17.2 Iterators are one-shot</a>
+    <a href="#s3">17.3 enumerate &amp; zip</a>
+    <a href="#s4">17.4 Writing your own</a>
+    <a href="#s5">17.5 Build: three iterators</a>
+    <a href="#s6">17.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 17.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>Welcome to Advanced</b>Beginner and Intermediate are behind you — Units 1–16, all of them, and especially the four class units. From here on these notes stop teaching new syntax and start showing you the machinery that was running underneath all along.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm as always: each concept is a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit17.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>Bring your dunders</b>Unit 15 taught that built-in functions are polite knockers: <code>len(x)</code> knocks on <code>__len__</code>, <code>print(x)</code> knocks on <code>__str__</code>. This unit is that idea's finest hour — two more knocks and your class joins the language.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">17.1</span>
+      <h2>What <code>for</code> really does</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> <code>for item in things:</code> has worked on lists, strings, dictionaries, ranges, files. Five different kinds of thing, one loop. Either <code>for</code> contains five special cases — or there is one agreement that all five signed. Which is it?</p>
+      <p><b>The idea, in plain words.</b> One agreement, and it is refreshingly small. Think of a bookshelf and a bookmark.</p>
+      <ul class="plain">
+        <li>The <b>iterable</b> is the <b>bookshelf</b> — the thing that holds the items. A list, a string, a dictionary. It has no idea where you are.</li>
+        <li>The <b>iterator</b> is a <b>bookmark</b> — a small separate object whose entire job is remembering <i>which item is next</i>.</li>
+        <li><code>iter(shelf)</code> asks the bookshelf for a <b>fresh bookmark</b>, parked before the first item.</li>
+        <li><code>next(bookmark)</code> reads out one item and shuffles the bookmark forward one slot.</li>
+        <li>When the bookmark runs off the end, <code>next()</code> raises <code>StopIteration</code> — the polite signal for "shelf's empty, we're done".</li>
+      </ul>
+      <p>And that is the whole of <code>for</code>. When you write <code>for n in nums:</code>, Python calls <code>iter(nums)</code> once to get a bookmark, then calls <code>next()</code> on that bookmark over and over, handing you each value, until <code>StopIteration</code> arrives — at which point the loop ends quietly. The <code>StopIteration</code> never reaches you; <code>for</code> swallows it. That pair of functions is called the <b>iteration protocol</b>, and "protocol" here just means "the agreement everything loopable signed".</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — be the for loop</div>
+      <div class="m">it = iter([10, 20, 30])
+print(next(it))
+print(next(it))
+print(next(it))</div>
+      <p><b>Line 1:</b> the list is the shelf. <code>iter()</code> hands back a bookmark object and stores it in the box <code>it</code>. Nothing has been read yet; the bookmark sits before item one.</p>
+      <p><b>Line 2:</b> <code>next(it)</code> reads <b>10</b> and moves the bookmark to slot 2. Printed bare — <code>10</code>, no quotes, because it is the actual value out of the list.</p>
+      <p><b>Line 3:</b> reads <b>20</b>, bookmark moves to slot 3. <b>Line 4:</b> reads <b>30</b>, bookmark moves past the end.</p>
+      <div class="m">10
+20
+30</div>
+      <p>A fourth <code>next(it)</code> now has nothing to read, so it raises <code>StopIteration</code>. In a real <code>for</code> loop you would never see that — the loop catches it and stops. Hand-driving like this, you see it raw. That is the entire mechanism you have been using for fourteen units.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 250" role="img" aria-label="A bookshelf of three items with a bookmark moving forward after each next() call">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">THE BOOKSHELF DOESN'T MOVE — THE BOOKMARK DOES</text>
+
+        <text x="40" y="62" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#3d3170">it = iter([10, 20, 30])</text>
+        <polygon points="55,76 71,76 63,90" fill="#a35a33"/>
+        <rect x="40" y="96" width="46" height="42" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="63" y="123" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">10</text>
+        <rect x="92" y="96" width="46" height="42" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="115" y="123" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">20</text>
+        <rect x="144" y="96" width="46" height="42" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="167" y="123" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">30</text>
+        <line x1="40" y1="146" x2="190" y2="146" stroke="#e3e6ee" stroke-width="3"/>
+        <text x="115" y="170" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">fresh bookmark, nothing read yet</text>
+
+        <text x="330" y="62" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#3d3170">next(it)  →  10</text>
+        <polygon points="397,76 413,76 405,90" fill="#a35a33"/>
+        <rect x="330" y="96" width="46" height="42" rx="8" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="353" y="123" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#6b7585">10</text>
+        <rect x="382" y="96" width="46" height="42" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="405" y="123" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">20</text>
+        <rect x="434" y="96" width="46" height="42" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="457" y="123" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">30</text>
+        <line x1="330" y1="146" x2="480" y2="146" stroke="#e3e6ee" stroke-width="3"/>
+        <text x="405" y="170" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">one read, one step forward</text>
+
+        <text x="620" y="62" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#3d3170">after three next() calls</text>
+        <polygon points="777,76 793,76 785,90" fill="#a35a33"/>
+        <rect x="620" y="96" width="46" height="42" rx="8" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="643" y="123" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#6b7585">10</text>
+        <rect x="672" y="96" width="46" height="42" rx="8" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="695" y="123" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#6b7585">20</text>
+        <rect x="724" y="96" width="46" height="42" rx="8" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="747" y="123" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#6b7585">30</text>
+        <line x1="620" y1="146" x2="770" y2="146" stroke="#e3e6ee" stroke-width="3"/>
+        <text x="700" y="170" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">past the end — next() now raises StopIteration</text>
+
+        <rect x="40" y="196" width="780" height="38" rx="9" fill="#23262e"/>
+        <text x="58" y="221" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#e8e9ee">for n in nums:   ≡   it = iter(nums);  then next(it), next(it), … until StopIteration</text>
+      </svg>
+      <div class="figcap">Fig. 1 — The shelf is unchanged throughout; only the bookmark's position changes. Grey items are behind the bookmark — read already, and unreachable from this bookmark forever.</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      <code>for</code> is not magic and not a special case per type. It calls <code>iter()</code> once to get an iterator, then <code>next()</code> repeatedly until <code>StopIteration</code>. Everything loopable in Python — every single thing — plays exactly this game.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> drive a list by hand, the way a <code>for</code> loop would. <b>Thinking:</b> one <code>iter()</code> to get the bookmark, then one <code>next()</code> per item. Watch the values come out bare — these are the real list values, not text.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">it = iter([10, 20, 30])
+print(next(it))
+print(next(it))
+print(next(it))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">17.1 · P1</span><span class="pt">Your own bookmark</span></div>
+        <p class="pd">Ask the list <code>colours</code> for an iterator, then read the first two items with <code>next()</code> — no loop allowed. Match the goal exactly.</p>
+        <div class="want">red
+green</div>
+        <div class="pyrun" data-id="s1p1" data-expect="red\ngreen">
+          <textarea spellcheck="false">colours = ["red", "green", "blue"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>colours = ["red", "green", "blue"]
+it = iter(colours)
+print(next(it))
+print(next(it))</pre><p>The third item is still on the shelf; the bookmark just never got there. Nothing was consumed that you didn't ask for.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">17.1 · P2</span><span class="pt">Predict: one next() too many</span></div>
+        <p class="pd">A string is a shelf of characters. Predict all four lines on paper — including what the fourth <code>next()</code> does — then run. No check on this one; the ending is the point.</p>
+        <div class="pyrun" data-id="s1p2">
+          <textarea spellcheck="false">it = iter("hi")
+print(next(it))
+print(next(it))
+print(next(it))</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>h
+i
+StopIteration</pre><p>Two characters, two successful reads, and then the bookmark is past the end — so <code>next()</code> raises <code>StopIteration</code> and the program stops. That is not a bug and not your fault: it is the agreed signal for "no more items". A <code>for</code> loop would have caught it and simply finished.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">17.1 · P3</span><span class="pt">Stretch — two bookmarks, one shelf</span></div>
+        <p class="pd">Call <code>iter()</code> twice on the same list to get two independent bookmarks, <code>a</code> and <code>b</code>. Advance <code>a</code> once, then <code>b</code> once, then <code>a</code> again — and predict the three numbers before you run. Goal below.</p>
+        <div class="want">10
+10
+20</div>
+        <div class="pyrun" data-id="s1p3" data-expect="10\n10\n20">
+          <textarea spellcheck="false">nums = [10, 20, 30]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>nums = [10, 20, 30]
+a = iter(nums)
+b = iter(nums)
+print(next(a))
+print(next(b))
+print(next(a))</pre><p>Each <code>iter()</code> call mints a <i>fresh</i> bookmark starting at the beginning — which is exactly why you can run two <code>for</code> loops over the same list without them tripping over each other. Remember this when 17.2 asks why the same trick fails on an iterator.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 17.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">17.2</span>
+      <h2>Iterators are one-shot</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> You loop over something, everything is fine. You loop over the same thing again, five lines later — and this time it prints nothing at all. No error, no warning, no crash. Just silence. This bug has cost more evenings than it has any right to.</p>
+      <p><b>The idea, in plain words.</b> The bookmark only moves forward. It has no rewind button, and it never gets one. Once a bookmark is sitting past the last item, every further <code>next()</code> raises <code>StopIteration</code> immediately — so a <code>for</code> loop over an exhausted iterator does zero rounds and ends without complaint. An iterator is <b>one-shot</b>: use it, and it is spent.</p>
+      <p>Lists don't behave this way, and now you can say exactly why. A list is a bookshelf, not a bookmark. Every <code>for</code> loop over a list starts by calling <code>iter(the_list)</code>, which mints a brand-new bookmark at position zero. Loop the same list ten times and you get ten fresh bookmarks. Loop the same <i>iterator</i> twice and the second loop finds a bookmark that has already run out of shelf.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the vanishing second loop</div>
+      <div class="m">it = iter([1, 2, 3])
+for n in it:
+    print(n)
+for n in it:
+    print("again", n)
+print("done")</div>
+      <p><b>Loop 1:</b> <code>for</code> calls <code>iter(it)</code> — and an iterator asked for an iterator hands back <i>itself</i>, the same bookmark. Then three <code>next()</code> calls print 1, 2, 3, and the fourth raises <code>StopIteration</code>. Loop ends. The bookmark is now past the end.</p>
+      <p><b>Loop 2:</b> <code>for</code> calls <code>iter(it)</code> again, gets the <i>same</i> exhausted bookmark, calls <code>next()</code> once — <code>StopIteration</code> straight away. Zero rounds. The body never runs. Not one <code>again</code> line appears.</p>
+      <div class="m">1
+2
+3
+done</div>
+      <p>Nothing went wrong. Nothing was reported. The second loop simply had nothing left to do, and Python saw no reason to mention it.</p>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>This is the one to carry out of the unit. <b>An empty second loop is not a bug in your loop — it is proof that you were looping over an iterator, not a collection.</b> The symptom is always the same: the data "vanishes" after first use. It shows up most often with <code>zip()</code> and <code>enumerate()</code> (next section — both hand back iterators), and with <code>sum()</code>, <code>max()</code> or <code>list()</code>, which quietly drain an iterator to the last item as part of doing their job. If you need the values twice, either build a real list once with <code>list(...)</code> and loop over <i>that</i>, or call <code>iter()</code> again on the original shelf for a fresh bookmark. What you must never do is expect a spent bookmark to rewind.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> show the same three values surviving a second pass — and then not surviving one. <b>Thinking:</b> loop the <i>list</i> twice (two fresh bookmarks, works), then loop an <i>iterator</i> twice (one spent bookmark, silence). Same data, opposite outcomes.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">nums = [1, 2, 3]
+print("list, pass 1:", list(nums))
+print("list, pass 2:", list(nums))
+
+it = iter(nums)
+print("iterator, pass 1:", list(it))
+print("iterator, pass 2:", list(it))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">17.2 · P1</span><span class="pt">Predict: where did the second loop go?</span></div>
+        <p class="pd">Write down, line by line, exactly what you expect on screen — how many <code>again</code> lines, and why. Then run and compare. Getting this one wrong is educational; getting it right means the bookmark picture has landed.</p>
+        <div class="pyrun" data-id="s2p1">
+          <textarea spellcheck="false">it = iter([1, 2, 3])
+for n in it:
+    print(n)
+for n in it:
+    print("again", n)
+print("done")</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>1
+2
+3
+done</pre><p>Zero <code>again</code> lines. The first loop drained the bookmark; the second one asked for a value, got <code>StopIteration</code> immediately, and ended before its body ever ran. Silent, and completely correct.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">17.2 · P2</span><span class="pt">Make the second pass work</span></div>
+        <p class="pd">Repair the program below with a <b>one-word</b> change so both passes actually print. Do not add a second <code>iter()</code> call — think about what a <code>for</code> loop does for you automatically when you hand it a list.</p>
+        <div class="want">1
+2
+3
+again
+1
+2
+3</div>
+        <div class="pyrun" data-id="s2p2" data-expect="1\n2\n3\nagain\n1\n2\n3">
+          <textarea spellcheck="false">nums = [1, 2, 3]
+it = iter(nums)
+for n in it:
+    print(n)
+print("again")
+for n in it:
+    print(n)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>nums = [1, 2, 3]
+for n in nums:
+    print(n)
+print("again")
+for n in nums:
+    print(n)</pre><p>Loop the shelf, not the bookmark. Each <code>for</code> silently calls <code>iter(nums)</code> and gets its own fresh bookmark — which is why lists have always felt so well-behaved.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">17.2 · P3</span><span class="pt">Stretch — the sum that ate the data</span></div>
+        <p class="pd">This one prints <code>60</code> and then an empty list, because <code>sum()</code> drained the iterator on its way to the answer. Fix it so the second line shows the real prices — change as little as you can.</p>
+        <div class="want">60
+[10, 20, 30]</div>
+        <div class="pyrun" data-id="s2p3" data-expect="60\n[10, 20, 30]">
+          <textarea spellcheck="false">prices = [10, 20, 30]
+it = iter(prices)
+print(sum(it))
+print(list(it))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>prices = [10, 20, 30]
+print(sum(prices))
+print(list(prices))</pre><p><code>sum()</code>, <code>max()</code>, <code>list()</code> and friends all consume an iterator completely — that is how they compute anything. Hand them the list itself and each one gets a fresh bookmark, so nothing is stolen from the next line. This exact bug, dressed as a <code>zip()</code>, is coming in 17.3.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 17.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">17.3</span>
+      <h2><code>enumerate</code> &amp; <code>zip</code>, demystified</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Since Unit 5 you have been hand-building position numbers: a <code>count</code> box, <code>count = count + 1</code> at the bottom of the loop, and a <code>count + 1</code> in the f-string because humans start lists at one and Python starts at zero. Three lines of ceremony to print "1. idli". Python has had a one-word answer the whole time — and now you have the background to understand what it actually hands back.</p>
+      <p><b>The idea, in plain words.</b> Two built-ins, both of which return <b>iterators</b> — bookmarks, not shelves.</p>
+      <ul class="plain">
+        <li><code>enumerate(items)</code> walks <code>items</code> and hands out a <b>pair</b> each time: the position and the item. <code>enumerate(menu)</code> gives <code>(0, 'idli')</code>, then <code>(1, 'dosa')</code>, and so on. Add <code>start=1</code> — <code>enumerate(menu, start=1)</code> — and the numbering begins at one. That is the counter box you have been maintaining by hand for twelve units, retired in a single argument.</li>
+        <li><code>zip(a, b)</code> walks two shelves side by side and hands out a pair from each round: <code>('Ada', 90)</code>, then <code>('Ben', 85)</code>. It <b>stops at the shortest</b> — the moment either shelf runs out, <code>zip</code> is done, and the leftovers on the longer one are silently ignored. Give it three lists and it hands out triples; the shortest rule still holds.</li>
+      </ul>
+      <p>Both are <b>lazy</b>: they compute nothing until something asks for the next item. That is a gift on huge data — you never build a giant list you only walk once — and it is exactly the trap 17.2 warned about. If you want to <i>see</i> what one contains, wrap it in <code>list(...)</code>: <code>list(enumerate(menu))</code> shows you the pairs. Printing the raw <code>enumerate</code> object shows you nothing useful, just a type name and a memory address — the bookmark, not the books.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — looking inside the lazy ones</div>
+      <div class="m">menu = ["idli", "dosa", "vada"]
+print(list(enumerate(menu)))
+print(list(enumerate(menu, start=1)))
+for n, item in enumerate(menu, start=1):
+    print(f"{n}. {item}")</div>
+      <p><b>Line 2:</b> <code>enumerate</code> returns a bookmark; <code>list()</code> drains it and collects every pair it produced. Pairs print in round brackets, and the text keeps its quotes because you are looking at the <i>contents</i> of a list, not at printed text.</p>
+      <p><b>Line 3:</b> the same walk, numbered from one instead of zero.</p>
+      <p><b>Line 4:</b> the loop takes each pair and unpacks it into two boxes at once — <code>n</code> gets the number, <code>item</code> gets the string — which is why <code>for n, item in ...</code> has two names before the <code>in</code>.</p>
+      <div class="m">[(0, 'idli'), (1, 'dosa'), (2, 'vada')]
+[(1, 'idli'), (2, 'dosa'), (3, 'vada')]
+1. idli
+2. dosa
+3. vada</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>enumerate(menu)</code> is <b>not</b> a list of pairs — it is a bookmark that will <i>produce</i> pairs on demand. Two consequences bite beginners. First, you cannot index it: <code>enumerate(menu)[0]</code> is a <code>TypeError</code>, because a bookmark has no slots to index. Second, and worse, storing it in a box does not freeze the data: <code>pairs = zip(names, scores)</code> followed by <code>list(pairs)</code> and then a <code>for</code> over <code>pairs</code> gives you a full list and then absolute silence — the classic vanishing bug from 17.2, wearing a different hat. If you need the values more than once, say <code>pairs = list(zip(names, scores))</code> and keep a real shelf.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a numbered menu and a paired scoreboard, the grown-up way. <b>Thinking:</b> <code>start=1</code> removes the counter box entirely; <code>zip</code> removes the index arithmetic that used to pair two lists. Compare this to how you would have written it in Unit 8.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">menu = ["idli", "dosa", "vada"]
+for n, item in enumerate(menu, start=1):
+    print(f"{n}. {item}")
+
+names = ["Ada", "Ben"]
+scores = [90, 85]
+for name, score in zip(names, scores):
+    print(name, "scored", score)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">17.3 · P1</span><span class="pt">The numbering you've earned</span></div>
+        <p class="pd">Print the menu as a numbered list starting at 1 — using <code>enumerate</code> with <code>start=1</code> and no counter box anywhere. One loop, one f-string.</p>
+        <div class="want">1. idli
+2. dosa
+3. vada</div>
+        <div class="pyrun" data-id="s3p1" data-expect="1. idli\n2. dosa\n3. vada">
+          <textarea spellcheck="false">menu = ["idli", "dosa", "vada"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>menu = ["idli", "dosa", "vada"]
+for n, item in enumerate(menu, start=1):
+    print(f"{n}. {item}")</pre><p>Twelve units of <code>count = count + 1</code>, replaced by one keyword argument. That ache you felt back in Unit 2's P4 — this is the last of it.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">17.3 · P2</span><span class="pt">Look inside the lazy one</span></div>
+        <p class="pd">Make the pairs visible. Print <code>enumerate(letters)</code> in a way that shows the actual pairs rather than a memory address — one <code>print</code>, one wrapper.</p>
+        <div class="want">[(0, 'a'), (1, 'b'), (2, 'c')]</div>
+        <div class="pyrun" data-id="s3p2" data-expect="[(0, 'a'), (1, 'b'), (2, 'c')]">
+          <textarea spellcheck="false">letters = ["a", "b", "c"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>letters = ["a", "b", "c"]
+print(list(enumerate(letters)))</pre><p><code>list()</code> drains the bookmark and keeps everything it produced. Use this whenever you want to <i>see</i> a lazy thing — and remember the bookmark is spent afterwards.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">17.3 · P3</span><span class="pt">zip stops at the shortest</span></div>
+        <p class="pd">Three names, two scores. Loop them together with <code>zip</code>, print each pairing, then print the line about Cara. Notice what <code>zip</code> does about the mismatch: nothing, quietly.</p>
+        <div class="want">Ada 90
+Ben 85
+Cara got left out</div>
+        <div class="pyrun" data-id="s3p3" data-expect="Ada 90\nBen 85\nCara got left out">
+          <textarea spellcheck="false">names = ["Ada", "Ben", "Cara"]
+scores = [90, 85]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>names = ["Ada", "Ben", "Cara"]
+scores = [90, 85]
+for name, score in zip(names, scores):
+    print(name, score)
+print("Cara got left out")</pre><p>No error, no warning — <code>zip</code> ends the moment either shelf runs dry. Convenient when you mean it, and a silent data-loss bug when you don't, so check your lengths when it matters.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">17.3 · P4</span><span class="pt">Stretch — number the pairs</span></div>
+        <p class="pd">Combine both: <code>zip</code> the names with the scores, wrap the whole thing in <code>enumerate(..., start=1)</code>, and print a numbered scoreboard. The loop needs three names before the <code>in</code> — and the pair from <code>zip</code> gets its own brackets: <code>for n, (name, score) in ...</code>.</p>
+        <div class="want">1. Ada: 90
+2. Ben: 85
+3. Cara: 78</div>
+        <div class="pyrun" data-id="s3p4" data-expect="1. Ada: 90\n2. Ben: 85\n3. Cara: 78">
+          <textarea spellcheck="false">names = ["Ada", "Ben", "Cara"]
+scores = [90, 85, 78]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>names = ["Ada", "Ben", "Cara"]
+scores = [90, 85, 78]
+for n, (name, score) in enumerate(zip(names, scores), start=1):
+    print(f"{n}. {name}: {score}")</pre><p>Two bookmarks stacked: <code>zip</code> produces pairs, <code>enumerate</code> numbers whatever it is given. The inner brackets tell Python "this second thing is itself a pair — take it apart too".</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 17.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">17.4</span>
+      <h2>Writing your own — the Countdown class</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Everything so far has been Python's own objects playing Python's own game. But you have spent four units building classes. If the iteration protocol really is just an agreement — two functions and a signal — then there is nothing stopping <i>your</i> class from signing it. And if it does, <code>for</code> will loop over your object without being told a thing about it.</p>
+      <p><b>The idea, in plain words.</b> Unit 15's lesson was that built-in functions are polite knockers: <code>len(x)</code> knocks on <code>x.__len__()</code>, <code>print(x)</code> knocks on <code>x.__str__()</code>. Two more knocks complete the picture:</p>
+      <ul class="plain">
+        <li><code>iter(x)</code> knocks on <code>x.__iter__()</code> — "give me a bookmark". Your object answers <code>return self</code>: <i>I am my own bookmark, I'll keep my own place.</i></li>
+        <li><code>next(x)</code> knocks on <code>x.__next__()</code> — "one item, please". Your method returns the next value, updating whatever it stores to remember where it is.</li>
+        <li>When there is nothing left, <code>__next__</code> says <code>raise StopIteration</code> — the agreed way to say "shelf's empty". <code>raise</code> means "signal this condition"; the <code>for</code> loop hears it and stops.</li>
+      </ul>
+      <p>Define those two methods and your class is, as far as Python is concerned, a first-class citizen of the loop. Not simulated. Not special-cased. The same machinery that walks lists and files and dictionaries will walk your object, because it is asking the same two questions and your object is answering them.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — a class that counts down</div>
+      <div class="m">class Countdown:
+    def __init__(self, start):
+        self.n = start
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.n &lt;= 0:
+            raise StopIteration
+        value = self.n
+        self.n -= 1
+        return value
+
+for n in Countdown(3):
+    print(n)
+print("Liftoff!")</div>
+      <p><b>The cookie:</b> <code>Countdown(3)</code> runs <code>__init__</code> and bakes one object whose <code>self.n</code> holds <b>3</b>. That box is the object's memory of where the bookmark sits.</p>
+      <p><b>The loop starts:</b> <code>for</code> calls <code>iter()</code> on it, which knocks on <code>__iter__</code>, which returns <code>self</code> — the object hands back itself as its own bookmark.</p>
+      <p><b>Round 1:</b> <code>for</code> calls <code>next()</code> → <code>__next__</code> runs. <code>self.n</code> is 3, not ≤ 0, so: remember 3 in <code>value</code>, drop <code>self.n</code> to 2, return 3. Printed: <b>3</b>.</p>
+      <p><b>Rounds 2 and 3:</b> the same, returning 2 then 1, leaving <code>self.n</code> at 0.</p>
+      <p><b>Round 4:</b> <code>self.n</code> is 0, so <code>raise StopIteration</code>. The <code>for</code> loop hears the signal, stops without fuss, and execution moves to the line after the loop.</p>
+      <div class="m">3
+2
+1
+Liftoff!</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 270" role="img" aria-label="The for loop calling __iter__ once and __next__ repeatedly on a Countdown object until StopIteration">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">WHO KNOCKS ON WHAT — for n in Countdown(3)</text>
+
+        <rect x="30" y="52" width="200" height="52" rx="10" fill="#23262e"/>
+        <text x="130" y="76" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#e8e9ee">for n in Countdown(3):</text>
+        <text x="130" y="94" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#9aa1b1">Python's loop machinery</text>
+
+        <line x1="230" y1="66" x2="316" y2="66" stroke="#5b4b9e" stroke-width="1.6"/>
+        <polygon points="316,62 326,66 316,70" fill="#5b4b9e"/>
+        <text x="273" y="58" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="10.5" fill="#3d3170">calls iter( ) once</text>
+
+        <rect x="330" y="44" width="216" height="46" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="438" y="63" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">__iter__(self)</text>
+        <text x="438" y="80" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">return self</text>
+
+        <line x1="230" y1="92" x2="316" y2="128" stroke="#2b7a78" stroke-width="1.6"/>
+        <polygon points="311,120 322,131 307,131" fill="#2b7a78"/>
+        <text x="248" y="122" font-family="Segoe UI,system-ui,sans-serif" font-size="10.5" fill="#1d5654">then next( ), again and again</text>
+
+        <rect x="330" y="118" width="216" height="70" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="438" y="139" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">__next__(self)</text>
+        <text x="438" y="157" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">self.n still &gt; 0 ?</text>
+        <text x="438" y="175" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">return it, step down</text>
+
+        <line x1="546" y1="140" x2="632" y2="140" stroke="#2b7a78" stroke-width="1.6"/>
+        <polygon points="632,136 642,140 632,144" fill="#2b7a78"/>
+        <rect x="646" y="118" width="180" height="42" rx="9" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="736" y="144" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">3 … 2 … 1</text>
+
+        <line x1="546" y1="176" x2="632" y2="212" stroke="#a35a33" stroke-width="1.6" stroke-dasharray="5 4"/>
+        <polygon points="627,204 638,215 623,215" fill="#a35a33"/>
+        <rect x="646" y="196" width="180" height="42" rx="9" fill="#f7ebe4" stroke="#a35a33" stroke-width="1.5"/>
+        <text x="736" y="222" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" font-weight="700" fill="#7c4324">StopIteration</text>
+        <text x="736" y="256" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#7c4324">caught by for — loop ends quietly</text>
+
+        <text x="30" y="240" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">Your class answers both knocks — so Python's own loop walks your object,</text>
+        <text x="30" y="258" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">with no special case anywhere. That is the whole trick.</text>
+      </svg>
+      <div class="figcap">Fig. 2 — One knock on <code>__iter__</code>, then a knock on <code>__next__</code> per round. The dashed arrow is the exit: <code>StopIteration</code> travels back up to the loop, which absorbs it and moves on.</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      Define <code>__iter__</code> (return the bookmark — usually <code>self</code>) and <code>__next__</code> (return the next value, or <code>raise StopIteration</code>), and your own class plugs directly into Python's <code>for</code> loop. This is what the last four units were building towards: not a class that merely holds data, but a class the <b>language itself</b> knows how to use.
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>raise StopIteration</code> looks alarming — it has the shape of an error. It isn't one. It is a message with a fixed meaning, and the <code>for</code> loop is its intended recipient; nobody upstream ever hears it. The other half of the confusion is <code>__iter__</code> returning <code>self</code>. Why would an object hand back itself? Because for a class like this the shelf <i>and</i> the bookmark are the same object — <code>self.n</code> is the position. That is also why a <code>Countdown</code> is one-shot exactly like the iterators in 17.2: loop it twice and the second loop gets nothing, because <code>self.n</code> is already 0.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> the full <code>Countdown</code>, running under a plain <code>for</code> loop. <b>Thinking:</b> <code>__init__</code> sets the starting position; <code>__iter__</code> hands back the bookmark; <code>__next__</code> checks whether anything is left, returns the current value, and steps down. Read it twice — every line of 17.5 is built from this shape.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">class Countdown:
+    def __init__(self, start):
+        self.n = start
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.n &lt;= 0:
+            raise StopIteration
+        value = self.n
+        self.n -= 1
+        return value
+
+for n in Countdown(3):
+    print(n)
+print("Liftoff!")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">17.4 · P1</span><span class="pt">The missing knock</span></div>
+        <p class="pd">This class has <code>__init__</code> and <code>__next__</code> but no <code>__iter__</code>, so <code>for</code> refuses it: <code>TypeError: 'Countdown' object is not iterable</code>. Add the two lines that answer the first knock.</p>
+        <div class="want">3
+2
+1
+Liftoff!</div>
+        <div class="pyrun" data-id="s4p1" data-expect="3\n2\n1\nLiftoff!">
+          <textarea spellcheck="false">class Countdown:
+    def __init__(self, start):
+        self.n = start
+
+    def __next__(self):
+        if self.n &lt;= 0:
+            raise StopIteration
+        value = self.n
+        self.n -= 1
+        return value
+
+for n in Countdown(3):
+    print(n)
+print("Liftoff!")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>    def __iter__(self):
+        return self</pre><p>Insert it between <code>__init__</code> and <code>__next__</code>, indented one level inside the class. Without it, <code>iter()</code> knocks and nobody answers — and "not iterable" is Python's way of saying exactly that.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">17.4 · P2</span><span class="pt">The missing brakes</span></div>
+        <p class="pd">Here <code>__next__</code> never says stop, so this countdown sails past zero into the negatives forever. Add the two lines that raise <code>StopIteration</code> when there is nothing left, so it halts at 1.</p>
+        <div class="want">3
+2
+1
+Liftoff!</div>
+        <div class="pyrun" data-id="s4p2" data-expect="3\n2\n1\nLiftoff!">
+          <textarea spellcheck="false">class Countdown:
+    def __init__(self, start):
+        self.n = start
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        value = self.n
+        self.n -= 1
+        return value
+
+for n in Countdown(3):
+    print(n)
+print("Liftoff!")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>    def __next__(self):
+        if self.n &lt;= 0:
+            raise StopIteration
+        value = self.n
+        self.n -= 1
+        return value</pre><p>The guard goes <i>first</i>, before anything is read or changed. An iterator with no <code>StopIteration</code> is an endless loop with extra steps — which, as Unit 18 will show, is occasionally exactly what you want.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">17.4 · P3</span><span class="pt">Stretch — your class is one-shot too</span></div>
+        <p class="pd">Store one <code>Countdown(3)</code> in a box and drain it with <code>list()</code> <b>twice</b>. Predict both lines before running, then explain the second one in terms of <code>self.n</code>.</p>
+        <div class="want">[3, 2, 1]
+[]</div>
+        <div class="pyrun" data-id="s4p3" data-expect="[3, 2, 1]\n[]">
+          <textarea spellcheck="false">class Countdown:
+    def __init__(self, start):
+        self.n = start
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.n &lt;= 0:
+            raise StopIteration
+        value = self.n
+        self.n -= 1
+        return value
+
+c = Countdown(3)
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>c = Countdown(3)
+print(list(c))
+print(list(c))</pre><p>The first <code>list()</code> drove <code>self.n</code> down to 0; the second one asks for an item, hits the guard immediately, and collects nothing. Your class inherited the one-shot behaviour of 17.2 for free — because it works the same way underneath. Want a second countdown? Build a second object: <code>Countdown(3)</code> again.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 17.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">17.5</span>
+      <h2>Your build — three iterators of your own</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>Three programs, each one a class that Python's own machinery agrees to walk. First <code>Countdown</code> driven three different ways — proof that a <code>for</code> loop, a hand-driven <code>next()</code> and a <code>list()</code> are three doors into the same room. Then two classes written from scratch, the same shape with different arithmetic inside. Copy the <code>Countdown</code> skeleton and change what <code>__next__</code> does; that is genuinely all there is to it.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">17.5 · P1</span><span class="pt">Countdown, three ways</span></div>
+        <p class="pd">The class is written for you. Below it, drive it three ways: a <code>for</code> loop over <code>Countdown(3)</code>; a fresh <code>Countdown(2)</code> hand-driven with two <code>next()</code> calls; and <code>list(Countdown(4))</code>. Each way needs its own object — remember 17.4's P3.</p>
+        <div class="want">3
+2
+1
+2
+1
+[4, 3, 2, 1]</div>
+        <div class="pyrun" data-id="s5p1" data-expect="3\n2\n1\n2\n1\n[4, 3, 2, 1]">
+          <textarea spellcheck="false">class Countdown:
+    def __init__(self, start):
+        self.n = start
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.n &lt;= 0:
+            raise StopIteration
+        value = self.n
+        self.n -= 1
+        return value
+
+# 1. a for loop over Countdown(3)
+
+# 2. a hand-driven Countdown(2), two next() calls
+
+# 3. list(Countdown(4))
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>for n in Countdown(3):
+    print(n)
+
+it = Countdown(2)
+print(next(it))
+print(next(it))
+
+print(list(Countdown(4)))</pre><p>Three doors, one room. The <code>for</code> loop and <code>list()</code> both do the <code>iter()</code>-then-<code>next()</code> dance for you; the middle block is you doing it by hand. Your class cannot tell the difference, and doesn't need to.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">17.5 · P2</span><span class="pt">Evens(limit)</span></div>
+        <p class="pd">Write an <code>Evens</code> class that produces the even numbers from 2 up to and including <code>limit</code>. Same skeleton as <code>Countdown</code>: <code>__init__</code> remembers where you are, <code>__iter__</code> returns <code>self</code>, <code>__next__</code> steps by 2 and raises <code>StopIteration</code> once you pass the limit.</p>
+        <div class="want">2
+4
+6
+[2, 4, 6, 8, 10]</div>
+        <div class="pyrun" data-id="s5p2" data-expect="2\n4\n6\n[2, 4, 6, 8, 10]">
+          <textarea spellcheck="false">class Evens:
+    def __init__(self, limit):
+        self.limit = limit
+        self.current = 0
+
+    # __iter__ and __next__ go here
+
+for n in Evens(6):
+    print(n)
+print(list(Evens(10)))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Evens:
+    def __init__(self, limit):
+        self.limit = limit
+        self.current = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.current += 2
+        if self.current &gt; self.limit:
+            raise StopIteration
+        return self.current
+
+for n in Evens(6):
+    print(n)
+print(list(Evens(10)))</pre><p>Starting <code>current</code> at 0 and adding 2 <i>before</i> the check is the tidiest version: the first call returns 2, and the moment the step would overshoot the limit, the guard fires. Two separate objects here, so both drives start fresh.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">17.5 · P3</span><span class="pt">Stretch — Repeat(word, times)</span></div>
+        <p class="pd">Write a <code>Repeat</code> class that hands out the same word a fixed number of times, then stops. Two things to remember in <code>__init__</code>: the word, and how many hand-outs are left. Note that the value returned never changes — only the count does.</p>
+        <div class="want">hi
+hi
+hi</div>
+        <div class="pyrun" data-id="s5p3" data-expect="hi\nhi\nhi">
+          <textarea spellcheck="false">class Repeat:
+    def __init__(self, word, times):
+        pass
+
+for w in Repeat("hi", 3):
+    print(w)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Repeat:
+    def __init__(self, word, times):
+        self.word = word
+        self.left = times
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.left &lt;= 0:
+            raise StopIteration
+        self.left -= 1
+        return self.word
+
+for w in Repeat("hi", 3):
+    print(w)</pre><p>The countdown moved into <code>self.left</code>, out of sight of whoever is looping — they just receive three <code>hi</code>s. An iterator's internal bookkeeping is nobody else's business, which is Unit 16's encapsulation lesson showing up again.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 17.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">17.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~14 min</span></span>
+      <p>The mixed set. Hand-driven bookmarks, <code>enumerate</code>, <code>zip</code>, and one class of your own — with f-strings, <code>input()</code> and list indexing along for the ride. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">Spell it by hand</span></div>
+        <p class="pd">A string is a shelf of characters. Get an iterator over <code>"Adi"</code> and print all three letters with <code>next()</code> — no loop, no indexing.</p>
+        <div class="want">A
+d
+i</div>
+        <div class="pyrun" data-id="b1" data-expect="A\nd\ni">
+          <textarea spellcheck="false">name = "Adi"
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>name = "Adi"
+it = iter(name)
+print(next(it))
+print(next(it))
+print(next(it))</pre><p>Exactly what <code>for letter in name:</code> has been doing since Unit 6 — you are just holding the bookmark yourself. A fourth <code>next()</code> would raise <code>StopIteration</code>.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">The numbered menu, with an order</span></div>
+        <p class="pd">Print the menu numbered from 1 using <code>enumerate</code>, then ask <code>Pick a number: </code> and report the chosen dish. Mind the off-by-one: the human types 2, the list stores that dish at index 1. Input is fixed to <code>2</code>.</p>
+        <div class="want">1. idli
+2. dosa
+3. vada
+Pick a number: 2
+You picked: dosa</div>
+        <div class="pyrun" data-id="b2" data-stdin="2" data-stdin-lock data-expect="1. idli\n2. dosa\n3. vada\nPick a number: 2\nYou picked: dosa">
+          <textarea spellcheck="false">menu = ["idli", "dosa", "vada"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>menu = ["idli", "dosa", "vada"]
+for n, item in enumerate(menu, start=1):
+    print(f"{n}. {item}")
+choice = int(input("Pick a number: "))
+print("You picked:", menu[choice - 1])</pre><p><code>start=1</code> gets the display right; <code>choice - 1</code> gets the lookup right. Those two adjustments always travel together — display in human numbers, index in Python numbers.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">The report card</span></div>
+        <p class="pd">Three parallel lists, one report. <code>zip</code> takes as many lists as you give it — hand it all three and unpack three names in the loop header.</p>
+        <div class="want">Ada: 91 (A)
+Ben: 78 (C)
+Cara: 85 (B)</div>
+        <div class="pyrun" data-id="b3" data-expect="Ada: 91 (A)\nBen: 78 (C)\nCara: 85 (B)">
+          <textarea spellcheck="false">names = ["Ada", "Ben", "Cara"]
+scores = [91, 78, 85]
+grades = ["A", "C", "B"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>names = ["Ada", "Ben", "Cara"]
+scores = [91, 78, 85]
+grades = ["A", "C", "B"]
+for name, score, grade in zip(names, scores, grades):
+    print(f"{name}: {score} ({grade})")</pre><p>Parallel lists plus <code>zip</code> is the honest, readable way to walk related data — no index arithmetic, no chance of reading row 3 of one list against row 4 of another.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — SkipOdd</span></div>
+        <p class="pd">Write a <code>SkipOdd</code> class that stores a list and hands out only its even numbers. The twist: <code>__next__</code> may have to skip <i>several</i> items before it finds one worth returning — so it needs a small loop inside, walking forward until it finds an even number or runs off the end.</p>
+        <div class="want">[4, 10, 12]
+2
+8</div>
+        <div class="pyrun" data-id="b4" data-expect="[4, 10, 12]\n2\n8">
+          <textarea spellcheck="false">class SkipOdd:
+    def __init__(self, numbers):
+        self.numbers = numbers
+        self.i = 0
+
+    # __iter__ and __next__ go here
+
+print(list(SkipOdd([3, 4, 7, 10, 11, 12])))
+it = SkipOdd([1, 2, 5, 8])
+print(next(it))
+print(next(it))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class SkipOdd:
+    def __init__(self, numbers):
+        self.numbers = numbers
+        self.i = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        while self.i &lt; len(self.numbers):
+            value = self.numbers[self.i]
+            self.i += 1
+            if value % 2 == 0:
+                return value
+        raise StopIteration</pre><p>The <code>while</code> walks forward; a <code>return</code> from inside it ends the method immediately, with <code>self.i</code> already parked on the next candidate. Only when the walk runs out of shelf does the <code>raise</code> line get reached. This is the shape of every filtering iterator ever written — and Unit 18 collapses the whole class into four lines.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 18 · Generators &amp; laziness</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">Look back at <code>Countdown</code>: a class, an <code>__init__</code>, an <code>__iter__</code> that only ever says <code>return self</code>, a <code>__next__</code> juggling a position box, and a <code>raise</code> to finish. That is a great deal of ceremony to count backwards from three. Unit 18 introduces one keyword — <code>yield</code> — that collapses the entire thing into three honest lines, keeps every bit of the protocol you just learned, and opens a door you cannot open with lists at all: sequences that never end, walked one item at a time, forever.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>The Python Tutorial</b> — <i>§9.8 Iterators</i>. <span class="why">The official half-page on exactly this: what <code>for</code> does behind the scenes, and how to add <code>__iter__</code> and <code>__next__</code> to a class of your own.</span> <a href="https://docs.python.org/3/tutorial/classes.html#iterators" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>Iterator Types</i>. <span class="why">The protocol stated precisely, including the rule that an exhausted iterator must keep raising <code>StopIteration</code> forever — the formal version of 17.2.</span> <a href="https://docs.python.org/3/library/stdtypes.html#iterator-types" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>Glossary</i>. <span class="why">Look up <i>iterable</i>, <i>iterator</i> and <i>generator</i> side by side; the distinction we drew with bookshelves and bookmarks is the same one Python's own vocabulary makes.</span> <a href="https://docs.python.org/3/glossary.html" rel="noopener">docs.python.org</a></li>
+      <li><b>Sweigart, A.</b> — <i>Automate the Boring Stuff with Python, ch. 4 (Lists)</i>. <span class="why">Where <code>enumerate</code> and looping over sequences first turn up in practical work — a gentle counterweight to this unit's machinery.</span> <a href="https://automatetheboringstuff.com/2e/chapter4/" rel="noopener">book</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit16.html"><span class="k">← Previous</span><span class="t">Unit 16 · Classes IV — properties &amp; encapsulation</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit18.html"><span class="k">Next →</span><span class="t">Unit 18 · Generators &amp; laziness</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 17 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"What does  for n in nums:  actually do, under the hood?",
+   o:["Copies nums into a hidden list and walks the copy by index","Calls iter(nums) once to get an iterator, then next() on it repeatedly until StopIteration","Checks the type of nums and picks one of several special-case loops","Calls nums.length and counts from 0 to that number"],
+   a:1,
+   e:"One agreement, no special cases: iter() once for the bookmark, then next() per round, ending quietly when StopIteration arrives. Every loopable thing in Python plays this same game."},
+  {q:"A list and the thing iter(list) hands back — which is which?",
+   o:["Both are iterators","The list is the iterator; iter() gives an iterable","The list is the iterable (the bookshelf); iter() gives an iterator (the bookmark)","They are the same object with two names"],
+   a:2,
+   e:"The iterable holds the items and knows nothing about position; the iterator's whole job is remembering which item is next. iter() asks a bookshelf for a fresh bookmark."},
+  {q:"You loop over the SAME iterator twice. What does the second loop print?",
+   o:["Nothing — the body never runs","The same values again","An error: StopIteration","Only the last value"],
+   a:0,
+   e:"The bookmark is sitting past the end, so the very first next() raises StopIteration and the loop finishes with zero rounds. No error, no warning — which is exactly what makes this bug so expensive. Lists escape it because every for gets a FRESH bookmark."},
+  {q:"What is  enumerate(items, start=1)  ?",
+   o:["A list of pairs, numbered from 1","A lazy iterator that hands out (number, item) pairs, numbered from 1","A list of items with 1 added to each","A copy of items with the first item removed"],
+   a:1,
+   e:"It's an iterator, not a list — it produces pairs on demand and is spent once drained. Wrap it in list() to look inside. start=1 gives the human numbering you used to build with a counter box."},
+  {q:"zip() is given a list of 3 names and a list of 2 scores. What happens?",
+   o:["A ValueError — the lists must be the same length","It pairs 2 and silently ignores the third name","It pairs the third name with None","It repeats the last score to fill the gap"],
+   a:1,
+   e:"zip stops the moment the SHORTEST input runs out, without a word. Convenient when you mean it, and a silent data-loss bug when you don't — so check your lengths when the pairing matters."},
+  {q:"Which two methods must your class define so that  for x in MyThing():  works?",
+   o:["__init__ and __str__","__len__ and __getitem__","__iter__ and __next__, with __next__ raising StopIteration when done","__start__ and __stop__"],
+   a:2,
+   e:"iter() knocks on __iter__ (usually 'return self'), next() knocks on __next__, and StopIteration is the agreed signal for 'nothing left'. Answer both knocks and Python's own for loop walks your object — no special case anywhere."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. The machinery under every for loop you'll ever write is now visible to you."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 17.2's exhaustion trap and 17.4's two dunders carry the unit."
+           : " — worth another pass through the practice above before Unit 18; generators assume this protocol cold.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Iterable","Anything a for loop can walk — a list, string, dict, range, file. The bookshelf: it holds the items and knows nothing about your position."],
+  ["Iterator","The bookmark: a separate object whose only job is remembering which item is next. Produced by iter(), advanced by next()."],
+  ["Iteration protocol","The agreement every loopable thing signs: answer iter() with an iterator, answer next() with the next value, raise StopIteration when spent."],
+  ["iter(x)","Asks x for a fresh iterator. Knocks on x.__iter__(). Calling it twice on a list gives two independent bookmarks."],
+  ["next(it)","Reads one item from the iterator and moves it forward. Knocks on it.__next__(). Raises StopIteration once the shelf runs out."],
+  ["StopIteration","The agreed signal for 'no more items'. Not an error you handle — for loops catch it and end quietly."],
+  ["__iter__","The dunder iter() calls. In a self-iterating class it says: return self — I am my own bookmark."],
+  ["__next__","The dunder next() calls. Returns the next value and updates the object's position, or raises StopIteration when there is nothing left."],
+  ["Exhausted","An iterator whose bookmark is past the last item. Every further next() raises StopIteration — iterators are one-shot and never rewind."],
+  ["Lazy","Computing each item only when asked, rather than building the whole result up front. enumerate, zip and range are all lazy."],
+  ["enumerate(items, start=0)","A lazy iterator handing out (position, item) pairs. start=1 gives human numbering — the counter box, retired."],
+  ["zip(a, b, …)","A lazy iterator pairing items from two or more iterables, one round at a time. Stops the moment the shortest one runs out, silently."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

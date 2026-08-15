@@ -1,0 +1,1429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classes III — Inheritance &amp; Composition — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u15" data-lwa-title="Unit 15 · Classes III — inheritance &amp; composition">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Intermediate — Object-oriented Python · Unit 15</div>
+      <h1>Classes III — Inheritance &amp; Composition</h1>
+      <p class="standfirst">You have one cookie cutter. Now you need a second one that is <i>almost</i> the same — the house dal, plus a spoon of cream. This session teaches Python's two ways of reusing a class you already wrote: say a new class <b>is a</b> kind of the old one, or say it <b>has</b> some of them inside. And out of the first falls the trick that makes one line of code do three different things.</p>
+      <div class="facts">
+        <div><b>One session</b>~50 min</div>
+        <div><b>5 concepts</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 13–14 — classes &amp; dunder methods</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">15.1 Is-a: inheriting</a>
+    <a href="#s2">15.2 Extending with super()</a>
+    <a href="#s3">15.3 Overriding &amp; polymorphism</a>
+    <a href="#s4">15.4 Has-a: composition</a>
+    <a href="#s5">15.5 Your build</a>
+    <a href="#s6">15.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 15.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Units 13–14</b><code>class</code>, <code>__init__</code>, <code>self</code>, methods, and <code>__str__</code>. The <code>BankAccount</code>, <code>Player</code> and <code>Playlist</code> classes you built there come back today — as parents.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm: each concept is a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit15.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>The one sentence to carry</b>Two classes are related either by <i>is-a</i> or by <i>has-a</i>. Say the sentence out loud and the code writes itself. That test is the whole unit.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">15.1</span>
+      <h2>Is-a: inheriting — a class built on another class</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Your <code>BankAccount</code> works. Now the bank wants savings accounts. A savings account is a bank account — same owner, same balance, same deposit, same withdraw, same report — <i>plus</i> an interest rate. Copying the whole class and pasting one extra line into it is how codebases rot: fix a bug in <code>withdraw</code> and you now have to remember to fix it twice.</p>
+      <p><b>The idea, in plain words.</b> Think of a family recipe book. The house dal has a full page: soak, boil, temper, salt. The restaurant dal doesn't repeat any of that — its page says <i>"same as the house dal, plus a spoon of cream at the end."</i> Nobody rewrites the boiling instructions, and when the house dal improves, the restaurant dal improves with it, free.</p>
+      <p>Python spells that one line:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">class SavingsAccount(BankAccount):</p>
+      <p>The name in the brackets is the <b>parent class</b> (also called the base or superclass); the new one is the <b>child</b> (subclass). And that's it — <code>SavingsAccount</code> now has <code>__init__</code>, <code>deposit</code>, <code>withdraw</code> and <code>report</code>, without a single line copied. Even if its whole body is the word <code>pass</code>, objects made from it can do everything a <code>BankAccount</code> can.</p>
+      <p>One useful question comes with the family: <b>is this object one of those?</b> <code>isinstance(s, SavingsAccount)</code> answers <code>True</code> — and so does <code>isinstance(s, BankAccount)</code>, because a savings account genuinely <i>is</i> a bank account. Inheritance is a promise, not a copy.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the free methods</div>
+      <div class="m">class SavingsAccount(BankAccount):
+    pass
+
+s = SavingsAccount("Meera", 500)
+s.deposit(250)
+s.report()</div>
+      <p><b>Lines 1–2:</b> a new class is born whose only content is "same as <code>BankAccount</code>". Zero methods written.</p>
+      <p><b>Line 4:</b> Python needs <code>SavingsAccount.__init__</code>. Not found in the child, so it walks one step up to <code>BankAccount</code> and finds it there. That parent <code>__init__</code> runs, with <code>self</code> being our new savings object: it gets a box <code>owner</code> holding <code>"Meera"</code> and a box <code>balance</code> holding <code>500</code>.</p>
+      <p><b>Line 5:</b> same walk — <code>deposit</code> isn't in the child, is in the parent. It runs, <code>balance</code> becomes <b>750</b>.</p>
+      <p><b>Line 6:</b> <code>report</code>, same walk again:</p>
+      <div class="m">Meera: 750.00</div>
+      <p>Three method calls, one line of class code. That walk — <i>child first, then parent</i> — is the only mechanism in this section, and it explains everything that follows.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 296" role="img" aria-label="A child class SavingsAccount inherits every method of the parent class BankAccount; a lookup arrow shows Python checking the child first, then the parent">
+        <text x="16" y="24" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">ONE ARROW UP — AND EVERY METHOD IS YOURS</text>
+        <rect x="480" y="46" width="360" height="180" rx="12" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.8"/>
+        <rect x="480" y="46" width="360" height="34" rx="12" fill="#ecebf6"/>
+        <text x="660" y="69" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#3d3170">class BankAccount   (the parent)</text>
+        <text x="504" y="106" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">__init__(self, owner, balance=0)</text>
+        <text x="504" y="134" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">deposit(self, amount)</text>
+        <text x="504" y="162" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">withdraw(self, amount)</text>
+        <text x="504" y="190" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">report(self)</text>
+        <text x="504" y="214" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">written once, in Unit 13</text>
+        <rect x="30" y="46" width="330" height="112" rx="12" fill="#ffffff" stroke="#2b7a78" stroke-width="1.8"/>
+        <rect x="30" y="46" width="330" height="34" rx="12" fill="#e3efee"/>
+        <text x="195" y="69" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#1d5654">class SavingsAccount(BankAccount)</text>
+        <text x="54" y="106" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">pass</text>
+        <text x="54" y="132" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">nothing of its own — yet</text>
+        <path d="M360 96 L472 96" stroke="#5b4b9e" stroke-width="2" fill="none" marker-end="url(#ar15)"/>
+        <defs><marker id="ar15" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#5b4b9e"/></marker></defs>
+        <text x="416" y="86" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" font-weight="700" fill="#3d3170">is-a</text>
+        <rect x="30" y="196" width="810" height="76" rx="10" fill="#23262e"/>
+        <text x="52" y="223" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#e8e9ee">s = SavingsAccount("Meera", 500)   →   s.deposit(250)</text>
+        <text x="52" y="252" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#9fd6d4">look in SavingsAccount → not there → look in BankAccount → found → run it</text>
+      </svg>
+      <div class="figcap">Fig. 1 — The lookup walk. Every attribute and method call starts at the object's own class and climbs the arrow until it finds a match. Keep this picture: the next three sections are all consequences of it.</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      <code>class Child(Parent):</code> means "everything the parent can do, the child can do". Python looks for a method in the child's class first, then climbs to the parent. Nothing is copied — the child <i>points</i> at the parent.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> give the bank a savings account with no new code at all, and prove it really is a bank account. <b>Thinking:</b> write the parent once (this is Unit 13's class, unchanged), then one <code>class</code> line with <code>pass</code> inside. Then use it as if it were fully written — because it is.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance = self.balance + amount
+
+    def withdraw(self, amount):
+        if amount > self.balance:
+            print("Insufficient funds")
+        else:
+            self.balance = self.balance - amount
+
+    def report(self):
+        print(f"{self.owner}: {self.balance:.2f}")
+
+
+class SavingsAccount(BankAccount):
+    pass
+
+
+s = SavingsAccount("Meera", 500)
+s.deposit(250)
+s.withdraw(100)
+s.report()
+print(isinstance(s, SavingsAccount), isinstance(s, BankAccount))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">15.1 · P1</span><span class="pt">Inherit and use</span></div>
+        <p class="pd">The parent is written for you. Add one <code>class</code> line so <code>SavingsAccount</code> exists and inherits everything, then let the code below run untouched.</p>
+        <div class="want">Ravi: 1200.00</div>
+        <div class="pyrun" data-id="s1p1" data-expect="Ravi: 1200.00">
+          <textarea spellcheck="false">class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance = self.balance + amount
+
+    def report(self):
+        print(f"{self.owner}: {self.balance:.2f}")
+
+
+# your subclass here (two lines is enough)
+
+
+acc = SavingsAccount("Ravi", 1000)
+acc.deposit(200)
+acc.report()</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class SavingsAccount(BankAccount):
+    pass</pre><p>The brackets are the whole instruction. <code>pass</code> means "no body of my own" — the child is complete because the parent is.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">15.1 · P2</span><span class="pt">Predict: three isinstance questions</span></div>
+        <p class="pd">Write your three answers on paper before running. The trick is remembering which direction the family arrow points.</p>
+        <div class="pyrun" data-id="s1p2">
+          <textarea spellcheck="false">class Animal:
+    pass
+
+class Dog(Animal):
+    pass
+
+d = Dog()
+a = Animal()
+print(isinstance(d, Dog))
+print(isinstance(d, Animal))
+print(isinstance(a, Dog))</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>True
+True
+False</pre><p>A dog is a dog, and a dog <i>is</i> an animal — the promise travels up the arrow. But an animal is not necessarily a dog; the promise never travels back down.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">15.1 · P3</span><span class="pt">Stretch — a method only the child has</span></div>
+        <p class="pd">A child can add methods of its own. Give <code>SavingsAccount</code> a method <code>double()</code> that doubles the balance by <i>calling the inherited</i> <code>deposit</code> with the current balance — no arithmetic of your own, and no touching <code>self.balance</code> directly.</p>
+        <div class="want">Nina: 800.00</div>
+        <div class="pyrun" data-id="s1p3" data-expect="Nina: 800.00">
+          <textarea spellcheck="false">class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance = self.balance + amount
+
+    def report(self):
+        print(f"{self.owner}: {self.balance:.2f}")
+
+
+class SavingsAccount(BankAccount):
+    # add double() here
+
+
+acc = SavingsAccount("Nina", 400)
+acc.double()
+acc.report()</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class SavingsAccount(BankAccount):
+    def double(self):
+        self.deposit(self.balance)</pre><p>Inside a child method, <code>self.deposit(...)</code> takes the same walk as everywhere else: not in the child, found in the parent. Children use their parents' methods exactly the way outsiders do.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 15.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">15.2</span>
+      <h2>Extending with super() — "same as the parent, plus…"</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> A savings account needs an interest <i>rate</i> — a box the parent knows nothing about. So the child needs its own <code>__init__</code>. But the moment you write one, the parent's <code>__init__</code> stops running: the walk finds the child's version first and stops there. Do you now re-type <code>self.owner = owner</code> and <code>self.balance = balance</code>? That's copying again, and copying was the disease.</p>
+      <p><b>The idea, in plain words.</b> Back to the recipe card: <i>"same as the house dal, plus a spoon of cream."</i> The word "same as" is a real instruction — it tells the cook to go and follow the other page first. Python's word for it is <code>super()</code>. Read <code>super()</code> as <b>"my parent"</b>, so <code>super().__init__(owner, balance)</code> means <i>run my parent's setup with these values</i>. Then, on the next line, you add the cream.</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">def __init__(self, owner, balance, rate):
+    super().__init__(owner, balance)
+    self.rate = rate</p>
+      <p>Three lines, and the child now has all three boxes: <code>owner</code> and <code>balance</code> filled by the parent, <code>rate</code> filled by the child. The order matters in spirit — parent's setup first, your additions after — and note you don't pass <code>self</code> to <code>super().__init__</code>; Python already knows which object is being built.</p>
+      <p>With <code>rate</code> in place, a genuinely new method becomes possible — one the parent could never have written:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">def add_interest(self):
+    self.balance = self.balance + self.balance * self.rate / 100</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — two __init__ methods, one object</div>
+      <div class="m">s = SavingsAccount("Meera", 1000, 5)
+s.add_interest()
+s.report()</div>
+      <p><b>Line 1:</b> Python makes one empty object and calls the child's <code>__init__</code> with <code>self</code> = that object, <code>owner</code> = "Meera", <code>balance</code> = 1000, <code>rate</code> = 5.</p>
+      <p><b>Inside it, line A:</b> <code>super().__init__(owner, balance)</code> hands control to the parent's <code>__init__</code> — <i>same object</i>, no second object is created. It gives the object a box <code>owner</code> ("Meera") and a box <code>balance</code> (1000), then returns.</p>
+      <p><b>Inside it, line B:</b> back in the child, <code>self.rate = rate</code> adds the third box: <b>5</b>. One object, three boxes, two classes cooperating.</p>
+      <p><b>Line 2:</b> <code>add_interest</code> — found in the child. 1000 × 5 / 100 = 50.0, so <code>balance</code> becomes <b>1050.0</b>.</p>
+      <p><b>Line 3:</b> <code>report</code> — not in the child, found in the parent, and it reads the same <code>owner</code> and <code>balance</code> boxes it always did:</p>
+      <div class="m">Meera: 1050.00</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Forget the <code>super().__init__(...)</code> line and Python does <b>not</b> warn you. The object is built with only the boxes your child <code>__init__</code> set — no <code>owner</code>, no <code>balance</code>. The complaint arrives later, from somewhere innocent-looking: <code>AttributeError: 'SavingsAccount' object has no attribute 'owner'</code>. Decode it as usual — last line first, then read it literally: <i>this object has no box called owner</i>. It never got one, because nobody ran the code that creates it. Whenever a child class raises "has no attribute" for something the parent obviously sets, the missing <code>super().__init__</code> is the culprit — every time.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a savings account that knows its rate and can pay interest. <b>Thinking:</b> the child's <code>__init__</code> takes one extra parameter, hands the two familiar ones up to the parent, and keeps the new one for itself. Everything else stays inherited.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance = self.balance + amount
+
+    def report(self):
+        print(f"{self.owner}: {self.balance:.2f}")
+
+
+class SavingsAccount(BankAccount):
+    def __init__(self, owner, balance, rate):
+        super().__init__(owner, balance)
+        self.rate = rate
+
+    def add_interest(self):
+        self.balance = self.balance + self.balance * self.rate / 100
+
+
+s = SavingsAccount("Meera", 1000, 5)
+s.add_interest()
+s.report()
+print(f"Rate: {s.rate}%")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">15.2 · P1</span><span class="pt">Hand the parent its two values</span></div>
+        <p class="pd">Complete the child's <code>__init__</code>: pass <code>owner</code> and <code>balance</code> up with <code>super()</code>, then store <code>rate</code> on the object.</p>
+        <div class="want">Asha: 2000.00
+Rate: 6</div>
+        <div class="pyrun" data-id="s2p1" data-expect="Asha: 2000.00\nRate: 6">
+          <textarea spellcheck="false">class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def report(self):
+        print(f"{self.owner}: {self.balance:.2f}")
+
+
+class SavingsAccount(BankAccount):
+    def __init__(self, owner, balance, rate):
+        # two lines go here
+
+
+acc = SavingsAccount("Asha", 2000, 6)
+acc.report()
+print("Rate:", acc.rate)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class SavingsAccount(BankAccount):
+    def __init__(self, owner, balance, rate):
+        super().__init__(owner, balance)
+        self.rate = rate</pre><p>Parent's setup first, own additions second. No <code>self</code> inside the <code>super()</code> call — Python supplies it.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">15.2 · P2</span><span class="pt">Decode the AttributeError</span></div>
+        <p class="pd">Run this as-is first and read the last line of the report. It complains about <code>owner</code> — but the parent clearly sets <code>owner</code>, so what went wrong? Fix it with one added line.</p>
+        <div class="want">Dev: 900.00</div>
+        <div class="pyrun" data-id="s2p2" data-expect="Dev: 900.00">
+          <textarea spellcheck="false">class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def report(self):
+        print(f"{self.owner}: {self.balance:.2f}")
+
+
+class SavingsAccount(BankAccount):
+    def __init__(self, owner, balance, rate):
+        self.rate = rate
+
+
+acc = SavingsAccount("Dev", 900, 4)
+acc.report()</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class SavingsAccount(BankAccount):
+    def __init__(self, owner, balance, rate):
+        super().__init__(owner, balance)
+        self.rate = rate</pre><p>Writing a child <code>__init__</code> replaces the parent's — the parent's never runs unless you say so. The values arrived in the child's parameters and then were thrown away; <code>super().__init__</code> is what passes them on.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">15.2 · P3</span><span class="pt">Stretch — a pro version of your Player</span></div>
+        <p class="pd">Unit 13's <code>Player</code> is back. Build <code>ProPlayer</code>: same name and score, plus a <code>team</code>, plus a method <code>badge()</code> that prints <code>&lt;name&gt; plays for &lt;team&gt;</code>. Don't retype anything the parent already does.</p>
+        <div class="want">Ravi has 30 points
+Ravi plays for Kings</div>
+        <div class="pyrun" data-id="s2p3" data-expect="Ravi has 30 points\nRavi plays for Kings">
+          <textarea spellcheck="false">class Player:
+    def __init__(self, name, score=0):
+        self.name = name
+        self.score = score
+
+    def report(self):
+        print(f"{self.name} has {self.score} points")
+
+
+class ProPlayer(Player):
+    # your code here
+
+
+p = ProPlayer("Ravi", 30, "Kings")
+p.report()
+p.badge()</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class ProPlayer(Player):
+    def __init__(self, name, score, team):
+        super().__init__(name, score)
+        self.team = team
+
+    def badge(self):
+        print(f"{self.name} plays for {self.team}")</pre><p><code>badge()</code> reads <code>self.name</code> — a box the <i>parent</i> filled. Once the object is built, no method cares which class put which box on it.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 15.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">15.3</span>
+      <h2>Overriding &amp; polymorphism — in plain words</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Premium customers are allowed a small overdraft — they may go up to 500 below zero before the bank objects. The inherited <code>withdraw</code> refuses that flatly. This isn't a new ability to add; it's an existing one that must behave <i>differently</i> for this kind of account.</p>
+      <p><b>The idea, in plain words.</b> Write a method in the child with the same name as one in the parent, and the child's version wins. You already know why: the lookup walk starts at the child and stops at the first match. That's called <b>overriding</b> — the recipe card that says "ignore the parent's step 4, do this instead". The parent's version isn't deleted or damaged; it's simply never reached for this kind of object (and <code>super().withdraw(...)</code> can still reach it deliberately, if you want the old behaviour <i>plus</i> something).</p>
+      <p>Now the payoff, and it is the reason this whole unit exists. Give three account types their own <code>report</code>, put one of each in a list, and write a single loop:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">for a in [account, savings, premium]:
+    a.report()</p>
+      <p>One line of calling code. Three different outputs. The loop never asks what kind of account it's holding — it just says <code>report()</code>, and each object answers in its own way, because each object's lookup walk starts in its own class. Nothing in the loop changes when you add a fourth account type tomorrow.</p>
+      <p>That loop <i>is</i> <b>polymorphism</b>. The word is Greek for "many shapes", it sounds like a barrier, and it means exactly this and nothing more: <b>the same call, sent to different objects, does the right different thing.</b></p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — who answers report()?</div>
+      <div class="m">account = BankAccount("Ravi", 1000)     # report → parent's version
+savings = SavingsAccount("Meera", 2000, 5)   # report → its own
+premium = PremiumAccount("Zoya", 300)   # report → its own
+
+for a in [account, savings, premium]:
+    a.report()</div>
+      <p><b>Pass 1:</b> <code>a</code> holds the plain account. Look for <code>report</code> in <code>BankAccount</code> — found immediately.</p>
+      <p><b>Pass 2:</b> <code>a</code> holds the savings account. Look in <code>SavingsAccount</code> — found there, so the walk stops; the parent's <code>report</code> is never consulted.</p>
+      <p><b>Pass 3:</b> <code>a</code> holds the premium account. Look in <code>PremiumAccount</code> — found there too.</p>
+      <div class="m">Ravi: 1000.00
+Meera: 2000.00 (savings at 5%)
+Zoya: 300.00 [premium]</div>
+      <p>The loop is three lines long and knows nothing about accounts. The objects carry their own answers.</p>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      Write a method with the parent's name in the child and the child's version wins — that's <b>overriding</b>. Then <code>for a in things: a.report()</code> — one line of calling code, each object answering in its own way — <b>that loop is polymorphism</b>. There is no more to the word than that.
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Overriding is <i>not</i> "having two versions of a method and Python picking by the arguments" — that's a different language's feature. In Python one name means one method per class, full stop. If a child defines <code>withdraw</code>, that child's objects have exactly one <code>withdraw</code>: theirs. The parent's still exists for the parent's own objects, and the child can borrow it on purpose with <code>super().withdraw(amount)</code> — but it will never be chosen automatically.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> three kinds of account — plain, savings, premium — where <code>withdraw</code> and <code>report</code> behave differently, driven by one loop. <b>Thinking:</b> premium overrides <code>withdraw</code> to allow 500 of overdraft; savings and premium each override <code>report</code>. Then a single loop, blissfully ignorant of all of it.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def withdraw(self, amount):
+        if amount > self.balance:
+            print("Insufficient funds")
+        else:
+            self.balance = self.balance - amount
+
+    def report(self):
+        print(f"{self.owner}: {self.balance:.2f}")
+
+
+class SavingsAccount(BankAccount):
+    def __init__(self, owner, balance, rate):
+        super().__init__(owner, balance)
+        self.rate = rate
+
+    def report(self):
+        print(f"{self.owner}: {self.balance:.2f} (savings at {self.rate}%)")
+
+
+class PremiumAccount(BankAccount):
+    def withdraw(self, amount):
+        if amount > self.balance + 500:
+            print("Over even the premium limit")
+        else:
+            self.balance = self.balance - amount
+
+    def report(self):
+        print(f"{self.owner}: {self.balance:.2f} [premium]")
+
+
+account = BankAccount("Ravi", 1000)
+savings = SavingsAccount("Meera", 2000, 5)
+premium = PremiumAccount("Zoya", 300)
+
+premium.withdraw(700)     # allowed — overdraft up to 500
+account.withdraw(5000)    # refused by the parent's rule
+
+for a in [account, savings, premium]:
+    a.report()</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">15.3 · P1</span><span class="pt">Override one method</span></div>
+        <p class="pd">A teen account behaves like any other, but its report must be tagged. Give <code>TeenAccount</code> its own <code>report()</code> printing <code>&lt;owner&gt; (teen): &lt;balance to 2dp&gt;</code>. Change nothing in the parent.</p>
+        <div class="want">Isha (teen): 250.00</div>
+        <div class="pyrun" data-id="s3p1" data-expect="Isha (teen): 250.00">
+          <textarea spellcheck="false">class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def report(self):
+        print(f"{self.owner}: {self.balance:.2f}")
+
+
+class TeenAccount(BankAccount):
+    # your report() here
+
+
+acc = TeenAccount("Isha", 250)
+acc.report()</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class TeenAccount(BankAccount):
+    def report(self):
+        print(f"{self.owner} (teen): {self.balance:.2f}")</pre><p>Same name, same shape, different body. The parent's <code>report</code> is untouched and still serves plain accounts.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">15.3 · P2</span><span class="pt">The polymorphic loop</span></div>
+        <p class="pd">Three classes are written for you and the band is assembled. Write the <b>one loop</b> that makes every instrument play — without a single <code>if</code> asking what kind it is.</p>
+        <div class="want">Kazoo makes a sound
+Fender goes strum
+Tabla goes boom</div>
+        <div class="pyrun" data-id="s3p2" data-expect="Kazoo makes a sound\nFender goes strum\nTabla goes boom">
+          <textarea spellcheck="false">class Instrument:
+    def __init__(self, name):
+        self.name = name
+
+    def play(self):
+        print(f"{self.name} makes a sound")
+
+
+class Guitar(Instrument):
+    def play(self):
+        print(f"{self.name} goes strum")
+
+
+class Drum(Instrument):
+    def play(self):
+        print(f"{self.name} goes boom")
+
+
+band = [Instrument("Kazoo"), Guitar("Fender"), Drum("Tabla")]
+# one loop here</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>for item in band:
+    item.play()</pre><p>Two lines, and they'd be the same two lines for twenty instrument types. Every <code>if</code> you didn't write is the point.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">15.3 · P3</span><span class="pt">Stretch — override <i>and</i> keep the original</span></div>
+        <p class="pd">Sometimes you want the parent's behaviour <i>plus</i> a bit more. Override <code>report()</code> in <code>SavingsAccount</code> so it first calls the parent's version with <code>super().report()</code>, then prints a second line — two spaces, then <code>interest rate: &lt;rate&gt;%</code>.</p>
+        <div class="want">Meera: 1500.00
+  interest rate: 5%</div>
+        <div class="pyrun" data-id="s3p3" data-expect="Meera: 1500.00\n  interest rate: 5%">
+          <textarea spellcheck="false">class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def report(self):
+        print(f"{self.owner}: {self.balance:.2f}")
+
+
+class SavingsAccount(BankAccount):
+    def __init__(self, owner, balance, rate):
+        super().__init__(owner, balance)
+        self.rate = rate
+
+    # your report() here
+
+
+s = SavingsAccount("Meera", 1500, 5)
+s.report()</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>    def report(self):
+        super().report()
+        print(f"  interest rate: {self.rate}%")</pre><p><code>super()</code> means "my parent" wherever it appears, not just in <code>__init__</code>. This "run the old one, then add mine" shape is the most common override of all.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 15.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">15.4</span>
+      <h2>Has-a: composition — objects inside objects</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> You need a library. A library has a name and a shelf of books; each book has a title and an author. Inheritance is fresh in your mind and tempting — so should <code>Library</code> inherit from <code>Book</code>? Something in you already says no, and it's worth finding out exactly what.</p>
+      <p><b>The idea, in plain words.</b> Unit 13's picture: <i>an object is a box of boxes with abilities attached</i>. Nothing said the inner boxes must hold numbers and strings. They can hold <b>other objects</b> — or a list of them. A <code>Library</code> object holds a box called <code>books</code> containing <code>Book</code> objects, and its methods work by asking those books to do things. That's <b>composition</b>: building a big thing out of smaller finished things, the way a car has an engine rather than being one.</p>
+      <p>The code shape is unremarkable, which is the nicest thing about it — you already know every line:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">def __init__(self, name):
+    self.name = name
+    self.books = []          # an empty shelf
+
+def add(self, book):
+    self.books.append(book)  # a whole Book object goes in</p>
+      <p>No new syntax at all — just a list attribute, and objects going into it. The <code>show()</code> method then loops over <code>self.books</code> and prints each one, and because Unit 14 gave <code>Book</code> a <code>__str__</code>, printing a book prints something readable instead of a memory address.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — a box of boxes of boxes</div>
+      <div class="m">lib = Library("Adi's shelf")
+lib.add(Book("Small Things", "Roy"))
+lib.show()</div>
+      <p><b>Line 1:</b> one <code>Library</code> object with two boxes: <code>name</code> holding the text, and <code>books</code> holding an <i>empty list</i>. Each library gets its own list, because the line runs afresh inside every <code>__init__</code>.</p>
+      <p><b>Line 2:</b> the inner call runs first — a whole <code>Book</code> object is built (its own two boxes, <code>title</code> and <code>author</code>). That finished object is then handed to <code>add</code>, which appends it. The library's <code>books</code> list now holds one object, not one string.</p>
+      <p><b>Line 3:</b> <code>show</code> reads <code>len(self.books)</code> → 1, then loops. Each loop variable is a real <code>Book</code>, so <code>b.title</code> works, and printing <code>b</code> goes through <code>Book.__str__</code>:</p>
+      <div class="m">Adi's shelf holds 1 books:
+- Small Things by Roy</div>
+      <p>Two classes, neither of them a parent or a child, cooperating perfectly.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 250" role="img" aria-label="Left: SavingsAccount points up to BankAccount, labelled is-a. Right: a Library object contains a list of three Book objects, labelled has-a.">
+        <text x="16" y="24" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">TWO WAYS TO RELATE TWO CLASSES</text>
+        <rect x="24" y="44" width="380" height="186" rx="12" fill="#f0f1f7" stroke="#e3e6ee"/>
+        <text x="214" y="70" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#3d3170">IS-A  →  inheritance</text>
+        <rect x="122" y="86" width="184" height="42" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="214" y="112" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">BankAccount</text>
+        <path d="M214 176 L214 134" stroke="#5b4b9e" stroke-width="2" fill="none" marker-end="url(#ar15b)"/>
+        <defs><marker id="ar15b" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#5b4b9e"/></marker></defs>
+        <rect x="106" y="176" width="216" height="42" rx="9" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="214" y="202" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1f2733">SavingsAccount</text>
+        <text x="330" y="160" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">"a savings account</text>
+        <text x="330" y="174" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">IS a bank account" ✓</text>
+        <rect x="440" y="44" width="396" height="186" rx="12" fill="#f0f1f7" stroke="#e3e6ee"/>
+        <text x="638" y="70" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#1d5654">HAS-A  →  composition</text>
+        <rect x="470" y="86" width="336" height="126" rx="10" fill="#ffffff" stroke="#2b7a78" stroke-width="1.8"/>
+        <text x="486" y="108" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1d5654">Library   name = "Adi's shelf"</text>
+        <text x="486" y="130" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#1d5654">books = [ ]</text>
+        <rect x="490" y="142" width="94" height="52" rx="8" fill="#e3efee" stroke="#2b7a78" stroke-width="1.3"/>
+        <text x="537" y="163" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11" fill="#1f2733">Book</text>
+        <text x="537" y="181" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="10.5" fill="#6b7585">title/author</text>
+        <rect x="596" y="142" width="94" height="52" rx="8" fill="#e3efee" stroke="#2b7a78" stroke-width="1.3"/>
+        <text x="643" y="163" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11" fill="#1f2733">Book</text>
+        <text x="643" y="181" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="10.5" fill="#6b7585">title/author</text>
+        <rect x="702" y="142" width="94" height="52" rx="8" fill="#e3efee" stroke="#2b7a78" stroke-width="1.3"/>
+        <text x="749" y="163" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11" fill="#1f2733">Book</text>
+        <text x="749" y="181" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="10.5" fill="#6b7585">title/author</text>
+      </svg>
+      <div class="figcap">Fig. 2 — Left, the child points up at the parent and gains its abilities. Right, one object simply holds others in a list. Both are "reuse"; only one of them is a promise about what the object <i>is</i>.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion — the judgment, and how to make it</div>
+      <p>Inheritance is exciting and beginners over-use it. The test takes two seconds: <b>say "is-a" out loud.</b> "A Library <i>is a</i> Book" — nonsense; a library isn't a kind of book, it contains books. So: composition. "A SavingsAccount <i>is a</i> BankAccount" — that rings true; it's an account, with extras. So: inheritance. Try it anywhere: a Car <i>is an</i> Engine? No — a car <i>has</i> an engine. A Dog <i>is an</i> Animal? Yes. And when the sentence sounds half-right and you genuinely can't decide, <b>prefer composition</b> — it keeps the two classes independent, and a wrong "has-a" is far easier to unpick later than a wrong "is-a".</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a library that holds books and can list them. <b>Thinking:</b> two plain classes, no parent-child anywhere. <code>Book</code> gets a <code>__str__</code> so it prints nicely; <code>Library</code> keeps a list and loops over it. Notice how ordinary this is — composition is mostly just lists you already know how to use.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">class Book:
+    def __init__(self, title, author):
+        self.title = title
+        self.author = author
+
+    def __str__(self):
+        return f"{self.title} by {self.author}"
+
+
+class Library:
+    def __init__(self, name):
+        self.name = name
+        self.books = []
+
+    def add(self, book):
+        self.books.append(book)
+
+    def show(self):
+        print(f"{self.name} holds {len(self.books)} books:")
+        for b in self.books:
+            print(f"- {b}")
+
+
+lib = Library("Adi's shelf")
+lib.add(Book("Small Things", "Roy"))
+lib.add(Book("Interpreter of Maladies", "Lahiri"))
+lib.show()</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">15.4 · P1</span><span class="pt">A team has players</span></div>
+        <p class="pd">Fill in <code>Team.add</code> (append the player to the list) and <code>Team.show</code> (loop the list, printing <code>&lt;name&gt;: &lt;score&gt;</code> for each). A team is not a kind of player — this is has-a.</p>
+        <div class="want">Ravi: 30
+Nina: 45</div>
+        <div class="pyrun" data-id="s4p1" data-expect="Ravi: 30\nNina: 45">
+          <textarea spellcheck="false">class Player:
+    def __init__(self, name, score):
+        self.name = name
+        self.score = score
+
+
+class Team:
+    def __init__(self, name):
+        self.name = name
+        self.players = []
+
+    def add(self, player):
+        # your code
+
+    def show(self):
+        # your code
+
+
+t = Team("Kings")
+t.add(Player("Ravi", 30))
+t.add(Player("Nina", 45))
+t.show()</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>    def add(self, player):
+        self.players.append(player)
+
+    def show(self):
+        for p in self.players:
+            print(f"{p.name}: {p.score}")</pre><p>The loop variable <code>p</code> is a whole <code>Player</code> object, so it still has its own boxes — <code>p.name</code>, <code>p.score</code>. Boxes inside boxes.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">15.4 · P2</span><span class="pt">A cart totals its items</span></div>
+        <p class="pd">Give <code>Cart</code> a method <code>total()</code> that <b>returns</b> the sum of its items' prices (a running total in a loop — no <code>sum()</code> needed). The print line is written for you.</p>
+        <div class="want">Total: 88.25</div>
+        <div class="pyrun" data-id="s4p2" data-expect="Total: 88.25">
+          <textarea spellcheck="false">class Item:
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+
+
+class Cart:
+    def __init__(self):
+        self.items = []
+
+    def add(self, item):
+        self.items.append(item)
+
+    # your total() here
+
+
+cart = Cart()
+cart.add(Item("Tea", 12.5))
+cart.add(Item("Cake", 45.75))
+cart.add(Item("Juice", 30))
+print(f"Total: {cart.total():.2f}")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>    def total(self):
+        t = 0
+        for it in self.items:
+            t = t + it.price
+        return t</pre><p>12.5 + 45.75 + 30 = 88.25. The method <i>returns</i> rather than prints, so the caller decides how to display it — format at the exit, as always.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">15.4 · P3</span><span class="pt">Stretch — both relationships in one program</span></div>
+        <p class="pd">A house <b>has</b> rooms (composition), and a studio <b>is a</b> house (inheritance) that describes itself differently. The parent is written; add <code>Studio</code>, overriding <code>describe()</code> to print <code>&lt;owner&gt;'s studio: one open space of &lt;area&gt; sq m</code>.</p>
+        <div class="want">Ravi's house: 2 rooms, 30 sq m
+Nina's studio: one open space of 32 sq m</div>
+        <div class="pyrun" data-id="s4p3" data-expect="Ravi's house: 2 rooms, 30 sq m\nNina's studio: one open space of 32 sq m">
+          <textarea spellcheck="false">class Room:
+    def __init__(self, name, area):
+        self.name = name
+        self.area = area
+
+
+class House:
+    def __init__(self, owner):
+        self.owner = owner
+        self.rooms = []
+
+    def add(self, room):
+        self.rooms.append(room)
+
+    def area(self):
+        total = 0
+        for r in self.rooms:
+            total = total + r.area
+        return total
+
+    def describe(self):
+        print(f"{self.owner}'s house: {len(self.rooms)} rooms, {self.area()} sq m")
+
+
+class Studio(House):
+    # your describe() here
+
+
+h = House("Ravi")
+h.add(Room("Hall", 20))
+h.add(Room("Kitchen", 10))
+h.describe()
+
+s = Studio("Nina")
+s.add(Room("Everything", 32))
+s.describe()</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Studio(House):
+    def describe(self):
+        print(f"{self.owner}'s studio: one open space of {self.area()} sq m")</pre><p><code>Studio</code> inherits <code>add</code> and <code>area</code> untouched and overrides only the sentence. Real designs almost always mix the two: things inherit <i>and</i> contain.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 15.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">15.5</span>
+      <h2>Your build — shapes that measure themselves, and a party that fights</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>Two small builds, both landing on the same punchline from opposite directions. First shapes: every shape can tell you its <code>area()</code>, but each computes it its own way — so one printing loop handles circles and rectangles without ever asking which is which. Then a party of game characters, each with its own <code>attack()</code>, driven by one battle round.</p>
+      <p>If the loops in these two builds feel suspiciously identical, that's the lesson landing. Write them and you'll never need the word "polymorphism" explained again.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">15.5 · P1</span><span class="pt">Shapes — one loop, two formulas</span></div>
+        <p class="pd">Complete <code>Circle.area()</code> (use <code>math.pi</code> and <code>self.radius ** 2</code>) and <code>Rectangle.area()</code>, then write the loop that prints <code>&lt;name&gt;: &lt;area to 2dp&gt;</code> for every shape in the list.</p>
+        <div class="want">Circle: 12.57
+Rectangle: 12.00
+Circle: 7.07</div>
+        <div class="pyrun" data-id="s5p1" data-expect="Circle: 12.57\nRectangle: 12.00\nCircle: 7.07">
+          <textarea spellcheck="false">import math
+
+
+class Shape:
+    def __init__(self, name):
+        self.name = name
+
+    def area(self):
+        return 0
+
+
+class Circle(Shape):
+    def __init__(self, radius):
+        super().__init__("Circle")
+        self.radius = radius
+
+    # your area() here
+
+
+class Rectangle(Shape):
+    def __init__(self, width, height):
+        super().__init__("Rectangle")
+        self.width = width
+        self.height = height
+
+    # your area() here
+
+
+shapes = [Circle(2), Rectangle(3, 4), Circle(1.5)]
+# one loop here: print(f"{s.name}: {s.area():.2f}")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Circle(Shape):
+    def area(self):
+        return math.pi * self.radius ** 2
+
+class Rectangle(Shape):
+    def area(self):
+        return self.width * self.height
+
+for s in shapes:
+    print(f"{s.name}: {s.area():.2f}")</pre><p>Circle(2) is 12.566…, rounded to 12.57; the rectangle's honest 12 gets dressed as 12.00 by <code>:.2f</code>. Note the child <code>__init__</code>s hand a fixed name up to the parent — <code>super()</code> takes literal values just as happily as parameters.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">15.5 · P2</span><span class="pt">Characters — everyone attacks their own way</span></div>
+        <p class="pd">Give <code>Wizard</code> and <code>Archer</code> their own <code>attack()</code> — <code>&lt;name&gt; casts a firebolt</code> and <code>&lt;name&gt; looses an arrow</code> — then run the party through one loop. The base <code>Character</code> keeps its generic strike.</p>
+        <div class="want">Bran swings wildly
+Mira casts a firebolt
+Kai looses an arrow</div>
+        <div class="pyrun" data-id="s5p2" data-expect="Bran swings wildly\nMira casts a firebolt\nKai looses an arrow">
+          <textarea spellcheck="false">class Character:
+    def __init__(self, name, health=100):
+        self.name = name
+        self.health = health
+
+    def attack(self):
+        print(f"{self.name} swings wildly")
+
+
+class Wizard(Character):
+    # your attack() here
+
+
+class Archer(Character):
+    # your attack() here
+
+
+party = [Character("Bran"), Wizard("Mira"), Archer("Kai")]
+# one loop here</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Wizard(Character):
+    def attack(self):
+        print(f"{self.name} casts a firebolt")
+
+class Archer(Character):
+    def attack(self):
+        print(f"{self.name} looses an arrow")
+
+for c in party:
+    c.attack()</pre><p>Neither child writes an <code>__init__</code> — name and health are inherited exactly as they are. Only the behaviour that differs gets written.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">15.5 · P3</span><span class="pt">Stretch — a party that has characters</span></div>
+        <p class="pd">Now compose: a <code>Party</code> <b>has</b> members. Complete <code>add()</code> and <code>battle_round()</code> — the round prints its banner line, then lets every member attack. Both of this unit's ideas, in nine lines.</p>
+        <div class="want">-- The Wanderers attack --
+Bran swings wildly
+Mira casts a firebolt
+Kai looses an arrow</div>
+        <div class="pyrun" data-id="s5p3" data-expect="-- The Wanderers attack --\nBran swings wildly\nMira casts a firebolt\nKai looses an arrow">
+          <textarea spellcheck="false">class Character:
+    def __init__(self, name, health=100):
+        self.name = name
+        self.health = health
+
+    def attack(self):
+        print(f"{self.name} swings wildly")
+
+
+class Wizard(Character):
+    def attack(self):
+        print(f"{self.name} casts a firebolt")
+
+
+class Archer(Character):
+    def attack(self):
+        print(f"{self.name} looses an arrow")
+
+
+class Party:
+    def __init__(self, name):
+        self.name = name
+        self.members = []
+
+    def add(self, member):
+        # your code
+
+    def battle_round(self):
+        # print(f"-- {self.name} attack --") then let each member attack
+
+
+p = Party("The Wanderers")
+p.add(Character("Bran"))
+p.add(Wizard("Mira"))
+p.add(Archer("Kai"))
+p.battle_round()</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>    def add(self, member):
+        self.members.append(member)
+
+    def battle_round(self):
+        print(f"-- {self.name} attack --")
+        for m in self.members:
+            m.attack()</pre><p><code>Party</code> knows nothing about wizards or archers — it holds <code>Character</code>-ish things and asks them to attack. Add a Healer class tomorrow and this method doesn't change by one character.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 15.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">15.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~14 min</span></span>
+      <p>The mixed set: inheriting, extending with <code>super()</code>, overriding, the polymorphic loop, and one thing that simply holds another. In order; they get meaner. The last one reaches back to a class you wrote yourself two units ago.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">Animals that speak for themselves</span></div>
+        <p class="pd">Give <code>Dog</code> and <code>Cat</code> their own <code>speak()</code> — <code>&lt;name&gt; says Woof</code> and <code>&lt;name&gt; says Meow</code> — then loop over the mixed list. No <code>if</code>, no <code>isinstance</code>: let the objects answer.</p>
+        <div class="want">Blob makes a sound
+Rex says Woof
+Mango says Meow</div>
+        <div class="pyrun" data-id="b1" data-expect="Blob makes a sound\nRex says Woof\nMango says Meow">
+          <textarea spellcheck="false">class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def speak(self):
+        print(f"{self.name} makes a sound")
+
+
+class Dog(Animal):
+    # your speak() here
+
+
+class Cat(Animal):
+    # your speak() here
+
+
+for a in [Animal("Blob"), Dog("Rex"), Cat("Mango")]:
+    # your loop body here</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class Dog(Animal):
+    def speak(self):
+        print(f"{self.name} says Woof")
+
+class Cat(Animal):
+    def speak(self):
+        print(f"{self.name} says Meow")
+
+for a in [Animal("Blob"), Dog("Rex"), Cat("Mango")]:
+    a.speak()</pre><p>The textbook example, and it earns its fame: three classes, one call site, three behaviours.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">Two years of interest</span></div>
+        <p class="pd">Build <code>SavingsAccount</code> properly: <code>__init__</code> with <code>super()</code> plus a <code>rate</code>, and <code>add_interest()</code> that grows the balance by <code>rate</code> percent. Then add interest twice, reporting after each.</p>
+        <div class="want">Meera: 1050.00
+Meera: 1102.50</div>
+        <div class="pyrun" data-id="b2" data-expect="Meera: 1050.00\nMeera: 1102.50">
+          <textarea spellcheck="false">class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def report(self):
+        print(f"{self.owner}: {self.balance:.2f}")
+
+
+class SavingsAccount(BankAccount):
+    # __init__ and add_interest here
+
+
+acc = SavingsAccount("Meera", 1000, 5)
+acc.add_interest()
+acc.report()
+acc.add_interest()
+acc.report()</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class SavingsAccount(BankAccount):
+    def __init__(self, owner, balance, rate):
+        super().__init__(owner, balance)
+        self.rate = rate
+
+    def add_interest(self):
+        self.balance = self.balance + self.balance * self.rate / 100</pre><p>1000 → 1050.0 → 1102.5. Interest compounds because each round reads the <i>new</i> balance — the same "right side first, then store back" you learned with your very first box.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">A school has students</span></div>
+        <p class="pd">Composition with a roll call. Complete <code>add</code>, <code>count</code> (return <code>len</code> of the list) and <code>roll_call</code> — the header line <code>&lt;school&gt;: &lt;n&gt; students</code>, then one line per student as <code>&lt;name&gt; (&lt;grade&gt;)</code>. The school name is typed in; here it's fixed to <code>Nehru High</code>.</p>
+        <div class="want">School name? Nehru High
+Nehru High: 3 students
+Asha (9)
+Dev (10)
+Nina (9)</div>
+        <div class="pyrun" data-id="b3" data-stdin="Nehru High" data-stdin-lock data-expect="School name? Nehru High\nNehru High: 3 students\nAsha (9)\nDev (10)\nNina (9)">
+          <textarea spellcheck="false">class Student:
+    def __init__(self, name, grade):
+        self.name = name
+        self.grade = grade
+
+
+class School:
+    def __init__(self, name):
+        self.name = name
+        self.students = []
+
+    def add(self, student):
+        # your code
+
+    def count(self):
+        # your code
+
+    def roll_call(self):
+        # your code
+
+
+name = input("School name? ")
+school = School(name)
+school.add(Student("Asha", 9))
+school.add(Student("Dev", 10))
+school.add(Student("Nina", 9))
+school.roll_call()</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>    def add(self, student):
+        self.students.append(student)
+
+    def count(self):
+        return len(self.students)
+
+    def roll_call(self):
+        print(f"{self.name}: {self.count()} students")
+        for s in self.students:
+            print(f"{s.name} ({s.grade})")</pre><p><code>roll_call</code> calls <code>self.count()</code> rather than <code>len(self.students)</code> again — one method leaning on another of its own is perfectly normal, and it means the counting rule lives in exactly one place.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — inherit from your own Playlist</span></div>
+        <p class="pd">Unit 13's <code>Playlist</code> is the parent this time. Build <code>KaraokePlaylist</code>: its <code>add(song, duet=False)</code> passes the song up with <code>super().add(song)</code> and remembers duets in a second list; its <code>show()</code> overrides the parent's to tag those songs with <code>(duet)</code>. Everything else stays inherited.</p>
+        <div class="want">Friday night:
+- Tum Hi Ho
+- Senorita (duet)
+- Kabira
+- Shallow (duet)</div>
+        <div class="pyrun" data-id="b4" data-expect="Friday night:\n- Tum Hi Ho\n- Senorita (duet)\n- Kabira\n- Shallow (duet)">
+          <textarea spellcheck="false">class Playlist:
+    def __init__(self, name):
+        self.name = name
+        self.songs = []
+
+    def add(self, song):
+        self.songs.append(song)
+
+    def show(self):
+        print(f"{self.name}:")
+        for s in self.songs:
+            print(f"- {s}")
+
+
+class KaraokePlaylist(Playlist):
+    # __init__, add(song, duet=False), show()
+
+
+kp = KaraokePlaylist("Friday night")
+kp.add("Tum Hi Ho")
+kp.add("Senorita", duet=True)
+kp.add("Kabira")
+kp.add("Shallow", duet=True)
+kp.show()</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>class KaraokePlaylist(Playlist):
+    def __init__(self, name):
+        super().__init__(name)
+        self.duets = []
+
+    def add(self, song, duet=False):
+        super().add(song)
+        if duet:
+            self.duets.append(song)
+
+    def show(self):
+        print(f"{self.name}:")
+        for s in self.songs:
+            if s in self.duets:
+                print(f"- {s} (duet)")
+            else:
+                print(f"- {s}")</pre><p>Both overrides lean on the parent in different ways: <code>add</code> borrows it with <code>super()</code> and adds bookkeeping; <code>show</code> replaces it outright. And the default <code>duet=False</code> means the three plain calls still work unchanged — a child can extend a method's signature as long as old calls keep meaning what they meant.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 16 · Classes IV — properties &amp; encapsulation</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">Your classes now reuse each other beautifully — and one door is still wide open. Nothing in any of today's code stops an outsider writing <code>account.balance = -999</code>, straight past every rule <code>withdraw</code> so carefully enforces. Unit 16 closes it: guarding the boxes with properties and validation, so an object can refuse a value that makes no sense. That's the last piece of the Intermediate level.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>The Python Tutorial</b> — <i>§9.5 Inheritance</i>. <span class="why">The official account of <code>class Child(Parent)</code>, the attribute lookup walk, and overriding — the same ground as 15.1 and 15.3.</span> <a href="https://docs.python.org/3/tutorial/classes.html#inheritance" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>Built-in Functions: super()</i>. <span class="why">What "my parent" really resolves to, and why the no-argument form inside a class is the one to use.</span> <a href="https://docs.python.org/3/library/functions.html#super" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>Built-in Functions: isinstance()</i>. <span class="why">The is-a question in code, including why it answers True for the parent class too.</span> <a href="https://docs.python.org/3/library/functions.html#isinstance" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>Glossary: duck-typing</i>. <span class="why">Why Python's polymorphic loop doesn't actually require a shared parent at all — a preview of how far this idea goes.</span> <a href="https://docs.python.org/3/glossary.html#term-duck-typing" rel="noopener">docs.python.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit14.html"><span class="k">← Previous</span><span class="t">Unit 14 · Classes II — objects that feel native</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit16.html"><span class="k">Next →</span><span class="t">Unit 16 · Classes IV — properties &amp; encapsulation</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 15 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"You write  class SavingsAccount(BankAccount):  with nothing but  pass  inside. What can a SavingsAccount object do?",
+   o:["Nothing — the class is empty","Everything BankAccount objects can do: __init__, deposit, withdraw, report","Only __init__, because the other methods must be copied in","Nothing until you also write deposit and withdraw"],
+   a:1,
+   e:"The brackets mean 'everything the parent can do, I can do'. Python looks for a method in the child first, finds nothing, and climbs to the parent — where all four methods live."},
+  {q:"Inside a child's __init__, what is the job of  super().__init__(owner, balance) ?",
+   o:["It creates a second, separate parent object","It runs the parent's setup code on this same object, so the parent's boxes get filled","It copies the parent's methods into the child","It checks that the child is really a kind of the parent"],
+   a:1,
+   e:"super() means 'my parent'. One object is being built; the call hands it to the parent's __init__ so owner and balance get set, and then the child adds its own extras."},
+  {q:"You forget the super().__init__ line, and later  acc.report()  fails. What does the error say?",
+   o:["SyntaxError: invalid syntax","NameError: name 'super' is not defined","AttributeError: 'SavingsAccount' object has no attribute 'owner'","TypeError: __init__() takes 2 positional arguments"],
+   a:2,
+   e:"Read it literally: this object has no box called owner. It never got one, because the code that creates it — the parent's __init__ — was never run. That message is the signature of a missing super().__init__."},
+  {q:"A child class defines a method with the SAME name as one in its parent. What happens?",
+   o:["An error — two methods can't share a name","Python picks one based on the arguments you pass","The child's version wins for the child's objects; the parent's still serves the parent's","Both run, child first"],
+   a:2,
+   e:"That's overriding, and it falls straight out of the lookup walk: the search starts in the child and stops at the first match. The parent's version is untouched — and reachable on purpose with super()."},
+  {q:"for a in [account, savings, premium]: a.report()  prints three differently-shaped lines. What is that called, and why does it work?",
+   o:["Inheritance — the loop inherits from the list","Polymorphism — the same call sent to different objects does the right different thing","Composition — the list has three accounts inside","Overloading — report() has three versions"],
+   a:1,
+   e:"Polymorphism, and it needs no cleverness in the loop: each object's lookup walk starts in its own class, so each finds its own report. Add a fourth account type and the loop doesn't change."},
+  {q:"You need a Library that holds Books. Which relationship, and how do you decide?",
+   o:["Inheritance — Library(Book) — because it reuses Book","Composition — Library holds a list of Book objects — because 'a Library is a Book' is nonsense","Either works equally well","Inheritance, because composition is only for numbers and strings"],
+   a:1,
+   e:"Say 'is-a' out loud: a library is not a kind of book, it contains books — so has-a, a list attribute. Keep the habit: 'a SavingsAccount is a BankAccount' rings true, so that one is inheritance; when the sentence is genuinely ambiguous, prefer composition."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — flawless. Is-a, has-a, and the loop that pays for both."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 15.2 and 15.3 carry the load."
+           : " — worth another pass through the practice above before Unit 16.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Inheritance","Declaring one class a kind of another with class Child(Parent). The child gets every method and attribute of the parent, without copying."],
+  ["Parent class","The class being inherited from — also called the base class or superclass. It knows nothing about its children."],
+  ["Child class","The class doing the inheriting — also called the subclass. It may add methods, replace them, or add nothing at all."],
+  ["is-a","The test for inheritance. Say it out loud: 'a SavingsAccount is a BankAccount' rings true, so inherit."],
+  ["has-a","The test for composition. 'A Library has Books' — so store them in a list attribute instead of inheriting."],
+  ["Composition","Building a class out of other objects it holds — a list attribute of Book objects, an Engine inside a Car. When in doubt, prefer this over inheritance."],
+  ["Attribute lookup","Python's search for a name: the object's own class first, then up the family arrow to the parent. It stops at the first match."],
+  ["super()","'My parent', inside a class. super().__init__(...) runs the parent's setup on this same object; super().method() reaches the parent's version of an overridden method."],
+  ["Overriding","Writing a method in the child with the same name as the parent's. The child's version wins for the child's objects; the parent's is untouched."],
+  ["Polymorphism","The same call sent to different objects doing the right different thing — one loop, many behaviours. Greek for 'many shapes'; nothing more to it than that."],
+  ["isinstance(obj, Cls)","Asks 'is this object one of those?'. True for the object's own class AND for every class it inherits from."],
+  ["AttributeError","'Object has no attribute X'. In a child class, almost always a missing super().__init__ — the box was never created."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

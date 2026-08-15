@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Making Decisions — Comparisons &amp; if/else — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u03" data-lwa-title="Unit 3 · Making decisions — comparisons &amp; if/else">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Beginner — Foundations · Unit 3</div>
+      <h1>Making Decisions — Comparisons &amp; if/else</h1>
+      <p class="standfirst">Your programs can remember and compute, but every run still walks the same straight line. This session installs the fork in the road: questions that answer <code style="font-size:.85em">True</code> or <code style="font-size:.85em">False</code>, and <code style="font-size:.85em">if</code>/<code style="font-size:.85em">elif</code>/<code style="font-size:.85em">else</code> to act on the answer. By the end you've built a one-guess number game and a bouncer who actually checks.</p>
+      <div class="facts">
+        <div><b>One session</b>~45 min</div>
+        <div><b>4 concepts + a build</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 1–2 — print, input, boxes</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">3.1 True/False &amp; comparisons</a>
+    <a href="#s2">3.2 if / else</a>
+    <a href="#s3">3.3 elif — many branches</a>
+    <a href="#s4">3.4 and / or / not</a>
+    <a href="#s5">3.5 Build: two deciders</a>
+    <a href="#s6">3.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 3.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Units 1–2</b>print() and input() from Unit 1; boxes, <code>int()</code> at the door, and f-strings from Unit 2. All of them work shifts here.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm: each concept is a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit3.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>One run, one road</b>The big picture of this unit: however many branches you write, each run of the program walks down exactly one of them. Keep that sentence in your head — every trace below is that sentence in action.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">3.1</span>
+      <h2>True/False &amp; the six comparisons</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Every useful program keeps asking yes/no questions. Is the bill over budget? Did the password match? Has the guess found the secret? Before a program can <i>act</i> on a question, it needs a way to <i>ask</i> one — and something to hold the answer.</p>
+      <p><b>The idea, in plain words.</b> Python has a third kind of value beside numbers and text: the <b>boolean</b> (<code>bool</code>), and it has exactly two members — <code>True</code> and <code>False</code>, capitalised, no quotes. They're the answers to yes/no questions, and the questions are asked with six <b>comparison operators</b>:</p>
+      <div class="fig" style="max-width:66ch;padding:6px 18px">
+      <table>
+        <tr><th>operator</th><th>asks</th><th>example</th><th>answer</th></tr>
+        <tr><td><code>==</code></td><td>equal?</td><td><code>7 == 7</code></td><td><code>True</code></td></tr>
+        <tr><td><code>!=</code></td><td>not equal?</td><td><code>7 != 7</code></td><td><code>False</code></td></tr>
+        <tr><td><code>&lt;</code></td><td>less than?</td><td><code>3 &lt; 7</code></td><td><code>True</code></td></tr>
+        <tr><td><code>&gt;</code></td><td>greater than?</td><td><code>3 &gt; 7</code></td><td><code>False</code></td></tr>
+        <tr><td><code>&lt;=</code></td><td>at most?</td><td><code>7 &lt;= 7</code></td><td><code>True</code></td></tr>
+        <tr><td><code>&gt;=</code></td><td>at least?</td><td><code>6 &gt;= 7</code></td><td><code>False</code></td></tr>
+      </table>
+      </div>
+      <p>A comparison is an expression like any other — it produces a value, and the value goes wherever values go: into a print, into a box, or (from 3.2 onward) into an <code>if</code>. Strings compare happily too: <code>guess == "mango"</code> is a perfectly good question, and it's answered character by character, case and all — <code>"Yes" == "yes"</code> is <code>False</code>, Unit 1's case-sensitivity striking again. And the type rules from Unit 2 still reign: <code>"7" == 7</code> is <code>False</code> — a string of one character and a number are simply not the same thing, however alike they look on screen.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — three questions, three answers</div>
+      <div class="m">age = 20
+print(age &gt;= 18)
+print(age == 21)
+print("7" == 7)</div>
+      <p><b>Line 1:</b> box <code>age</code> holds <b>20</b>.</p>
+      <p><b>Line 2:</b> the question "is 20 at least 18?" — yes:</p>
+      <p><b>Line 3:</b> "is 20 exactly 21?" — no. <b>Line 4:</b> a string versus an int — never equal, whatever the characters say:</p>
+      <div class="m">True
+False
+False</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Unit 2 planted this and here's the payoff: <b><code>=</code> stores, <code>==</code> asks.</b> <code>x = 5</code> puts 5 in the box; <code>x == 5</code> looks in the box and answers <code>True</code> or <code>False</code>, changing nothing. Write <code>=</code> where a question belongs and Python usually stops you with a <code>SyntaxError</code>; write <code>==</code> where a store belongs and — worse — nothing happens at all: the question is asked, answered, and the answer thrown away. One symbol stores, two symbols ask. Say it until it's boring.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a clinic flags a fever. Ask three questions about a temperature reading and print all three answers. <b>Thinking:</b> comparisons are just expressions — print them like anything else, or store them in boxes first. Predict all three before running.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">temperature = 38.2
+print("Fever?", temperature > 37.5)
+print("Exactly normal?", temperature == 37.0)
+print("Safe range?", temperature <= 41.0)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">3.1 · P1</span><span class="pt">Predict: four questions</span></div>
+        <p class="pd">On paper, predict all four answers — the last one is the trap Unit 2 warned you about. Then run and reconcile.</p>
+        <div class="pyrun" data-id="s1p1">
+          <textarea spellcheck="false">print(7 > 3)
+print(7 < 3)
+print(7 != 3)
+print("7" == 7)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>True
+False
+True
+False</pre><p>The first three are ordinary arithmetic questions. The last compares a string with an int — different types are simply not equal, so the answer is a calm <code>False</code> (not an error — unlike <code>"7" + 7</code>, which refuses to run).</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">3.1 · P2</span><span class="pt">The examiner's two questions</span></div>
+        <p class="pd">Pass mark is 35, topper territory starts at 90. Using one comparison in each print, report both answers for <code>marks = 72</code> to match the goal exactly.</p>
+        <div class="want">Passed: True
+Topper: False</div>
+        <div class="pyrun" data-id="s1p2" data-expect="Passed: True\nTopper: False">
+          <textarea spellcheck="false">marks = 72
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>marks = 72
+print("Passed:", marks &gt;= 35)
+print("Topper:", marks &gt;= 90)</pre><p>Comparisons produce values, and comma-print handles them like any other value — <code>True</code> and <code>False</code> print with their capital letters.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">3.1 · P3</span><span class="pt">One symbol stores, two symbols ask</span></div>
+        <p class="pd">This program means to add 5 to the box, but it prints <code>10</code>. Run it, see the damage — no error, just a wrong answer — then fix one character so it prints the goal.</p>
+        <div class="want">15</div>
+        <div class="pyrun" data-id="s1p3" data-expect="15">
+          <textarea spellcheck="false">x = 10
+x == x + 5
+print(x)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>x = 10
+x = x + 5
+print(x)</pre><p>Line 2 <i>asked</i> "is 10 equal to 15?", got <code>False</code>, and threw the answer away — the box never changed. The silent version of the <code>=</code>/<code>==</code> mix-up is the dangerous one: no error report, just wrong numbers downstream.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">3.1 · P4</span><span class="pt">Stretch — exact means exact</span></div>
+        <p class="pd">Run as-is: the typed input is fixed to <code>Yes</code> (capital Y) and the program checks it against <code>"yes"</code>. Predict the answer first — then, in the solution, see the standard trick real programs use.</p>
+        <div class="want">Type yes: Yes
+False</div>
+        <div class="pyrun" data-id="s1p4" data-stdin="Yes" data-stdin-lock data-expect="Type yes: Yes\nFalse">
+          <textarea spellcheck="false">word = input("Type yes: ")
+print(word == "yes")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>word = input("Type yes: ")
+print(word == "yes")</pre><p><code>"Yes"</code> and <code>"yes"</code> differ in their first character, so <code>False</code>. String equality has no mercy and no imagination. (Real programs often smooth this over with <code>word.lower() == "yes"</code> — a preview of string methods, coming in Unit 6.)</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">3.2</span>
+      <h2>if / else — the fork in the road</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> You can now ask questions and see the answers — but nothing <i>changes</i>. A program that prints <code>False</code> and carries on regardless is a spectator. We want: <i>if</i> the marks clear the bar, say pass; <i>otherwise</i>, say fail. Different runs, different behaviour.</p>
+      <p><b>The idea, in plain words.</b> The <code>if</code> statement is a fork in the road. Our literal-minded kitchen helper reaches it, evaluates the question, and takes exactly one of the two paths:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">if marks &gt;= 35:<br>&nbsp;&nbsp;&nbsp;&nbsp;print("Pass")<br>else:<br>&nbsp;&nbsp;&nbsp;&nbsp;print("Fail")</p>
+      <p>Two pieces of syntax carry all the weight:</p>
+      <ul class="plain">
+        <li><b>The colon</b> at the end of the <code>if</code> line (and the <code>else</code> line) says "a block of lines belongs to me". Forget it and Python stops with a <code>SyntaxError</code> pointing at the line end.</li>
+        <li><b>The indentation</b> — the four spaces — is not decoration. In Python, indentation IS the syntax that says "these lines are inside the branch". Everything indented under the <code>if</code> runs only when the answer is <code>True</code>; everything under <code>else</code> runs only when it's <code>False</code>; and the first line back at the left margin runs <i>either way</i>, because it's after the fork, not inside it.</li>
+      </ul>
+      <p>Mis-indent and you meet a new error report: <code>IndentationError</code>. Read it like every other report — last line first — and it tells you Python expected a block and didn't find one, or found spaces it can't make sense of. It feels fussy for a week; then your eyes start reading indentation as structure, which is exactly what Python's designers intended. Use 4 spaces, always — pick it and never think about it again. One more thing: <code>else</code> is optional. An <code>if</code> alone means "do this extra thing when true; otherwise just carry on".</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — one run, one road</div>
+      <div class="m">marks = 52
+if marks &gt;= 35:
+    print("Pass")
+else:
+    print("Fail")
+print("Done")</div>
+      <p><b>Line 1:</b> box <code>marks</code> holds <b>52</b>.</p>
+      <p><b>Line 2:</b> the question: is 52 at least 35? <b>True</b> — so the helper steps into the indented block below the <code>if</code>.</p>
+      <p><b>Line 3:</b> prints <code>Pass</code>. <b>Lines 4–5:</b> the entire <code>else</code> block is skipped — not run slowly, not run quietly; <i>never looked at</i>.</p>
+      <p><b>Line 6:</b> back at the left margin — after the fork, so it runs on every run:</p>
+      <div class="m">Pass
+Done</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 300" role="img" aria-label="Flow diagram: the condition marks >= 35 forks into a taken True path printing Pass and a skipped False path printing Fail, then both roads rejoin at print Done">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">THE FORK IN THE ROAD — marks = 52</text>
+        <rect x="330" y="46" width="200" height="46" rx="9" fill="#f0f1f7" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="430" y="74" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#3d3170">marks &gt;= 35 ?</text>
+        <path d="M370 92 L215 138" stroke="#2b7a78" stroke-width="2.5" fill="none"/>
+        <polygon points="215,138 226,130 222,141" fill="#2b7a78"/>
+        <text x="255" y="112" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">True</text>
+        <path d="M490 92 L645 138" stroke="#e3e6ee" stroke-width="2.5" fill="none"/>
+        <polygon points="645,138 634,141 638,130" fill="#e3e6ee"/>
+        <text x="570" y="112" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#a35a33">False</text>
+        <rect x="105" y="142" width="220" height="50" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="2"/>
+        <text x="215" y="172" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1d5654">print("Pass")</text>
+        <text x="215" y="212" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">the road taken this run</text>
+        <rect x="535" y="142" width="220" height="50" rx="9" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <text x="645" y="172" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#6b7585">print("Fail")</text>
+        <text x="645" y="212" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">never looked at this run</text>
+        <path d="M215 222 L400 252" stroke="#2b7a78" stroke-width="2.5" fill="none"/>
+        <path d="M645 222 L460 252" stroke="#e3e6ee" stroke-width="2" fill="none" stroke-dasharray="5 4"/>
+        <rect x="330" y="240" width="200" height="46" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="430" y="268" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#3d3170">print("Done")</text>
+      </svg>
+      <div class="figcap">Fig. 1 — One run, one road. The two branches both exist in the code, but each run of the program travels exactly one of them, and the roads rejoin at the first unindented line.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Beginners often expect Python to notice a "nearly indented" line. It won't. <code>print("Pass")</code> flush against the left margin directly after <code>if marks &gt;= 35:</code> is an <code>IndentationError: expected an indented block</code> — Python was promised a block by the colon and got none. And a line accidentally indented where no block was opened is an error too. Indentation is a statement about structure, and Python holds you to it — which is precisely why Python programs are so readable.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a wallet check before buying: if the price fits the balance, approve; otherwise say exactly how short we are. <b>Thinking:</b> one comparison, two roads — and the <code>else</code> road computes with the same boxes, f-string at the exit. Change <code>price</code> to 300 and re-run to travel the other road.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">balance = 500
+price = 650
+if price <= balance:
+    print("Purchase approved")
+else:
+    print(f"Short by {price - balance} rupees")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">3.2 · P1</span><span class="pt">The fever gate</span></div>
+        <p class="pd">Write the fork: if <code>temperature</code> is above 37.5 print <code>Fever</code>, otherwise print <code>Normal</code>. The box is set so the goal is one word — but write both roads anyway; a fork with one working path is half a program.</p>
+        <div class="want">Fever</div>
+        <div class="pyrun" data-id="s2p1" data-expect="Fever">
+          <textarea spellcheck="false">temperature = 39.5
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>temperature = 39.5
+if temperature &gt; 37.5:
+    print("Fever")
+else:
+    print("Normal")</pre><p>Colon after the question, four spaces before each road. Change the box to 36.6 and re-run — same code, other road.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">3.2 · P2</span><span class="pt">Predict: inside vs after</span></div>
+        <p class="pd">Two prints — one indented, one not. Predict exactly which lines appear, then run. If you predicted one line, re-read "the first line back at the left margin" in the read above.</p>
+        <div class="pyrun" data-id="s2p2">
+          <textarea spellcheck="false">age = 30
+if age >= 18:
+    print("Adult")
+print("Ticket please")</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>Adult
+Ticket please</pre><p><code>print("Adult")</code> is inside the branch (indented) — it ran because the answer was True. <code>print("Ticket please")</code> is back at the margin — after the fork, it runs on every run, whatever the age. There's no <code>else</code> here, and that's fine: no-else means "otherwise, just carry on".</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">3.2 · P3</span><span class="pt">Fix the indentation</span></div>
+        <p class="pd">This fork is broken. Run it, read the error report — last line first, as always — and fix the layout (not the logic) so it prints the goal.</p>
+        <div class="want">You passed!</div>
+        <div class="pyrun" data-id="s2p3" data-expect="You passed!">
+          <textarea spellcheck="false">score = 80
+if score >= 50:
+print("You passed!")
+else:
+    print("Try again")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>score = 80
+if score &gt;= 50:
+    print("You passed!")
+else:
+    print("Try again")</pre><p><code>IndentationError: expected an indented block</code> — the colon promised a block and line 3 sat at the margin. Four spaces fix it. Your editor's Tab key types them for you.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">3.3</span>
+      <h2>elif — many branches, first True wins</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Pass/fail is a two-way fork. But grades come in bands — A from 90, B from 75, C from 50, D below — and stacking whole <code>if/else</code> forks inside each other gets ugly fast. We want one clean structure that says "try this, else try this, else try this, else give up".</p>
+      <p><b>The idea, in plain words.</b> That structure is <code>elif</code> — literally "else, if". It adds more doors to the fork, and the helper checks them <b>top to bottom, taking the first one whose question answers True</b> and skipping everything after it. The <code>else</code> at the bottom is the door for "none of the above".</p>
+      <p>The consequence is the rule this whole section exists to teach: <b>order matters</b>. Since 95 clears the bar for A, B <i>and</i> C, the ladder works only because the strictest band is asked first. Ask <code>marks &gt;= 50</code> first and every passing paper on earth gets a C — no error message, just confidently wrong grades. Python can't catch this one for you; only your ordering can.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — down the ladder</div>
+      <div class="m">marks = 78
+if marks &gt;= 90:
+    grade = "A"
+elif marks &gt;= 75:
+    grade = "B"
+elif marks &gt;= 50:
+    grade = "C"
+else:
+    grade = "D"
+print(f"Grade: {grade}")</div>
+      <p><b>Line 2:</b> is 78 at least 90? False — door stays shut, move down.</p>
+      <p><b>Line 4:</b> is 78 at least 75? <b>True</b> — in we go: <code>grade</code> now holds <code>"B"</code>. And that's the ladder <i>done</i>: the <code>&gt;= 50</code> door (which 78 would also open) and the <code>else</code> are never looked at.</p>
+      <p><b>Line 10:</b> back at the margin, the f-string reads the box:</p>
+      <div class="m">Grade: B</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 250" role="img" aria-label="An elif ladder checked top to bottom for marks 78: the 90 door answers False, the 75 door answers True and is taken, the 50 door and else are never checked">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">THE LADDER, TOP TO BOTTOM — marks = 78</text>
+        <rect x="40" y="48" width="230" height="42" rx="9" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="155" y="74" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1f2733">marks &gt;= 90 ?</text>
+        <text x="300" y="74" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#a35a33">False — move down</text>
+        <path d="M155 90 L155 108" stroke="#5b4b9e" stroke-width="2" fill="none"/>
+        <polygon points="155,112 150,103 160,103" fill="#5b4b9e"/>
+        <rect x="40" y="114" width="230" height="42" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="2"/>
+        <text x="155" y="140" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">marks &gt;= 75 ?</text>
+        <text x="300" y="132" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">True — take this door,</text>
+        <text x="300" y="150" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">grade = "B", ladder DONE</text>
+        <rect x="40" y="174" width="230" height="42" rx="9" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <text x="155" y="200" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#6b7585">marks &gt;= 50 ?</text>
+        <rect x="290" y="174" width="120" height="42" rx="9" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <text x="350" y="200" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#6b7585">else</text>
+        <text x="435" y="200" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">never looked at — 78 would open the &gt;= 50 door, but nobody knocks</text>
+        <text x="40" y="240" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">First True wins. That's why the strictest question must sit at the top.</text>
+      </svg>
+      <div class="figcap">Fig. 2 — The ladder is checked top to bottom and the first True door ends the whole affair. Everything below it is skipped, even doors the value could have opened.</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      An <code>if/elif/else</code> ladder takes exactly one door per run: the first whose question is True, or <code>else</code> if none are. Order your questions from strictest to loosest, or the loose ones will steal every run.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a weather advisory in bands: 40+ heatwave, 30+ hot, 20+ pleasant, below that cool. <b>Thinking:</b> strictest first, one door per run. Try 43, 25 and 12 in the box and watch a different door open each time.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">temp = 31
+if temp >= 40:
+    print("Heatwave - stay indoors")
+elif temp >= 30:
+    print("Hot - carry water")
+elif temp >= 20:
+    print("Pleasant")
+else:
+    print("Cool - take a jacket")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">3.3 · P1</span><span class="pt">The grade classifier</span></div>
+        <p class="pd">Build the ladder from the trace: A from 90, B from 75, C from 50, else D — storing the grade in a box and printing it with the f-string shown in the goal. The box is set to 64.</p>
+        <div class="want">Grade: C</div>
+        <div class="pyrun" data-id="s3p1" data-expect="Grade: C">
+          <textarea spellcheck="false">marks = 64
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>marks = 64
+if marks &gt;= 90:
+    grade = "A"
+elif marks &gt;= 75:
+    grade = "B"
+elif marks &gt;= 50:
+    grade = "C"
+else:
+    grade = "D"
+print(f"Grade: {grade}")</pre><p>64 walks past the 90 and 75 doors, opens the 50 door, and the print at the margin reads whatever the one taken branch stored.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">3.3 · P2</span><span class="pt">Fix the upside-down ladder</span></div>
+        <p class="pd">Someone built the same classifier with the questions in the wrong order. Run it — a 95 gets a C, and Python raises no objection whatsoever. Reorder the ladder so the goal comes out. Don't change any numbers.</p>
+        <div class="want">Grade: A</div>
+        <div class="pyrun" data-id="s3p2" data-expect="Grade: A">
+          <textarea spellcheck="false">marks = 95
+if marks >= 50:
+    print("Grade: C")
+elif marks >= 75:
+    print("Grade: B")
+elif marks >= 90:
+    print("Grade: A")
+else:
+    print("Grade: D")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>marks = 95
+if marks &gt;= 90:
+    print("Grade: A")
+elif marks &gt;= 75:
+    print("Grade: B")
+elif marks &gt;= 50:
+    print("Grade: C")
+else:
+    print("Grade: D")</pre><p>In the broken version, 95 opens the very first door (<code>&gt;= 50</code>) and the ladder ends — the A door exists but nobody ever reaches it. First True wins; strictest question first.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">3.3 · P3</span><span class="pt">Stretch — the ticket counter</span></div>
+        <p class="pd">Ask <code>Age? </code> (convert at the door — Unit 2 reflex) and price the ticket by age band: under 5 free, under 18 pays 60, under 60 pays 120, otherwise 80. Input is fixed to 12.</p>
+        <div class="want">Age? 12
+Ticket: 60</div>
+        <div class="pyrun" data-id="s3p3" data-stdin="12" data-stdin-lock data-expect="Age? 12\nTicket: 60">
+          <textarea spellcheck="false">age = int(input("Age? "))
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>age = int(input("Age? "))
+if age &lt; 5:
+    print("Ticket: free")
+elif age &lt; 18:
+    print("Ticket: 60")
+elif age &lt; 60:
+    print("Ticket: 120")
+else:
+    print("Ticket: 80")</pre><p>This ladder runs the other direction — loosest bound rising — and works for the same reason: each door is only reached by ages the earlier doors rejected. 12 fails <code>&lt; 5</code>, passes <code>&lt; 18</code>, done.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">3.4</span>
+      <h2>and / or / not — combining questions</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Real rules rarely ask one question. A club admits you if you're 18 <i>and</i> holding a ticket. A shop gives the discount if the bill is big <i>or</i> it's Tuesday. "Working age" means at least 18 <i>and</i> at most 60. One comparison can't say any of that.</p>
+      <p><b>The idea, in plain words.</b> Three little words weld questions together, and they mean exactly what they mean in English:</p>
+      <ul class="plain">
+        <li><code>a and b</code> — True only when <b>both</b> sides are True. One False anywhere sinks it.</li>
+        <li><code>a or b</code> — True when <b>either</b> side is (or both). Only two Falses make it False.</li>
+        <li><code>not a</code> — flips the answer: <code>not True</code> is <code>False</code>.</li>
+      </ul>
+      <p>So a range check reads almost like prose: <code>age &gt;= 18 and age &lt;= 60</code>. Python even lets you chain the comparisons the way maths writes them — <code>18 &lt;= age &lt;= 60</code> means the same thing and is perfectly good style. Combined questions produce ordinary <code>True</code>/<code>False</code> values, so they slot straight into <code>if</code>, into prints, into boxes — everywhere a lone comparison goes.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the discount rule</div>
+      <div class="m">age = 66
+member = age &gt;= 60
+big_bill = 480 &gt;= 1000
+if member or big_bill:
+    print("Discount applies")
+else:
+    print("Full price")</div>
+      <p><b>Line 2:</b> is 66 at least 60? True — box <code>member</code> holds <b>True</b>. (Booleans live in boxes as happily as numbers do.)</p>
+      <p><b>Line 3:</b> 480 against 1000 — box <code>big_bill</code> holds <b>False</b>.</p>
+      <p><b>Line 4:</b> <code>True or False</code> — <code>or</code> needs only one — <b>True</b>. Into the first branch:</p>
+      <div class="m">Discount applies</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>The English shortcut "age is at least 18 and at most 60" tempts everyone to type <code>age &gt;= 18 and &lt;= 60</code> — a <code>SyntaxError</code>. Each side of <code>and</code> must be a <b>complete question</b>: <code>age &gt;= 18 and age &lt;= 60</code>, naming the box both times. (Or sidestep it entirely with the chain <code>18 &lt;= age &lt;= 60</code>.)</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a shop discounts 10% when the bill is 1000+ <i>or</i> it's Tuesday. <b>Thinking:</b> one <code>or</code> in the condition, then Unit 2 does the rest — arithmetic in the branch, <code>:.2f</code> at the exit. Try changing the day to <code>"friday"</code> and the bill to 800: which road now?</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">bill = 1450
+day = "tuesday"
+if bill >= 1000 or day == "tuesday":
+    print("10% off!")
+    print(f"You pay: {bill * 0.9:.2f}")
+else:
+    print(f"You pay: {bill:.2f}")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">3.4 · P1</span><span class="pt">Predict: the three welders</span></div>
+        <p class="pd">Three combined questions about one box. Predict all three answers on paper — the third needs care with what <code>not</code> flips — then run.</p>
+        <div class="pyrun" data-id="s4p1">
+          <textarea spellcheck="false">a = 10
+print(a > 5 and a < 20)
+print(a > 5 or a > 100)
+print(not a == 10)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>True
+True
+False</pre><p>Line 2: both sides True, so <code>and</code> is True. Line 3: the left side alone satisfies <code>or</code>. Line 4: <code>a == 10</code> answers True, and <code>not</code> flips it to False.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">3.4 · P2</span><span class="pt">The range check</span></div>
+        <p class="pd">Print the answer to "is <code>age</code> working age?" — at least 18 and at most 60 — with the label shown in the goal. Use <code>and</code>, or the chained form; both earn full marks.</p>
+        <div class="want">Working age: True</div>
+        <div class="pyrun" data-id="s4p2" data-expect="Working age: True">
+          <textarea spellcheck="false">age = 45
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>age = 45
+print("Working age:", 18 &lt;= age &lt;= 60)</pre><p>The chain reads like the maths. The spelled-out twin — <code>age &gt;= 18 and age &lt;= 60</code> — is identical in meaning; use whichever your eyes prefer.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">3.4 · P3</span><span class="pt">Stretch — free delivery</span></div>
+        <p class="pd">Delivery is free when the order is at least 500 <i>or</i> the distance is under 3 km; otherwise it costs 40. Write the fork so the boxes below produce the goal — then flip the numbers around and check the other road charges correctly.</p>
+        <div class="want">Free delivery</div>
+        <div class="pyrun" data-id="s4p3" data-expect="Free delivery">
+          <textarea spellcheck="false">order = 350
+distance = 2
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>order = 350
+distance = 2
+if order &gt;= 500 or distance &lt; 3:
+    print("Free delivery")
+else:
+    print("Delivery: 40")</pre><p>The order is too small, but the distance rescues it — <code>False or True</code> is True. With <code>and</code> instead, this customer pays; one word changes the business rule entirely.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">3.5</span>
+      <h2>Your build — two little deciders</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>Two complete programs, everything from this session in play. First, a guessing game with a secret number and one shot at it — comparisons and a three-door ladder. Second, the classic bouncer: two questions at the door, and both answers must satisfy. Ask → convert → decide → reply: the Unit 2 four-beat, with a fork where "compute" used to be.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">3.5 · P1</span><span class="pt">Guess my number, v1</span></div>
+        <p class="pd">The secret is hard-coded: 7. Take one guess with <code>int(input("Your guess? "))</code> and reply <code>Too low!</code>, <code>Too high!</code> or <code>Correct!</code> — a three-door ladder. The guess here is fixed to 4; make sure your ladder would answer 9 and 7 correctly too.</p>
+        <div class="want">Your guess? 4
+Too low!</div>
+        <div class="pyrun" data-id="s5p1" data-stdin="4" data-stdin-lock data-expect="Your guess? 4\nToo low!">
+          <textarea spellcheck="false">secret = 7
+guess = int(input("Your guess? "))
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>secret = 7
+guess = int(input("Your guess? "))
+if guess &lt; secret:
+    print("Too low!")
+elif guess &gt; secret:
+    print("Too high!")
+else:
+    print("Correct!")</pre><p>Three doors cover every possible int, so <code>else</code> can safely mean "equal". One guess per run is annoying, isn't it? Unit 4 fixes exactly that.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">3.5 · P2</span><span class="pt">The bouncer</span></div>
+        <p class="pd">Two questions at the door: <code>Age? </code> (convert!) and <code>Ticket? (yes/no) </code>. Entry only if age is at least 18 <b>and</b> the ticket answer is exactly <code>yes</code> — reply <code>Come on in.</code> or <code>No entry.</code> Inputs fixed: 19, then yes. Then unlock nothing — just re-read your condition and convince yourself a 17-year-old with a ticket, and a 30-year-old without one, are both turned away.</p>
+        <div class="want">Age? 19
+Ticket? (yes/no) yes
+Come on in.</div>
+        <div class="pyrun" data-id="s5p2" data-stdin="19\nyes" data-stdin-lock data-expect="Age? 19\nTicket? (yes/no) yes\nCome on in.">
+          <textarea spellcheck="false">age = int(input("Age? "))
+ticket = input("Ticket? (yes/no) ")
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>age = int(input("Age? "))
+ticket = input("Ticket? (yes/no) ")
+if age &gt;= 18 and ticket == "yes":
+    print("Come on in.")
+else:
+    print("No entry.")</pre><p>Note what stays text and what converts: age does maths, so it's <code>int()</code> at the door; the ticket answer is compared as a string, so it stays as it came. <code>and</code> makes one False anywhere enough to refuse.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">3.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~12 min</span></span>
+      <p>The mixed set: comparisons, forks, ladders and welded questions — with Unit 2's arithmetic and f-strings pulling shifts. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">Even or odd</span></div>
+        <p class="pd">Unit 2's <code>%</code> operator, paid off: a number is even exactly when <code>n % 2 == 0</code>. Report the box's verdict in one f-string sentence as shown. (Check your code also gets <code>40 is even</code> right.)</p>
+        <div class="want">41 is odd</div>
+        <div class="pyrun" data-id="b1" data-expect="41 is odd">
+          <textarea spellcheck="false">n = 41
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>n = 41
+if n % 2 == 0:
+    print(f"{n} is even")
+else:
+    print(f"{n} is odd")</pre><p>The remainder after dividing by 2 is 0 for evens, 1 for odds — so the comparison <code>n % 2 == 0</code> is the standard evenness question. You'll type it for the rest of your programming life.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">Biggest of three</span></div>
+        <p class="pd">Three boxes; print the biggest with the label shown. You'll need <code>and</code> inside a ladder — the first door must establish that <code>a</code> beats <i>both</i> others.</p>
+        <div class="want">Biggest: 67</div>
+        <div class="pyrun" data-id="b2" data-expect="Biggest: 67">
+          <textarea spellcheck="false">a = 23
+b = 67
+c = 41
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>a = 23
+b = 67
+c = 41
+if a &gt;= b and a &gt;= c:
+    print(f"Biggest: {a}")
+elif b &gt;= c:
+    print(f"Biggest: {b}")
+else:
+    print(f"Biggest: {c}")</pre><p>The second door doesn't need to re-check against <code>a</code> — reaching it already proves <code>a</code> lost. Each rung of a ladder inherits everything the rungs above ruled out.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">The login check</span></div>
+        <p class="pd">The stored credentials are username <code>adi</code>, password <code>mango42</code>. Ask <code>Username: </code> and <code>Password: </code>, and greet with the f-string shown only if <b>both</b> match exactly; otherwise print <code>Access denied.</code> Inputs fixed to the right pair — but make sure a wrong password would be refused.</p>
+        <div class="want">Username: adi
+Password: mango42
+Welcome, adi!</div>
+        <div class="pyrun" data-id="b3" data-stdin="adi\nmango42" data-stdin-lock data-expect="Username: adi\nPassword: mango42\nWelcome, adi!">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>username = input("Username: ")
+password = input("Password: ")
+if username == "adi" and password == "mango42":
+    print(f"Welcome, {username}!")
+else:
+    print("Access denied.")</pre><p>String equality is exact — case, spaces and all — which is precisely what you want from a login. Real systems never store passwords in plain sight like this; that story comes much later.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — the shipping desk</span></div>
+        <p class="pd">Ask <code>Weight in kg? </code> (convert at the door) and quote shipping by band: up to 1 kg costs 50, up to 5 kg costs 90, up to 10 kg costs 150, heavier is <code>Too heavy to ship</code>. Input fixed to 7. Get the ladder direction right — which end is "strictest" here?</p>
+        <div class="want">Weight in kg? 7
+Shipping: 150</div>
+        <div class="pyrun" data-id="b4" data-stdin="7" data-stdin-lock data-expect="Weight in kg? 7\nShipping: 150">
+          <textarea spellcheck="false">weight = int(input("Weight in kg? "))
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>weight = int(input("Weight in kg? "))
+if weight &lt;= 1:
+    print("Shipping: 50")
+elif weight &lt;= 5:
+    print("Shipping: 90")
+elif weight &lt;= 10:
+    print("Shipping: 150")
+else:
+    print("Too heavy to ship")</pre><p>With <code>&lt;=</code> bands the <i>smallest</i> bound is strictest, so the ladder climbs upward: 7 walks past the 1 kg and 5 kg doors and opens the 10 kg one. Same first-True-wins rule as the grades, mirrored.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 4 · Doing it again — loops</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">Your programs can now choose — but they still do everything exactly once. Unit 4 teaches them to repeat: <code>while</code> and <code>for</code>, the guess game finally gets its retries, and the <code>count = count + 1</code> ache from Unit 2 meets its cure. Bring today's conditions with you; loops run on them.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>The Python Tutorial</b> — <i>§4 More Control Flow Tools — if statements</i>. <span class="why">The official, compact treatment of if/elif/else — the same ladder we built, in the language's own words.</span> <a href="https://docs.python.org/3/tutorial/controlflow.html" rel="noopener">docs.python.org</a></li>
+      <li><b>Sweigart, A.</b> — <i>Automate the Boring Stuff with Python, ch. 2 (Flow Control)</i>. <span class="why">Booleans, comparisons, and flow-chart thinking, hands-on — a generous second pass over everything here.</span> <a href="https://automatetheboringstuff.com/2e/chapter2/" rel="noopener">book</a></li>
+      <li><b>Python documentation</b> — <i>Built-in Types: truth value testing &amp; comparisons</i>. <span class="why">The precise rules behind True/False, the six comparisons and chaining — skim now, bookmark forever.</span> <a href="https://docs.python.org/3/library/stdtypes.html" rel="noopener">docs.python.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit2.html"><span class="k">← Previous</span><span class="t">Unit 2 · Remembering things — variables &amp; numbers</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit4.html"><span class="k">Next →</span><span class="t">Unit 4 · Doing it again — loops</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 3 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"Inside a program, what is the difference between  x = 5  and  x == 5 ?",
+   o:["Nothing — both check whether x is 5","x = 5 stores 5 into the box; x == 5 asks whether the box holds 5 and answers True or False","x == 5 stores the value more permanently","x = 5 is always an error"],
+   a:1,
+   e:"One symbol stores, two symbols ask. = is Unit 2's 'store into'; == is a question producing True or False and changing nothing. Writing == where you meant = fails silently — the question is answered and the answer discarded."},
+  {q:"An if/elif/elif/else ladder has four branches. In a single run, how many of them execute?",
+   o:["All whose conditions are True","Exactly one — the first branch whose condition is True, or else if none are","All four, top to bottom","None, until you call the ladder"],
+   a:1,
+   e:"Python walks down the ladder, takes the first True door, and skips everything after it — even branches whose conditions are also True. One run, one road."},
+  {q:"marks = 95, and the ladder checks  marks >= 50  first, then >= 75, then >= 90. What prints?",
+   o:["Grade: A","Grade: B","Grade: C","All three grades"],
+   a:2,
+   e:"95 >= 50 is True, so the first door wins and the ladder ends — the A branch exists but is never reached. No error is raised; the grade is just wrong. Order ladders strictest-first."},
+  {q:"age = 16 and ticket = \"yes\". What is  age >= 18 and ticket == \"yes\" ?",
+   o:["True","False","\"yes\"","A TypeError"],
+   a:1,
+   e:"and is True only when BOTH sides are True. The left side (16 >= 18) is False, so the whole expression is False — the bouncer turns them away, ticket or no ticket."},
+  {q:"How does Python know which lines belong inside an if?",
+   o:["The colon at the end of each inside line","Curly braces around the block","The indentation — lines indented under the if form its block","It guesses from the blank lines"],
+   a:2,
+   e:"Indentation IS syntax in Python, not decoration. The colon announces a block; the four-space indent defines it; the first line back at the margin is after the fork. Get it wrong and IndentationError explains."},
+  {q:"What does  \"7\" == 7  give?",
+   o:["True","False","A TypeError, like \"7\" + 7","49"],
+   a:1,
+   e:"A string and an int are never equal, however alike they look — so the answer is a calm False. Note the contrast with \"7\" + 7, which refuses with a TypeError. To compare honestly, convert first: int(\"7\") == 7 is True."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. Your programs can now choose."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 3.1 and 3.3 carry the load."
+           : " — worth another pass through the practice above before Unit 4.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Boolean (bool)","Python's yes/no type. Exactly two values exist: True and False — capitalised, unquoted."],
+  ["Comparison operator","==, !=, <, >, <=, >= — asks a question about two values and answers with a bool."],
+  ["== (equality)","Asks 'are these equal?' and answers True or False. Two symbols ask; one symbol (=) stores."],
+  ["!= (inequality)","Asks 'are these different?' — the exact opposite question to ==."],
+  ["Condition","Any expression that produces True or False — a comparison, a combined question, or a bool from a box. What an if decides on."],
+  ["if / else","The fork in the road: the if block runs when the condition is True, the else block when it's False. Exactly one of them per run."],
+  ["elif","'Else, if' — an extra door in the fork. The ladder is checked top to bottom and the first True door wins; order matters."],
+  ["Block","The lines indented together under an if/elif/else line — the body of that branch. Opened by the colon."],
+  ["Indentation","The four spaces that put a line inside a block. In Python it IS syntax, not style — structure you can see."],
+  ["IndentationError","Python's report that the indentation doesn't match the structure the colons promised — a block missing, or spaces where none belong."],
+  ["and / or / not","The welders: and needs both sides True; or needs at least one; not flips the answer."],
+  ["Chained comparison","18 <= age <= 60 — two comparisons written as one range, exactly as maths writes it. Same meaning as the and version."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

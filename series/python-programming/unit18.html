@@ -1,0 +1,1170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generators &amp; Laziness — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u18" data-lwa-title="Unit 18 · Generators &amp; laziness">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Advanced — The subtle machinery · Unit 18</div>
+      <h1>Generators &amp; Laziness</h1>
+      <p class="standfirst">Unit 17 made you write a class, two dunder methods and a deliberate exception just to count backwards from three. This session replaces all of it with one keyword — <code style="font-size:.85em">yield</code> — a function that pauses mid-sentence and resumes exactly where it stopped. Then it goes further: values made only when asked, infinite streams that are perfectly safe, and pipelines that read a file one line at a time no matter how big the file is.</p>
+      <div class="facts">
+        <div><b>One session</b>~50 min</div>
+        <div><b>5 concepts</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Unit 17 — iterators · Unit 12 — comprehensions · Unit 10 — files</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">18.1 yield</a>
+    <a href="#s2">18.2 Laziness</a>
+    <a href="#s3">18.3 Generator expressions</a>
+    <a href="#s4">18.4 Pipelines</a>
+    <a href="#s5">18.5 Your build</a>
+    <a href="#s6">18.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 18.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Unit 17</b>The iteration protocol: <code>iter()</code>, <code>next()</code>, <code>StopIteration</code>, and the bookshelf-and-bookmark picture. Everything here is that protocol, written shorter.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm: each concept is a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit18.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>Also useful</b>Unit 12's list comprehensions (18.3 pays them off) and Unit 10's files (18.4 writes a log and reads it back in one run).</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">18.1</span>
+      <h2>yield — a function that pauses</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Here, honestly, is what Unit 17 cost us to count backwards from three: a class, an <code>__init__</code> to hold the starting number, an <code>__iter__</code> to hand back the bookmark, an <code>__next__</code> to work out the next value, and a hand-written <code>raise StopIteration</code> to say "the shelf is empty". Twelve-odd lines and two dunder methods for something a five-year-old does out loud. That ceremony bought real power — anything with those methods works in a <code>for</code> loop — but the price is absurd, and Python knows it.</p>
+      <p><b>The idea, in plain words.</b> A normal function runs to the end and hands back one answer with <code>return</code>. A <b>generator function</b> uses <code>yield</code> instead — and <code>yield</code> means <i>hand this value out, then freeze right here</i>. Not finish. Freeze. Every local box keeps its contents, the position in the code is remembered, and the next time somebody asks for a value the function wakes up on the very next line as if nothing happened. Same countdown, three lines:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px;white-space:pre">def countdown(n):
+    while n > 0:
+        yield n
+        n -= 1</p>
+      <p>No class, no dunders, no <code>raise</code>. Python sees the word <code>yield</code> anywhere in the body and quietly builds the whole Unit 17 machine for you — the <code>__iter__</code>, the <code>__next__</code>, the <code>StopIteration</code> when the function finally runs off the end. What you write is just the story of the values; the ceremony is generated. That's where the name comes from.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — where does it freeze?</div>
+      <div class="m">def countdown(n):
+    while n > 0:
+        yield n
+        n -= 1
+
+c = countdown(3)
+print(next(c))
+print(next(c))</div>
+      <p><b>Line 6</b> — <code>countdown(3)</code>. The body does <b>not</b> run. Not one line. Python builds a paused machine with <code>n</code> holding <b>3</b> and a marker sitting <i>before the first line of the body</i>, and stores it in <code>c</code>.</p>
+      <p><b>Line 7</b> — the first <code>next(c)</code> thaws it. The <code>while</code> test: 3 &gt; 0, true. Hits <code>yield n</code>: hands out <b>3</b> and freezes <i>on that line</i>, with <code>n</code> still 3.</p>
+      <p><b>Line 8</b> — the second <code>next(c)</code> resumes on the line <i>after</i> the yield: <code>n -= 1</code> makes <code>n</code> <b>2</b>, loop back, 2 &gt; 0 true, <code>yield n</code> hands out <b>2</b> and freezes again.</p>
+      <div class="m">3
+2</div>
+      <p>Ask twice more and you get 1, then the <code>while</code> test fails, the function runs off the end, and Python raises <code>StopIteration</code> on your behalf — the same signal Unit 17 made you <code>raise</code> by hand.</p>
+    </div>
+    <div class="fig" style="max-width:66ch;padding:6px 18px">
+      <table>
+        <tr><th>call</th><th>runs until</th><th>hands out</th><th>frozen at</th></tr>
+        <tr><td><code>countdown(3)</code></td><td>nothing runs</td><td>—</td><td>before line 1, <code>n</code>=3</td></tr>
+        <tr><td><code>next(c)</code></td><td><code>yield n</code></td><td><code>3</code></td><td>the yield, <code>n</code>=3</td></tr>
+        <tr><td><code>next(c)</code></td><td><code>yield n</code></td><td><code>2</code></td><td>the yield, <code>n</code>=2</td></tr>
+        <tr><td><code>next(c)</code></td><td><code>yield n</code></td><td><code>1</code></td><td>the yield, <code>n</code>=1</td></tr>
+        <tr><td><code>next(c)</code></td><td>end of function</td><td><code>StopIteration</code></td><td>finished — for good</td></tr>
+      </table>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 880 250" role="img" aria-label="Three snapshots of a generator: built and frozen before the body, frozen at the yield with n equal to 3, then resumed and frozen again with n equal to 2">
+        <text x="16" y="24" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">ONE MACHINE, FROZEN THREE TIMES</text>
+
+        <text x="20" y="52" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">after c = countdown(3)</text>
+        <rect x="20" y="62" width="250" height="130" rx="10" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="34" y="84" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">while n &gt; 0:</text>
+        <text x="46" y="104" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">yield n</text>
+        <text x="46" y="124" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">n -= 1</text>
+        <rect x="34" y="138" width="96" height="34" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="82" y="159" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">n = 3</text>
+        <path d="M14 78 L28 78" stroke="#a35a33" stroke-width="2.5"/>
+        <text x="150" y="159" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">marker before</text>
+        <text x="150" y="174" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">the first line</text>
+        <text x="145" y="212" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">nothing has run · nothing handed out</text>
+
+        <text x="315" y="52" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">after next(c) → 3</text>
+        <rect x="315" y="62" width="250" height="130" rx="10" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="329" y="84" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">while n &gt; 0:</text>
+        <rect x="337" y="90" width="120" height="20" rx="5" fill="#e3efee"/>
+        <text x="341" y="104" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" font-weight="700" fill="#1d5654">yield n</text>
+        <text x="341" y="124" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">n -= 1</text>
+        <rect x="329" y="138" width="96" height="34" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="377" y="159" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">n = 3</text>
+        <path d="M309 100 L323 100" stroke="#2b7a78" stroke-width="2.5"/>
+        <text x="445" y="159" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">frozen ON</text>
+        <text x="445" y="174" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">the yield</text>
+        <text x="440" y="212" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">handed out 3 · boxes kept</text>
+
+        <text x="610" y="52" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">after next(c) → 2</text>
+        <rect x="610" y="62" width="250" height="130" rx="10" fill="#ffffff" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="624" y="84" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">while n &gt; 0:</text>
+        <rect x="632" y="90" width="120" height="20" rx="5" fill="#e3efee"/>
+        <text x="636" y="104" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" font-weight="700" fill="#1d5654">yield n</text>
+        <text x="636" y="124" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#1f2733">n -= 1</text>
+        <rect x="624" y="138" width="96" height="34" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="672" y="159" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">n = 2</text>
+        <path d="M604 100 L618 100" stroke="#2b7a78" stroke-width="2.5"/>
+        <text x="740" y="159" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">resumed below</text>
+        <text x="740" y="174" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">the yield, then froze</text>
+        <text x="735" y="212" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#6b7585">handed out 2 · same machine, moved on</text>
+      </svg>
+      <div class="figcap">Fig. 1 — A generator is one machine that keeps its memory between visits. The marker is the only new idea: an ordinary function forgets everything when it returns, a generator remembers exactly where it stood.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Calling <code>countdown(3)</code> runs <b>none</b> of the body — it builds the machine. Looping over it runs the machine. Unit 7 gave you the canon for this: <i>def is writing the recipe card, calling is cooking</i>. With generators there's a step in between — calling hands you a <b>kitchen with the recipe pinned up and the gas off</b>, and each <code>next()</code> cooks one dish and turns the gas back off. If you put a <code>print("starting")</code> as the first line of a generator function, it will not appear when you call it. It appears on the first <code>next()</code>. Problem P1 makes you watch this happen.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> the whole of Unit 17's <code>Countdown</code> class, rewritten and used. <b>Thinking:</b> write the story of the values and let Python generate the protocol. Watch the printed order carefully — "before the loop" comes out first because the <code>for</code> is what actually starts the machine.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">def countdown(n):
+    while n > 0:
+        yield n
+        n -= 1
+
+print("before the loop")
+for x in countdown(3):
+    print(x)
+print("done")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">18.1 · P1</span><span class="pt">Calling runs nothing</span></div>
+        <p class="pd">Predict the four output lines on paper <i>before</i> you run — in particular, decide where <code>machine starting</code> appears. Then run and check.</p>
+        <div class="want">nothing has run yet
+machine starting
+hello
+again</div>
+        <div class="pyrun" data-id="s1p1" data-expect="nothing has run yet\nmachine starting\nhello\nagain">
+          <textarea spellcheck="false">def greeter():
+    print("machine starting")
+    yield "hello"
+    yield "again"
+
+g = greeter()
+print("nothing has run yet")
+print(next(g))
+print(next(g))</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>nothing has run yet
+machine starting
+hello
+again</pre><p><code>greeter()</code> built the machine and ran nothing, so our own line printed first. The first <code>next(g)</code> ran the body up to the first <code>yield</code> — which is why <code>machine starting</code> arrives late — then froze. The second <code>next(g)</code> resumed after that yield and reached the second one.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">18.1 · P2</span><span class="pt">Three lines, no ceremony</span></div>
+        <p class="pd">Write a generator function <code>countup(n)</code> that yields <code>1, 2, 3, …</code> up to and including <code>n</code>, then loop over <code>countup(4)</code> printing each value on its own line. Class-free, dunder-free — if you find yourself typing <code>__next__</code>, stop.</p>
+        <div class="want">1
+2
+3
+4</div>
+        <div class="pyrun" data-id="s1p2" data-expect="1\n2\n3\n4">
+          <textarea spellcheck="false">def countup(n):
+    # your three lines here
+
+
+for x in countup(4):
+    print(x)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def countup(n):
+    i = 1
+    while i &lt;= n:
+        yield i
+        i += 1
+
+for x in countup(4):
+    print(x)</pre><p>Four lines of body, and every one of them is about the <i>values</i>. Compare that to the class version: not one character here is protocol paperwork.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">18.1 · P3</span><span class="pt">Stretch — see the freeze points</span></div>
+        <p class="pd">This generator has a <code>print</code> between every yield, and the loop prints too. Work out the exact interleaving on paper first — that's the real exercise — then run. Hint: the loop's <i>last</i> request is the one that runs the tail of the function.</p>
+        <div class="want">part 1
+got A
+part 2
+got B
+part 3</div>
+        <div class="pyrun" data-id="s1p3" data-expect="part 1\ngot A\npart 2\ngot B\npart 3">
+          <textarea spellcheck="false">def machine():
+    print("part 1")
+    yield "A"
+    print("part 2")
+    yield "B"
+    print("part 3")
+
+for item in machine():
+    print("got", item)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>part 1
+got A
+part 2
+got B
+part 3</pre><p>Control ping-pongs. The loop asks, the function runs to a yield and freezes, the loop prints, the loop asks again. After <code>B</code>, the third request resumes below the second yield, prints <code>part 3</code>, falls off the end — and that end <i>is</i> the StopIteration that stops the loop. The tail of a generator always runs on one final, invisible request.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 18.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">18.2</span>
+      <h2>Laziness — values on demand</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Ask for the squares of the first million numbers as a list and Python obediently builds all million, right now, in memory — about 40 megabytes of them — even if your program looks at the first three and then decides it doesn't want the rest. Worse: ask for the squares of <i>every</i> number and there is no list big enough. Some sequences have no end.</p>
+      <p><b>The idea, in plain words.</b> A list is a warehouse: everything exists at once, on shelves, taking up space. A generator is a <b>kitchen that cooks to order</b>: nothing exists until someone asks, and then exactly one thing is made. That's <b>laziness</b> — doing no work until the work is actually needed — and its opposite, building everything up front, is called <b>eager</b>.</p>
+      <p>You have been using laziness since Unit 4 without being told. <code>range(1000000)</code> does not build a million numbers; it remembers "start, stop, step" and produces each one as the loop asks. That's why <code>for i in range(10_000_000)</code> starts instantly. Unit 17's <code>enumerate</code> and <code>zip</code> are lazy too. Generators just give you the same trick for your own sequences.</p>
+      <p>And laziness buys something a list can never have: <b>infinite streams</b>. This function has a loop with no exit condition —</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px;white-space:pre">def naturals():
+    n = 1
+    while True:
+        yield n
+        n += 1</p>
+      <p>— and it is completely safe, because it never runs on its own. It advances one step per request and freezes. An infinite loop only hangs a program when nothing can stop it between iterations; <code>yield</code> stops it every single time. The danger moves from the generator to <i>whoever asks</i>: take five values with a <code>break</code> and all is well; ask for all of them and you deserve what you get. (P3 lets you watch exactly that, safely.)</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the first three naturals</div>
+      <div class="m">nat = naturals()
+print(next(nat))
+print(next(nat))
+print(next(nat))</div>
+      <p><b>Line 1:</b> machine built, frozen before the body. <code>while True</code> has not been tested even once.</p>
+      <p><b>Line 2:</b> thaw → <code>n = 1</code> → loop test (always true) → <code>yield n</code> hands out <b>1</b>, freeze.</p>
+      <p><b>Line 3:</b> resume below the yield → <code>n += 1</code> → <code>n</code> is 2 → loop back → yield hands out <b>2</b>, freeze.</p>
+      <p><b>Line 4:</b> same again → <b>3</b>. Three requests, three trips round the loop. The loop is infinite; the <i>work done</i> is exactly three steps.</p>
+      <div class="m">1
+2
+3</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      A list decides how much work to do when you build it. A generator decides how much work to do when you <i>consume</i> it — so an infinite generator costs nothing until somebody asks for infinity.
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>"Lazy" is not "slow". Generating a million squares one at a time takes the same total work as building the list — the saving is <b>memory</b> (one value alive at a time instead of a million) and <b>abandoned work</b> (if you stop after three, the other 999,997 are never computed at all). If you genuinely need all million values in memory at once, a list is the honest tool. Laziness pays when the sequence is huge, endless, or you might quit early.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> an endless stream of natural numbers, and take the first five from it. <b>Thinking:</b> the generator has no stopping rule at all — the stopping rule lives in the consumer, as a counter and a <code>break</code>. Note the last line: after the break the machine is still sitting there, frozen, perfectly willing to continue.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">def naturals():
+    n = 1
+    while True:
+        yield n
+        n += 1
+
+taken = 0
+for value in naturals():
+    print(value)
+    taken += 1
+    if taken == 5:
+        break
+
+print("stopped at 5 — the machine is still frozen, waiting")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">18.2 · P1</span><span class="pt">A million squares, three of them real</span></div>
+        <p class="pd">Run this and notice how instantly it finishes. The generator was told <i>one million</i> and did three multiplications. Predict the three numbers first.</p>
+        <div class="want">a million squares, none computed yet
+1
+4
+9</div>
+        <div class="pyrun" data-id="s2p1" data-expect="a million squares, none computed yet\n1\n4\n9">
+          <textarea spellcheck="false">def squares(limit):
+    n = 1
+    while n <= limit:
+        yield n * n
+        n += 1
+
+s = squares(1000000)
+print("a million squares, none computed yet")
+print(next(s))
+print(next(s))
+print(next(s))</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>a million squares, none computed yet
+1
+4
+9</pre><p>The list version — <code>[n*n for n in range(1, 1000001)]</code> — would have done a million multiplications and held about 40 MB before the first <code>print</code>. Same three answers, a millionth of the work.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">18.2 · P2</span><span class="pt">An endless stream, six values</span></div>
+        <p class="pd">Complete the infinite generator <code>powers_of_two()</code> — 1, 2, 4, 8, … forever — then take exactly six values with a counter and a <code>break</code>. The generator must have no stopping rule of its own.</p>
+        <div class="want">1
+2
+4
+8
+16
+32</div>
+        <div class="pyrun" data-id="s2p2" data-expect="1\n2\n4\n8\n16\n32">
+          <textarea spellcheck="false">def powers_of_two():
+    p = 1
+    while True:
+        # yield p, then double it
+
+
+taken = 0
+for value in powers_of_two():
+    print(value)
+    taken += 1
+    if taken == 6:
+        break</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def powers_of_two():
+    p = 1
+    while True:
+        yield p
+        p *= 2
+
+taken = 0
+for value in powers_of_two():
+    print(value)
+    taken += 1
+    if taken == 6:
+        break</pre><p><code>while True</code> with a <code>yield</code> inside is a completely ordinary, safe thing to write. Unit 2's chessboard doubling, now available forever — ask for the 64th value if you like.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">18.2 · P3</span><span class="pt">Stretch — deliberately ask for infinity</span></div>
+        <p class="pd">Unit 4 had a moment where we ran a genuine infinite loop on purpose, just to prove nothing bad happens here. Same deal. <code>list()</code> is the most eager function in Python: it asks for <i>every</i> value. Point it at an endless generator and press Run. The runner gives it twelve seconds and then stops it with a friendly note. No check on this one — watching is the point.</p>
+        <div class="pyrun" data-id="s2p3">
+          <textarea spellcheck="false">def naturals():
+    n = 1
+    while True:
+        yield n
+        n += 1
+
+print("about to ask an endless generator for ALL its values...")
+everything = list(naturals())
+print("this line is never reached")</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>about to ask an endless generator for ALL its values...
+(runner stops it after ~12 seconds)</pre><p>The generator did nothing wrong — it froze politely after every single value, billions of times. <code>list()</code> is the villain: it kept asking. Remember this shape. Anything that wants the whole sequence at once (<code>list()</code>, <code>sorted()</code>, <code>len()</code>, <code>sum()</code> over an endless stream) will run forever on an infinite generator. Endless generators need consumers with a <code>break</code>.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 18.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">18.3</span>
+      <h2>Generator expressions — the comprehension you don't build</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~9 min</span></span>
+      <p><b>The problem.</b> Writing a whole <code>def</code> for "the squares of these numbers" feels heavy — Unit 12 already gave us a one-liner for that: <code>[x*x for x in nums]</code>. But that one-liner is eager; it builds the entire list. What if we want the comprehension's brevity <i>and</i> the generator's laziness?</p>
+      <p><b>The idea, in plain words.</b> Change the brackets. Square brackets build a list; round brackets build a generator.</p>
+      <div class="fig" style="max-width:66ch;padding:6px 18px">
+      <table>
+        <tr><th>you write</th><th>you get</th><th>when the work happens</th></tr>
+        <tr><td><code>[x*x for x in nums]</code></td><td>a list</td><td>immediately, all of it</td></tr>
+        <tr><td><code>(x*x for x in nums)</code></td><td>a generator</td><td>one value per request</td></tr>
+      </table>
+      </div>
+      <p>Identical shape, identical rules — the <code>for</code>, the optional <code>if</code> filter, the expression at the front — and one character of difference in behaviour that matters enormously. A <b>generator expression</b> is a comprehension that hasn't happened yet.</p>
+      <p>The place it shines is feeding a function that consumes a whole sequence anyway. <code>sum()</code>, <code>max()</code>, <code>min()</code>, <code>any()</code>, <code>all()</code> all take an iterable, and when a generator expression is the <i>only</i> argument you can drop its brackets entirely:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">sum(x*x for x in range(1, 6))   # 55, and no list was ever built</p>
+      <p>Compare <code>sum([x*x for x in range(1, 6)])</code>: same answer, but a five-item list is built, added up, and thrown away. At five items nobody cares. At five million, one version holds five million numbers and the other holds one.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — bracket for bracket</div>
+      <div class="m">nums = [1, 2, 3]
+a = [x*x for x in nums]
+b = (x*x for x in nums)
+print(a)
+print(sum(b))
+print(sum(b))</div>
+      <p><b>Line 2:</b> eager. Python squares all three <i>now</i>. <code>a</code> holds the real list <code>[1, 4, 9]</code>.</p>
+      <p><b>Line 3:</b> lazy. Zero multiplications happen. <code>b</code> holds a frozen machine that <i>knows how</i> to square them.</p>
+      <p><b>Line 4:</b> prints the list as a list.</p>
+      <p><b>Line 5:</b> <code>sum</code> asks <code>b</code> for values: 1, 4, 9, then StopIteration → <b>14</b>. The machine is now exhausted — a bookmark that reached the end of the shelf.</p>
+      <p><b>Line 6:</b> <code>sum</code> asks again. The machine says "finished" immediately, so <code>sum</code> adds up nothing at all → <b>0</b>. Not an error. Just empty.</p>
+      <div class="m">[1, 4, 9]
+14
+0</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Two bracket traps. First: <code>sum((x*x for x in nums))</code> works but the inner brackets are redundant — one argument, one set of brackets, that's all. You <i>do</i> need them when there's another argument: <code>sum((x*x for x in nums), 100)</code>. Second, and nastier: <code>print(x*x for x in nums)</code> does not print the squares — it prints the machine, something like <code>&lt;generator object &lt;genexpr&gt; at 0x7f...&gt;</code>. Printing a generator shows you the box, never the contents. Loop over it, or wrap it in <code>list()</code> when you're sure it's finite.</p>
+    </div>
+    <div class="aside">
+      <div class="lbl">Which one, then?</div>
+      <p>Reach for a <b>list</b> when you need to look twice — index it, <code>len()</code> it, sort it, loop over it in two different places. Reach for a <b>generator</b> when you'll walk it once, when it's large, when it's endless, or when it feeds straight into <code>sum</code>/<code>max</code>/a <code>for</code>. Unit 17's rule still holds and is the whole reason: a generator is a bookmark, and a bookmark only travels forward, once.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> the same computation four ways, so the difference is visible rather than theoretical. <b>Thinking:</b> the printed answers are identical — read the <i>code</i> for the difference, not the output. Line 4 is the shape to memorise.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">nums = [1, 2, 3, 4, 5]
+
+print([x*x for x in nums])                 # eager: a real list
+print(sum([x*x for x in nums]))            # builds a list, sums it, bins it
+print(sum(x*x for x in nums))              # lazy: nothing but a running total
+print(max(len(w) for w in ["fig", "banana", "kiwi"]))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">18.3 · P1</span><span class="pt">Drop the brackets</span></div>
+        <p class="pd">Print the sum of the squares of 1 to 5 using a generator expression handed straight to <code>sum()</code> — no square brackets anywhere in your line.</p>
+        <div class="want">55</div>
+        <div class="pyrun" data-id="s3p1" data-expect="55">
+          <textarea spellcheck="false">print(sum(   ))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print(sum(x*x for x in range(1, 6)))</pre><p>1 + 4 + 9 + 16 + 25 = 55. Three lazy things stacked: <code>range</code> produces numbers on demand, the generator expression squares them on demand, <code>sum</code> keeps one running total. At no moment does more than one square exist.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">18.3 · P2</span><span class="pt">The biggest discounted price</span></div>
+        <p class="pd">Every price gets a 10% discount (multiply by <code>0.9</code>). Print the largest discounted price to two decimals, using a generator expression inside <code>max()</code> — don't build a discounted list first.</p>
+        <div class="want">342.00</div>
+        <div class="pyrun" data-id="s3p2" data-expect="342.00">
+          <textarea spellcheck="false">prices = [120, 45, 380, 99, 260]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>prices = [120, 45, 380, 99, 260]
+print(f"{max(p * 0.9 for p in prices):.2f}")</pre><p>380 × 0.9 = 342.0, formatted at the exit as <code>342.00</code>. <code>max</code> holds one "best so far" and nothing else — the discounted list never exists.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">18.3 · P3</span><span class="pt">Stretch — one-shot, twice</span></div>
+        <p class="pd">Predict all four numbers before running. Two of them are the same computation asked twice; one pair disagrees and one pair doesn't. Say <i>why</i> out loud before you press Run — this is Unit 17's exhaustion, wearing new brackets.</p>
+        <div class="want">12
+0
+12
+12</div>
+        <div class="pyrun" data-id="s3p3" data-expect="12\n0\n12\n12">
+          <textarea spellcheck="false">gen = (x*2 for x in [1, 2, 3])
+print(sum(gen))
+print(sum(gen))
+
+lst = [x*2 for x in [1, 2, 3]]
+print(sum(lst))
+print(sum(lst))</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>12
+0
+12
+12</pre><p>The generator is a bookmark: the first <code>sum</code> walked it to the end, so the second found nothing left and summed an empty stream to <code>0</code> — silently, with no error, which is exactly what makes this bug expensive. The list is a shelf: you can read it as often as you like. When you need the values twice, build the list.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 18.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">18.4</span>
+      <h2>Pipelines — generators feeding generators</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> A real log file: eight gigabytes, millions of lines, and you want the error lines, numbered. The obvious approach — read the whole file into a list, strip every line, filter the list, number the result — needs three full copies of eight gigabytes. Your laptop has other plans.</p>
+      <p><b>The idea, in plain words.</b> Build a <b>pipeline</b>: a chain of generators where each one takes the previous one's output as its input. Nothing is a list; every stage is a frozen machine. Because a file object is itself a lazy iterator of lines (Unit 10's <code>for line in f</code>, all along), the whole chain runs on one line at a time:</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px;white-space:pre">lines    = (l.strip() for l in f)
+errors   = (l for l in lines if l.startswith("ERROR"))
+numbered = enumerate(errors, 1)</p>
+      <p>Three assignments, and after all three <b>not a single line has been read from the file</b>. Each stage just remembers who feeds it. Then the final <code>for</code> loop asks <code>numbered</code> for one item, which asks <code>errors</code>, which asks <code>lines</code>, which asks the file for one line — and one line travels the whole chain and comes out the other end. Then the next.</p>
+      <p>Read it as plumbing: the stages are pipe sections, and the last loop is the tap. Nothing flows until you open the tap, and then it flows a drop at a time.</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 880 210" role="img" aria-label="A pipeline: file to strip stage to filter stage to enumerate stage to the for loop, with pull arrows going backwards and one line flowing forwards">
+        <text x="16" y="24" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">THE LAST LOOP PULLS EVERYTHING THROUGH</text>
+
+        <rect x="20" y="56" width="130" height="52" rx="9" fill="#23262e"/>
+        <text x="85" y="79" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#e3e6ee">the file</text>
+        <text x="85" y="97" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="10.5" fill="#8a93a3">8 GB on disk</text>
+
+        <rect x="185" y="56" width="140" height="52" rx="9" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="255" y="79" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" font-weight="700" fill="#3d3170">lines</text>
+        <text x="255" y="97" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">strip()</text>
+
+        <rect x="360" y="56" width="140" height="52" rx="9" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="430" y="79" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" font-weight="700" fill="#3d3170">errors</text>
+        <text x="430" y="97" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">keep ERROR lines</text>
+
+        <rect x="535" y="56" width="140" height="52" rx="9" fill="#ffffff" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="605" y="79" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" font-weight="700" fill="#3d3170">numbered</text>
+        <text x="605" y="97" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#6b7585">enumerate(…, 1)</text>
+
+        <rect x="710" y="56" width="150" height="52" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="785" y="79" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" font-weight="700" fill="#1d5654">for i, line in …</text>
+        <text x="785" y="97" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11" fill="#1d5654">the tap</text>
+
+        <path d="M150 74 L182 74" stroke="#e3e6ee" stroke-width="2"/>
+        <path d="M325 74 L357 74" stroke="#e3e6ee" stroke-width="2"/>
+        <path d="M500 74 L532 74" stroke="#e3e6ee" stroke-width="2"/>
+        <path d="M675 74 L707 74" stroke="#e3e6ee" stroke-width="2"/>
+
+        <path d="M700 132 L30 132" stroke="#a35a33" stroke-width="1.8" stroke-dasharray="5 4"/>
+        <path d="M30 132 l10 -5 l0 10 z" fill="#a35a33"/>
+        <text x="440" y="152" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">each request travels backwards: give me one</text>
+
+        <path d="M30 174 L850 174" stroke="#2b7a78" stroke-width="1.8"/>
+        <path d="M850 174 l-10 -5 l0 10 z" fill="#2b7a78"/>
+        <text x="440" y="194" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">…and exactly one line travels forwards. Memory used: one line.</text>
+      </svg>
+      <div class="figcap">Fig. 2 — Four stages, one line in flight. Building the chain reads nothing; the loop at the end is what pulls. Swap the 8 GB file for an 8 KB one and the code does not change — that's the point of the shape.</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      A pipeline is a chain of frozen machines. Assembling it does no work at all; the last loop pulls one value through the entire chain, then the next. Memory stays flat however long the source is.
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Because nothing is read until the final loop, the whole chain must be consumed <i>while the file is still open</i> — inside the <code>with</code> block. Build the pipeline inside the <code>with</code>, loop outside it, and you get <code>ValueError: I/O operation on closed file</code>: the machines went to fetch their line and found the door locked. Lazy code moves <i>when</i> things happen, and that's exactly the sort of bug it creates.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> write a small log file, then pull its error lines out through a three-stage pipeline, numbered. <b>Thinking:</b> Unit 10's write-then-read-in-one-run pattern gives us a real file to work on. Watch where <code>pipeline built</code> prints — after three assignments, before a single line has been read.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">with open("app.log", "w") as f:
+    f.write("INFO  started\n")
+    f.write("ERROR disk full\n")
+    f.write("INFO  retry\n")
+    f.write("ERROR timeout\n")
+
+with open("app.log") as f:
+    lines = (l.strip() for l in f)
+    errors = (l for l in lines if l.startswith("ERROR"))
+    numbered = enumerate(errors, 1)
+    print("pipeline built — nothing has been read yet")
+    for i, line in numbered:
+        print(i, line)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">18.4 · P1</span><span class="pt">Two stages, one total</span></div>
+        <p class="pd">The file has a name and a count per line. Add a second stage that turns each stripped line into just its number (<code>int(l.split()[1])</code>), then print the total. No list anywhere.</p>
+        <div class="want">87</div>
+        <div class="pyrun" data-id="s4p1" data-expect="87">
+          <textarea spellcheck="false">with open("sales.txt", "w") as f:
+    f.write("apple 30\n")
+    f.write("banana 12\n")
+    f.write("cherry 45\n")
+
+with open("sales.txt") as f:
+    lines = (l.strip() for l in f)
+    # stage 2: counts = ...
+    print(sum(counts))</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>with open("sales.txt") as f:
+    lines = (l.strip() for l in f)
+    counts = (int(l.split()[1]) for l in lines)
+    print(sum(counts))</pre><p>30 + 12 + 45 = 87. Three stages if you count the file itself, and the largest thing in memory at any moment is one line of text.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">18.4 · P2</span><span class="pt">Number the warnings</span></div>
+        <p class="pd">Same shape as the worked example, different filter: keep only lines starting with <code>WARN</code>, and print them numbered from 1 in the form <code>1. WARN low memory</code>. Use <code>enumerate(warns, 1)</code>.</p>
+        <div class="want">1. WARN low memory
+2. WARN slow disk</div>
+        <div class="pyrun" data-id="s4p2" data-expect="1. WARN low memory\n2. WARN slow disk">
+          <textarea spellcheck="false">with open("run.log", "w") as f:
+    f.write("OK boot\n")
+    f.write("WARN low memory\n")
+    f.write("OK ready\n")
+    f.write("WARN slow disk\n")
+
+with open("run.log") as f:
+    lines = (l.strip() for l in f)
+    # filter, then number, then print
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>with open("run.log") as f:
+    lines = (l.strip() for l in f)
+    warns = (l for l in lines if l.startswith("WARN"))
+    for i, w in enumerate(warns, 1):
+        print(f"{i}. {w}")</pre><p>The numbering counts the <i>kept</i> lines, not the file's lines — because <code>enumerate</code> sits after the filter in the chain. Move it before the filter and you'd number all four. Order in a pipeline is meaning.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">18.4 · P3</span><span class="pt">Stretch — watch the pull</span></div>
+        <p class="pd">Two generator stages, each announcing itself. Predict the exact ten lines before running — especially whether <code>source</code> hands out all three words before <code>shout</code> sees any. (It doesn't. Work out why.)</p>
+        <div class="want">built
+  source hands out one
+  shout receives one
+final got ONE
+  source hands out two
+  shout receives two
+final got TWO
+  source hands out three
+  shout receives three
+final got THREE</div>
+        <div class="pyrun" data-id="s4p3" data-expect="built\n  source hands out one\n  shout receives one\nfinal got ONE\n  source hands out two\n  shout receives two\nfinal got TWO\n  source hands out three\n  shout receives three\nfinal got THREE">
+          <textarea spellcheck="false">def source():
+    for word in ["one", "two", "three"]:
+        print("  source hands out", word)
+        yield word
+
+def shout(words):
+    for w in words:
+        print("  shout receives", w)
+        yield w.upper()
+
+pipeline = shout(source())
+print("built")
+for item in pipeline:
+    print("final got", item)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>built
+  source hands out one
+  shout receives one
+final got ONE
+  source hands out two
+  shout receives two
+final got TWO
+  source hands out three
+  shout receives three
+final got THREE</pre><p><code>built</code> prints first: assembling the chain ran nothing. Then each cycle is one round trip — the loop pulls, <code>shout</code> pulls, <code>source</code> produces one word, and it comes back through. A generator stage never runs ahead of its consumer, which is precisely why the memory stays flat.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 18.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">18.5</span>
+      <h2>Your build — Fibonacci, a log filter, and batches</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>Three programs, each one a shape you'll write again for real. An endless mathematical stream that you take a slice of; a file pipeline that reports; and a generator that reshapes a sequence instead of just filtering it. Build them in order — the third is the one that will surprise you.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">18.5 · P1</span><span class="pt">Fibonacci, forever — first ten</span></div>
+        <p class="pd">Write an endless generator <code>fibonacci()</code> yielding 1, 1, 2, 3, 5, 8, … (each value the sum of the two before it). Collect the first ten into a list with a loop and a <code>break</code>, then print the list.</p>
+        <div class="want">[1, 1, 2, 3, 5, 8, 13, 21, 34, 55]</div>
+        <div class="pyrun" data-id="s5p1" data-expect="[1, 1, 2, 3, 5, 8, 13, 21, 34, 55]">
+          <textarea spellcheck="false">def fibonacci():
+    a, b = 1, 1
+    while True:
+        # yield a, then shuffle the pair forward
+
+
+first = []
+for value in fibonacci():
+    first.append(value)
+    if len(first) == 10:
+        break
+print(first)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def fibonacci():
+    a, b = 1, 1
+    while True:
+        yield a
+        a, b = b, a + b
+
+first = []
+for value in fibonacci():
+    first.append(value)
+    if len(first) == 10:
+        break
+print(first)</pre><p><code>a, b = b, a + b</code> computes the whole right side first, so the old <code>a</code> is still available for the sum — the swap trick from Unit 2's problem bank, without the temporary shelf. The generator has no idea ten was wanted; ask for a hundred by changing one number.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">18.5 · P2</span><span class="pt">The log filter, end to end</span></div>
+        <p class="pd">Write the five-line log, then pull the <code>ERROR</code> lines through a pipeline: number them from 1, print each as <code>1: ERROR db unreachable</code>, and after the loop print how many there were. Count them <i>as they come through</i> — you can't ask a generator for its length.</p>
+        <div class="want">1: ERROR db unreachable
+2: ERROR auth failed
+2 errors found</div>
+        <div class="pyrun" data-id="s5p2" data-expect="1: ERROR db unreachable\n2: ERROR auth failed\n2 errors found">
+          <textarea spellcheck="false">with open("server.log", "w") as f:
+    f.write("INFO boot ok\n")
+    f.write("ERROR db unreachable\n")
+    f.write("WARN cache cold\n")
+    f.write("ERROR auth failed\n")
+    f.write("INFO done\n")
+
+total = 0
+with open("server.log") as f:
+    lines = (l.strip() for l in f)
+    # your pipeline here
+
+print(f"{total} errors found")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>total = 0
+with open("server.log") as f:
+    lines = (l.strip() for l in f)
+    errors = (l for l in lines if l.startswith("ERROR"))
+    for i, line in enumerate(errors, 1):
+        print(f"{i}: {line}")
+        total += 1
+
+print(f"{total} errors found")</pre><p>The counter lives outside the <code>with</code> so it survives the file being closed; the loop lives inside so the pipeline can still reach the file. <code>len()</code> on a generator is a <code>TypeError</code> — a bookmark doesn't know how many pages are left until it gets there.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">18.5 · P3</span><span class="pt">Stretch — chunks()</span></div>
+        <p class="pd">Write <code>chunks(items, size)</code>: a generator that yields <i>lists</i> of <code>size</code> items at a time, with whatever is left over as a shorter final list. This is how real programs send 10,000 records to a database 500 at a time — and it's your first generator that yields something built rather than something passed through.</p>
+        <div class="want">[1, 2, 3]
+[4, 5, 6]
+[7]</div>
+        <div class="pyrun" data-id="s5p3" data-expect="[1, 2, 3]\n[4, 5, 6]\n[7]">
+          <textarea spellcheck="false">def chunks(items, size):
+    batch = []
+    # fill batch; when it's full, yield it and start a new one
+    # don't forget the leftovers after the loop
+
+
+for group in chunks([1, 2, 3, 4, 5, 6, 7], 3):
+    print(group)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def chunks(items, size):
+    batch = []
+    for item in items:
+        batch.append(item)
+        if len(batch) == size:
+            yield batch
+            batch = []
+    if batch:
+        yield batch
+
+for group in chunks([1, 2, 3, 4, 5, 6, 7], 3):
+    print(group)</pre><p>Two details earn their keep. <code>batch = []</code> after the yield makes a <i>fresh</i> list — reusing the same one would hand out the same object three times and every group would end up identical. And the <code>if batch:</code> at the end catches the leftover <code>[7]</code>; without it, the last partial batch silently vanishes. Yields inside a loop, plus one after — a very common generator shape.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 18.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">18.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~12 min</span></span>
+      <p>The mixed set: <code>yield</code>, generator expressions, endless streams, and one that asks the user how far to count. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">The Evens class, retired</span></div>
+        <p class="pd">Unit 17 built an <code>Evens</code> class — <code>__init__</code>, <code>__iter__</code>, <code>__next__</code>, a hand-raised <code>StopIteration</code>. Replace the whole thing with a generator function <code>evens(limit)</code> that yields every even number from 0 up to and including the limit, then loop over <code>evens(10)</code> printing each. Delete more than you write.</p>
+        <div class="want">0
+2
+4
+6
+8
+10</div>
+        <div class="pyrun" data-id="b1" data-expect="0\n2\n4\n6\n8\n10">
+          <textarea spellcheck="false">def evens(limit):
+    # four lines, tops
+
+
+for e in evens(10):
+    print(e)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def evens(limit):
+    n = 0
+    while n &lt;= limit:
+        yield n
+        n += 2
+
+for e in evens(10):
+    print(e)</pre><p>Same behaviour, same protocol, roughly a quarter of the code — and the surviving lines are all about even numbers rather than about iteration paperwork. That's the trade generators make for you.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">The biggest square</span></div>
+        <p class="pd">Print the largest square of these numbers in one line, using a generator expression inside <code>max()</code>. No list comprehension, no loop.</p>
+        <div class="want">81</div>
+        <div class="pyrun" data-id="b2" data-expect="81">
+          <textarea spellcheck="false">nums = [3, 9, 4, 7]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>nums = [3, 9, 4, 7]
+print(max(x*x for x in nums))</pre><p>9 × 9 = 81. Note <code>max(x*x for x in nums)</code> and <code>max(nums) ** 2</code> agree here only because the numbers are all positive — with a <code>-10</code> in the list they would not. Square first, then compare.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">Liftoff</span></div>
+        <p class="pd">Unit 4 counted down to a launch with a loop. Do it with a generator: ask <code>Count from? </code>, convert it, feed it to a <code>countdown</code> generator, print each number, and print <code>Liftoff!</code> after the loop ends. Input is fixed to 5.</p>
+        <div class="want">Count from? 5
+5
+4
+3
+2
+1
+Liftoff!</div>
+        <div class="pyrun" data-id="b3" data-stdin="5" data-stdin-lock data-expect="Count from? 5\n5\n4\n3\n2\n1\nLiftoff!">
+          <textarea spellcheck="false">def countdown(n):
+    while n > 0:
+        yield n
+        n -= 1
+
+start = int(input("Count from? "))
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def countdown(n):
+    while n &gt; 0:
+        yield n
+        n -= 1
+
+start = int(input("Count from? "))
+for x in countdown(start):
+    print(x)
+print("Liftoff!")</pre><p>Convert at the door, as ever. The <code>Liftoff!</code> sits after the loop because the loop ends exactly when the generator falls off its <code>while</code> — the StopIteration you never had to write.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — the running total</span></div>
+        <p class="pd">Write <code>running_total(numbers)</code>: a generator that yields the cumulative sum so far, one value per input value. Given <code>[10, 20, 5, 15]</code> it yields 10, then 30, then 35, then 50. It needs one box that survives between yields — which is exactly what a frozen generator gives you.</p>
+        <div class="want">10
+30
+35
+50</div>
+        <div class="pyrun" data-id="b4" data-expect="10\n30\n35\n50">
+          <textarea spellcheck="false">def running_total(numbers):
+    # one total, one yield per number
+
+
+for t in running_total([10, 20, 5, 15]):
+    print(t)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>def running_total(numbers):
+    total = 0
+    for n in numbers:
+        total += n
+        yield total
+
+for t in running_total([10, 20, 5, 15]):
+    print(t)</pre><p>The generator carries state — <code>total</code> — across freezes, which no single expression could. Remember this one: cumulative sums are how you'll compute running balances, moving averages and loss curves in the data stage, and the shape will be identical.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 19 · Functions as values</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">You've been passing data <i>to</i> functions since Unit 7. Next, the functions themselves become the data: stored in boxes, passed as arguments to <code>sorted()</code>, built on the fly with <code>lambda</code>, and — the strange, lovely part — remembering where they came from long after the code that made them has finished. It's the last piece of machinery before the Advanced level closes.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>The Python Tutorial</b> — <i>§9.9 Generators</i>. <span class="why">The official half-page on <code>yield</code>, written for people who have just met iterators — the same ground as 18.1, tighter.</span> <a href="https://docs.python.org/3/tutorial/classes.html#generators" rel="noopener">docs.python.org</a></li>
+      <li><b>The Python Tutorial</b> — <i>§9.10 Generator Expressions</i>. <span class="why">Round brackets versus square, and the bracket-dropping trick for <code>sum</code> and <code>max</code> — 18.3 in four paragraphs.</span> <a href="https://docs.python.org/3/tutorial/classes.html#generator-expressions" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>Glossary</i>. <span class="why">Look up <i>generator</i>, <i>generator iterator</i>, <i>lazy</i> and <i>iterable</i> here whenever the words start blurring; the definitions are unusually good.</span> <a href="https://docs.python.org/3/glossary.html" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>itertools</i>. <span class="why">A whole library of ready-made lazy generators — <code>count</code>, <code>islice</code>, <code>chain</code>. Skim it once now; you'll come back when a pipeline needs a stage you'd rather not write.</span> <a href="https://docs.python.org/3/library/itertools.html" rel="noopener">docs.python.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit17.html"><span class="k">← Previous</span><span class="t">Unit 17 · Iterators &amp; the iteration protocol</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit19.html"><span class="k">Next →</span><span class="t">Unit 19 · Functions as values</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 18 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"You write a generator function with a print() as its very first line, then call it: g = machine(). What is printed?",
+   o:["The print runs immediately","Nothing — calling builds the machine and runs no code","The print runs once for every yield in the body","An error, because generators can't print"],
+   a:1,
+   e:"Calling a generator function runs NONE of the body. It builds a paused machine and hands it to you. The first line runs on the first next() — def is writing the recipe card, calling here only sets up the kitchen with the gas off."},
+  {q:"A generator hits  yield n  and hands out a value. Where does it resume on the next request?",
+   o:["At the top of the function, from scratch","On the line immediately after that yield, with all local boxes intact","At the start of the enclosing loop, with locals reset","It doesn't resume — a new machine is built each time"],
+   a:1,
+   e:"yield freezes rather than finishes. Position and every local box are kept, so the next request carries on at the very next line as if nothing happened. That memory across freezes is the whole feature."},
+  {q:"Why prefer  sum(x*x for x in range(1, 5_000_000))  over  sum([x*x for x in range(1, 5_000_000)])?",
+   o:["The generator version gives a more accurate total","The generator version does far less arithmetic","The generator holds one value at a time instead of five million","The list version doesn't work at all"],
+   a:2,
+   e:"Both do the same number of multiplications and give the same answer. The difference is memory: the list version builds five million numbers, sums them, and throws the list away; the lazy version never holds more than one square plus a running total."},
+  {q:"What is the only difference between  [w.upper() for w in words]  and  (w.upper() for w in words)?",
+   o:["Round brackets make a tuple instead of a list","Round brackets produce a lazy generator instead of a built list","Round brackets are just an older style; they behave identically","Round brackets skip any empty strings"],
+   a:1,
+   e:"Same rules, same shape, one character of difference in behaviour: square brackets build the whole list now, round brackets hand back a generator that produces each value only when asked. (A tuple comprehension doesn't exist — that's what the round brackets were free to mean.)"},
+  {q:"gen = (x*2 for x in [1, 2, 3]).  You print sum(gen) twice. What comes out?",
+   o:["12 then 12","12 then 0","12 then a StopIteration error","0 then 12"],
+   a:1,
+   e:"12, then 0. A generator is a one-shot bookmark: the first sum walked it to the end, so the second found an already-finished stream and added up nothing. No error, no warning — which is what makes exhaustion an expensive bug. If you need the values twice, build a list."},
+  {q:"Why is  while True: yield n; n += 1  safe, when a plain  while True  loop hangs the program?",
+   o:["Python secretly limits generators to a million values","yield pauses the loop and hands control back after every single value — it only advances when asked","Generators run in a separate process that can be killed","The loop isn't really infinite; yield adds a hidden stopping condition"],
+   a:1,
+   e:"The loop really is infinite, but it can never run away: every trip round it stops dead at the yield and returns control to whoever asked. The risk moves to the consumer — take values with a break and you're fine; call list() on it and it will run until something stops it."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. You can now write in three lines what Unit 17 needed a class for."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 18.1's freeze point and 18.3's one-shot rule carry the load."
+           : " — worth another pass through 18.1 and 18.2 before Unit 19.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Generator function","Any function whose body contains yield. Calling it runs no code — it builds and hands back a generator."],
+  ["yield","Hand this value out and freeze right here. Locals and position are kept; the next request resumes on the following line."],
+  ["Generator (generator object)","The paused machine a generator function hands back. It is an iterator: it has __iter__ and __next__, written for you."],
+  ["Lazy","Doing no work until the value is actually asked for. range(), enumerate(), zip() and every generator are lazy."],
+  ["Eager","The opposite: building everything up front. Lists, and list comprehensions, are eager."],
+  ["Generator expression","A comprehension in round brackets: (x*x for x in nums). Same rules as a list comprehension, but lazy."],
+  ["Infinite generator","A generator with no stopping rule — while True with a yield inside. Safe, because it advances only when asked."],
+  ["Exhaustion","A generator that has reached its end. It stays finished forever and quietly yields nothing more — one-shot, like a bookmark."],
+  ["Pipeline","A chain of generators, each consuming the previous one. Building it does nothing; the final loop pulls one value through the whole chain."],
+  ["StopIteration","The end-of-sequence signal. Unit 17 made you raise it; a generator raises it for you when the function body ends."],
+  ["Chunking","Yielding a sequence in fixed-size batches, with a shorter final batch — the chunks() generator from 18.5."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

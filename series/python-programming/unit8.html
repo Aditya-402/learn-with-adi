@@ -1,0 +1,946 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Words &amp; Text — Strings, Properly — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u08" data-lwa-title="Unit 8 · Words &amp; text — strings, properly">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Beginner — Foundations · Unit 8</div>
+      <h1>Words &amp; Text — Strings, Properly</h1>
+      <p class="standfirst">Here's the quiet reveal of this session: text was a sequence all along. Everything Unit 5 taught you about lists — indexing, slicing, <code style="font-size:.85em">len</code>, looping, <code style="font-size:.85em">in</code> — works on strings from the first minute. Add the methods that clean, split, search and format words, and by the end you're printing a receipt whose columns actually line up.</p>
+      <div class="facts">
+        <div><b>One session</b>~45 min</div>
+        <div><b>5 concepts</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Units 2 · 4 · 5 · 7</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">8.1 Strings are sequences</a>
+    <a href="#s2">8.2 The everyday methods</a>
+    <a href="#s3">8.3 Split, join &amp; search</a>
+    <a href="#s4">8.4 Formatting, deep dive</a>
+    <a href="#s5">8.5 Build: mad-libs &amp; more</a>
+    <a href="#s6">8.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 8.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Units 4 &amp; 5</b>Indexing with <code>[0]</code> and <code>[-1]</code>, slicing with <code>[1:4]</code>, <code>len()</code>, and the for-loop. Every one of them transfers to text today, unchanged.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm: each concept is a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit8.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>One analogy to hold</b>A string is a list of characters wearing one coat. Peek under the coat and it's Unit 5's row of boxes — you already know how to walk it.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">8.1</span>
+      <h2>Strings are sequences — you already know this</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Your programs have treated text as a sealed parcel — store it, print it, glue it. But real work happens <i>inside</i> the text: the first letter of a name, the last three characters of a filename, whether a word hides in a sentence. How do you get in?</p>
+      <p><b>The idea, in plain words.</b> You've been in all along. A string is a <b>sequence</b> — a list of characters wearing one coat — and every tool from Unit 5 works on it without modification:</p>
+      <ul class="plain">
+        <li><code>word[0]</code> is the first character, <code>word[-1]</code> the last — same counting-from-zero, same negative shortcut.</li>
+        <li><code>word[1:4]</code> slices out characters 1, 2 and 3 — start included, stop excluded, exactly like list slices.</li>
+        <li><code>len(word)</code> counts characters; <code>for ch in word:</code> visits them one at a time; <code>"go" in word</code> asks whether that piece of text appears anywhere inside.</li>
+      </ul>
+      <p>One rule is new, and it matters: a string is <b>immutable</b> — frozen at birth. You can read any character, but you cannot overwrite one. To "change" a string, you build a <i>new</i> one and store it (often back in the same box). The practice below makes you feel this.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — list tools, on text</div>
+      <div class="m">word = "mango"
+print(word[0], word[-1])
+print(word[1:4])
+print(len(word))
+print("go" in word)</div>
+      <p><b>Line 2:</b> character 0 is <code>m</code>; character -1 (last) is <code>o</code>. Comma-print puts one space between.</p>
+      <p><b>Line 3:</b> slice from 1 up to (not including) 4 → characters 1, 2, 3 → <code>ang</code>.</p>
+      <p><b>Line 4:</b> five characters. <b>Line 5:</b> does <code>"go"</code> appear inside <code>"mango"</code>? Yes — man<b>go</b> → <code>True</code>.</p>
+      <div class="m">m o
+ang
+5
+True</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 250" role="img" aria-label="The string python drawn as six indexed character boxes with positive indices above and negative indices below">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">A STRING IS A LIST OF CHARACTERS WEARING ONE COAT</text>
+        <rect x="150" y="52" width="560" height="150" rx="16" fill="none" stroke="#5b4b9e" stroke-width="1.8" stroke-dasharray="7 5"/>
+        <text x="430" y="44" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">word = "python"  — the coat</text>
+        <text x="215" y="86" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#5b4b9e">0</text>
+        <text x="301" y="86" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#5b4b9e">1</text>
+        <text x="387" y="86" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#5b4b9e">2</text>
+        <text x="473" y="86" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#5b4b9e">3</text>
+        <text x="559" y="86" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#5b4b9e">4</text>
+        <text x="645" y="86" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#5b4b9e">5</text>
+        <rect x="180" y="96" width="70" height="56" rx="8" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <rect x="266" y="96" width="70" height="56" rx="8" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <rect x="352" y="96" width="70" height="56" rx="8" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <rect x="438" y="96" width="70" height="56" rx="8" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <rect x="524" y="96" width="70" height="56" rx="8" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <rect x="610" y="96" width="70" height="56" rx="8" fill="#f0f1f7" stroke="#e3e6ee" stroke-width="1.5"/>
+        <text x="215" y="131" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="17" fill="#1f2733">p</text>
+        <text x="301" y="131" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="17" fill="#1f2733">y</text>
+        <text x="387" y="131" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="17" fill="#1f2733">t</text>
+        <text x="473" y="131" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="17" fill="#1f2733">h</text>
+        <text x="559" y="131" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="17" fill="#1f2733">o</text>
+        <text x="645" y="131" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="17" fill="#1f2733">n</text>
+        <text x="215" y="180" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#2b7a78">-6</text>
+        <text x="301" y="180" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#2b7a78">-5</text>
+        <text x="387" y="180" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#2b7a78">-4</text>
+        <text x="473" y="180" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#2b7a78">-3</text>
+        <text x="559" y="180" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#2b7a78">-2</text>
+        <text x="645" y="180" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#2b7a78">-1</text>
+        <text x="180" y="230" font-family="Segoe UI,system-ui,sans-serif" font-size="12" fill="#6b7585">word[0] → "p" · word[-1] → "n" · word[1:4] → "yth" · len(word) → 6</text>
+      </svg>
+      <div class="figcap">Fig. 1 — Unit 5's row of boxes, back again. Positive indices count from the front, negative from the back; every slicing rule carries over character for character.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>If strings behave like lists, surely <code>s[0] = "X"</code> works? It does not — it dies with <code>TypeError: 'str' object does not support item assignment</code>. Lists can be edited in place; strings can't. The characters are read-only. To change one, build a <b>new</b> string from pieces — <code>"X" + s[1:]</code> — and store it. This isn't Python being difficult; frozen strings are what make them safe to use as dictionary keys and cheap to share.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> interrogate a filename with nothing but Unit 5 tools: how long is it, what's its first character, what are its last three, and is there a dot in it? <b>Thinking:</b> four questions, four tools you already own — just aimed at text. Predict all four outputs, then run.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">fname = "report.pdf"
+print(len(fname))
+print(fname[0])
+print(fname[-3:])
+print("." in fname)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">8.1 · P1</span><span class="pt">First and last</span></div>
+        <p class="pd">Using indexing only (no slices needed), print the first and last characters of the word to match the goal exactly.</p>
+        <div class="want">First: p
+Last: g</div>
+        <div class="pyrun" data-id="s1p1" data-expect="First: p\nLast: g">
+          <textarea spellcheck="false">word = "programming"
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>word = "programming"
+print("First:", word[0])
+print("Last:", word[-1])</pre><p>Position 0 from the front, position -1 from the back — Unit 5's rules, unchanged on text.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">8.1 · P2</span><span class="pt">Predict: five slices and searches</span></div>
+        <p class="pd">On paper, predict all five outputs — including the two <code>True</code>/<code>False</code> lines. Then run and reconcile. If a slice surprised you, count the positions on your fingers.</p>
+        <div class="pyrun" data-id="s1p2">
+          <textarea spellcheck="false">s = "notebook"
+print(s[0:4])
+print(s[4:])
+print(s[-4:])
+print("note" in s)
+print("pad" in s)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>note
+book
+book
+True
+False</pre><p>Characters 0–3; everything from 4 on; the last four (which happen to be the same); and <code>in</code> answers "does this piece appear anywhere?" — capital-T <code>True</code>, capital-F <code>False</code>, as always.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">8.1 · P3</span><span class="pt">One letter per line</span></div>
+        <p class="pd">Use a for-loop (Unit 4, meet Unit 8) to print each character of <code>"sun"</code> on its own line.</p>
+        <div class="want">s
+u
+n</div>
+        <div class="pyrun" data-id="s1p3" data-expect="s\nu\nn">
+          <textarea spellcheck="false">word = "sun"
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>word = "sun"
+for ch in word:
+    print(ch)</pre><p>The loop that visited list items now visits characters. Same machine, smaller cargo.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">8.1 · P4</span><span class="pt">Stretch — the frozen string</span></div>
+        <p class="pd">This program tries to capitalise <code>python</code> by editing character 0 in place — run it and read the last line of the error first. Then fix it the only way strings allow: build a <b>new</b> string from <code>"P"</code> plus a slice of the old one.</p>
+        <div class="want">Python</div>
+        <div class="pyrun" data-id="s1p4" data-expect="Python">
+          <textarea spellcheck="false">name = "python"
+name[0] = "P"
+print(name)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>name = "python"
+name = "P" + name[1:]
+print(name)</pre><p>You can't edit a frozen string, but you can build a fresh one and store it back in the same box. This new-string-into-the-old-box move is the whole pattern of string work.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 8.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">8.2</span>
+      <h2>The everyday methods — clean, change case, check ends</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p><b>The problem.</b> Real text arrives messy. Users type <code>"yes "</code> with a stray space and your <code>==</code> check fails for a reason you cannot <i>see</i>. Names arrive in random capitalisation. Filenames need checking. Editing all this by slicing alone would be miserable.</p>
+      <p><b>The idea, in plain words.</b> Every string carries a toolkit of <b>methods</b> — small built-in machines you call with a dot: <code>word.upper()</code>. Think of Unit 7's functions, pre-packaged and bolted onto every string. The everyday six:</p>
+      <div class="fig" style="max-width:66ch;padding:6px 18px">
+      <table>
+        <tr><th>method</th><th>does</th><th>example</th><th>gives</th></tr>
+        <tr><td><code>.upper()</code> / <code>.lower()</code></td><td>change case</td><td><code>"adi".upper()</code></td><td><code>"ADI"</code></td></tr>
+        <tr><td><code>.title()</code></td><td>Capitalise Each Word</td><td><code>"ada lovelace".title()</code></td><td><code>"Ada Lovelace"</code></td></tr>
+        <tr><td><code>.strip()</code></td><td>trim whitespace at both ends</td><td><code>"  hi  ".strip()</code></td><td><code>"hi"</code></td></tr>
+        <tr><td><code>.replace(a, b)</code></td><td>swap every <code>a</code> for <code>b</code></td><td><code>"co-op".replace("-", "")</code></td><td><code>"coop"</code></td></tr>
+        <tr><td><code>.startswith(x)</code> / <code>.endswith(x)</code></td><td>check the ends</td><td><code>"file.png".endswith(".png")</code></td><td><code>True</code></td></tr>
+      </table>
+      </div>
+      <p>And the rule that unifies them, straight from 8.1: strings are frozen, so <b>no method ever edits the string — every method hands back a new one</b>. <code>name.upper()</code> on its own line changes nothing; you must catch the result: <code>shout = name.upper()</code>, or store it back over the old box.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — methods return, they don't edit</div>
+      <div class="m">name = "adi"
+shout = name.upper()
+print(shout)
+print(name)</div>
+      <p><b>Line 2:</b> <code>.upper()</code> reads the frozen <code>"adi"</code>, manufactures a brand-new <code>"ADI"</code>, and hands it over. The new string lands in <code>shout</code>; the original sits untouched in <code>name</code>.</p>
+      <p><b>Lines 3–4:</b> two boxes, two different strings:</p>
+      <div class="m">ADI
+adi</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Writing <code>msg.replace("a", "b")</code> on its own line and wondering why <code>msg</code> didn't change is <i>the</i> classic string bug. The method did its work — then the new string evaporated, uncaught. Frozen strings can't be edited in place, so the fix is always the same: <b>catch the result</b> — <code>msg = msg.replace("a", "b")</code>. If a string method "didn't work", you almost certainly dropped its return value.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> the invisible-spaces bug, live. The visitor typed <code>yes</code> — or so they believe; their finger caught the space bar on the way out. Watch the honest <code>==</code> check fail, then watch <code>.strip()</code> rescue it. The input here is fixed to <code>yes&nbsp;</code> (with a trailing space).</p>
+      <div class="pyrun" data-id="w2" data-stdin="yes ">
+        <textarea spellcheck="false">answer = input("Shall we begin? ")
+print(answer == "yes")
+print(len(answer))
+print(answer.strip() == "yes")</textarea>
+      </div>
+      <p>The first check says <code>False</code> and <code>len</code> rats out the stowaway: 4 characters, not 3. Rule of thumb from today onward: <b>strip anything a human typed before comparing it</b>.</p>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">8.2 · P1</span><span class="pt">Two ways to shout</span></div>
+        <p class="pd">Print the name twice — once Title Cased for a certificate, once ALL CAPS for the award announcement.</p>
+        <div class="want">Ada Lovelace
+ADA LOVELACE</div>
+        <div class="pyrun" data-id="s2p1" data-expect="Ada Lovelace\nADA LOVELACE">
+          <textarea spellcheck="false">name = "ada lovelace"
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>name = "ada lovelace"
+print(name.title())
+print(name.upper())</pre><p>Two method calls, two new strings, printed straight away — <code>name</code> itself never changes.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">8.2 · P2</span><span class="pt">The censor that doesn't</span></div>
+        <p class="pd">This program means to blank out the password before displaying the message — but prints the secret anyway. Run it, spot which rule from this section it breaks, and fix it.</p>
+        <div class="want">the password is *****</div>
+        <div class="pyrun" data-id="s2p2" data-expect="the password is *****">
+          <textarea spellcheck="false">msg = "the password is mango123"
+msg.replace("mango123", "*****")
+print(msg)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>msg = "the password is mango123"
+msg = msg.replace("mango123", "*****")
+print(msg)</pre><p>The uncaught return value, in the wild. <code>.replace()</code> built the censored string and nobody stored it. Catch it back into the box.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">8.2 · P3</span><span class="pt">The photo sorter's questions</span></div>
+        <p class="pd">A photo-sorting script asks two questions about every filename: does it end in <code>.png</code>, and does it start with <code>IMG</code>? Write the two prints for this filename to match the goal.</p>
+        <div class="want">True
+False</div>
+        <div class="pyrun" data-id="s2p3" data-expect="True\nFalse">
+          <textarea spellcheck="false">fname = "holiday_photo.png"
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>fname = "holiday_photo.png"
+print(fname.endswith(".png"))
+print(fname.startswith("IMG"))</pre><p>Both return honest booleans — perfect fuel for Unit 3's <code>if</code>, which is exactly how the build below uses them.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 8.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">8.3</span>
+      <h2>Split, join &amp; search — between text and lists</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> A sentence is one string, but you want its <i>words</i>. A line from a spreadsheet — <code>"Ada,36,London"</code> — is one string, but you want its three fields. Slicing by hand would mean counting commas like an accountant.</p>
+      <p><b>The idea, in plain words.</b> Two methods form a revolving door between text and Unit 5's lists:</p>
+      <ul class="plain">
+        <li><b><code>.split()</code> — string in, list out.</b> <code>"a big cat".split()</code> → <code>['a', 'big', 'cat']</code>. With no argument it splits on any run of whitespace; give it a separator — <code>line.split(",")</code> — and it cuts at every comma instead.</li>
+        <li><b><code>.join()</code> — list in, string out.</b> The glue goes first: <code>" ".join(words)</code> reassembles with spaces, <code>"-".join(words)</code> with dashes. Split then join, and you've laundered a string through list-land and back.</li>
+      </ul>
+      <p>For finding things <i>within</i> a string, two more: <code>.count(x)</code> says how many times <code>x</code> appears, and <code>.find(x)</code> says the index where it first starts — or <code>-1</code>, its polite way of saying "not there". (<code>find</code> is <code>in</code>'s chattier sibling: <code>in</code> says whether, <code>find</code> says where.)</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the revolving door</div>
+      <div class="m">line = "Ada,36,London"
+parts = line.split(",")
+print(parts)
+print(parts[0])
+back = "-".join(parts)
+print(back)</div>
+      <p><b>Line 2:</b> cut at every comma → a real Unit 5 list of three <i>strings</i>: <code>['Ada', '36', 'London']</code>. Note <code>'36'</code> is text — split never converts; that's still <code>int()</code>'s job, at the door.</p>
+      <p><b>Line 4:</b> lists index as always. <b>Line 5:</b> glue the pieces back with dashes:</p>
+      <div class="m">['Ada', '36', 'London']
+Ada
+Ada-36-London</div>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      <code>.split()</code> turns a string into a list; <code>"glue".join()</code> turns it back. That round trip — plus <code>"name,age,city".split(",")</code> — is the exact move that reads spreadsheet-style data files, which is where this series is headed.
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>.split()</code> and <code>.split(" ")</code> are not the same machine. Bare <code>.split()</code> treats any <i>run</i> of whitespace as one cut and ignores the ends — <code>"  a   b ".split()</code> → <code>['a', 'b']</code>, clean. <code>.split(" ")</code> cuts at every single space and keeps the empty scraps between them. For human-typed text, use the bare version; save <code>.split(",")</code> and friends for data with a deliberate separator.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> one line of spreadsheet-style data — name, age, city, comma-separated. Pull it apart, use the fields, and re-export it with a different separator. <b>Thinking:</b> split on the comma, index the list, join with what the other program expects. This is data wrangling in miniature.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">line = "Ada,36,London"
+parts = line.split(",")
+print(parts)
+print(f"{parts[0]} lives in {parts[2]}")
+print(" | ".join(parts))</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">8.3 · P1</span><span class="pt">Sentence to list</span></div>
+        <p class="pd">Split the sentence into words, print the resulting list, then print how many words it has — match the goal exactly (yes, the printed list shows its quotes; Unit 5 warned you).</p>
+        <div class="want">['learn', 'python', 'every', 'single', 'day']
+5</div>
+        <div class="pyrun" data-id="s3p1" data-expect="['learn', 'python', 'every', 'single', 'day']\n5">
+          <textarea spellcheck="false">sentence = "learn python every single day"
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>sentence = "learn python every single day"
+words = sentence.split()
+print(words)
+print(len(words))</pre><p>Counting words is now just <code>len()</code> on the split — a one-two you'll use constantly.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">8.3 · P2</span><span class="pt">Join the date</span></div>
+        <p class="pd">A form hands you the date as three list pieces. Glue them into one dashed string. Remember which side of the dot the glue lives on.</p>
+        <div class="want">2026-08-15</div>
+        <div class="pyrun" data-id="s3p2" data-expect="2026-08-15">
+          <textarea spellcheck="false">pieces = ["2026", "08", "15"]
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>pieces = ["2026", "08", "15"]
+print("-".join(pieces))</pre><p>The glue string owns the method: <code>"-".join(pieces)</code>, never <code>pieces.join("-")</code>. Read it as "use this glue on that list".</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">8.3 · P3</span><span class="pt">Stretch — count &amp; find</span></div>
+        <p class="pd">For the quote below, print how many times <code>"to"</code> appears, then the index where <code>"not"</code> starts. Predict both numbers before running — count characters on paper for the second.</p>
+        <div class="want">2
+9</div>
+        <div class="pyrun" data-id="s3p3" data-expect="2\n9">
+          <textarea spellcheck="false">quote = "to be or not to be"
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>quote = "to be or not to be"
+print(quote.count("to"))
+print(quote.find("not"))</pre><p><code>"to"</code> appears at positions 0 and 13 — two hits. <code>"not"</code> starts at index 9 (spaces count!). And had we searched for <code>"xyz"</code>, <code>find</code> would answer <code>-1</code>, not an error.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 8.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">8.4</span>
+      <h2>Formatting, the deep dive — columns that line up</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p><b>The problem.</b> Unit 2's <code>:.2f</code> made single numbers presentable. But print a receipt — names on the left, prices on the right — and everything staggers, because <code>Tea</code> and <code>Samosa</code> are different lengths. Real programs print tables. How do you make columns?</p>
+      <p><b>The idea, in plain words.</b> The f-string braces accept a <b>width</b>. <code>{name:&lt;10}</code> means "write <code>name</code> in a lane exactly 10 characters wide, pushed left (<code>&lt;</code>), padding the rest with spaces". <code>{price:&gt;7.2f}</code> means "a lane 7 wide, pushed right (<code>&gt;</code>), two decimals". Same-width lanes on every row ⇒ columns that line up, whatever the contents. (Format at the exit, as always — the boxes keep their real values.)</p>
+      <p>Second tool: <code>\n</code> inside any string is not two characters on screen — it's an instruction meaning "start a new line here". <code>print("To do:\n- milk")</code> prints two lines with one call. You've seen <code>\n</code> in this series' checked goals all along; now it's yours to write.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — one receipt row</div>
+      <div class="m">print(f"{'Tea':&lt;10}{12.5:&gt;7.2f}")</div>
+      <p><b>Lane 1:</b> <code>'Tea'</code> is 3 characters; the lane is 10 wide, pushed left → <code>Tea</code> + 7 spaces.</p>
+      <p><b>Lane 2:</b> <code>12.5</code> becomes <code>12.50</code> (5 characters); the lane is 7 wide, pushed right → 2 spaces + <code>12.50</code>.</p>
+      <p>Glued together — 17 characters exactly (dots shown for the spaces you can't see):</p>
+      <div class="m">Tea·······  ··12.50</div>
+      <div class="m" style="white-space:pre">Tea         12.50</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 190" role="img" aria-label="Seventeen character cells showing Tea left-aligned in a width-10 lane and 12.50 right-aligned in a width-7 lane">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">TWO LANES, SEVENTEEN CELLS — f"{'Tea':&lt;10}{12.5:&gt;7.2f}"</text>
+        <rect x="40" y="50" width="460" height="52" rx="8" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.6"/>
+        <rect x="500" y="50" width="322" height="52" rx="8" fill="#e3efee" stroke="#2b7a78" stroke-width="1.6"/>
+        <text x="63" y="83" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#1f2733">T</text>
+        <text x="109" y="83" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#1f2733">e</text>
+        <text x="155" y="83" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#1f2733">a</text>
+        <text x="201" y="83" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#b6aede">·</text>
+        <text x="247" y="83" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#b6aede">·</text>
+        <text x="293" y="83" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#b6aede">·</text>
+        <text x="339" y="83" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#b6aede">·</text>
+        <text x="385" y="83" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#b6aede">·</text>
+        <text x="431" y="83" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#b6aede">·</text>
+        <text x="470" y="83" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#b6aede">·</text>
+        <text x="516" y="83" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#9ec8c6">·</text>
+        <text x="558" y="83" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#9ec8c6">·</text>
+        <text x="600" y="83" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#1f2733">1</text>
+        <text x="644" y="83" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#1f2733">2</text>
+        <text x="688" y="83" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#1f2733">.</text>
+        <text x="726" y="83" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#1f2733">5</text>
+        <text x="770" y="83" font-family="Cascadia Mono,Consolas,monospace" font-size="19" fill="#1f2733">0</text>
+        <text x="270" y="132" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#3d3170">:&lt;10 — lane of 10, contents pushed LEFT, spaces fill the rest</text>
+        <text x="661" y="132" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#1d5654">:&gt;7.2f — lane of 7, pushed RIGHT</text>
+        <text x="40" y="168" font-family="Segoe UI,system-ui,sans-serif" font-size="12" fill="#6b7585">Every row uses the same lanes — so every row's columns land in the same places. That's the whole trick of text tables.</text>
+      </svg>
+      <div class="figcap">Fig. 2 — Widths make lanes; <code>&lt;</code> and <code>&gt;</code> choose which wall the contents hug. Numbers hug the right so their digits align; names hug the left so your eye can scan them.</div>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a canteen receipt — header, three items, a rule, a total — with the price column aligned to the paisa. <b>Thinking:</b> every line uses the same two lanes: <code>:&lt;10</code> for the name, <code>:&gt;7.2f</code> for the amount (the header uses <code>:&gt;7</code> since "Price" isn't a number). The divider is Unit 2's old friend, string repetition: <code>"-" * 17</code>.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">print(f"{'Item':&lt;10}{'Price':&gt;7}")
+print("-" * 17)
+print(f"{'Tea':&lt;10}{12.5:&gt;7.2f}")
+print(f"{'Samosa':&lt;10}{45:&gt;7.2f}")
+print(f"{'Biscuit':&lt;10}{8:&gt;7.2f}")
+print("-" * 17)
+total = 12.5 + 45 + 8
+print(f"{'Total':&lt;10}{total:&gt;7.2f}")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">8.4 · P1</span><span class="pt">Three lines, one print</span></div>
+        <p class="pd">Print this three-line to-do list using exactly <b>one</b> <code>print()</code> call — <code>\n</code> is the line break you type instead of pressing Enter.</p>
+        <div class="want">To do:
+- milk
+- bread</div>
+        <div class="pyrun" data-id="s4p1" data-expect="To do:\n- milk\n- bread">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print("To do:\n- milk\n- bread")</pre><p>One string, two embedded newlines, three lines on screen. <code>\n</code> counts as a single character — <code>len("a\nb")</code> is 3.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">8.4 · P2</span><span class="pt">Stretch — the aligned menu</span></div>
+        <p class="pd">Print both menu rows using lanes <code>:&lt;8</code> for the name and <code>:&gt;6.2f</code> for the price, so the decimal points stack. Count the goal's spaces if your check fails — the lanes are exact.</p>
+        <div class="want">Coffee   25.00
+Cake    110.50</div>
+        <div class="pyrun" data-id="s4p2" data-expect="Coffee   25.00\nCake    110.50">
+          <textarea spellcheck="false">item1 = "Coffee"
+price1 = 25
+item2 = "Cake"
+price2 = 110.5
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>item1 = "Coffee"
+price1 = 25
+item2 = "Cake"
+price2 = 110.5
+print(f"{item1:&lt;8}{price1:&gt;6.2f}")
+print(f"{item2:&lt;8}{price2:&gt;6.2f}")</pre><p>"Coffee" fills 6 of its 8-lane, "Cake" only 4 — the lane absorbs the difference, and the prices' right walls line up regardless.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 8.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">8.5</span>
+      <h2>Your build — mad-libs, a gatekeeper, and a cipher</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~12 min</span></span>
+      <p>Three small programs, rising stakes. A story machine that runs on f-strings; a signup gatekeeper that runs on <code>len</code>, <code>in</code>, and a loop with a flag; and — for the brave — a cipher that finally cashes in Unit 2's <code>%</code> in the way it was born for.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">8.5 · P1</span><span class="pt">Mad-libs</span></div>
+        <p class="pd">Ask for a noun, a verb and a place — prompts exactly <code>Noun? </code>, <code>Verb? </code>, <code>Place? </code> — then pour all three into one f-string story line to match the goal. Inputs are fixed: dragon, dance, Chennai.</p>
+        <div class="want">Noun? dragon
+Verb? dance
+Place? Chennai
+The dragon decided to dance all the way to Chennai.</div>
+        <div class="pyrun" data-id="s5p1" data-stdin="dragon\ndance\nChennai" data-stdin-lock data-expect="Noun? dragon\nVerb? dance\nPlace? Chennai\nThe dragon decided to dance all the way to Chennai.">
+          <textarea spellcheck="false">noun = input("Noun? ")
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>noun = input("Noun? ")
+verb = input("Verb? ")
+place = input("Place? ")
+print(f"The {noun} decided to {verb} all the way to {place}.")</pre><p>No conversions needed — for once, text staying text is exactly right. The template does the rest.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">8.5 · P2</span><span class="pt">The signup gatekeeper</span></div>
+        <p class="pd">Rules: a username needs at least 4 characters and no spaces; a password needs at least 8 characters and at least one digit. The username checks are written for you. Add the password checks — for the digit, loop over the password with a <code>found_digit</code> flag that starts <code>False</code> and flips <code>True</code> if any character is <code>in "0123456789"</code>. Inputs fixed: meetu, learn2code.</p>
+        <div class="want">Username? meetu
+Password? learn2code
+Username OK
+Password OK</div>
+        <div class="pyrun" data-id="s5p2" data-stdin="meetu\nlearn2code" data-stdin-lock data-expect="Username? meetu\nPassword? learn2code\nUsername OK\nPassword OK">
+          <textarea spellcheck="false">username = input("Username? ")
+password = input("Password? ")
+
+if len(username) &lt; 4:
+    print("Username too short")
+elif " " in username:
+    print("Username cannot contain spaces")
+else:
+    print("Username OK")
+
+# your password checks here:
+# too short (under 8) / needs a digit / OK
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>username = input("Username? ")
+password = input("Password? ")
+
+if len(username) &lt; 4:
+    print("Username too short")
+elif " " in username:
+    print("Username cannot contain spaces")
+else:
+    print("Username OK")
+
+found_digit = False
+for ch in password:
+    if ch in "0123456789":
+        found_digit = True
+
+if len(password) &lt; 8:
+    print("Password too short")
+elif not found_digit:
+    print("Password needs a digit")
+else:
+    print("Password OK")</pre><p>The flag pattern from Unit 4, hunting through a string: assume <code>False</code>, sweep every character, flip on evidence. Once it clicks, wrap each rule-set in a Unit 7 function — <code>check_username(u)</code> returning the message — and this becomes reusable in any program.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">8.5 · P3</span><span class="pt">Stretch — the shift cipher</span></div>
+        <p class="pd">Slide every letter one step along the alphabet: a→b, b→c … and z wraps to a. For each character, <code>alphabet.find(ch)</code> gives its position; add 1; and <code>% 26</code> — Unit 2's remainder, in its natural habitat — wraps 26 back to 0. Build the secret string character by character (8.1's new-string pattern) and print it.</p>
+        <div class="want">afcsb</div>
+        <div class="pyrun" data-id="s5p3" data-expect="afcsb">
+          <textarea spellcheck="false">alphabet = "abcdefghijklmnopqrstuvwxyz"
+word = "zebra"
+secret = ""
+for ch in word:
+    spot = alphabet.find(ch)
+    # shift by 1, wrap with % 26, glue onto secret
+print(secret)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>alphabet = "abcdefghijklmnopqrstuvwxyz"
+word = "zebra"
+secret = ""
+for ch in word:
+    spot = alphabet.find(ch)
+    secret = secret + alphabet[(spot + 1) % 26]
+print(secret)</pre><p>z is position 25; 25 + 1 = 26; 26 % 26 = 0 → a. The remainder operator turns the alphabet into a circle — z→a, e→f, b→c, r→s, a→b, and "zebra" whispers "afcsb". Julius Caesar encrypted army orders with exactly this (shift 3); you've just built a two-thousand-year-old cipher in six lines.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 8.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">8.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~12 min</span></span>
+      <p>The mixed set. Indexing, slicing, methods, split/join, and one delightful trick you haven't met yet. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">Initials</span></div>
+        <p class="pd">Ask <code>Full name? </code>, split the answer into words, and print the two initials in capitals, glued together. Input fixed to <code>ada lovelace</code> — note it arrives lowercase; your program supplies the capitals.</p>
+        <div class="want">Full name? ada lovelace
+AL</div>
+        <div class="pyrun" data-id="b1" data-stdin="ada lovelace" data-stdin-lock data-expect="Full name? ada lovelace\nAL">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>full = input("Full name? ")
+parts = full.split()
+print(parts[0][0].upper() + parts[1][0].upper())</pre><p>Read <code>parts[0][0]</code> inside-out: word zero, then character zero of it — indexing a list, then indexing the string you got. Then <code>.upper()</code> and glue.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">The word counter</span></div>
+        <p class="pd">Print how many words the sentence has, in the exact format shown. One line of counting logic — you built the pieces in 8.3.</p>
+        <div class="want">Words: 9</div>
+        <div class="pyrun" data-id="b2" data-expect="Words: 9">
+          <textarea spellcheck="false">sentence = "the quick brown fox jumps over the lazy dog"
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>sentence = "the quick brown fox jumps over the lazy dog"
+print("Words:", len(sentence.split()))</pre><p>Split to a list, <code>len</code> the list — the counting you once did with a loop-and-counter, now in one honest line.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">Palindrome patrol</span></div>
+        <p class="pd">A treat first: the slice <code>word[::-1]</code> — both positions blank, step -1 — walks the whole string <i>backwards</i>, giving the reversed copy in one stroke. Use it to check each word in the list: if a word equals its own reverse, it's a palindrome. Match the goal.</p>
+        <div class="want">level is a palindrome
+python is not a palindrome
+madam is a palindrome</div>
+        <div class="pyrun" data-id="b3" data-expect="level is a palindrome\npython is not a palindrome\nmadam is a palindrome">
+          <textarea spellcheck="false">words = ["level", "python", "madam"]
+for word in words:
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>words = ["level", "python", "madam"]
+for word in words:
+    if word == word[::-1]:
+        print(word, "is a palindrome")
+    else:
+        print(word, "is not a palindrome")</pre><p><code>"level"[::-1]</code> → <code>"level"</code> — equal, palindrome. <code>"python"[::-1]</code> → <code>"nohtyp"</code> — not. The reversal slice works on lists too; file it among your favourite tricks.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — the text launderer</span></div>
+        <p class="pd">This string arrived from a form in a shocking state: stray spaces at both ends, a triple space in the middle, chaotic capitals. Clean it to the goal. Hint: bare <code>.split()</code> eats all the whitespace mess (ends included), <code>" ".join()</code> rebuilds cleanly, and <code>.title()</code> fixes the case — one pipeline.</p>
+        <div class="want">Hello World</div>
+        <div class="pyrun" data-id="b4" data-expect="Hello World">
+          <textarea spellcheck="false">messy = "  hello   wORLD  "
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>messy = "  hello   wORLD  "
+clean = " ".join(messy.split()).title()
+print(clean)</pre><p>Split shreds away every whitespace sin, join rebuilds with single spaces, title straightens the capitals (it lowercases the rest of each word too — <code>wORLD</code> → <code>World</code>). Chained methods read left to right: shred, rebuild, dress up. A <code>messy.strip().title()</code> would fix the ends and case but leave the triple space — the split/join pipeline is the full launder.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 9 · When things break — errors &amp; debugging</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">You've met errors as accidents — the red report that ends a run. Next session they become a tool: reading any traceback calmly from the last line up, guarding risky lines with <code>try</code>/<code>except</code> so bad input bounces instead of crashing, and making the to-do app uncrashable. The programs stop being fragile; that's the moment they start feeling real.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>The Python Tutorial</b> — <i>§3.1.2 Text</i>. <span class="why">The official walk through indexing, slicing and immutability — the same ground as 8.1, with the slice-boundary diagram everyone ends up memorising.</span> <a href="https://docs.python.org/3/tutorial/introduction.html#text" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>String Methods</i>. <span class="why">The full catalogue behind 8.2 and 8.3 — every method strings carry, in one reference page. Skim now, bookmark forever.</span> <a href="https://docs.python.org/3/library/stdtypes.html#string-methods" rel="noopener">docs.python.org</a></li>
+      <li><b>Sweigart, A.</b> — <i>Automate the Boring Stuff with Python, ch. 6 (Manipulating Strings)</i>. <span class="why">The same toolkit applied to gloriously practical jobs — a good second pass at this unit's material.</span> <a href="https://automatetheboringstuff.com/2e/chapter6/" rel="noopener">book</a></li>
+      <li><b>Python documentation</b> — <i>Format Specification Mini-Language</i>. <span class="why">Everything the lanes of 8.4 can do — widths, alignment, fills, and siblings of :.2f.</span> <a href="https://docs.python.org/3/library/string.html#format-specification-mini-language" rel="noopener">docs.python.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit7.html"><span class="k">← Previous</span><span class="t">Unit 7 · Packaging logic — functions</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit9.html"><span class="k">Next →</span><span class="t">Unit 9 · When things break — errors &amp; debugging</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 8 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"s holds \"cat\". What does  s[0] = \"b\"  do?",
+   o:["Changes s to \"bat\"","Quietly creates a new string \"bat\" and stores it in s","Fails with a TypeError — strings cannot be edited in place","Changes s only until the program ends"],
+   a:2,
+   e:"Strings are immutable — frozen at birth. Reading s[0] is fine; writing to it is refused. To get \"bat\", build a new string and store it: s = \"b\" + s[1:]."},
+  {q:"After  name = \"adi\"  and then a bare line  name.upper()  — what does  print(name)  show?",
+   o:["ADI","adi","Adi","An error — upper() needs a variable to land in"],
+   a:1,
+   e:"No string method ever edits the string — each one returns a NEW string. Uncaught, that new \"ADI\" evaporated. To keep it: name = name.upper()."},
+  {q:"What does  \"  hello  \".strip()  give?",
+   o:["\"hello\"","\"hello  \" — only the front is cleaned","\"  hello\" — only the back is cleaned","\"hello\" with ALL spaces removed, even ones inside a sentence"],
+   a:0,
+   e:"strip() trims whitespace from both ENDS only — inner spaces are safe. It's the standard rinse for anything a human typed, especially before an == check."},
+  {q:"parts holds  \"red,green,blue\".split(\",\")  — which expression rebuilds the original string?",
+   o:["parts.join(\",\")","\",\".join(parts)","join(parts, \",\")","parts.split(\",\") again"],
+   a:1,
+   e:"join is a method of the GLUE string: \",\".join(parts) → \"red,green,blue\". split and join are inverses — string to list and back — and the glue always goes before the dot."},
+  {q:"What does  \"python\"[1:4]  give?",
+   o:["\"pyt\"","\"yth\"","\"ytho\"","\"pyth\""],
+   a:1,
+   e:"Same rule as list slices: start at position 1, stop BEFORE position 4 — characters 1, 2, 3 → \"yth\". Start included, stop excluded, every time."},
+  {q:"What does  print(f\"{'Hi':<5}|\")  show?",
+   o:["Hi|","   Hi|","Hi   |","Hi<5|"],
+   a:2,
+   e:"<5 is a lane 5 wide with the contents pushed LEFT: \"Hi\" plus three padding spaces, then the bar. >5 would push right instead — that's how 8.4's price columns stack their decimal points."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. Text bends to your will now."
+           : correct >= 4 ? " — solid. Reread 8.1 and 8.2; frozen strings and returned-not-edited carry everything else."
+           : " — worth another lap through the practice above before Unit 9.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Sequence","Anything with items in numbered positions — lists and strings both. Indexing, slicing, len(), for-loops and in work on every sequence the same way."],
+  ["Immutable","Frozen after creation. Strings are immutable: read any character, but s[0] = \"X\" is a TypeError. To change one, build a new string and store it."],
+  ["Method","A function bolted onto a value, called with a dot: word.upper(). String methods never edit the string — they always return a new one."],
+  [".strip()","Returns a copy with whitespace trimmed from both ends (not the middle). The standard rinse for human-typed input before an == check."],
+  [".replace(a, b)","Returns a copy with every a swapped for b. Catch the result — msg = msg.replace(...) — or it evaporates."],
+  [".split()","String in, list out. Bare split() cuts on any run of whitespace; split(\",\") cuts at every comma — the move that reads data files."],
+  [".join()","List in, string out; the glue owns the method: \"-\".join(parts) → \"a-b-c\". split's exact inverse."],
+  [".find() / .count()","find(x) gives the index where x first starts, or -1 if absent; count(x) says how many times x appears. in's chattier siblings."],
+  [".startswith() / .endswith()","True/False checks on a string's ends — fname.endswith(\".png\"). Boolean fuel for if."],
+  ["Alignment (:<10, :>7.2f)","Width lanes inside f-string braces: < pushes left, > pushes right, the number sets the lane width. Same lanes on every row → columns that line up."],
+  ["\\n","The newline character: one character that means \"start a new line here\". print(\"a\\nb\") prints two lines."],
+  ["word[::-1]","The reversal slice — both ends open, step -1 — walks the whole sequence backwards. The one-stroke palindrome tool."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>

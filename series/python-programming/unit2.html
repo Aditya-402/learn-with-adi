@@ -1,0 +1,875 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Remembering Things — Variables &amp; Numbers — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
+  --muted:#6b7585; --line:#e3e6ee; --accent:#5b4b9e; --accent-deep:#3d3170;
+  --accent-wash:#ecebf6; --teal:#2b7a78; --teal-wash:#e3efee;
+  --clay:#a35a33; --clay-wash:#f7ebe4; --gold:#8a6d1c; --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:var(--fs-base);line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0;text-wrap:pretty}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.masthead{background:var(--panel);border-bottom:1px solid var(--line)}
+.masthead-in{max-width:1440px;margin:0 auto;padding:22px 28px 0;display:flex;flex-direction:column;gap:34px}
+.title-block{padding-bottom:38px}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:20ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;font-size:var(--fs-sm);color:var(--muted)}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+.shell{max-width:1440px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px}
+.rail a{display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);color:var(--muted);text-decoration:none;border-left:2px solid transparent}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
+.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
+body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
+body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);font-weight:600;letter-spacing:.04em}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+.rtag{display:inline-flex;gap:14px;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rtag .pr{color:var(--teal)}
+.keyidea{border-left:3px solid var(--accent);background:var(--accent-wash);padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch}
+.keyidea .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent-deep);margin-bottom:6px}
+.aside{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate)}
+.aside .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.confuse{border-left:3px solid var(--clay);background:var(--clay-wash);padding:16px 20px;border-radius:0 10px 10px 0;max-width:66ch}
+.confuse .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:#7c4324;margin-bottom:6px}
+.confuse p{font-size:var(--fs-cap);color:#5c3f28}
+.trace{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
+.trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
+.trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:6px}
+.pq{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;background:var(--panel);padding:12px 14px;font-size:var(--fs-sm);color:var(--slate)}
+.pq b{display:block;color:var(--ink);font-size:var(--fs-cap);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);max-width:66ch}
+th{text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.worked{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:18px 22px;max-width:820px;display:flex;flex-direction:column;gap:12px}
+.worked .wl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+.worked p{font-size:var(--fs-cap);color:var(--slate)}
+.practice{display:flex;flex-direction:column;gap:16px;max-width:820px}
+.p-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.p-card .ph{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.p-card .pn{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent);background:var(--accent-wash);border-radius:6px;padding:2px 9px}
+.p-card .pt{font-weight:600;font-size:var(--fs-cap)}
+.p-card .pd{font-size:var(--fs-cap);color:var(--slate);max-width:66ch}
+.p-card .pd code{background:var(--subtle);border-radius:4px;padding:1px 5px}
+.p-card details{border:1px dashed var(--line);border-radius:var(--r);padding:10px 14px;font-size:var(--fs-cap);color:var(--slate)}
+.p-card details summary{cursor:pointer;font-weight:600;color:var(--accent-deep);font-size:var(--fs-sm)}
+.p-card details pre{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:10px 13px;overflow-x:auto;margin:10px 0 4px}
+.p-card details p{margin-top:8px}
+.p-card .want{font-family:var(--mono);font-size:var(--fs-sm);background:var(--teal-wash);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);border-radius:6px;padding:9px 13px;white-space:pre-wrap;color:#1d5654}
+.p-card .want::before{content:"the goal, exactly:";display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:5px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent)}
+.score{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+.next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+.foot{border-top:1px solid var(--line);background:var(--panel);padding:34px 28px;margin-top:20px}
+.foot-in{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.foot img{height:26px;opacity:.75}
+button{font:inherit;cursor:pointer}
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rail-toggle{display:none}
+  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
+  body.rail-min .shell{grid-template-columns:1fr}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+</style>
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u02" data-lwa-title="Unit 2 · Remembering things — variables &amp; numbers">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Beginner — Foundations · Unit 2</div>
+      <h1>Remembering Things — Variables &amp; Numbers</h1>
+      <p class="standfirst">Unit 1 gave you one labeled box and it carried a conversation. This session hands you the full toolkit: boxes for anything, arithmetic that does real work, the moment <code style="font-size:.85em">"7"</code> and <code style="font-size:.85em">7</code> finally part ways — and by the end, a tip calculator that splits a real bill.</p>
+      <div class="facts">
+        <div><b>One session</b>~40 min</div>
+        <div><b>5 concepts</b>each: short read + practice</div>
+        <div><b>19 problems</b>solved right here</div>
+        <div><b>Builds on</b>Unit 1 — print &amp; input</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">2.1 Labeled boxes</a>
+    <a href="#s2">2.2 Numbers &amp; arithmetic</a>
+    <a href="#s3">2.3 Text vs numbers</a>
+    <a href="#s4">2.4 f-strings</a>
+    <a href="#s5">2.5 Build: tip calculator</a>
+    <a href="#s6">2.6 Problem bank</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 2.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>You'll need Unit 1</b>print(), input(), quotes, and reading an error's last line first. Ten minutes there pays for itself here.</div>
+      <div class="pq"><b>How this unit works</b>Same rhythm: each concept is a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit2.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>The state of memory</b>Unit 1 promised the labeled-box picture would become the star. This is that unit — every trace here tracks what each box holds after each line.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">2.1</span>
+      <h2>Labeled boxes — variables, properly</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p><b>The problem.</b> Programs need to keep things around. A bill total must survive from the line that computes it to the line that prints it; a name typed once should be usable five lines later. Where does a program keep what it knows?</p>
+      <p><b>The idea, in plain words.</b> In labeled boxes. The line <code>price = 40</code> does exactly one thing: takes a box, sticks the label <code>price</code> on it, and puts <code>40</code> inside. From then on, writing <code>price</code> anywhere means <i>the contents of that box</i>. That's the whole mechanism — and three consequences follow:</p>
+      <ul class="plain">
+        <li><b>Read <code>=</code> as "store into", never "equals".</b> Right side first, then into the box on the left. That's why <code>count = count + 1</code> — nonsense in maths — is perfectly sensible here: work out the right side using the <i>old</i> contents, then store the result back.</li>
+        <li><b>A box holds one thing.</b> Store something new and the old contents are gone — no warning, no undo.</li>
+        <li><b>Labels are exact.</b> <code>price</code>, <code>Price</code> and <code>PRICE</code> are three different boxes (Unit 1's case-sensitivity, back again). Labels use letters, digits and underscores, can't start with a digit, and can't contain spaces — <code>total_cost</code>, not <code>total cost</code>.</li>
+      </ul>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — watch the boxes</div>
+      <div class="m">score = 10
+score = score + 5
+bonus = score
+print(score, bonus)</div>
+      <p><b>Line 1:</b> box <code>score</code> created, holds <b>10</b>.</p>
+      <p><b>Line 2:</b> right side first: <code>score + 5</code> → 10 + 5 → 15. Stored back: <code>score</code> now holds <b>15</b>. The 10 is gone.</p>
+      <p><b>Line 3:</b> right side is <code>score</code> → 15. A <i>new</i> box <code>bonus</code> gets a copy: <b>15</b>. Two boxes now, each holding their own 15.</p>
+      <p><b>Line 4:</b> both boxes read out:</p>
+      <div class="m">15 15</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 860 200" role="img" aria-label="State of memory across four lines: score becomes 15, bonus copies it">
+        <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">THE STATE OF MEMORY, LINE BY LINE</text>
+        <text x="60" y="58" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">after line 1</text>
+        <rect x="40" y="70" width="150" height="56" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="115" y="92" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">score</text>
+        <text x="115" y="114" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">10</text>
+        <text x="330" y="58" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">after line 2</text>
+        <rect x="310" y="70" width="150" height="56" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="385" y="92" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">score</text>
+        <text x="385" y="114" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">15</text>
+        <text x="385" y="152" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">the 10 is gone — replaced, not kept</text>
+        <text x="620" y="58" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#3d3170">after line 3</text>
+        <rect x="560" y="70" width="130" height="56" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="625" y="92" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#3d3170">score</text>
+        <text x="625" y="114" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">15</text>
+        <rect x="706" y="70" width="130" height="56" rx="9" fill="#e3efee" stroke="#2b7a78" stroke-width="1.5"/>
+        <text x="771" y="92" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" font-weight="700" fill="#1d5654">bonus</text>
+        <text x="771" y="114" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" fill="#1f2733">15</text>
+        <text x="698" y="152" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">a copy — two separate boxes</text>
+      </svg>
+      <div class="figcap">Fig. 1 — Three snapshots of memory. Tracing any program means keeping this picture in your head; these notes will keep drawing it until you do it automatically.</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p><code>=</code> in Python is <b>not</b> the equals sign from school. It's an arrow pointing left: <i>compute the right, store into the left</i>. Asking whether two things are equal is a different symbol (<code>==</code>) and a different unit — Unit 3. If <code>count = count + 1</code> still reads like a lie, read it as "new count = old count + 1".</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> a game awards 10 points, then doubles your score, then adds 3. Track it in one box and print the final value. <b>Thinking:</b> one box, three store-intos — each right side uses the box's <i>current</i> contents. Predict the number before you run.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">points = 10
+points = points * 2
+points = points + 3
+print(points)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">2.1 · P1</span><span class="pt">Boxes in, boxes out</span></div>
+        <p class="pd">Create two boxes — <code>city</code> holding <code>Chennai</code> and <code>year</code> holding the number <code>2026</code> — then print them with one comma-print to match the goal.</p>
+        <div class="want">Chennai 2026</div>
+        <div class="pyrun" data-id="s1p1" data-expect="Chennai 2026">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>city = "Chennai"
+year = 2026
+print(city, year)</pre><p>Text into a box still needs its quotes; the number goes bare. The unquoted names in print read the boxes back out.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">2.1 · P2</span><span class="pt">Replace, don't keep</span></div>
+        <p class="pd">Predict the output first — one box, three stores. Then run. If your prediction missed, re-trace with the boxes picture before reading the solution.</p>
+        <div class="pyrun" data-id="s1p2">
+          <textarea spellcheck="false">word = "old"
+word = "new"
+word = "newest"
+print(word)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>newest</pre><p>One box, relabeled contents twice. Only the last store survives — a box holds one thing.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">2.1 · P3</span><span class="pt">Fix the labels</span></div>
+        <p class="pd">Every line here breaks a naming rule or misreads a label. Fix all three so the program prints the goal. The error messages will point the way — last line first.</p>
+        <div class="want">150</div>
+        <div class="pyrun" data-id="s1p3" data-expect="150">
+          <textarea spellcheck="false">total cost = 100
+2nd_charge = 50
+print(Total_cost + second_charge)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>total_cost = 100
+second_charge = 50
+print(total_cost + second_charge)</pre><p>No spaces in labels (underscore instead); labels can't start with a digit; and the print must use the exact labels — case and all.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">2.1 · P4</span><span class="pt">Stretch — count up</span></div>
+        <p class="pd">Start <code>count</code> at <code>0</code>. Using only lines of the form <code>count = count + 1</code>, raise it to exactly <code>3</code> and print it. Yes, it's repetitive — feel that pain; Unit 4 exists to remove it.</p>
+        <div class="want">3</div>
+        <div class="pyrun" data-id="s1p4" data-expect="3">
+          <textarea spellcheck="false">count = 0
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>count = 0
+count = count + 1
+count = count + 1
+count = count + 1
+print(count)</pre><p>Each line reads the old value and stores one more. Remember this ache when loops arrive.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">2.2</span>
+      <h2>Numbers &amp; arithmetic — the seven operators</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p><b>The problem.</b> Boxes that only store are a filing cabinet. Programs earn their keep by <i>computing</i> — totals, splits, percentages, remainders. What arithmetic does Python actually offer?</p>
+      <p><b>The idea, in plain words.</b> Python has two kinds of numbers: <b>int</b> — whole numbers like <code>4</code> — and <b>float</b> — decimal-point numbers like <code>4.5</code> (so called because the point "floats"). Seven operators work on both:</p>
+      <div class="fig" style="max-width:66ch;padding:6px 18px">
+      <table>
+        <tr><th>operator</th><th>does</th><th>example</th><th>gives</th></tr>
+        <tr><td><code>+</code> <code>-</code> <code>*</code></td><td>add, subtract, multiply</td><td><code>4 * 5</code></td><td><code>20</code></td></tr>
+        <tr><td><code>/</code></td><td>divide — <b>always a float</b></td><td><code>10 / 4</code></td><td><code>2.5</code></td></tr>
+        <tr><td><code>//</code></td><td>divide, keep whole part</td><td><code>10 // 4</code></td><td><code>2</code></td></tr>
+        <tr><td><code>%</code></td><td>the remainder</td><td><code>10 % 4</code></td><td><code>2</code></td></tr>
+        <tr><td><code>**</code></td><td>power</td><td><code>2 ** 3</code></td><td><code>8</code></td></tr>
+      </table>
+      </div>
+      <p>The pair <code>//</code> and <code>%</code> answer one everyday question together: share 10 sweets among 4 kids — <code>10 // 4</code> says each gets 2, <code>10 % 4</code> says 2 are left over. And order follows school rules — multiply and divide before add and subtract — with parentheses to override: <code>(2 + 3) * 4</code> is 20, <code>2 + 3 * 4</code> is 14. When in doubt, add parentheses; they're free.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — a real bill</div>
+      <div class="m">samosas = 3 * 15
+tea = 2 * 12
+bill = samosas + tea
+print(bill, bill / 2)</div>
+      <p><b>Line 1:</b> 3 × 15 → <code>samosas</code> holds <b>45</b>. <b>Line 2:</b> 2 × 12 → <code>tea</code> holds <b>24</b>. <b>Line 3:</b> 45 + 24 → <code>bill</code> holds <b>69</b>.</p>
+      <p><b>Line 4:</b> prints the bill and a two-way split — and note the split: 69 / 2 is <code>34.5</code>, a float. Division always hands back a float, even <code>10 / 2</code> → <code>5.0</code>.</p>
+      <div class="m">69 34.5</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Why does <code>10 / 2</code> print <code>5.0</code> and not <code>5</code>? Because <code>/</code> <i>always</i> produces a float — Python won't secretly switch types on you depending on whether the division came out even. Want the whole-number version? That's what <code>//</code> is for: <code>10 // 2</code> → <code>5</code>.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> 47 students, vans seat 12 each — how many full vans, and how many students overflow into the last one? <b>Thinking:</b> "how many fit" is <code>//</code>, "who's left over" is <code>%</code>. The two operators were made for each other.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">students = 47
+seats = 12
+print("Full vans:", students // seats)
+print("Left over:", students % seats)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">2.2 · P1</span><span class="pt">The canteen bill</span></div>
+        <p class="pd">4 idlis at 10 each, 2 coffees at 15 each. Boxes for <code>idlis</code>, <code>coffees</code> and <code>bill</code>, then print the bill to match the goal exactly.</p>
+        <div class="want">Bill: 70</div>
+        <div class="pyrun" data-id="s2p1" data-expect="Bill: 70">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>idlis = 4 * 10
+coffees = 2 * 15
+bill = idlis + coffees
+print("Bill:", bill)</pre><p>40 + 30 = 70. Named boxes beat one long formula — you can print any part of the working when a number looks wrong.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">2.2 · P2</span><span class="pt">Predict: the three divisions</span></div>
+        <p class="pd">On paper, predict all three outputs — including whether each has a decimal point. Then run and reconcile.</p>
+        <div class="pyrun" data-id="s2p2">
+          <textarea spellcheck="false">print(17 / 5)
+print(17 // 5)
+print(17 % 5)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>3.4
+3
+2</pre><p><code>/</code> gives the exact float; <code>//</code> keeps the whole part; <code>%</code> reports what's left (3 × 5 = 15, remainder 2).</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">2.2 · P3</span><span class="pt">Parentheses earn their keep</span></div>
+        <p class="pd">Three friends split a 100-rupee pizza and a 20-rupee delivery fee. This attempt prints the wrong share — run it, work out why on paper, then fix it so each pays <code>40.0</code>.</p>
+        <div class="want">Each pays: 40.0</div>
+        <div class="pyrun" data-id="s2p3" data-expect="Each pays: 40.0">
+          <textarea spellcheck="false">share = 100 + 20 / 3
+print("Each pays:", share)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>share = (100 + 20) / 3
+print("Each pays:", share)</pre><p>Without parentheses, division goes first: 100 + 6.67. The parentheses make the total exist before the split.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">2.2 · P4</span><span class="pt">Stretch — the chessboard legend</span></div>
+        <p class="pd">One grain of rice on square 1, doubling every square. Use <code>**</code> to print how many grains sit on square 64 alone (that's 2 to the power 63). Marvel briefly; Python's ints handle numbers this size without blinking.</p>
+        <div class="want">9223372036854775808</div>
+        <div class="pyrun" data-id="s2p4" data-expect="9223372036854775808">
+          <textarea spellcheck="false">print(2 ** 63)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print(2 ** 63)</pre><p>Nine quintillion grains — more rice than Earth grows in a millennium. Doubling gets out of hand fast; remember that feeling in the ML stage when "exponential" comes up.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">2.3</span>
+      <h2>Text vs numbers — the promised showdown</h2>
+      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p><b>The problem.</b> Unit 1 planted a flag: <code>"7"</code> and <code>7</code> look identical on screen but aren't the same thing. Time to cash that in — because a program that asks for a number and tries to do maths with the answer is about to get a surprise.</p>
+      <p><b>The idea, in plain words.</b> Every value has a <b>type</b> — text (<code>str</code>), whole number (<code>int</code>), decimal (<code>float</code>) — and the type decides what an operator <i>means</i>. For numbers, <code>+</code> adds. For strings, <code>+</code> <b>glues</b>: <code>"7" + "7"</code> is <code>"77"</code>, and <code>"Hello, " + name</code> is the no-gap gluing that Unit 1's P2 hinted at. Mix the two — <code>"7" + 7</code> — and Python refuses with a <code>TypeError</code>: it won't guess whether you meant 14 or "77".</p>
+      <p>Here's the trap that catches every beginner: <b><code>input()</code> always hands back text.</b> Type 25 at a prompt and the box holds <code>"25"</code> — characters, not a number. Before doing maths, convert: <code>int("25")</code> → 25, or <code>float("4.5")</code> → 4.5. (And <code>str(25)</code> goes the other way when you need it.) Curious what a box holds? <code>type(x)</code> tells you — it's the first question to ask when maths misbehaves.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — the same key, two doors</div>
+      <div class="m">age = input("Age? ")        # types 25 → box holds "25"  (text!)
+next_year = int(age) + 1
+print("Next year:", next_year)</div>
+      <p><b>Line 1:</b> the box <code>age</code> holds the <i>string</i> <code>"25"</code> — two characters.</p>
+      <p><b>Line 2:</b> right side first: <code>int(age)</code> reads the box, converts <code>"25"</code> → 25 (a real int), adds 1 → 26. Stored into <code>next_year</code>. The box <code>age</code> still holds <code>"25"</code> — conversion made a new value, it didn't change the box.</p>
+      <div class="m">Age? 25
+Next year: 26</div>
+      <p>Skip the <code>int()</code> and line 2 dies with <code>TypeError: can only concatenate str (not "int") to str</code> — Python telling you it found glue-plus and maths-plus in the same expression.</p>
+    </div>
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      The type decides what the operator means. <code>+</code> adds numbers but glues strings; <code>input()</code> always returns a string; <code>int()</code> / <code>float()</code> convert before maths. Half of all beginner bugs live in this box.
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> ask for two numbers and print their real sum — not their gluing. <b>Thinking:</b> convert at the door: wrap each <code>input()</code> in <code>int()</code> immediately, so everything downstream is honest arithmetic. Inputs here are fixed to 8 and 5.</p>
+      <div class="pyrun" data-id="w3" data-stdin="8\n5">
+        <textarea spellcheck="false">a = int(input("First number? "))
+b = int(input("Second number? "))
+print("Sum:", a + b)</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">2.3 · P1</span><span class="pt">Predict: glue vs add</span></div>
+        <p class="pd">Four lines, four predictions on paper first — which ones glue, which add, which refuse to run? Then run. (The error, when it comes, stops the program — so think about what prints <i>before</i> it.)</p>
+        <div class="pyrun" data-id="s3p1">
+          <textarea spellcheck="false">print(7 + 7)
+print("7" + "7")
+print("7" * 3)
+print("7" + 7)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>14
+77
+777
+TypeError: can only concatenate str (not "int") to str</pre><p>Numbers add; strings glue; a string times 3 repeats it (a bonus rule that follows the same logic); and the mix is refused. Note lines 1–3 printed before the crash — programs die mid-flight, not retroactively.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">2.3 · P2</span><span class="pt">Fix the birthday bot</span></div>
+        <p class="pd">This program means well and dies on line 2. Run it, read the last line of the report, fix with one conversion. Input is fixed to <code>17</code>.</p>
+        <div class="want">How old are you? 17
+In 3 years you'll be 20</div>
+        <div class="pyrun" data-id="s3p2" data-stdin="17" data-stdin-lock data-expect="How old are you? 17\nIn 3 years you'll be 20">
+          <textarea spellcheck="false">age = input("How old are you? ")
+soon = age + 3
+print("In 3 years you'll be", soon)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>age = int(input("How old are you? "))
+soon = age + 3
+print("In 3 years you'll be", soon)</pre><p>Convert at the door. (Fixing line 2 as <code>int(age) + 3</code> works too — but converting immediately means never wondering which boxes hold text.)</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">2.3 · P3</span><span class="pt">Stretch — the glue trap in reverse</span></div>
+        <p class="pd">Someone wants the output <code>Score: 95!</code> with no space before the <code>!</code> — Unit 1's old enemy. Now you own the tool: convert the number to text with <code>str()</code> and glue with <code>+</code>. Make it print the goal.</p>
+        <div class="want">Score: 95!</div>
+        <div class="pyrun" data-id="s3p3" data-expect="Score: 95!">
+          <textarea spellcheck="false">points = 95
+print("Score:", points, "!")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>points = 95
+print("Score: " + str(points) + "!")</pre><p>Gluing needs everything to be text, so the int visits <code>str()</code> first. Clunky? Agreed — the next section replaces this whole dance.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">2.4</span>
+      <h2>f-strings — sentences without the scaffolding</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p><b>The problem.</b> Building sentences from boxes keeps forcing a choice between two clunky tools: commas (which insert spaces you didn't ask for) and gluing (which demands <code>str()</code> around every number). There has to be a way to just… write the sentence.</p>
+      <p><b>The idea, in plain words.</b> There is, and it's Python at its most pleasant. Put an <code>f</code> in front of the opening quote and the string becomes a <b>template</b>: anything inside curly braces <code>{ }</code> is filled in from your boxes, exactly where you wrote it.</p>
+      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">print(f"Hello, {name} from {city}!")</p>
+      <p>No commas, no gluing, no <code>str()</code> — numbers convert themselves, spaces and punctuation land precisely where you typed them. The <code>f</code> stands for <i>formatted</i>, and it has one more gift: put <code>:.2f</code> after a box name — <code>{price:.2f}</code> — and the number is written with exactly two decimal places. That's money formatting, and the build below runs on it.</p>
+    </div>
+    <div class="trace">
+      <div class="dl">Trace it by hand — one template, filled in</div>
+      <div class="m">name = "Ada"
+each = 106.666666
+print(f"{name} pays {each:.2f} rupees")</div>
+      <p><b>Line 3:</b> Python walks the template left to right: <code>{name}</code> → box contents <code>Ada</code>; the literal text stays put; <code>{each:.2f}</code> → 106.666666 written to two decimals → <code>106.67</code> (it rounds, not chops):</p>
+      <div class="m">Ada pays 106.67 rupees</div>
+    </div>
+    <div class="confuse">
+      <div class="lbl">Common confusion</div>
+      <p>Forgot the <code>f</code>? Then <code>print("Hello, {name}")</code> prints the braces literally: <code>Hello, {name}</code>. No error, just a template nobody filled in. If you ever see your curly braces on screen, the missing <code>f</code> is the culprit — every time.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Worked example</div>
+      <p><b>Task:</b> reprint 2.3's stretch — <code>Score: 95!</code> — the modern way, then a price line with clean decimals. <b>Thinking:</b> write the sentence as you want it to appear; drop boxes in braces where values go.</p>
+      <div class="pyrun" data-id="w4">
+        <textarea spellcheck="false">points = 95
+price = 1234.5
+print(f"Score: {points}!")
+print(f"Price: {price:.2f} rupees")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">2.4 · P1</span><span class="pt">Rewrite with f-strings</span></div>
+        <p class="pd">Rewrite this comma-and-glue mess as <b>one</b> f-string print that produces the goal exactly — note the no-space <code>!</code> that commas can't do.</p>
+        <div class="want">Ada scored 95 in Python!</div>
+        <div class="pyrun" data-id="s4p1" data-expect="Ada scored 95 in Python!">
+          <textarea spellcheck="false">name = "Ada"
+marks = 95
+subject = "Python"
+print(name, "scored", marks, "in", subject, "!")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>name = "Ada"
+marks = 95
+subject = "Python"
+print(f"{name} scored {marks} in {subject}!")</pre><p>The sentence reads like a sentence, and punctuation obeys you instead of the comma rule.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">2.4 · P2</span><span class="pt">Two decimals, always</span></div>
+        <p class="pd">A shop wants every price shown with two decimals. Print both prices using <code>:.2f</code> to match the goal — one gets padded, one gets rounded.</p>
+        <div class="want">Tea: 12.00
+Cake: 45.68</div>
+        <div class="pyrun" data-id="s4p2" data-expect="Tea: 12.00\nCake: 45.68">
+          <textarea spellcheck="false">tea = 12
+cake = 45.678
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>tea = 12
+cake = 45.678
+print(f"Tea: {tea:.2f}")
+print(f"Cake: {cake:.2f}")</pre><p><code>:.2f</code> means "as a decimal number, two places": 12 becomes 12.00, and 45.678 rounds to 45.68.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">2.4 · P3</span><span class="pt">Stretch — why money needs :.2f</span></div>
+        <p class="pd">Run this and look closely at the first line. Then fix the print with <code>:.2f</code> so it shows the goal. (The read below the solution explains the weirdness — it isn't a bug in your code.)</p>
+        <div class="want">Total: 0.30</div>
+        <div class="pyrun" data-id="s4p3" data-expect="Total: 0.30">
+          <textarea spellcheck="false">total = 0.1 + 0.2
+print("Total:", total)</textarea>
+        </div>
+        <details><summary>Show solution &amp; the why</summary><pre>total = 0.1 + 0.2
+print(f"Total: {total:.2f}")</pre><p>The raw print shows <code>0.30000000000000004</code>. Computers store decimals in binary, and 0.1 in binary is a repeating fraction — like ⅓ in decimal — so a microscopic rounding error rides along. Every language has this; professionals format money to fixed decimals for exactly this reason. Now you do too.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2.5 BUILD ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">2.5</span>
+      <h2>Your build — the tip calculator</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p>Everything from this session, one real program: ask for the bill, the tip percentage, and how many people are splitting; compute the tip, the total, and each person's share; print money like money. That's <code>input()</code> + <code>int()</code>, three arithmetic lines, and f-strings with <code>:.2f</code>. Build it in two stages.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">2.5 · P1</span><span class="pt">Stage 1 — bill and tip</span></div>
+        <p class="pd">Ask <code>Bill amount? </code> and <code>Tip percent? </code> (convert both at the door), compute the tip as <code>bill * tip_percent / 100</code> and the total, and print both with <code>:.2f</code>. Inputs fixed: 1200, then 10.</p>
+        <div class="want">Bill amount? 1200
+Tip percent? 10
+Tip: 120.00
+Total: 1320.00</div>
+        <div class="pyrun" data-id="s5p1" data-stdin="1200\n10" data-stdin-lock data-expect="Bill amount? 1200\nTip percent? 10\nTip: 120.00\nTotal: 1320.00">
+          <textarea spellcheck="false">bill = int(input("Bill amount? "))
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>bill = int(input("Bill amount? "))
+tip_percent = int(input("Tip percent? "))
+tip = bill * tip_percent / 100
+total = bill + tip
+print(f"Tip: {tip:.2f}")
+print(f"Total: {total:.2f}")</pre><p>The division by 100 makes <code>tip</code> a float (120.0), and <code>:.2f</code> dresses it as money.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">2.5 · P2</span><span class="pt">Stage 2 — split it</span></div>
+        <p class="pd">Extend Stage 1: also ask <code>How many people? </code> and print each person's share of the total. Inputs fixed: 1200, 10, 4. Paste your Stage 1 code and grow it — that's how real programs are built.</p>
+        <div class="want">Bill amount? 1200
+Tip percent? 10
+How many people? 4
+Tip: 120.00
+Total: 1320.00
+Each pays: 330.00</div>
+        <div class="pyrun" data-id="s5p2" data-stdin="1200\n10\n4" data-stdin-lock data-expect="Bill amount? 1200\nTip percent? 10\nHow many people? 4\nTip: 120.00\nTotal: 1320.00\nEach pays: 330.00">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>bill = int(input("Bill amount? "))
+tip_percent = int(input("Tip percent? "))
+people = int(input("How many people? "))
+tip = bill * tip_percent / 100
+total = bill + tip
+each = total / people
+print(f"Tip: {tip:.2f}")
+print(f"Total: {total:.2f}")
+print(f"Each pays: {each:.2f}")</pre><p>Ask → convert → compute → format. This four-beat shape is most of practical programming; you'll recognise it in every unit from here on.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">2.5 · P3</span><span class="pt">Stretch — make it yours</span></div>
+        <p class="pd">Unlock the input field (it's editable here), try your own bill, an awkward head-count like 3, a 12% tip. Watch <code>:.2f</code> keep the output civilised however messy the division gets. No check — this one's for the feel of it.</p>
+        <div class="pyrun" data-id="s5p3" data-stdin="850\n12\n3">
+          <textarea spellcheck="false">bill = int(input("Bill amount? "))
+tip_percent = int(input("Tip percent? "))
+people = int(input("How many people? "))
+total = bill + bill * tip_percent / 100
+print(f"Each pays: {total / people:.2f}")</textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2.6 PROBLEM BANK ============ -->
+  <section id="s6">
+    <div class="prose">
+      <span class="sec-num">2.6</span>
+      <h2>Problem bank — everything at once</h2>
+      <span class="rtag"><span class="pr">Practice · ~12 min</span></span>
+      <p>The mixed set. Boxes, all seven operators, conversions, f-strings — in combinations. In order; they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">The swap</span></div>
+        <p class="pd">Make the two boxes trade contents, using a third box as a temporary shelf, so the print matches the goal. (Changing the first two lines is cheating.)</p>
+        <div class="want">tea coffee</div>
+        <div class="pyrun" data-id="b1" data-expect="tea coffee">
+          <textarea spellcheck="false">a = "coffee"
+b = "tea"
+# swap them here
+
+print(a, b)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>a = "coffee"
+b = "tea"
+temp = a
+a = b
+b = temp
+print(a, b)</pre><p>Store a's contents on the shelf before overwriting — otherwise "coffee" is gone forever. A classic that interviews still ask.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">Digits of a number</span></div>
+        <p class="pd">For any two-digit number in the box, print its tens digit and ones digit using only <code>//</code> and <code>%</code>. Goal shown for 74.</p>
+        <div class="want">Tens: 7
+Ones: 4</div>
+        <div class="pyrun" data-id="b2" data-expect="Tens: 7\nOnes: 4">
+          <textarea spellcheck="false">n = 74
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>n = 74
+print("Tens:", n // 10)
+print("Ones:", n % 10)</pre><p>Dividing by 10 shifts a digit off the end; the remainder is the digit that fell off. This trick scales to any base and returns in the ML stage.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">Minutes, humanised</span></div>
+        <p class="pd">Ask <code>Minutes? </code>, convert, and report hours and minutes using <code>//</code> and <code>%</code> in one f-string. Input fixed to 175.</p>
+        <div class="want">Minutes? 175
+That is 2 h 55 min</div>
+        <div class="pyrun" data-id="b3" data-stdin="175" data-stdin-lock data-expect="Minutes? 175\nThat is 2 h 55 min">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>minutes = int(input("Minutes? "))
+print(f"That is {minutes // 60} h {minutes % 60} min")</pre><p>Whole hours by <code>//</code>, leftover minutes by <code>%</code> — and yes, expressions can live right inside the braces.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — the fuel-cost estimator</span></div>
+        <p class="pd">Trip of 380 km, mileage 18.5 km per litre, petrol at 102.40 per litre — all as boxes. Litres needed is distance ÷ mileage; cost is litres × price. Print both to two decimals.</p>
+        <div class="want">Litres: 20.54
+Cost: 2103.35</div>
+        <div class="pyrun" data-id="b4" data-expect="Litres: 20.54\nCost: 2103.35">
+          <textarea spellcheck="false">distance = 380
+mileage = 18.5
+price = 102.40
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>distance = 380
+mileage = 18.5
+price = 102.40
+litres = distance / mileage
+cost = litres * price
+print(f"Litres: {litres:.2f}")
+print(f"Cost: {cost:.2f}")</pre><p>Note the display rounds (20.54) but the <i>box</i> keeps full precision (20.5405…), so the cost is computed from the honest number, not the rounded one. Format at the exit, never in the middle.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this unit you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Unit 3 · Making decisions — comparisons &amp; if/else</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">Your programs can remember and compute, but they can't yet <i>choose</i> — every run walks the same straight line. Unit 3 gives them a fork in the road: True and False, the comparisons that produce them, and if/elif/else to act on the answer. The <code>=</code> vs <code>==</code> distinction we planted here becomes the star of the show.</p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+    </div>
+    <ol>
+      <li><b>The Python Tutorial</b> — <i>§3.1 Numbers &amp; §3.1.2 Text</i>. <span class="why">The official treatment of ints, floats, operators and strings — the same ground as 2.2 and 2.3.</span> <a href="https://docs.python.org/3/tutorial/introduction.html" rel="noopener">docs.python.org</a></li>
+      <li><b>Sweigart, A.</b> — <i>Automate the Boring Stuff with Python, ch. 1 (Python Basics)</i>. <span class="why">Expressions, data types, variables and string concatenation, hands-on.</span> <a href="https://automatetheboringstuff.com/2e/chapter1/" rel="noopener">book</a></li>
+      <li><b>Python documentation</b> — <i>Format Specification Mini-Language</i>. <span class="why">Everything <code>:.2f</code> can do and its many siblings — skim now, bookmark forever.</span> <a href="https://docs.python.org/3/library/string.html#format-specification-mini-language" rel="noopener">docs.python.org</a></li>
+      <li><b>Python documentation</b> — <i>Floating Point Arithmetic: Issues and Limitations</i>. <span class="why">The honest full story behind 2.4's 0.30000000000000004.</span> <a href="https://docs.python.org/3/tutorial/floatingpoint.html" rel="noopener">docs.python.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="unit1.html"><span class="k">← Previous</span><span class="t">Unit 1 · Your first conversation with a computer</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit3.html"><span class="k">Next →</span><span class="t">Unit 3 · Making decisions</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 2 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"What does the line  count = count + 1  actually do?",
+   o:["Nothing — it's a mathematical impossibility","States that count equals count plus one","Computes the right side using the box's current contents, then stores the result back into the box","Creates a second box also called count"],
+   a:2,
+   e:"= is 'store into', not 'equals': right side first (old contents + 1), then into the box on the left. The old value is replaced."},
+  {q:"What does 10 / 2 give?",
+   o:["5","5.0","2.5","An error"],
+   a:1,
+   e:"The / operator always produces a float, even when the division comes out even. Want the int? That's 10 // 2 → 5."},
+  {q:"You need to know how many are LEFT OVER after sharing 23 sweets among 4 kids. Which operator?",
+   o:["/","//","%","**"],
+   a:2,
+   e:"% gives the remainder: 23 % 4 → 3 left over. Its partner // gives each kid's share: 23 // 4 → 5."},
+  {q:"Someone types 25 at  age = input(\"Age? \")  — what is in the box?",
+   o:["The int 25","The float 25.0","The string \"25\"","Depends on what was typed"],
+   a:2,
+   e:"input() ALWAYS hands back text, whatever was typed. Before maths, convert: int(age). This is the single most common beginner bug."},
+  {q:"What does \"7\" + \"7\" give?",
+   o:["14","\"77\"","An error","49"],
+   a:1,
+   e:"For strings, + glues. The type decides what the operator means: 7 + 7 adds to 14, \"7\" + \"7\" glues to \"77\", and \"7\" + 7 refuses with a TypeError."},
+  {q:"What does  print(f\"{price:.2f}\")  do that  print(price)  doesn't?",
+   o:["Prints the price twice","Writes the number with exactly two decimal places, rounding if needed","Converts the price to an integer","Makes the output bold"],
+   a:1,
+   e:":.2f is a formatting instruction: as a decimal number, two places — 12 becomes 12.00, 45.678 becomes 45.68. It changes only the display; the box keeps full precision."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. Your programs now remember and compute."
+           : correct >= 4 ? " — solid. Reread the ones you missed; 2.1 and 2.3 carry the load."
+           : " — worth another pass through the practice above before Unit 3.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Variable","A labeled box that stores one value. Created by assignment; read by writing its name; replaced by storing again."],
+  ["Assignment (=)","'Store into', right to left: compute the right side, put the result in the box on the left. Not the equals sign from school."],
+  ["int","A whole number: 4, -12, 2026. No decimal point."],
+  ["float","A decimal-point number: 4.5, 0.1, 330.0. Division with / always produces one."],
+  ["Type","What kind of value something is — str, int or float. The type decides what operators mean. type(x) reveals it."],
+  ["// (floor division)","Divide and keep only the whole part: 17 // 5 → 3."],
+  ["% (modulo)","The remainder after division: 17 % 5 → 2. Partner of //."],
+  ["** (power)","Raise to a power: 2 ** 10 → 1024."],
+  ["TypeError","Python refusing to mix types: \"7\" + 7 could mean two things, so it means neither."],
+  ["int() / float() / str()","Converters between types. input() always returns a string — convert at the door before maths."],
+  ["f-string","A quoted template with an f in front: f\"Hi {name}\". Boxes in braces are filled in place; numbers convert themselves."],
+  [":.2f","Format instruction inside braces: write the number with exactly two decimal places. The money formatter."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>
