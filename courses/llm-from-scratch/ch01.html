@@ -1,0 +1,1359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Makes a Language Model Large — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+:root{
+  --ground:#f6f7fb;
+  --panel:#ffffff;
+  --subtle:#f0f1f7;
+  --ink:#1f2733;
+  --muted:#6b7585;
+  --line:#e3e6ee;
+  --accent:#5b4b9e;
+  --accent-deep:#3d3170;
+  --accent-wash:#ecebf6;
+  --teal:#2b7a78;
+  --teal-wash:#e3efee;
+  --clay:#a35a33;
+  --clay-wash:#f7ebe4;
+  --gold:#8a6d1c;
+  --gold-wash:#f5f0df;
+  --slate:#4a5a72;
+
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --sans:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Cascadia Mono','Cascadia Code',Consolas,'SF Mono',ui-monospace,Menlo,monospace;
+
+  --fs-xs:.75rem; --fs-sm:.8125rem; --fs-cap:.875rem;
+  --fs-base:1.0625rem; --fs-lg:1.1875rem; --fs-xl:1.4rem;
+  --fs-2xl:1.85rem; --fs-3xl:2.6rem;
+
+  --r:10px; --r-lg:14px;
+  --shadow:0 1px 2px rgba(31,39,51,.05), 0 8px 24px rgba(31,39,51,.05);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:var(--fs-base);
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.2;margin:0}
+p{margin:0}
+a{color:var(--accent);text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.9em}
+
+/* ---------- masthead ---------- */
+.masthead{
+  background:var(--panel);
+  border-bottom:1px solid var(--line);
+}
+.masthead-in{
+  max-width:1180px;margin:0 auto;padding:22px 28px 0;
+  display:flex;flex-direction:column;gap:34px;
+}
+.brandbar{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.brandbar img{height:34px;width:auto;display:block}
+.brand-tag{
+  font-size:var(--fs-xs);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);font-weight:600;
+}
+.title-block{padding-bottom:38px}
+.eyebrow{
+  font-size:var(--fs-xs);letter-spacing:.15em;text-transform:uppercase;
+  color:var(--accent);font-weight:700;margin-bottom:14px;
+}
+h1{font-size:var(--fs-3xl);letter-spacing:-.015em;max-width:17ch}
+.standfirst{margin-top:18px;font-size:var(--fs-lg);color:var(--slate);line-height:1.55;max-width:56ch}
+.facts{
+  display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;
+  font-size:var(--fs-sm);color:var(--muted);
+}
+.facts b{display:block;color:var(--ink);font-size:var(--fs-cap);font-weight:600}
+
+/* ---------- shell ---------- */
+.shell{
+  max-width:1180px;margin:0 auto;padding:46px 28px 90px;
+  display:grid;grid-template-columns:196px minmax(0,1fr);gap:52px;align-items:start;
+}
+.rail{position:sticky;top:26px;display:flex;flex-direction:column;gap:2px}
+.rail-h{
+  font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted);font-weight:700;margin-bottom:10px;padding-left:11px;
+}
+.rail a{
+  display:block;padding:6px 11px;border-radius:7px;font-size:var(--fs-sm);
+  color:var(--muted);text-decoration:none;border-left:2px solid transparent;
+}
+.rail a:hover{background:var(--subtle);color:var(--ink)}
+.rail a.on{color:var(--accent-deep);background:var(--accent-wash);border-left-color:var(--accent);font-weight:600}
+
+main{min-width:0;display:flex;flex-direction:column;gap:58px}
+section{scroll-margin-top:22px;display:flex;flex-direction:column;gap:20px}
+.prose{max-width:66ch;display:flex;flex-direction:column;gap:16px}
+.sec-num{
+  font-family:var(--mono);font-size:var(--fs-sm);color:var(--accent);
+  font-weight:600;letter-spacing:.04em;
+}
+h2{font-size:var(--fs-2xl);letter-spacing:-.01em}
+h3{font-size:var(--fs-xl);margin-top:6px}
+h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacing:.02em}
+
+/* ---------- editorial bits ---------- */
+.keyidea{
+  border-left:3px solid var(--accent);background:var(--accent-wash);
+  padding:16px 20px;border-radius:0 var(--r) var(--r) 0;max-width:66ch;
+}
+.keyidea .lbl{
+  font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;
+  font-weight:700;color:var(--accent-deep);margin-bottom:6px;
+}
+.aside{
+  background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px 20px;max-width:66ch;font-size:var(--fs-cap);color:var(--slate);
+}
+.aside .lbl{
+  font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;
+  font-weight:700;color:var(--ink);margin-bottom:6px;
+}
+.term{font-weight:600;color:var(--accent-deep);border-bottom:1px dotted var(--accent);cursor:help}
+ul.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:8px}
+ul.plain li::marker{color:var(--accent)}
+
+/* ---------- lab ---------- */
+.lab{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.lab-head{
+  padding:16px 22px;border-bottom:1px solid var(--line);
+  display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  background:linear-gradient(var(--panel),var(--subtle));
+}
+.lab-head h4{font-size:var(--fs-lg);font-family:var(--serif);font-weight:600}
+.lab-kicker{
+  font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;
+  color:var(--accent);font-weight:700;
+}
+.lab-body{padding:22px}
+.lab-note{
+  padding:13px 22px;border-top:1px solid var(--line);background:var(--subtle);
+  font-size:var(--fs-sm);color:var(--muted);
+}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.stack{display:flex;flex-direction:column;gap:16px}
+.lbl-sm{
+  font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-weight:700;
+}
+
+button{font:inherit;cursor:pointer}
+.btn{
+  background:var(--accent);color:#fff;border:1px solid var(--accent);
+  padding:8px 16px;border-radius:8px;font-size:var(--fs-cap);font-weight:600;
+  transition:background .15s;
+}
+.btn:hover{background:var(--accent-deep)}
+.btn.ghost{background:var(--panel);color:var(--accent-deep);border-color:var(--line)}
+.btn.ghost:hover{background:var(--accent-wash)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+.seg{display:inline-flex;background:var(--subtle);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
+.seg button{
+  border:none;background:transparent;color:var(--muted);
+  padding:6px 14px;border-radius:6px;font-size:var(--fs-cap);font-weight:600;
+}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--accent-deep);box-shadow:0 1px 2px rgba(31,39,51,.1)}
+
+textarea,input[type=text]{
+  font-family:var(--mono);font-size:var(--fs-cap);color:var(--ink);
+  background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);
+  padding:12px 14px;width:100%;line-height:1.6;resize:vertical;
+}
+textarea:focus,input[type=text]:focus{background:var(--panel)}
+
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap)}
+th{
+  text-align:left;font-size:var(--fs-xs);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--muted);font-weight:700;padding:8px 12px;border-bottom:1px solid var(--line);
+}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.num{font-variant-numeric:tabular-nums;text-align:right}
+.scroll-x{overflow-x:auto}
+
+/* ---------- 1.1 nested fields ---------- */
+.rings{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+.ring{border:2px solid;border-radius:var(--r-lg);padding:13px}
+.ring-btn{
+  display:block;width:100%;text-align:left;background:transparent;border:none;
+  padding:2px 4px 9px;font-family:var(--serif);font-size:var(--fs-cap);font-weight:600;
+}
+.ring-ai{border-color:#c9cede;background:#fbfbfe}
+.ring-ml{border-color:#b3bcd6;background:#f4f5fb}
+.ring-dl{border-color:#9a93c8;background:var(--accent-wash)}
+.ring-llm{border-color:var(--accent);background:#e2dff2}
+.ring[data-on="true"]{box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+.ring-btn small{display:block;font-family:var(--sans);font-size:var(--fs-xs);color:var(--muted);font-weight:500;letter-spacing:.02em}
+.detail{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.detail h5{margin:0 0 8px;font-family:var(--serif);font-size:var(--fs-lg);font-weight:600}
+.detail p{font-size:var(--fs-cap);color:var(--slate)}
+.detail .spam{
+  margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);
+  font-size:var(--fs-sm);
+}
+.detail .spam b{display:block;color:var(--accent-deep);font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+
+/* ---------- next-word lab ---------- */
+.gen-out{
+  font-family:var(--serif);font-size:1.35rem;line-height:1.75;
+  background:var(--subtle);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px;min-height:96px;
+}
+.gen-out .ctx{color:var(--muted)}
+.gen-out .fresh{color:var(--accent-deep);font-weight:600;background:var(--accent-wash);border-radius:4px;padding:0 3px}
+.gen-out .caret{
+  display:inline-block;width:2px;height:1.1em;background:var(--accent);
+  vertical-align:-.16em;animation:blink 1.05s steps(2) infinite;
+}
+@keyframes blink{50%{opacity:0}}
+.cands{display:flex;flex-direction:column;gap:6px}
+.cand{
+  display:grid;grid-template-columns:minmax(88px,auto) minmax(0,1fr) 52px;
+  gap:11px;align-items:center;width:100%;
+  background:transparent;border:1px solid var(--line);border-radius:8px;
+  padding:7px 11px;text-align:left;
+}
+.cand:hover{border-color:var(--accent);background:var(--accent-wash)}
+.cand .w{font-family:var(--mono);font-size:var(--fs-cap);font-weight:600}
+.cand .bar{height:9px;background:var(--subtle);border-radius:5px;overflow:hidden}
+.cand .bar i{display:block;height:100%;background:var(--accent);border-radius:5px}
+.cand .p{font-size:var(--fs-sm);color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.ctx-chip{
+  display:inline-block;font-family:var(--mono);font-size:var(--fs-sm);
+  background:var(--accent-wash);color:var(--accent-deep);border-radius:6px;
+  padding:3px 8px;font-weight:600;
+}
+.backoff{font-size:var(--fs-sm);color:var(--muted)}
+
+/* ---------- pair table ---------- */
+.pair-ctx{font-family:var(--mono);font-size:var(--fs-sm);color:var(--slate)}
+.pair-tgt{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;color:var(--accent-deep)}
+
+/* ---------- pipeline ---------- */
+.pipe{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.stage{
+  border:1px solid var(--line);border-radius:var(--r);padding:15px;
+  background:var(--panel);text-align:left;width:100%;
+}
+.stage[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-wash);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}
+.stage .n{
+  font-family:var(--mono);font-size:var(--fs-xs);color:var(--accent);font-weight:700;
+  letter-spacing:.08em;
+}
+.stage .t{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;margin:5px 0 4px}
+.stage .d{font-size:var(--fs-sm);color:var(--muted)}
+
+/* ---------- visibility (BERT vs GPT) ---------- */
+.sent{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0}
+.tok{
+  font-family:var(--mono);font-size:var(--fs-cap);
+  border:1px solid var(--line);background:var(--panel);border-radius:7px;
+  padding:6px 11px;color:var(--muted);transition:all .16s;
+}
+.tok.visible{background:var(--teal-wash);border-color:var(--teal);color:#1d5654}
+.tok.target{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.tok.hidden-tok{background:var(--subtle);border-style:dashed;color:#a4acbb}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:var(--fs-sm);color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.swatch{width:13px;height:13px;border-radius:4px;border:1px solid}
+
+/* ---------- dataset chart ---------- */
+.bars{display:flex;flex-direction:column;gap:11px}
+.brow{display:grid;grid-template-columns:150px minmax(0,1fr) 96px;gap:13px;align-items:center}
+.brow .nm{font-size:var(--fs-cap);font-weight:600}
+.brow .nm small{display:block;font-weight:400;color:var(--muted);font-size:var(--fs-xs)}
+.track{height:26px;background:var(--subtle);border-radius:6px;overflow:hidden}
+.track i{display:block;height:100%;border-radius:6px;transition:width .45s cubic-bezier(.4,0,.2,1)}
+.brow .v{font-size:var(--fs-cap);font-variant-numeric:tabular-nums;text-align:right;font-weight:600}
+
+/* ---------- shots ---------- */
+.prompt-box{
+  font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);
+  border:1px solid var(--line);border-radius:var(--r);padding:16px;
+  white-space:pre-wrap;line-height:1.75;
+}
+.prompt-box .ex{color:var(--teal)}
+.prompt-box .q{color:var(--ink);font-weight:600}
+.prompt-box .a{color:var(--accent-deep);font-weight:700;background:var(--accent-wash);border-radius:4px;padding:1px 5px}
+
+/* ---------- quiz ---------- */
+.q-card{border:1px solid var(--line);border-radius:var(--r);padding:17px;background:var(--panel)}
+.q-card .qq{font-weight:600;margin-bottom:12px;font-size:var(--fs-cap)}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{
+  text-align:left;background:var(--panel);border:1px solid var(--line);
+  border-radius:8px;padding:9px 13px;font-size:var(--fs-cap);width:100%;
+}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-wash)}
+.opt.right{border-color:var(--teal);background:var(--teal-wash);color:#1d5654;font-weight:600}
+.opt.wrong{border-color:var(--clay);background:var(--clay-wash);color:#7c4324}
+.explain{
+  margin-top:11px;padding:11px 13px;background:var(--subtle);border-radius:8px;
+  font-size:var(--fs-sm);color:var(--slate);border-left:3px solid var(--accent);
+}
+.score{
+  font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;
+  padding:13px 17px;background:var(--accent-wash);border-radius:var(--r);color:var(--accent-deep);
+}
+
+/* ---------- glossary ---------- */
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px}
+.gcard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--panel)}
+.gcard dt{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;color:var(--accent-deep)}
+.gcard dd{margin:6px 0 0;font-size:var(--fs-sm);color:var(--slate);line-height:1.6}
+
+/* ---------- footer ---------- */
+.foot{
+  border-top:1px solid var(--line);background:var(--panel);
+  padding:34px 28px;margin-top:20px;
+}
+.foot-in{
+  max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;
+  gap:24px;flex-wrap:wrap;align-items:center;font-size:var(--fs-sm);color:var(--muted);
+}
+.foot img{height:26px;opacity:.75}
+.next{
+  background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);
+  border-radius:var(--r-lg);padding:22px 24px;max-width:66ch;
+}
+.next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
+.next h3{font-size:var(--fs-xl);margin:0 0 8px}
+
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .rail-h{display:none}
+  .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
+  .rail a.on{border-left:none;border-bottom-color:var(--accent)}
+  .rings{grid-template-columns:1fr}
+  .pipe{grid-template-columns:1fr}
+  .brow{grid-template-columns:110px minmax(0,1fr) 78px}
+  h1{font-size:2rem}
+  .masthead-in{padding:18px 20px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+}
+</style>
+</head>
+<body data-lwa-course="llm-from-scratch" data-lwa-chapter="ch01" data-lwa-title="Chapter 1 · What Makes a Language Model Large">
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Track 01 · Build an LLM from Scratch</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Build a Large Language Model (From Scratch) · Chapter 1</div>
+      <h1>What Makes a Language Model Large</h1>
+      <p class="standfirst">An LLM learns one absurdly simple task — guess the next word — a few hundred billion times. Everything else it can do falls out of that. These notes take you through why that works.</p>
+      <div class="facts">
+        <div><b>Pages 25–52</b>Source chapter</div>
+        <div><b>7 sections</b>1.1 – 1.7</div>
+        <div><b>7 labs</b>Hands-on, in this page</div>
+        <div><b>No maths yet</b>Concepts only</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">1.1 What is an LLM?</a>
+    <a href="#s2">1.2 What they're used for</a>
+    <a href="#s3">1.3 Two training stages</a>
+    <a href="#s4">1.4 The transformer</a>
+    <a href="#s5">1.5 The data</a>
+    <a href="#s6">1.6 Inside GPT</a>
+    <a href="#s7">1.7 Our build plan</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 1.1 ============ -->
+  <section id="s1">
+    <div class="prose">
+      <div class="sec-num">1.1</div>
+      <h2>What is an LLM?</h2>
+      <p>A <span class="term" title="Large Language Model">large language model</span> is a neural network trained to understand, generate and respond to human-like text. That is the whole definition. The interesting part is the word <em>large</em>, which is doing two jobs at once:</p>
+      <ul class="plain">
+        <li><b>Large in parameters.</b> Parameters are the adjustable weights inside the network. Modern models have tens or hundreds of billions of them.</li>
+        <li><b>Large in data.</b> They are trained on enormous quantities of text — sometimes a sizeable fraction of the public internet.</li>
+      </ul>
+      <p>And what are all those parameters tuned to do? One thing: <b>predict the next word in a sequence.</b> That's it. It sounds far too simple to produce anything impressive, and honestly, it surprised a lot of researchers that it works as well as it does.</p>
+    </div>
+
+    <div class="keyidea">
+      <div class="lbl">Key idea</div>
+      <p>Next-word prediction is a good training task because language is <em>already</em> a sequence. To learn context, structure and relationships between words, the model doesn't need anyone to explain grammar to it — it just needs to keep guessing what comes next and keep being corrected.</p>
+    </div>
+
+    <div class="prose">
+      <p>One caution on vocabulary before we go further. When we say a model "understands" language, we mean it processes and produces text that is coherent and contextually appropriate. We do <em>not</em> mean it has human-like consciousness or comprehension. Keep that distinction sharp — it prevents a lot of confused thinking later.</p>
+      <h3>Where LLMs sit in the field</h3>
+      <p>AI, machine learning, deep learning and LLMs are often used loosely and interchangeably. They're actually nested inside one another. Click through the layers below — each one is explained using the same running example, a spam filter, so you can see exactly what changes at each level.</p>
+    </div>
+
+    <div class="lab">
+      <div class="lab-head">
+        <h4>Lab 1 · The nested fields</h4>
+        <span class="lab-kicker">Click a layer</span>
+      </div>
+      <div class="lab-body">
+        <div class="rings">
+          <div class="ring ring-ai" data-on="false">
+            <button class="ring-btn" data-ring="ai">Artificial Intelligence<small>Machines doing things that need human-like intelligence</small></button>
+            <div class="ring ring-ml" data-on="false">
+              <button class="ring-btn" data-ring="ml">Machine Learning<small>Learn the rules from data, don't write them</small></button>
+              <div class="ring ring-dl" data-on="false">
+                <button class="ring-btn" data-ring="dl">Deep Learning<small>Neural networks, three or more layers</small></button>
+                <div class="ring ring-llm" data-on="false">
+                  <button class="ring-btn" data-ring="llm">Large Language Models<small>Deep learning applied to text, at scale</small></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="detail" id="ring-detail" aria-live="polite"></div>
+        </div>
+      </div>
+      <div class="lab-note">Note that AI is broader than machine learning: rule-based systems, genetic algorithms, expert systems, fuzzy logic and symbolic reasoning all live in the outer ring too.</div>
+    </div>
+  </section>
+
+  <!-- ============ 1.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <div class="sec-num">1.2</div>
+      <h2>What LLMs are actually used for</h2>
+      <p>Because they parse and generate unstructured text well, LLMs turn up almost anywhere text is involved: machine translation, sentiment analysis, summarisation, writing fiction and articles, writing computer code, powering chatbots and virtual assistants, and retrieving knowledge from large specialised document collections in fields like medicine and law.</p>
+      <p>There's a pattern worth noticing here. Before LLMs, each of these was a <em>separate</em> model. You built one system for translation, another for classification, another for summarisation — each with its own architecture and its own labelled dataset.</p>
+    </div>
+
+    <div class="keyidea">
+      <div class="lbl">The shift</div>
+      <p>Earlier NLP models were narrow specialists that were excellent at one task. An LLM is a generalist: one model, many tasks, no retraining. That change — from many narrow models to one broad one — is the real story of the last few years.</p>
+    </div>
+
+    <div class="prose">
+      <p>Traditional methods were genuinely good at categorisation and pattern matching that could be captured with handcrafted rules. Where they fell down was anything needing complex understanding and generation: following detailed instructions, doing contextual analysis, producing coherent original text. Writing an email from a list of keywords was out of reach for the previous generation. It's trivial now.</p>
+    </div>
+  </section>
+
+  <!-- ============ 1.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <div class="sec-num">1.3</div>
+      <h2>The two stages: pretraining and fine-tuning</h2>
+      <p>Building an LLM happens in two phases, and understanding the split explains almost everything about how these models are made and shared.</p>
+    </div>
+
+    <div class="lab">
+      <div class="lab-head">
+        <h4>Lab 2 · The training pipeline</h4>
+        <span class="lab-kicker">Click a stage</span>
+      </div>
+      <div class="lab-body stack">
+        <div class="pipe">
+          <button class="stage" data-stage="0" aria-pressed="true">
+            <div class="n">STAGE 1</div>
+            <div class="t">Raw text</div>
+            <div class="d">Huge, unlabelled, unstructured</div>
+          </button>
+          <button class="stage" data-stage="1" aria-pressed="false">
+            <div class="n">STAGE 2</div>
+            <div class="t">Pretraining</div>
+            <div class="d">Next-word prediction at scale</div>
+          </button>
+          <button class="stage" data-stage="2" aria-pressed="false">
+            <div class="n">STAGE 3</div>
+            <div class="t">Fine-tuning</div>
+            <div class="d">Small labelled dataset, specific job</div>
+          </button>
+        </div>
+        <div class="detail" id="stage-detail" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div class="prose">
+      <h3>Why pretraining needs no labels</h3>
+      <p>Here is the trick that makes the whole thing affordable. Traditional supervised learning needs labelled examples, and labels are expensive — a human has to make each one. Pretraining sidesteps this entirely using <span class="term" title="The model creates its own labels from the structure of the data">self-supervised learning</span>: the model generates its own labels from the input data.</p>
+      <p>How? Take any sentence. The words up to position <i>n</i> are the input; the word at position <i>n+1</i> is the label. Nobody had to annotate anything — the text labels itself. Try it below.</p>
+    </div>
+
+    <div class="lab">
+      <div class="lab-head">
+        <h4>Lab 3 · Text that labels itself</h4>
+        <span class="lab-kicker">Type your own sentence</span>
+      </div>
+      <div class="lab-body stack">
+        <div>
+          <div class="lbl-sm" style="margin-bottom:7px">Raw text — no labels attached</div>
+          <input type="text" id="ss-input" value="the student opened the laptop and started to read">
+        </div>
+        <div class="scroll-x">
+          <table id="ss-table">
+            <thead><tr><th style="width:56px">#</th><th>Input (what the model sees)</th><th style="width:150px">Label (what it must guess)</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="lab-note">One short sentence just produced <b id="ss-count">8</b> free training examples. Now imagine doing this to 300 billion words.</div>
+    </div>
+
+    <div class="aside">
+      <div class="lbl">Why build your own?</div>
+      <p>Custom LLMs tailored to a domain can outperform general-purpose ones — BloombergGPT for finance is a known example. Beyond accuracy there are three practical reasons: <b>privacy</b> (your sensitive data never leaves your infrastructure), <b>deployment</b> (a smaller model can run directly on a laptop or phone, cutting latency and server cost), and <b>autonomy</b> (you control updates, not a vendor).</p>
+    </div>
+  </section>
+
+  <!-- ============ 1.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <div class="sec-num">1.4</div>
+      <h2>The transformer architecture</h2>
+      <p>Nearly every modern LLM rests on the <b>transformer</b>, introduced in the 2017 paper <a href="https://arxiv.org/abs/1706.03762">"Attention Is All You Need"</a>. It was originally built for machine translation — English to German and French — and it has two halves:</p>
+      <ul class="plain">
+        <li><b>The encoder</b> reads the input text and turns it into a series of vectors that capture its meaning in context.</li>
+        <li><b>The decoder</b> takes those vectors and generates the output text, one word at a time.</li>
+      </ul>
+      <p>Connecting them is the <span class="term" title="Covered properly in chapter 3">self-attention mechanism</span>, which lets the model weigh how important every word is relative to every other word. That's what allows it to handle long-range dependencies — to connect a pronoun to a noun twelve words back. Chapter 3 implements it properly; for now, just get a feel for it.</p>
+    </div>
+
+    <div class="lab">
+      <div class="lab-head">
+        <h4>Lab 4 · Attention, informally</h4>
+        <span class="lab-kicker">Hover or tap a German word</span>
+      </div>
+      <div class="lab-body stack">
+        <div>
+          <div class="lbl-sm" style="margin-bottom:8px">English input → German output</div>
+          <div id="align-wrap"></div>
+        </div>
+        <p style="font-size:var(--fs-cap);color:var(--slate);margin:0" id="align-msg">Each output word draws on the input words differently. Hover one to see which English words it leans on.</p>
+      </div>
+      <div class="lab-note">This is an illustration of the <em>idea</em>, using a hand-written alignment. In a real transformer these weights are learned, not written down — chapter 3 computes them from scratch.</div>
+    </div>
+
+    <div class="prose">
+      <h3>Two descendants: BERT and GPT</h3>
+      <p>Later models kept one half of the transformer and threw away the other.</p>
+      <ul class="plain">
+        <li><b>BERT</b> (bidirectional encoder representations from transformers) keeps the <em>encoder</em>. It's trained on masked word prediction — hide a word, predict it — and because it can look in both directions, it's strong at classification. X (formerly Twitter) has used BERT to detect toxic content.</li>
+        <li><b>GPT</b> (generative pretrained transformer) keeps the <em>decoder</em>. It's trained on next-word prediction, sees only what came before, and is built to generate.</li>
+      </ul>
+      <p>The difference in what each model is <em>allowed to see</em> is the whole reason their strengths diverge. Click any word below to make it the target and watch the visible context change.</p>
+    </div>
+
+    <div class="lab">
+      <div class="lab-head">
+        <h4>Lab 5 · What each model is allowed to see</h4>
+        <span class="lab-kicker">Click a word to target it</span>
+      </div>
+      <div class="lab-body stack">
+        <div class="seg" role="group" aria-label="Model type">
+          <button id="vm-bert" aria-pressed="true">BERT — encoder</button>
+          <button id="vm-gpt" aria-pressed="false">GPT — decoder</button>
+        </div>
+        <div>
+          <div class="lbl-sm" style="margin-bottom:8px">The teacher opened the book and started to read the notes</div>
+          <div class="sent" id="vis-sent"></div>
+        </div>
+        <div class="legend">
+          <span><i class="swatch" style="background:var(--teal-wash);border-color:var(--teal)"></i> Visible to the model</span>
+          <span><i class="swatch" style="background:var(--accent);border-color:var(--accent)"></i> Word being predicted</span>
+          <span><i class="swatch" style="background:var(--subtle);border-color:#a4acbb"></i> Hidden from the model</span>
+        </div>
+        <div class="detail" id="vis-detail" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div class="prose">
+      <h3>Zero-shot and few-shot</h3>
+      <p>A pretrained GPT can often do a task it was never fine-tuned for, just from how you phrase the input. Give it no examples and it's working <b>zero-shot</b>; give it a handful inside the prompt and it's working <b>few-shot</b>. No retraining, no architecture change — the examples just sit in the input.</p>
+    </div>
+
+    <div class="lab">
+      <div class="lab-head">
+        <h4>Lab 6 · Zero-shot vs few-shot</h4>
+        <span class="lab-kicker">Change the number of examples</span>
+      </div>
+      <div class="lab-body stack">
+        <div class="seg" role="group" aria-label="Number of examples">
+          <button data-shot="0" aria-pressed="true">Zero-shot</button>
+          <button data-shot="1" aria-pressed="false">One-shot</button>
+          <button data-shot="3" aria-pressed="false">Few-shot (3)</button>
+        </div>
+        <div class="prompt-box" id="shot-box"></div>
+        <p style="font-size:var(--fs-cap);color:var(--slate);margin:0" id="shot-msg"></p>
+      </div>
+      <div class="lab-note">Everything above the answer is <em>input</em>. The model's weights never change — you are steering it purely with context.</div>
+    </div>
+
+    <div class="aside">
+      <div class="lbl">Transformers vs LLMs — not the same word</div>
+      <p>The terms get used interchangeably, but they don't fully overlap. Not all transformers are LLMs — transformers are also used for computer vision. And not all LLMs are transformers — some are built on recurrent or convolutional architectures, usually to improve computational efficiency. Throughout this book, "LLM" means a transformer-based, GPT-like model.</p>
+    </div>
+  </section>
+
+  <!-- ============ 1.5 ============ -->
+  <section id="s5">
+    <div class="prose">
+      <div class="sec-num">1.5</div>
+      <h2>The data behind the model</h2>
+      <p>GPT-3 was the base model for the first version of ChatGPT. Its training data is documented, and it repays a close look — because the obvious reading of the table is wrong.</p>
+      <p>A <b>token</b> is a unit of text the model reads; roughly, tokens ≈ words plus punctuation. Chapter 2 is entirely about how text becomes tokens.</p>
+    </div>
+
+    <div class="lab">
+      <div class="lab-head">
+        <h4>Lab 7 · What GPT-3 read</h4>
+        <span class="lab-kicker">Switch the measure</span>
+      </div>
+      <div class="lab-body stack">
+        <div class="seg" role="group" aria-label="Measure">
+          <button data-measure="tokens" aria-pressed="true">Tokens available</button>
+          <button data-measure="share" aria-pressed="false">Share of training</button>
+          <button data-measure="epochs" aria-pressed="false">Times seen</button>
+        </div>
+        <div class="bars" id="ds-bars"></div>
+        <div class="detail" id="ds-detail" aria-live="polite"></div>
+      </div>
+      <div class="lab-note">Figures from table 1.1 of the source chapter. "Times seen" is derived: share of the 300B training tokens ÷ tokens available in that source.</div>
+    </div>
+
+    <div class="keyidea">
+      <div class="lbl">The non-obvious bit</div>
+      <p>Wikipedia is only 3 billion tokens — under 1% of what was available — yet it makes up 3% of training, meaning it was read roughly <b>three times over</b>. CommonCrawl, the biggest source by far, was sampled at less than half of one pass. Quantity is not the same as weight. The engineers deliberately fed the model more of the <em>good</em> text.</p>
+    </div>
+
+    <div class="prose">
+      <p>Two more numbers worth carrying with you. The subsets total 499 billion tokens, but the model was trained on only 300 billion — the GPT-3 authors never explained why. And pretraining cost an estimated <b>$4.6 million</b> in cloud computing credits. That's why nobody pretrains from scratch casually, and why openly available pretrained weights matter so much.</p>
+    </div>
+
+    <div class="aside">
+      <div class="lbl">What this means for us</div>
+      <p>We'll write real pretraining code and run it on a small dataset — every computation in this book runs on ordinary consumer hardware. Then we'll load openly available pretrained weights into the architecture we built, which lets us skip the expensive stage and go straight to fine-tuning.</p>
+    </div>
+  </section>
+
+  <!-- ============ 1.6 ============ -->
+  <section id="s6">
+    <div class="prose">
+      <div class="sec-num">1.6</div>
+      <h2>A closer look at GPT</h2>
+      <p>Compared with the full transformer, GPT's architecture is startlingly plain: <b>it's just the decoder, with the encoder removed.</b> It reads left to right, one direction only, and it was pretrained on nothing but next-word prediction.</p>
+      <p>Because each new word is chosen based on the sequence that precedes it — and then becomes part of the sequence for the <em>next</em> prediction — GPT is called an <span class="term" title="Its own output is fed back in as input">autoregressive</span> model. That feedback loop is what keeps generated text coherent.</p>
+      <p>Scale is where the size went, not complexity. The original transformer stacked its blocks 6 times. GPT-3 has <b>96 transformer layers and 175 billion parameters</b>.</p>
+      <p>Time to run the loop yourself. The lab below is a working next-word predictor — small, but genuinely trained on the text in the box.</p>
+    </div>
+
+    <div class="lab">
+      <div class="lab-head">
+        <h4>Lab 8 · Build a next-word predictor</h4>
+        <span class="lab-kicker">The centrepiece</span>
+      </div>
+      <div class="lab-body stack">
+        <div>
+          <div class="lbl-sm" style="margin-bottom:7px">Training corpus — edit this and the model retrains instantly</div>
+          <textarea id="corpus" rows="7" spellcheck="false"></textarea>
+          <div class="row" style="margin-top:9px;font-size:var(--fs-sm);color:var(--muted)">
+            <span id="corpus-stats"></span>
+          </div>
+        </div>
+
+        <div>
+          <div class="lbl-sm" style="margin-bottom:7px">Generated text</div>
+          <div class="gen-out" id="gen-out" aria-live="polite"></div>
+        </div>
+
+        <div class="row">
+          <button class="btn" id="gen-step">Predict next word</button>
+          <button class="btn ghost" id="gen-auto">Write 8 words</button>
+          <button class="btn ghost" id="gen-reset">Start over</button>
+        </div>
+
+        <div>
+          <div class="row" style="justify-content:space-between;margin-bottom:9px">
+            <span class="lbl-sm">Candidates for the next word</span>
+            <span class="backoff" id="gen-ctx"></span>
+          </div>
+          <div class="cands" id="gen-cands"></div>
+          <p class="backoff" id="gen-backoff" style="margin-top:9px"></p>
+        </div>
+      </div>
+      <div class="lab-note"><b>Be clear about what this is.</b> This counts word sequences — it is an n-gram model, not a transformer. It has no attention, no embeddings, no learned parameters. It is a faithful model of the <em>task</em> (guess the next word from context, then feed your guess back in) and a poor model of the <em>machinery</em>. Chapters 2–4 replace every part of it.</div>
+    </div>
+
+    <div class="keyidea">
+      <div class="lbl">Emergent behaviour</div>
+      <p>GPT models can translate between languages — despite being decoder-only models trained purely to predict the next word, with no translation objective anywhere in training. Nobody taught it; the ability <b>emerged</b> from exposure to vast multilingual text. This is why one model can replace many specialised ones, and it's the single most surprising result in the chapter.</p>
+    </div>
+  </section>
+
+  <!-- ============ 1.7 ============ -->
+  <section id="s7">
+    <div class="prose">
+      <div class="sec-num">1.7</div>
+      <h2>The plan for the rest of the book</h2>
+      <p>We'll take GPT's core idea as a blueprint and build it in three stages. Here's the whole route, so you always know where you are.</p>
+    </div>
+
+    <div class="lab">
+      <div class="lab-head">
+        <h4>Lab 9 · The build roadmap</h4>
+        <span class="lab-kicker">Click a stage</span>
+      </div>
+      <div class="lab-body stack">
+        <div class="pipe">
+          <button class="stage" data-road="0" aria-pressed="true">
+            <div class="n">STAGE 1 · CH 2–3</div>
+            <div class="t">Foundations</div>
+            <div class="d">Data prep and the attention mechanism</div>
+          </button>
+          <button class="stage" data-road="1" aria-pressed="false">
+            <div class="n">STAGE 2 · CH 4–5</div>
+            <div class="t">Pretraining</div>
+            <div class="d">Build and train a GPT that writes text</div>
+          </button>
+          <button class="stage" data-road="2" aria-pressed="false">
+            <div class="n">STAGE 3 · CH 6–7</div>
+            <div class="t">Fine-tuning</div>
+            <div class="d">Turn it into a classifier or an assistant</div>
+          </button>
+        </div>
+        <div class="detail" id="road-detail" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every term from this chapter you'll need again later.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Coming next</div>
+      <h3>Chapter 2 · Working with text data</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">This chapter kept saying "the model reads a word" — that's a convenient lie. Neural networks only take numbers. Chapter 2 is the whole pipeline that gets us from a string of characters to a tensor: splitting text into tokens, mapping tokens to IDs, byte pair encoding, sliding windows, and finally turning IDs into embedding vectors.</p>
+    </div>
+  </section>
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>This chapter follows the book below — the hero reference for the whole course. The rest is supporting material worth your time.</p>
+    </div>
+    <ol>
+      <li class="hero"><b>Raschka, S.</b> — <i>Build a Large Language Model (From Scratch), Manning, 2024</i>. <span class="why">The hero reference — this chapter follows its pathway (chapter 1, pages 25–52).</span> <a href="https://www.manning.com/books/build-a-large-language-model-from-scratch" rel="noopener">book</a> · <a href="https://github.com/rasbt/LLMs-from-scratch" rel="noopener">code</a></li>
+      <li><b>Radford, A. et al.</b> — <i>Improving Language Understanding by Generative Pre-Training (GPT-1), 2018</i>. <span class="why">The decoder-only recipe this whole course follows.</span> <a href="https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf" rel="noopener">paper</a></li>
+      <li><b>Brown, T. et al.</b> — <i>Language Models are Few-Shot Learners (GPT-3), NeurIPS 2020</i>. <span class="why">Where few-shot and zero-shot behaviour was shown at scale.</span> <a href="https://arxiv.org/abs/2005.14165" rel="noopener">arXiv</a></li>
+      <li><b>Vaswani, A. et al.</b> — <i>Attention Is All You Need, NeurIPS 2017</i>. <span class="why">The transformer architecture chapter 1 sketches and chapter 3 builds.</span> <a href="https://arxiv.org/abs/1706.03762" rel="noopener">arXiv</a></li>
+      <li><b>3Blue1Brown</b> — <i>But what is a GPT? — Neural networks series</i>. <span class="why">The best visual primer to watch alongside this chapter.</span> <a href="https://www.3blue1brown.com/lessons/gpt" rel="noopener">video</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="index.html"><span class="k">← Previous</span><span class="t">Course home</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this chapter complete</span></button>
+    <a href="ch02.html"><span class="k">Next →</span><span class="t">Chapter 2 · From Text to Tensors</span></a>
+  </div>
+
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>A guided companion to <i>Build a Large Language Model (From Scratch)</i> by Sebastian Raschka — chapter 1 (pages 25–52) · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Course</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+
+/* ============================================================
+   1.1 — nested fields explorer
+   ============================================================ */
+const RINGS = {
+  ai:{
+    title:"Artificial Intelligence",
+    body:"The broad field of building machines that can do things which normally require human-like intelligence: understanding language, recognising patterns, making decisions. It is much wider than the techniques we use here — rule-based systems, genetic algorithms, expert systems, fuzzy logic and symbolic reasoning are all AI too.",
+    spamLabel:"Spam filter at this level",
+    spam:"A human writes the rules by hand: if the subject line contains “free” and there are more than three exclamation marks, mark it as spam. Every rule is authored by a person. Nothing is learned."
+  },
+  ml:{
+    title:"Machine Learning",
+    body:"Algorithms that learn from data and make predictions or decisions without being explicitly programmed. Instead of writing the rules, you supply examples and let the algorithm find the pattern by minimising its error on a training set.",
+    spamLabel:"Spam filter at this level",
+    spam:"A human expert still chooses which features matter — frequency of trigger words like “prize”, “win”, “free”, the count of exclamation marks, ALL-CAPS words, suspicious links. The algorithm then learns how to weigh those features. This hand-picking step is called manual feature extraction."
+  },
+  dl:{
+    title:"Deep Learning",
+    body:"A subset of machine learning that uses neural networks with three or more layers — deep neural networks — to model complex patterns and abstractions. The defining difference from traditional ML: no manual feature extraction. The network works out for itself which features matter.",
+    spamLabel:"Spam filter at this level",
+    spam:"You hand the network the raw email text. Nobody tells it to look at exclamation marks. It discovers the useful signals on its own. Note that you still need the labels — someone must mark emails as spam or not-spam — that requirement doesn't go away."
+  },
+  llm:{
+    title:"Large Language Models",
+    body:"A specific application of deep learning to text, at very large scale. An LLM is a deep neural network trained on massive text corpora to understand, generate and respond to human-like language, using the transformer architecture.",
+    spamLabel:"Spam filter at this level",
+    spam:"Now the labels can mostly go too. The model is pretrained on unlabelled text using self-supervision, and only then fine-tuned on a small labelled spam dataset — which is precisely what we build in chapter 6. Far fewer labelled examples are needed."
+  }
+};
+const ringDetail = document.getElementById("ring-detail");
+function showRing(k){
+  const r = RINGS[k];
+  ringDetail.innerHTML =
+    "<h5>"+r.title+"</h5><p>"+r.body+"</p>"+
+    "<div class='spam'><b>"+r.spamLabel+"</b>"+r.spam+"</div>";
+  document.querySelectorAll(".ring").forEach(el=>el.setAttribute("data-on","false"));
+  const btn = document.querySelector('.ring-btn[data-ring="'+k+'"]');
+  if(btn) btn.parentElement.setAttribute("data-on","true");
+}
+document.querySelectorAll(".ring-btn").forEach(b=>{
+  b.addEventListener("click",e=>{ e.stopPropagation(); showRing(b.dataset.ring); });
+});
+showRing("llm");
+
+/* ============================================================
+   1.3 — pretraining / fine-tuning stages
+   ============================================================ */
+const STAGES = [
+  {
+    title:"Raw text — the starting material",
+    body:"A large corpus of ordinary text with no labelling information attached. “Raw” means exactly that: no annotations, no categories, nothing marked up. Light filtering is applied — stripping formatting characters, dropping documents in unknown languages — but nobody is labelling anything.",
+    foot:"Cost: essentially free. The internet already wrote it."
+  },
+  {
+    title:"Pretraining — building general language ability",
+    body:"The model is trained on that huge diverse corpus using next-word prediction, learning broad language structure. Because it invents its own labels from the text, this is self-supervised, not supervised. The result is called a base model or foundation model — GPT-3 is the classic example. It can complete half-written sentences and has limited few-shot ability.",
+    foot:"Cost: an estimated $4.6 million for GPT-3. This is the expensive stage."
+  },
+  {
+    title:"Fine-tuning — specialising the model",
+    body:"The pretrained model is trained further on a much smaller <em>labelled</em> dataset. Two flavours dominate. <b>Instruction fine-tuning</b> uses instruction-and-answer pairs — for example, a request to translate a sentence, paired with the correct translation (chapter 7). <b>Classification fine-tuning</b> uses texts with class labels — emails paired with “spam” or “not spam” (chapter 6).",
+    foot:"Cost: modest. This is why open pretrained weights are so valuable — you skip stage 2 entirely."
+  }
+];
+const stageDetail = document.getElementById("stage-detail");
+function showStage(i){
+  const s = STAGES[i];
+  stageDetail.innerHTML = "<h5>"+s.title+"</h5><p>"+s.body+"</p>"+
+    "<div class='spam'><b>Practical note</b>"+s.foot+"</div>";
+  document.querySelectorAll(".stage[data-stage]").forEach(b=>
+    b.setAttribute("aria-pressed", String(+b.dataset.stage===i)));
+}
+document.querySelectorAll(".stage[data-stage]").forEach(b=>
+  b.addEventListener("click",()=>showStage(+b.dataset.stage)));
+showStage(0);
+
+/* ============================================================
+   1.3 — self-supervised label maker
+   ============================================================ */
+const ssInput = document.getElementById("ss-input");
+const ssBody  = document.querySelector("#ss-table tbody");
+const ssCount = document.getElementById("ss-count");
+function buildPairs(){
+  const words = ssInput.value.trim().split(/\s+/).filter(Boolean);
+  ssBody.innerHTML = "";
+  let n = 0;
+  for(let i=1;i<words.length;i++){
+    const tr = document.createElement("tr");
+    tr.innerHTML =
+      "<td class='num' style='color:var(--muted)'>"+i+"</td>"+
+      "<td class='pair-ctx'>"+words.slice(0,i).join(" ")+"</td>"+
+      "<td class='pair-tgt'>"+words[i]+"</td>";
+    ssBody.appendChild(tr);
+    n++;
+  }
+  ssCount.textContent = n;
+}
+ssInput.addEventListener("input", buildPairs);
+buildPairs();
+
+/* ============================================================
+   1.4 — attention alignment illustration
+   ============================================================ */
+const SRC_EN = ["This","is","an","example"];
+const TGT_DE = [
+  {w:"Das",   on:[0],   note:"“Das” maps mostly to “This”."},
+  {w:"ist",   on:[1],   note:"“ist” is the verb — it leans on “is”."},
+  {w:"ein",   on:[2,3], note:"“ein” is an article, but German gender depends on the noun — so it must also look ahead at “example”."},
+  {w:"Beispiel",on:[3,2],note:"“Beispiel” comes from “example”, with the article for agreement."}
+];
+const alignWrap = document.getElementById("align-wrap");
+const alignMsg  = document.getElementById("align-msg");
+alignWrap.innerHTML =
+  "<div class='sent' id='al-en'></div>"+
+  "<div style='font-size:var(--fs-lg);color:var(--muted);margin:4px 0 6px'>↓</div>"+
+  "<div class='sent' id='al-de'></div>";
+const alEn = document.getElementById("al-en"), alDe = document.getElementById("al-de");
+SRC_EN.forEach(w=>{
+  const s=document.createElement("span"); s.className="tok"; s.textContent=w; alEn.appendChild(s);
+});
+TGT_DE.forEach((t,i)=>{
+  const b=document.createElement("button");
+  b.className="tok"; b.textContent=t.w; b.type="button";
+  const light=()=>{
+    [...alEn.children].forEach((el,j)=>
+      el.classList.toggle("visible", t.on.includes(j)));
+    [...alDe.children].forEach((el,j)=>
+      el.classList.toggle("target", j===i));
+    alignMsg.textContent = t.note;
+  };
+  const clear=()=>{
+    [...alEn.children].forEach(el=>el.classList.remove("visible"));
+    [...alDe.children].forEach(el=>el.classList.remove("target"));
+    alignMsg.textContent = "Each output word draws on the input words differently. Hover one to see which English words it leans on.";
+  };
+  b.addEventListener("mouseenter",light);
+  b.addEventListener("mouseleave",clear);
+  b.addEventListener("focus",light);
+  b.addEventListener("blur",clear);
+  b.addEventListener("click",light);
+  alDe.appendChild(b);
+});
+
+/* ============================================================
+   1.4 — BERT vs GPT visibility
+   ============================================================ */
+const VIS_WORDS = "The teacher opened the book and started to read the notes".split(" ");
+const visSent = document.getElementById("vis-sent");
+const visDetail = document.getElementById("vis-detail");
+let visMode = "bert", visTarget = 4;
+
+function renderVis(){
+  visSent.innerHTML = "";
+  VIS_WORDS.forEach((w,i)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "tok"; b.textContent = w;
+    if(i === visTarget){
+      b.classList.add("target");
+      b.textContent = visMode === "bert" ? "[MASK]" : w;
+    } else if(visMode === "bert"){
+      b.classList.add("visible");
+    } else {
+      b.classList.add(i < visTarget ? "visible" : "hidden-tok");
+    }
+    b.addEventListener("click",()=>{ visTarget = i; renderVis(); });
+    visSent.appendChild(b);
+  });
+
+  const before = VIS_WORDS.slice(0,visTarget);
+  const after  = VIS_WORDS.slice(visTarget+1);
+  if(visMode === "bert"){
+    visDetail.innerHTML =
+      "<h5>BERT sees both sides</h5>"+
+      "<p>The target word is replaced with a <code>[MASK]</code> token and the model must recover it. It may read "+
+      "<b>"+before.length+"</b> word(s) to the left and <b>"+after.length+"</b> to the right — the full sentence minus the mask.</p>"+
+      "<div class='spam'><b>Why this matters</b>Reading in both directions builds a rich representation of the whole sentence, which is why encoder models excel at classification tasks like sentiment prediction and document categorisation. But it cannot generate text left to right, because at generation time the right-hand side doesn't exist yet.</div>";
+  } else {
+    visDetail.innerHTML =
+      "<h5>GPT sees only the past</h5>"+
+      "<p>The model must predict <b>“"+VIS_WORDS[visTarget]+"”</b> using only the <b>"+before.length+"</b> word(s) before it. Everything to the right is hidden — not because it is secret, but because during real generation it hasn't been written yet.</p>"+
+      "<div class='spam'><b>Why this matters</b>This left-to-right restriction is exactly what makes generation possible. Predict a word, append it, and the sequence grows by one — that is the autoregressive loop, and it is what you'll run yourself in lab 8.</div>";
+  }
+}
+document.getElementById("vm-bert").addEventListener("click",()=>{
+  visMode="bert";
+  document.getElementById("vm-bert").setAttribute("aria-pressed","true");
+  document.getElementById("vm-gpt").setAttribute("aria-pressed","false");
+  renderVis();
+});
+document.getElementById("vm-gpt").addEventListener("click",()=>{
+  visMode="gpt";
+  if(visTarget === 0) visTarget = 4;
+  document.getElementById("vm-gpt").setAttribute("aria-pressed","true");
+  document.getElementById("vm-bert").setAttribute("aria-pressed","false");
+  renderVis();
+});
+renderVis();
+
+/* ============================================================
+   1.4 — zero-shot / few-shot
+   ============================================================ */
+const SHOT_EXAMPLES = [
+  {t:"The delivery arrived a day early and the packaging was perfect.", l:"positive"},
+  {t:"Waited three weeks and it turned up damaged.", l:"negative"},
+  {t:"Does exactly what it says. No complaints.", l:"positive"}
+];
+const SHOT_MSGS = {
+  0:"No examples at all. The model has to infer the whole task from the instruction — that it should classify, and that “positive” and “negative” are the allowed answers. This is zero-shot.",
+  1:"One worked example. It now knows the exact output format expected — a single lowercase word, not a sentence of explanation.",
+  3:"Three examples, showing both labels and a range of phrasings. Accuracy and format consistency usually improve. This is the few-shot setting."
+};
+const shotBox = document.getElementById("shot-box");
+const shotMsg = document.getElementById("shot-msg");
+function renderShots(n){
+  let s = "Classify the sentiment of the review as positive or negative.\n\n";
+  for(let i=0;i<n;i++){
+    s += "<span class='ex'>Review: "+SHOT_EXAMPLES[i].t+"\nSentiment: "+SHOT_EXAMPLES[i].l+"</span>\n\n";
+  }
+  s += "<span class='q'>Review: Battery lasts half as long as advertised.\nSentiment:</span> <span class='a'>negative</span>";
+  shotBox.innerHTML = s;
+  shotMsg.textContent = SHOT_MSGS[n];
+  document.querySelectorAll("[data-shot]").forEach(b=>
+    b.setAttribute("aria-pressed", String(+b.dataset.shot === n)));
+}
+document.querySelectorAll("[data-shot]").forEach(b=>
+  b.addEventListener("click",()=>renderShots(+b.dataset.shot)));
+renderShots(0);
+
+/* ============================================================
+   1.5 — GPT-3 dataset chart
+   ============================================================ */
+const DS = [
+  {n:"CommonCrawl", d:"Web crawl data (filtered)", tok:410, share:60, col:"var(--accent)"},
+  {n:"WebText2",    d:"Web crawl data",            tok:19,  share:22, col:"var(--teal)"},
+  {n:"Books1",      d:"Internet book corpus",      tok:12,  share:8,  col:"var(--gold)"},
+  {n:"Books2",      d:"Internet book corpus",      tok:55,  share:8,  col:"var(--clay)"},
+  {n:"Wikipedia",   d:"High-quality text",         tok:3,   share:3,  col:"var(--slate)"}
+];
+const TRAINED_ON = 300; // billion tokens actually used
+DS.forEach(d => d.epochs = (d.share/100*TRAINED_ON)/d.tok);
+
+const dsBars = document.getElementById("ds-bars");
+const dsDetail = document.getElementById("ds-detail");
+const DS_MEASURE = {
+  tokens:{max:()=>410, val:d=>d.tok, fmt:d=>d.tok+"B",
+    note:"<h5>How much text each source contains</h5><p>CommonCrawl dwarfs everything — 410 billion tokens, about 570&nbsp;GB of storage on its own. Wikipedia is the smallest at 3 billion. If size were all that mattered, the model would essentially be a web-crawl model.</p>"},
+  share:{max:()=>60, val:d=>d.share, fmt:d=>d.share+"%",
+    note:"<h5>How much of training each source actually made up</h5><p>Now the picture changes. WebText2 holds just 19 billion tokens but accounts for 22% of training. Books2 is nearly three times larger than Books1 yet gets the same 8% share. The proportions were chosen by hand, not by size.</p>"},
+  epochs:{max:()=>3.5, val:d=>d.epochs, fmt:d=>d.epochs.toFixed(2)+"×",
+    note:"<h5>How many times the model read each source</h5><p>This is the consequence. Wikipedia and WebText2 were read roughly three times over; CommonCrawl and Books2 were sampled at under half a pass. Higher-quality text was deliberately weighted up. <em>Derived from the table — the source chapter reports only tokens and proportions.</em></p>"}
+};
+function renderDS(m){
+  const cfg = DS_MEASURE[m], max = cfg.max();
+  dsBars.innerHTML = DS.map(d=>
+    "<div class='brow'>"+
+      "<div class='nm'>"+d.n+"<small>"+d.d+"</small></div>"+
+      "<div class='track'><i style='width:"+(cfg.val(d)/max*100).toFixed(1)+"%;background:"+d.col+"'></i></div>"+
+      "<div class='v'>"+cfg.fmt(d)+"</div>"+
+    "</div>").join("");
+  dsDetail.innerHTML = cfg.note;
+  document.querySelectorAll("[data-measure]").forEach(b=>
+    b.setAttribute("aria-pressed", String(b.dataset.measure===m)));
+}
+document.querySelectorAll("[data-measure]").forEach(b=>
+  b.addEventListener("click",()=>renderDS(b.dataset.measure)));
+renderDS("tokens");
+
+/* ============================================================
+   1.6 — next-word predictor (real n-gram model)
+   ============================================================ */
+const DEFAULT_CORPUS =
+"the student opened the laptop and started to read the notes\n"+
+"the student opened the book and started to read the notes\n"+
+"the teacher opened the laptop and started to explain the notes\n"+
+"the student closed the laptop and started to write the answers\n"+
+"the teacher closed the book and started to write the questions\n"+
+"the student went to the library to read the book\n"+
+"the teacher went to the library to read the notes\n"+
+"the student likes to read the book in the library\n"+
+"the teacher likes to explain the notes in the class\n"+
+"the student likes to write the answers in the class\n"+
+"the teacher opened the notes and started to explain the answers";
+
+const corpusEl = document.getElementById("corpus");
+const statsEl  = document.getElementById("corpus-stats");
+const outEl    = document.getElementById("gen-out");
+const candsEl  = document.getElementById("gen-cands");
+const ctxEl    = document.getElementById("gen-ctx");
+const backEl   = document.getElementById("gen-backoff");
+corpusEl.value = DEFAULT_CORPUS;
+
+let uni = new Map(), bi = new Map(), tri = new Map(), vocab = 0;
+const SEED = ["the","student"];
+let seq = SEED.slice(), freshFrom = SEED.length;
+
+function bump(map,key,w){
+  if(!map.has(key)) map.set(key,new Map());
+  const m = map.get(key);
+  m.set(w,(m.get(w)||0)+1);
+}
+function train(){
+  uni = new Map(); bi = new Map(); tri = new Map();
+  const seen = new Set();
+  corpusEl.value.split(/\n+/).forEach(line=>{
+    const w = line.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    w.forEach(x=>seen.add(x));
+    for(let i=0;i<w.length;i++){
+      if(i+1<w.length){
+        bump(uni,"",w[i]);
+        bump(bi,w[i],w[i+1]);
+        if(i+2<w.length) bump(tri,w[i]+" "+w[i+1],w[i+2]);
+      }
+    }
+  });
+  vocab = seen.size;
+  const pairs = [...bi.values()].reduce((a,m)=>a+[...m.values()].reduce((x,y)=>x+y,0),0);
+  statsEl.textContent = vocab+" unique words · "+pairs+" word-pair observations counted";
+}
+
+function predict(){
+  const n = seq.length;
+  const c2 = n>=2 ? seq[n-2]+" "+seq[n-1] : null;
+  const c1 = seq[n-1];
+  let m = null, order = 0;
+  if(c2 && tri.has(c2)){ m = tri.get(c2); order = 2; }
+  else if(bi.has(c1)) { m = bi.get(c1);  order = 1; }
+  else if(uni.has("")){ m = uni.get(""); order = 0; }
+  if(!m) return {list:[],order:-1,ctx:""};
+  const total = [...m.values()].reduce((a,b)=>a+b,0);
+  const list = [...m.entries()]
+    .map(([w,c])=>({w,c,p:c/total}))
+    .sort((a,b)=>b.p-a.p || a.w.localeCompare(b.w))
+    .slice(0,5);
+  return {list,order,ctx: order===2 ? c2 : (order===1 ? c1 : "—")};
+}
+
+function renderOut(){
+  const before = seq.slice(0,freshFrom).join(" ");
+  const after  = seq.slice(freshFrom);
+  outEl.innerHTML =
+    "<span class='ctx'>"+before+"</span> "+
+    after.map(w=>"<span class='fresh'>"+w+"</span>").join(" ")+
+    "<span class='caret'></span>";
+}
+
+function renderCands(){
+  const {list,order,ctx} = predict();
+  ctxEl.innerHTML = order<0 ? "" :
+    "context: <span class='ctx-chip'>"+ctx+"</span>";
+  if(!list.length){
+    candsEl.innerHTML = "<p class='backoff'>No continuation found. Add this word to the corpus above, or start over.</p>";
+    backEl.textContent = "";
+    return;
+  }
+  candsEl.innerHTML = "";
+  list.forEach(c=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "cand";
+    b.innerHTML =
+      "<span class='w'>"+c.w+"</span>"+
+      "<span class='bar'><i style='width:"+(c.p*100).toFixed(0)+"%'></i></span>"+
+      "<span class='p'>"+(c.p*100).toFixed(0)+"%</span>";
+    b.title = "Seen "+c.c+" time"+(c.c>1?"s":"")+" after this context";
+    b.addEventListener("click",()=>{ seq.push(c.w); renderOut(); renderCands(); });
+    candsEl.appendChild(b);
+  });
+  backEl.textContent = order===2
+    ? "Using a 2-word context. The model found this exact pair in the corpus."
+    : order===1
+      ? "No match for the 2-word context, so the model backed off to a 1-word context. Less context means a vaguer guess."
+      : "No match at all — falling back to overall word frequency.";
+}
+
+function stepOnce(){
+  const {list} = predict();
+  if(!list.length) return false;
+  seq.push(list[0].w);
+  return true;
+}
+document.getElementById("gen-step").addEventListener("click",()=>{
+  if(stepOnce()){ renderOut(); renderCands(); }
+});
+document.getElementById("gen-auto").addEventListener("click",()=>{
+  for(let i=0;i<8;i++) if(!stepOnce()) break;
+  renderOut(); renderCands();
+});
+document.getElementById("gen-reset").addEventListener("click",()=>{
+  seq = SEED.slice(); freshFrom = SEED.length;
+  renderOut(); renderCands();
+});
+corpusEl.addEventListener("input",()=>{ train(); renderCands(); });
+train(); renderOut(); renderCands();
+
+/* ============================================================
+   1.7 — roadmap
+   ============================================================ */
+const ROAD = [
+  {t:"Stage 1 — Foundations (chapters 2 and 3)",
+   b:"First the data pipeline: tokenising text, converting tokens to IDs, byte pair encoding, sampling with a sliding window, and building embedding vectors. Then the attention mechanism itself — simple self-attention, then trainable weights, then causal masking, then multi-head attention. This is the heart of every LLM.",
+   f:"By the end you can turn any text into tensors and compute attention over them."},
+  {t:"Stage 2 — Pretraining (chapters 4 and 5)",
+   b:"Assemble the full GPT architecture: layer normalisation, GELU feed-forward networks, shortcut connections, the transformer block, and the model that generates text. Then pretrain it, measure loss on training and validation sets, and control randomness with temperature scaling and top-k sampling.",
+   f:"Pretraining from scratch costs millions for a real model, so we train small — then load openly available weights into our own architecture."},
+  {t:"Stage 3 — Fine-tuning (chapters 6 and 7)",
+   b:"Take the pretrained model in two directions. Classification fine-tuning adds a classification head and turns it into a spam detector. Instruction fine-tuning trains it on instruction-and-answer pairs so it behaves like an assistant, then evaluates how well it followed the instructions.",
+   f:"These are the two most common real-world uses of an LLM — and where the book ends."}
+];
+const roadDetail = document.getElementById("road-detail");
+function showRoad(i){
+  roadDetail.innerHTML = "<h5>"+ROAD[i].t+"</h5><p>"+ROAD[i].b+"</p>"+
+    "<div class='spam'><b>What you'll have</b>"+ROAD[i].f+"</div>";
+  document.querySelectorAll("[data-road]").forEach(b=>
+    b.setAttribute("aria-pressed", String(+b.dataset.road===i)));
+}
+document.querySelectorAll("[data-road]").forEach(b=>
+  b.addEventListener("click",()=>showRoad(+b.dataset.road)));
+showRoad(0);
+
+/* ============================================================
+   Quiz
+   ============================================================ */
+const QUIZ = [
+  {q:"During pretraining, where do the training labels come from?",
+   o:["Human annotators label a sample of the text","The text supplies its own labels — the next word is the answer","No labels are used at any point","Labels are copied from a smaller pretrained model"],
+   a:1,
+   e:"This is self-supervised learning. The next word in the sequence <em>is</em> the label, generated on the fly from the data's own structure. That's what makes training on hundreds of billions of unlabelled words possible."},
+  {q:"What is the main architectural difference between BERT and GPT?",
+   o:["BERT is larger; GPT is smaller","BERT uses attention; GPT does not","BERT keeps the encoder and reads both directions; GPT keeps the decoder and reads left to right","BERT is pretrained; GPT is not"],
+   a:2,
+   e:"Both use attention and both are pretrained. The difference is which half of the transformer they kept, and therefore what context they may see — which is exactly why BERT suits classification and GPT suits generation."},
+  {q:"GPT-3 can translate between languages despite never being trained to translate. What is this called?",
+   o:["Few-shot learning","Emergent behaviour","Fine-tuning","Transfer of weights"],
+   a:1,
+   e:"Emergent behaviour: an ability that was never explicitly taught but appears as a consequence of large-scale exposure to diverse multilingual data. Few-shot learning is a different thing — that's about giving examples in the prompt."},
+  {q:"Wikipedia contributed only 3 billion of GPT-3's 499 billion available tokens, yet made up 3% of training data. What does that imply?",
+   o:["Wikipedia was barely used","Wikipedia text was read multiple times over","The figures in the table are inconsistent","Wikipedia was used only for evaluation"],
+   a:1,
+   e:"3% of the 300 billion training tokens is about 9 billion — roughly three passes over a 3-billion-token source. High-quality sources were deliberately weighted up, while CommonCrawl was sampled at under half a pass."},
+  {q:"What makes GPT an autoregressive model?",
+   o:["It regresses towards the mean of the training data","It automatically adjusts its own learning rate","It feeds its own previous outputs back in as inputs for the next prediction","It can run in reverse to reconstruct the input"],
+   a:2,
+   e:"Each generated word is appended to the sequence and becomes part of the context for the next prediction. That feedback loop is what you drove by hand in lab 8, and it's why generated text stays coherent."},
+  {q:"Which statement is true?",
+   o:["All transformers are LLMs","All LLMs are transformers","Not all transformers are LLMs, and not all LLMs are transformers","Transformers and LLMs are exactly the same thing"],
+   a:2,
+   e:"Transformers are also used for computer vision, so they aren't all LLMs. And some LLMs are built on recurrent or convolutional architectures instead, usually for efficiency. The terms overlap heavily but aren't synonyms."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. On to chapter 2."
+           : correct >= 4 ? " — solid. Reread the ones you missed before moving on."
+           : " — worth another pass through the labs above before chapter 2.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============================================================
+   Glossary
+   ============================================================ */
+const GLOSSARY = [
+  ["Large language model","A deep neural network trained on massive text data to understand, generate and respond to human-like text. “Large” refers both to its parameter count and its training data."],
+  ["Parameter","An adjustable weight inside the network, tuned during training. GPT-3 has 175 billion of them."],
+  ["Token","The unit of text a model reads — roughly a word or a punctuation mark. Chapter 2 covers how text becomes tokens."],
+  ["Transformer","The deep learning architecture behind most LLMs, introduced in 2017. Made of an encoder and a decoder joined by attention."],
+  ["Self-attention","The mechanism that lets a model weigh the importance of every word relative to every other word, capturing long-range dependencies. Built from scratch in chapter 3."],
+  ["Encoder","The half of the transformer that reads input text and turns it into contextual vectors. BERT is encoder-based."],
+  ["Decoder","The half that generates output text one word at a time. GPT is decoder-only."],
+  ["Pretraining","The first training stage: next-word prediction over a large unlabelled corpus, producing a base model."],
+  ["Fine-tuning","The second stage: further training on a smaller labelled dataset, for either instruction-following or classification."],
+  ["Self-supervised learning","Training where the model generates its own labels from the data's structure — no human annotation required."],
+  ["Base / foundation model","The result of pretraining. Broadly capable, not yet specialised. GPT-3 is the classic example."],
+  ["Autoregressive","A model that feeds its own previous outputs back in as inputs for future predictions."],
+  ["Zero-shot","Performing a task with no examples in the prompt — relying purely on the instruction."],
+  ["Few-shot","Performing a task from a handful of examples supplied in the prompt, without retraining."],
+  ["Emergent behaviour","An ability the model was never explicitly trained for, arising from large-scale training — such as translation in GPT."],
+  ["Embedding","A numerical vector representing text, capturing meaning across many dimensions. The subject of the end of chapter 2."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============================================================
+   Scrollspy
+   ============================================================ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  // at the very bottom the last section may never cross the line
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+</body>
+</html>

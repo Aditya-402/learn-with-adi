@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="196" height="36" viewBox="0 0 196 36" role="img" aria-label="Learn with Adi">
+  <!-- open-book glyph -->
+  <g transform="translate(2,5)">
+    <path d="M13 3.5 C9.5 1 4.5 0.5 1 1.2 L1 22.2 C4.5 21.5 9.5 22 13 24.5 C16.5 22 21.5 21.5 25 22.2 L25 1.2 C21.5 0.5 16.5 1 13 3.5 Z"
+          fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M13 3.5 L13 24.5" stroke="#5b4b9e" stroke-width="1.8"/>
+    <path d="M4.4 6.4 C7 6 9.5 6.4 11 7.3 M4.4 10.4 C7 10 9.5 10.4 11 11.3 M4.4 14.4 C7 14 9.5 14.4 11 15.3"
+          stroke="#8d80c4" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+    <path d="M15 7.3 C16.5 6.4 19 6 21.6 6.4 M15 11.3 C16.5 10.4 19 10 21.6 10.4 M15 15.3 C16.5 14.4 19 14 21.6 14.4"
+          stroke="#8d80c4" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+    <!-- spark -->
+    <path d="M22.5 -2.4 L23.4 -0.1 L25.7 0.8 L23.4 1.7 L22.5 4 L21.6 1.7 L19.3 0.8 L21.6 -0.1 Z" fill="#5b4b9e"/>
+  </g>
+  <text x="36" y="24.5" font-family="'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif"
+        font-size="19" fill="#1f2733">Learn <tspan fill="#6b7585" font-style="italic">with</tspan> <tspan fill="#5b4b9e" font-weight="700">Adi</tspan></text>
+</svg>

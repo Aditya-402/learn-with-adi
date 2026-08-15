@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learn with Adi</title>
+<meta name="description" content="Free, hands-on, self-study courses for graduate engineers — starting with building a large language model from scratch.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+body{margin:0;background:var(--lwa-ground);color:var(--lwa-ink);font-family:var(--lwa-sans);line-height:1.6}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+header.top{background:var(--lwa-panel);border-bottom:1px solid var(--lwa-line)}
+.top-in{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0;flex-wrap:wrap}
+.hero{padding:52px 0 40px}
+.hero h1{font-family:var(--lwa-serif);font-size:clamp(30px,5vw,44px);margin:0 0 14px;line-height:1.15}
+.hero h1 em{color:var(--lwa-accent);font-style:normal}
+.hero p{max-width:640px;font-size:16.5px;color:var(--lwa-slate);margin:0 0 10px}
+section{padding:26px 0}
+h2.sec{font-family:var(--lwa-serif);font-size:24px;margin:0 0 16px}
+footer{border-top:1px solid var(--lwa-line);margin-top:48px;background:var(--lwa-panel)}
+.foot-in{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;padding:22px 0;font-size:13px;color:var(--lwa-muted)}
+.foot-in img{height:26px}
+.foot-in a{color:var(--lwa-accent);text-decoration:none}
+.note{font-size:12.5px;color:var(--lwa-muted);max-width:720px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-in">
+    <a class="lwa-home" href="index.html" style="display:inline-flex"><img src="assets/wordmark.svg" alt="Learn with Adi" style="height:34px"></a>
+    <span data-lwa-auth></span>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>Learn by <em>building the thing</em>,<br>not by reading about it.</h1>
+    <p>Free, hands-on, self-study courses for graduate engineers. Every chapter is atomic — one sitting, one idea set — with live labs you can poke at, worked numbers you can follow by hand, and the code that actually runs.</p>
+  </div>
+
+  <div data-lwa-journey data-lwa-root=""></div>
+
+  <section>
+    <h2 class="sec">Courses</h2>
+    <div class="lwa-cards">
+
+      <a class="lwa-card" href="courses/llm-from-scratch/index.html" data-lwa-progress="llm-from-scratch" data-lwa-total="7">
+        <span class="badge">Track 01 · Live</span>
+        <span class="k">Deep learning · Hands-on</span>
+        <h3>Build an LLM from Scratch</h3>
+        <p>Tokenizers, attention, transformer blocks, pretraining, fine-tuning — you build a working GPT-style model, piece by piece. A guided companion to Sebastian Raschka's <i>Build&nbsp;a&nbsp;Large&nbsp;Language&nbsp;Model&nbsp;(From&nbsp;Scratch)</i>.</p>
+        <div class="pbar"><i style="width:0"></i></div>
+        <div class="meta"><span data-lwa-count>0 of 7 chapters complete</span><span>· interactive labs</span></div>
+      </a>
+
+      <div class="lwa-card soon">
+        <span class="badge">Coming soon</span>
+        <span class="k">Deep learning · Applied</span>
+        <h3>Small Language Models</h3>
+        <p>What changes when the model must fit on modest hardware — distillation, quantization, and making small models punch above their weight.</p>
+        <div class="meta"><span>In planning</span></div>
+      </div>
+
+      <div class="lwa-card soon">
+        <span class="badge">Coming soon</span>
+        <span class="k">AI engineering</span>
+        <h3>Agentic RAG</h3>
+        <p>Retrieval that thinks: agents that search, read, verify, and answer with citations — built from first principles, not from a framework.</p>
+        <div class="meta"><span>In planning</span></div>
+      </div>
+
+      <div class="lwa-card soon">
+        <span class="badge">Coming soon</span>
+        <span class="k">Workshops</span>
+        <h3>Fast-paced Workshops</h3>
+        <p>Short, intense, build-something-today material for when you have an afternoon, not a semester.</p>
+        <div class="meta"><span>In planning</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <p class="note">Signing in is optional and only saves your learning journey across devices — every page here is free to read without an account. Progress is otherwise kept privately in your browser. See the <a href="privacy.html" style="color:var(--lwa-accent)">privacy note</a>.</p>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap foot-in">
+    <span style="display:inline-flex;align-items:center;gap:10px"><img src="assets/wordmark.svg" alt=""> </span>
+    <span>Made by Adi · <a href="privacy.html">Privacy</a></span>
+  </div>
+</footer>
+
+<script src="assets/site-config.js"></script>
+<script src="assets/progress.js"></script>
+</body>
+</html>
