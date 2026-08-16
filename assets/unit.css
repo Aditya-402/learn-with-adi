@@ -66,6 +66,45 @@ h4{font-family:var(--sans);font-size:var(--fs-cap);font-weight:700;letter-spacin
 .trace .dl{font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--teal);margin-bottom:8px}
 .trace p{font-size:var(--fs-cap);color:var(--slate);margin:6px 0}
 .trace .m{font-family:var(--mono);font-size:var(--fs-sm);background:var(--subtle);border-radius:6px;padding:9px 13px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+/* ---------- the form, shown before any discussion ---------- */
+.syntax{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:0 var(--r) var(--r) 0;padding:13px 18px;max-width:66ch}
+.syntax .sl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;
+  color:var(--accent);margin-bottom:7px}
+.syntax .form{font-family:var(--mono);font-size:var(--fs-cap);color:var(--ink);background:var(--subtle);
+  border-radius:7px;padding:10px 13px;white-space:pre-wrap;overflow-x:auto}
+.syntax p{font-size:var(--fs-sm);color:var(--slate);margin-top:8px}
+
+/* ---------- annotated listing: each line of code, and what it does ---------- */
+.listing{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  overflow:hidden;max-width:820px;box-shadow:var(--shadow)}
+.listing .lh{padding:10px 16px;border-bottom:1px solid var(--line);background:var(--subtle);
+  font-size:var(--fs-sm);font-weight:600;color:var(--ink)}
+.listing ol{margin:0;padding:4px 0;list-style:none;counter-reset:ln}
+.listing li{display:grid;grid-template-columns:26px minmax(0,1fr) minmax(0,1.15fr);gap:14px;
+  align-items:baseline;padding:7px 16px;border-bottom:1px dashed var(--line)}
+.listing li:last-child{border-bottom:none}
+.listing li::before{counter-increment:ln;content:counter(ln);font-family:var(--mono);
+  font-size:var(--fs-xs);color:var(--muted);text-align:right}
+.listing li code{font-family:var(--mono);font-size:var(--fs-cap);color:var(--ink);white-space:pre-wrap}
+.listing li .note{font-size:var(--fs-sm);color:var(--slate)}
+@media (max-width:760px){
+  .listing li{grid-template-columns:22px minmax(0,1fr);row-gap:4px}
+  .listing li .note{grid-column:2}
+}
+
+/* ---------- what you should see on screen ---------- */
+.yousee{background:#23262e;color:#e8eaf0;font-family:var(--mono);font-size:var(--fs-sm);
+  line-height:1.65;padding:12px 16px;white-space:pre-wrap}
+.yousee b{display:block;font-family:var(--sans);font-size:var(--fs-xs);letter-spacing:.1em;
+  text-transform:uppercase;color:#9aa3b5;font-weight:700;margin-bottom:6px}
+.listing .yousee{border-top:1px solid var(--line)}
+
+/* ---------- end-of-unit quick reference ---------- */
+.cheat{max-width:820px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:4px 18px 14px}
+.cheat h4{margin:14px 0 6px;color:var(--accent-deep);font-size:var(--fs-cap)}
+.cheat table{max-width:none}
+.cheat td:first-child code{white-space:nowrap}
 .fig{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:900px;box-shadow:var(--shadow)}
 .fig svg{width:100%;height:auto;display:block}
 .figcap{font-size:var(--fs-sm);color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
