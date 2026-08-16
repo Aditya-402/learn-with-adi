@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Layout B · Unit 1 preview — Learn with Adi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="../../assets/site.css?v=3">
+<link rel="stylesheet" href="../../assets/unit.css?v=3">
+<link rel="stylesheet" href="../../assets/layout-b.css?v=1">
+</head>
+<body data-lwa-course="python-programming" data-lwa-chapter="u01" data-lwa-title="Unit 1 · Your first conversation with a computer">
+<div style="position:sticky;top:0;z-index:500;background:#1d5654;color:#fff;
+  font-family:'Segoe UI Variable Text','Segoe UI',system-ui,sans-serif;font-size:13.5px;
+  padding:9px 16px;display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap">
+  <b>Layout B — two widths, strictly enforced</b>
+  <span style="opacity:.85">prose stays narrow (66 characters) · everything interactive at one wider measure</span>
+  <a href="unit1-layout-a.html" style="color:#fff;text-decoration:underline">see Layout A →</a>
+  <a href="unit1.html" style="color:#fff;text-decoration:underline;opacity:.85">current layout</a>
+  <span style="opacity:.75">open Spark ✨ (bottom right) to see the docking fix</span>
+</div>
+
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="lwa-brandrow">
+      <a class="lwa-home" href="../../index.html"><img src="../../assets/wordmark.svg" alt="Learn with Adi"></a>
+      <div class="lwa-brand-right">
+        <span class="lwa-tag"><a href="index.html">Series 02 · Python Programming</a></span>
+        <span data-lwa-auth></span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">Python Programming · Beginner — Foundations · Unit 1</div>
+      <h1>Your First Conversation with a Computer</h1>
+      <p class="standfirst">Today you write your first real programs. They will speak, they will listen, and they will answer you back. Everything runs right here on this page — nothing to install, nothing to set up.</p>
+      <div class="facts">
+        <div><b>One session</b>~35 min</div>
+        <div><b>4 ideas</b>each: short read, then practice</div>
+        <div><b>17 problems</b>solved right here</div>
+        <div><b>Nothing to install</b>real Python, in this page</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
+    <div class="rail-h">Contents</div>
+    <a href="#s1" class="on">1.1 What is a program?</a>
+    <a href="#s2">1.2 Why the quotes?</a>
+    <a href="#s3">1.3 Errors are messages</a>
+    <a href="#s4">1.4 Making it listen</a>
+    <a href="#s5">1.5 Problem bank</a>
+    <a href="#cheat">Quick reference</a>
+    <a href="#quiz">Check yourself</a>
+    <a href="#gloss">Glossary</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 1.1 ============ -->
+  <section id="s1">
+    <div class="prereq">
+      <div class="pq"><b>Nothing is assumed</b>Never written a line of code? You are exactly the person these notes are written for.</div>
+      <div class="pq"><b>How each idea works</b>A short read, then you practise. The practice is the point. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit1.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>Progress is optional</b>Sign in (top right) and your journey follows you across devices. Everything works without an account too.</div>
+    </div>
+    <div class="prose">
+      <span class="sec-num">1.1</span>
+      <h2>What is a program?</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p>Let's try to understand what a program really is.</p>
+      <p>You have made tea, or at least watched someone make it, right? Now suppose you write the steps down for a friend who has never entered a kitchen. You write "add sugar to taste". He stops there. Whose taste? How much?</p>
+      <p>A computer is that friend. Very fast, never tired, zero imagination. It does exactly what you write — nothing more, nothing less.</p>
+      <p>So the job is easy to say and takes practice to learn: <b>write every step, in order, leaving no gap.</b></p>
+      <p>That written-down list of steps is what we call a <b>program</b>. Each line in it is an <b>instruction</b>.</p>
+      <p>We write ours in <b>Python</b>. It reads almost like English, and it is the language most of the machine-learning world runs on. That is why our journey starts here.</p>
+    </div>
+
+    <div class="syntax">
+      <div class="sl">The form</div>
+      <div class="form">print("anything you want on the screen")</div>
+      <p><code>print</code> has nothing to do with paper. It means: <i>show this on the screen.</i></p>
+    </div>
+
+    <div class="listing">
+      <div class="lh">Your first program — one line, read it with me</div>
+      <ol>
+        <li><code>print("Hello, world")</code><span class="note"><code>print</code> — show something. The brackets hold <i>what</i> to show. The quotes hold the exact words.</span></li>
+      </ol>
+      <div class="yousee"><b>What you should see</b>Hello, world</div>
+    </div>
+
+    <div class="prose">
+      <p>One instruction in, one action out. Every program you will ever write is just more of these, one after another.</p>
+    </div>
+
+    <div class="fig">
+      <svg viewBox="0 0 860 190" role="img" aria-label="You write a program, Python follows it, the screen shows the result">
+        <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6b7585"/></marker></defs>
+        <rect x="12" y="46" width="180" height="96" rx="12" fill="#ffffff" stroke="#e3e6ee"/>
+        <text x="102" y="80" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="15" font-weight="600" fill="#1f2733">You</text>
+        <text x="102" y="103" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#6b7585">write the steps</text>
+        <text x="102" y="121" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#6b7585">in Python</text>
+        <line x1="196" y1="94" x2="248" y2="94" stroke="#6b7585" stroke-width="1.6" marker-end="url(#ar)"/>
+        <rect x="252" y="34" width="230" height="120" rx="12" fill="#f0f1f7" stroke="#e3e6ee"/>
+        <text x="367" y="66" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13.5" fill="#3d3170">print("Hello, world")</text>
+        <text x="367" y="96" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#6b7585">the program —</text>
+        <text x="367" y="114" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#6b7585">steps with no gaps</text>
+        <line x1="486" y1="94" x2="538" y2="94" stroke="#6b7585" stroke-width="1.6" marker-end="url(#ar)"/>
+        <rect x="542" y="46" width="140" height="96" rx="12" fill="#ecebf6" stroke="#c9c2e4"/>
+        <text x="612" y="86" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="15" font-weight="600" fill="#3d3170">Python</text>
+        <text x="612" y="108" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#6b7585">obeys, exactly</text>
+        <line x1="686" y1="94" x2="738" y2="94" stroke="#6b7585" stroke-width="1.6" marker-end="url(#ar)"/>
+        <rect x="742" y="46" width="106" height="96" rx="10" fill="#23262e"/>
+        <text x="795" y="90" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#e8eaf0">Hello,</text>
+        <text x="795" y="108" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#e8eaf0">world</text>
+      </svg>
+      <div class="figcap">Fig. 1 — You write the steps, Python follows them to the letter, the screen shows the result. Nowhere in this picture does the machine guess.</div>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Now you run it</div>
+      <p>Press <b>▶ Run</b> and watch the panel answer. Then change the words inside the quotes and run it again. It obeys <i>you</i> now.</p>
+      <div class="pyrun" data-id="w1">
+        <textarea spellcheck="false">print("Hello, world")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">1.1 · P1</span><span class="pt">Change the message</span></div>
+        <p class="pd">Make it print exactly <code>Hello, Python!</code> — capital H, capital P, exclamation mark. Then press <b>✓ Check</b>.</p>
+        <div class="pyrun" data-id="s1p1" data-expect="Hello, Python!">
+          <textarea spellcheck="false">print("Hello, world")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print("Hello, Python!")</pre><p>Only the words inside the quotes change. The instruction around them stays the same.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">1.1 · P2</span><span class="pt">Order matters</span></div>
+        <p class="pd">Python runs lines top to bottom, one at a time. Add a third line so <code>Third</code> comes after the other two.</p>
+        <div class="want">First
+Second
+Third</div>
+        <div class="pyrun" data-id="s1p2" data-expect="First\nSecond\nThird">
+          <textarea spellcheck="false">print("First")
+print("Second")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print("First")
+print("Second")
+print("Third")</pre><p>Each <code>print</code> gets its own line on screen, in the order you wrote it.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">1.1 · P3</span><span class="pt">Make it yours</span></div>
+        <p class="pd">Three lines: your name, your city, and one thing you want to build some day. No check here — this one is yours.</p>
+        <div class="pyrun" data-id="s1p3">
+          <textarea spellcheck="false">print("...")
+</textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 1.2 ============ -->
+  <section id="s2">
+    <div class="prose">
+      <span class="sec-num">1.2</span>
+      <h2>Why the quotes?</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p>You have been typing quotes without asking why. Let's try to understand.</p>
+      <p>Suppose I tell you: <i>say your name.</i> You say "Aditya". Now I tell you: <i>say "your name".</i> You say the words <i>your name</i>.</p>
+      <p>Same three words. The quotes changed the meaning completely, right?</p>
+      <p>Python works the same way:</p>
+      <ul class="plain">
+        <li><b>With quotes</b> — repeat these characters exactly.</li>
+        <li><b>Without quotes</b> — this is a name, I should already know it.</li>
+      </ul>
+      <p>So <code>print(Hello)</code> fails. Python looks for something called <code>Hello</code> and finds nothing.</p>
+      <p>Numbers are different. <code>print(2026)</code> is fine, because digits can never be mistaken for a name.</p>
+      <p>And a comma lets you print several things together. Python puts one space at each comma.</p>
+      <p>Text inside quotes has a name. We call it a <b>string</b> — a string of characters, like beads on a thread.</p>
+    </div>
+
+    <div class="syntax">
+      <div class="sl">The form</div>
+      <div class="form">print("some text")        # repeated exactly
+print(25)                 # a number, no quotes
+print("Age:", 25)         # two things, one space between</div>
+    </div>
+
+    <div class="listing">
+      <div class="lh">Three lines, three different behaviours</div>
+      <ol>
+        <li><code>print("2 + 3")</code><span class="note">Quoted, so it is repeated as it is. No arithmetic happens.</span></li>
+        <li><code>print(2 + 3)</code><span class="note">No quotes, so Python works it out first, then shows the answer.</span></li>
+        <li><code>print("Result:", 2 + 3)</code><span class="note">Both together. The comma puts one space between them.</span></li>
+      </ol>
+      <div class="yousee"><b>What you should see</b>2 + 3
+5
+Result: 5</div>
+    </div>
+
+    <div class="confuse">
+      <div class="lbl">Careful here</div>
+      <p><code>print("7")</code> and <code>print(7)</code> look the same on screen. They are not the same thing. One is the <i>character</i> 7, the other is the <i>number</i> 7. In Unit 2, when we start doing arithmetic, this difference will matter a lot.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Watch one first</div>
+      <p>Print <code>I am 10 years old</code>, keeping 10 as a real number. Two pieces of text, one number, joined by commas.</p>
+      <div class="pyrun" data-id="w2">
+        <textarea spellcheck="false">print("I am", 10, "years old")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">1.2 · P1</span><span class="pt">The missing quotes</span></div>
+        <p class="pd">This wants to print <code>Hello</code> but the author forgot the rule. Fix it, Run, then Check.</p>
+        <div class="pyrun" data-id="s2p1" data-expect="Hello">
+          <textarea spellcheck="false">print(Hello)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print("Hello")</pre><p>Without quotes Python hunts for a name called <code>Hello</code>. With quotes it is simply text.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">1.2 · P2</span><span class="pt">Commas do the joining</span></div>
+        <p class="pd">One <code>print</code> line. Use commas, and keep <code>3</code> as a number without quotes.</p>
+        <div class="want">I have 3 dosas</div>
+        <div class="pyrun" data-id="s2p2" data-expect="I have 3 dosas">
+          <textarea spellcheck="false">print("...")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print("I have", 3, "dosas")</pre><p>Each comma becomes one space, so the text pieces do not need spaces of their own.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">1.2 · P3</span><span class="pt">A small shopping list</span></div>
+        <p class="pd">Three print lines, producing this list exactly — dashes and all.</p>
+        <div class="want">Shopping list:
+- milk
+- eggs</div>
+        <div class="pyrun" data-id="s2p3" data-expect="Shopping list:\n- milk\n- eggs">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print("Shopping list:")
+print("- milk")
+print("- eggs")</pre><p>The dash and the space are just characters inside the quotes. Python repeats them like any other.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">1.2 · P4</span><span class="pt">Predict, then run</span></div>
+        <p class="pd">Write your three guesses on paper first. Then Run and compare. The code is correct as it is — fix your guess, not the code.</p>
+        <div class="pyrun" data-id="s2p4">
+          <textarea spellcheck="false">print("10 + 5")
+print(10 + 5)
+print("total:", 10 + 5)</textarea>
+        </div>
+        <details><summary>Show what happens &amp; why</summary><pre>10 + 5
+15
+total: 15</pre><p>Quoted is repeated. Unquoted is worked out. The comma joins both worlds with a space.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 1.3 ============ -->
+  <section id="s3">
+    <div class="prose">
+      <span class="sec-num">1.3</span>
+      <h2>Errors are messages, not scoldings</h2>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p>Some time in the next ten minutes you will type something Python cannot follow. Everybody does. So let's understand what actually happens.</p>
+      <p>Go back to our friend in the kitchen. He does not throw the vessel and walk out. He stops and says: <i>I am stuck at this step, and this is what I could not do.</i></p>
+      <p>Python does exactly that. The red text is not scolding you. It is the machine telling you where it stopped and why.</p>
+      <p>Now one habit, and please make it a habit from today: <b>read the last line first.</b> The last line tells you what kind of problem it is. The lines above it only tell you where.</p>
+      <p>Two kinds will meet you today:</p>
+      <ul class="plain">
+        <li>Punctuation broken — a missing quote or bracket — so Python could not even read the line. We call that a <b>SyntaxError</b>.</li>
+        <li>A name it does not know — a misspelt instruction, or text without quotes. Python read the line fine. We call that a <b>NameError</b>.</li>
+      </ul>
+    </div>
+
+    <div class="listing">
+      <div class="lh">One broken line, and what Python says back</div>
+      <ol>
+        <li><code>print("Bye)</code><span class="note">A quote opens, and the line ends before another quote closes it. Python cannot finish reading it.</span></li>
+      </ol>
+      <div class="yousee"><b>What you should see</b>  print("Bye)
+        ^
+SyntaxError: unterminated string literal</div>
+    </div>
+
+    <div class="prose">
+      <p>Read it from the bottom. <i>SyntaxError</i> — could not read the line. <i>unterminated string</i> — a quote opened and never closed. The little <code>^</code> points near the trouble. Now the fix is obvious: close the quote.</p>
+    </div>
+
+    <div class="confuse">
+      <div class="lbl">Careful here</div>
+      <p>An error does not mean the computer is damaged, or your earlier work is lost, or that you are bad at this. The program simply stopped at the step it could not do. Fix the line, run again. The machine keeps no grudge.</p>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Watch one first</div>
+      <p>This one is broken. Run it <i>before</i> fixing it — never fix blind. The last line says <code>NameError: name 'prnt' is not defined</code>. Python read the line, but knows nothing called <code>prnt</code>. Spelling. Correct it and run again.</p>
+      <div class="pyrun" data-id="w3">
+        <textarea spellcheck="false">prnt("Good morning")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">1.3 · P1</span><span class="pt">Read it, then fix it</span></div>
+        <p class="pd">Run first. Read the last line. Then fix it so it prints <code>Bye for now</code>.</p>
+        <div class="pyrun" data-id="s3p1" data-expect="Bye for now">
+          <textarea spellcheck="false">print("Bye for now)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print("Bye for now")</pre><p>SyntaxError, unterminated string — the closing quote was missing.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">1.3 · P2</span><span class="pt">A different complaint</span></div>
+        <p class="pd">Same drill — run, read, fix. Target: <code>Ready to learn</code>. Notice how this report differs from P1 before you touch anything.</p>
+        <div class="pyrun" data-id="s3p2" data-expect="Ready to learn">
+          <textarea spellcheck="false">Print("Ready to learn")</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print("Ready to learn")</pre><p>NameError this time. Python is case-sensitive, so <code>Print</code> and <code>print</code> are two different names — and only the small one exists.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">1.3 · P3</span><span class="pt">Two bugs, one program</span></div>
+        <p class="pd">There are two problems here. Fix them one at a time, running in between, and watch the message change.</p>
+        <div class="want">Step one done
+Step two done</div>
+        <div class="pyrun" data-id="s3p3" data-expect="Step one done\nStep two done">
+          <textarea spellcheck="false">print("Step one done"
+print(Step two done)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print("Step one done")
+print("Step two done")</pre><p>Line 1 was missing its closing bracket, line 2 its quotes. Errors come one at a time — fixing the first reveals the second. That is normal, not a sign you are going backwards.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 1.4 ============ -->
+  <section id="s4">
+    <div class="prose">
+      <span class="sec-num">1.4</span>
+      <h2>Making it listen</h2>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p>So far our program only talks. Every run says the same thing. Can it listen? Let's try to understand.</p>
+      <p>Think of the delivery boy who calls you: <i>"Sir, which floor?"</i> He asks. He waits. He cannot move until you answer. Then he uses your answer.</p>
+      <p><code>input()</code> does exactly that. It shows a question, it stops the program, and it hands back whatever was typed.</p>
+      <p>But hands it back to <i>where</i>? If nobody catches it, it is gone. So we catch it in a labelled box:</p>
+      <p>Read the <code>=</code> as <b>store into</b>, right to left. Run <code>input(…)</code>, take what comes back, put it in a box labelled <code>name</code>. From that line onwards, writing <code>name</code> means <i>the contents of that box</i>.</p>
+      <p>That labelled box has a name too. We call it a <b>variable</b>. Unit 2 is all about them. Today one box is enough.</p>
+      <p>One honest note about this page: a real Python program waits for your keyboard. Here, the <b>Program input</b> field below the code plays that part — it holds the answers, in order, so the checks know what to expect.</p>
+    </div>
+
+    <div class="syntax">
+      <div class="sl">The form</div>
+      <div class="form">box_name = input("your question here ")</div>
+      <p>Mind the space before the closing quote — that is what keeps the typed answer from touching the question mark.</p>
+    </div>
+
+    <div class="listing">
+      <div class="lh">Ask, store, use — the shape of every interactive program</div>
+      <ol>
+        <li><code>name = input("What is your name? ")</code><span class="note">Ask, wait, and keep the answer in a box called <code>name</code>. Say the person types Ada.</span></li>
+        <li><code>print("Hello,", name, "— welcome aboard!")</code><span class="note">Unquoted <code>name</code>, so Python opens the box and puts the contents in.</span></li>
+      </ol>
+      <div class="yousee"><b>What you should see</b>What is your name? Ada
+Hello, Ada — welcome aboard!</div>
+    </div>
+
+    <div class="fig">
+      <svg viewBox="0 0 860 210" role="img" aria-label="After line 1 the box name holds Ada; line 2 reads the box">
+        <text x="16" y="28" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">WHAT MEMORY LOOKS LIKE, LINE BY LINE</text>
+        <rect x="16" y="52" width="390" height="130" rx="12" fill="#ffffff" stroke="#e3e6ee"/>
+        <text x="34" y="80" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#3d3170">after line 1:  name = input(…)</text>
+        <rect x="34" y="98" width="200" height="62" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
+        <text x="134" y="122" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#3d3170">name</text>
+        <text x="134" y="146" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="14" fill="#1f2733">"Ada"</text>
+        <text x="256" y="126" font-family="Segoe UI,system-ui,sans-serif" font-size="12" fill="#6b7585">one labelled box,</text>
+        <text x="256" y="144" font-family="Segoe UI,system-ui,sans-serif" font-size="12" fill="#6b7585">holding the answer</text>
+        <line x1="418" y1="117" x2="452" y2="117" stroke="#6b7585" stroke-width="1.6" marker-end="url(#ar2)"/>
+        <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6b7585"/></marker></defs>
+        <rect x="456" y="52" width="388" height="130" rx="12" fill="#ffffff" stroke="#e3e6ee"/>
+        <text x="474" y="80" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#3d3170">line 2:  print("Hello,", name, …)</text>
+        <text x="474" y="112" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#4a5a72">Python sees the unquoted word <tspan font-family="Cascadia Mono,Consolas,monospace" fill="#3d3170">name</tspan>,</text>
+        <text x="474" y="132" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#4a5a72">opens the box, and puts the contents in:</text>
+        <rect x="474" y="146" width="352" height="26" rx="6" fill="#23262e"/>
+        <text x="484" y="164" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#e8eaf0">Hello, Ada — welcome aboard!</text>
+      </svg>
+      <div class="figcap">Fig. 2 — Ask, store, use. Which boxes exist, and what is inside each one after every line — that picture is the whole of Unit 2.</div>
+    </div>
+
+    <div class="worked">
+      <div class="wl">Now you run it</div>
+      <p>The Program input field plays your keyboard, and it holds <code>Ada</code>. Run it. Then change that field to your own name and run again — same steps, different conversation.</p>
+      <div class="pyrun" data-id="w4" data-stdin="Ada">
+        <textarea spellcheck="false">name = input("What is your name? ")
+print("Hello,", name, "— welcome aboard!")</textarea>
+      </div>
+    </div>
+
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">1.4 · P1</span><span class="pt">The food critic</span></div>
+        <p class="pd">Ask <code>What is your favourite food? </code> (note the space before the closing quote), keep the answer in a box called <code>food</code>, then reply. The input is fixed to <code>dosa</code>.</p>
+        <div class="want">What is your favourite food? dosa
+dosa sounds delicious!</div>
+        <div class="pyrun" data-id="s4p1" data-stdin="dosa" data-stdin-lock data-expect="What is your favourite food? dosa\ndosa sounds delicious!">
+          <textarea spellcheck="false">food = input("...")
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>food = input("What is your favourite food? ")
+print(food, "sounds delicious!")</pre><p>The box is read back by writing its name without quotes. The comma gives the space before "sounds".</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">1.4 · P2</span><span class="pt">Two questions, two boxes</span></div>
+        <p class="pd">Ask for a name, then a city, keep both, and combine them in one greeting using commas. Inputs are fixed to <code>Ada</code> then <code>Chennai</code>.</p>
+        <div class="want">What is your name? Ada
+Which city are you from? Chennai
+Hello, Ada from Chennai</div>
+        <div class="pyrun" data-id="s4p2" data-stdin="Ada\nChennai" data-stdin-lock data-expect="What is your name? Ada\nWhich city are you from? Chennai\nHello, Ada from Chennai">
+          <textarea spellcheck="false">name = input("...")
+</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>name = input("What is your name? ")
+city = input("Which city are you from? ")
+print("Hello,", name, "from", city)</pre><p>Two boxes, both read back by name. Wondering why there is no exclamation mark at the end? Try adding <code>, "!"</code> — the comma sneaks a space in before it. Joining text with no gap needs <code>+</code>, and that is Unit 2's business.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">1.4 · P3</span><span class="pt">Your build — the greeter that answers back</span></div>
+        <p class="pd">Now build your own: at least three questions, a reply after each answer, and a sign-off line at the end. Put your own answers in the Program input field, separated by <code>⏎</code>. No check — this one is yours. It is the first thing you have ever built. Keep it.</p>
+        <div class="pyrun" data-id="s4p3" data-stdin="Ada\nhappy\nlearn Python">
+          <textarea spellcheck="false">name = input("What is your name? ")
+print("Hello,", name)
+</textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 1.5 PROBLEM BANK ============ -->
+  <section id="s5">
+    <div class="prose">
+      <span class="sec-num">1.5</span>
+      <h2>Problem bank</h2>
+      <span class="rtag"><span class="pr">Practice · ~10 min</span></span>
+      <p>Nothing new here. Just everything from today, mixed together. Do them in order — they get meaner.</p>
+    </div>
+    <div class="practice">
+      <div class="p-card">
+        <div class="ph"><span class="pn">B1</span><span class="pt">The banner</span></div>
+        <p class="pd">Produce this banner exactly. Count the <code>=</code> signs — there are 14.</p>
+        <div class="want">==============
+ LEARN PYTHON
+==============</div>
+        <div class="pyrun" data-id="b1" data-expect="==============\n LEARN PYTHON\n==============">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print("==============")
+print(" LEARN PYTHON")
+print("==============")</pre><p>Every character inside the quotes is repeated exactly — including that leading space on line 2.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B2</span><span class="pt">Three bugs walk into a program</span></div>
+        <p class="pd">One bug per line. Run, read the last line, fix, repeat.</p>
+        <div class="want">Monday
+Tuesday
+Wednesday</div>
+        <div class="pyrun" data-id="b2" data-expect="Monday\nTuesday\nWednesday">
+          <textarea spellcheck="false">print("Monday)
+prin("Tuesday")
+print(Wednesday)</textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>print("Monday")
+print("Tuesday")
+print("Wednesday")</pre><p>A missing quote, a misspelt instruction, and missing quotes around text. The full set from 1.3, in one place.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B3</span><span class="pt">The compliment machine</span></div>
+        <p class="pd">Ask <code>How old are you? </code>, keep the answer in <code>age</code>, and reply using commas. Input is fixed to <code>21</code>.</p>
+        <div class="want">How old are you? 21
+Wow, 21 is a great age!</div>
+        <div class="pyrun" data-id="b3" data-stdin="21" data-stdin-lock data-expect="How old are you? 21\nWow, 21 is a great age!">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>age = input("How old are you? ")
+print("Wow,", age, "is a great age!")</pre><p>Ask, store, use. The commas put one space on each side of the box's contents.</p></details>
+      </div>
+      <div class="p-card">
+        <div class="ph"><span class="pn">B4</span><span class="pt">The mini interview</span></div>
+        <p class="pd">Three questions — <code>Name? </code>, <code>Favourite colour? </code>, <code>Tea or coffee? </code> — then one summary line built from all three boxes.</p>
+        <div class="want">Name? Ada
+Favourite colour? blue
+Tea or coffee? tea
+Ada likes blue and drinks tea</div>
+        <div class="pyrun" data-id="b4" data-stdin="Ada\nblue\ntea" data-stdin-lock data-expect="Name? Ada\nFavourite colour? blue\nTea or coffee? tea\nAda likes blue and drinks tea">
+          <textarea spellcheck="false"></textarea>
+        </div>
+        <details><summary>Show solution</summary><pre>name = input("Name? ")
+colour = input("Favourite colour? ")
+drink = input("Tea or coffee? ")
+print(name, "likes", colour, "and drinks", drink)</pre><p>Three boxes, one sentence. On day one you have written a program with memory and a conversation.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUICK REFERENCE ============ -->
+  <section id="cheat">
+    <div class="prose">
+      <h2>Quick reference</h2>
+      <p>Everything from today, on one screen. Come back to this page for this box alone.</p>
+    </div>
+    <div class="cheat">
+      <h4>Showing things</h4>
+      <table>
+        <tr><td><code>print("text")</code></td><td>show the text exactly as written</td></tr>
+        <tr><td><code>print(25)</code></td><td>show a number — no quotes needed</td></tr>
+        <tr><td><code>print("Age:", 25)</code></td><td>show several things, one space at each comma</td></tr>
+      </table>
+      <h4>Asking and remembering</h4>
+      <table>
+        <tr><td><code>name = input("Who? ")</code></td><td>ask, wait, and store the answer in a box</td></tr>
+        <tr><td><code>print(name)</code></td><td>read the box back — no quotes around the box name</td></tr>
+      </table>
+      <h4>When it breaks</h4>
+      <table>
+        <tr><td><code>SyntaxError</code></td><td>could not even read the line — missing quote or bracket</td></tr>
+        <tr><td><code>NameError</code></td><td>read it fine, but does not know that name — spelling, or missing quotes</td></tr>
+        <tr><td>the habit</td><td><b>read the last line first</b></td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <div class="prose">
+      <h2>Check yourself</h2>
+      <p>Six questions. A wrong answer here is worth more than a right one — read the explanation either way.</p>
+    </div>
+    <div class="stack" id="quiz-box"></div>
+    <div class="score" id="quiz-score" hidden></div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="gloss">
+    <div class="prose">
+      <h2>Glossary</h2>
+      <p>Every word from today that you will need again.</p>
+    </div>
+    <dl class="gloss" id="gloss-list"></dl>
+  </section>
+
+  <!-- ============ NEXT ============ -->
+  <section>
+    <div class="next">
+      <div class="lbl">Before you go to Unit 2</div>
+      <h3>Go and build something small</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">Take the greeter you wrote in 1.4 and make it your own. Ask five questions instead of three. Make it rude. Make it sound like a railway announcement. Break it on purpose, read what Python says, and fix it. That last part is not a joke — you learn more from ten broken programs than from ten copied ones. Come back with your questions.</p>
+      <p style="font-size:var(--fs-cap);color:var(--slate);margin-top:10px">Then in <b>Unit 2</b> we give those boxes their proper job: numbers, arithmetic that computes a real bill, and the moment <code>"7"</code> and <code>7</code> finally part ways. The build is a tip calculator that splits a bill between friends.</p>
+      <p style="font-size:var(--fs-cap);color:var(--slate);margin-top:10px"><i>One question for you before that: your program printed exactly what you typed. So where do you think it kept your name between the two lines?</i></p>
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="lwa-refs" id="refs">
+    <div class="prose">
+      <h2>References</h2>
+      <p>Where to read more on today's ground, in the order I would read them.</p>
+    </div>
+    <ol>
+      <li><b>The Python Tutorial</b> — <i>§3 An Informal Introduction to Python</i>. <span class="why">The official first steps, in the language's own voice.</span> <a href="https://docs.python.org/3/tutorial/introduction.html" rel="noopener">docs.python.org</a></li>
+      <li><b>Sweigart, A.</b> — <i>Automate the Boring Stuff with Python, ch. 1</i>. <span class="why">Free online; printing, input() and first errors, hands-on.</span> <a href="https://automatetheboringstuff.com/2e/chapter1/" rel="noopener">book</a></li>
+      <li><b>Python documentation</b> — <i>Built-in functions: print(), input()</i>. <span class="why">The exact reference for today's two instructions. Worth a look now, just to see that docs are not scary.</span> <a href="https://docs.python.org/3/library/functions.html" rel="noopener">docs.python.org</a></li>
+    </ol>
+  </section>
+
+  <div class="lwa-chapnav">
+    <a href="index.html"><span class="k">← Series</span><span class="t">Python Programming — all units</span></a>
+    <button type="button" class="lwa-complete" data-lwa-complete><span class="k">Progress</span><span class="t">Mark this unit complete</span></button>
+    <a href="unit2.html"><span class="k">Next →</span><span class="t">Unit 2 · Remembering things — variables &amp; numbers</span></a>
+  </div>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <img src="../../assets/wordmark.svg" alt="Learn with Adi" style="height:26px">
+    <span>Learn with Adi — Unit 1 · <a href="../../index.html" style="color:var(--accent)">Home</a> · <a href="index.html" style="color:var(--accent)">Series</a> · <a href="../../privacy.html" style="color:var(--accent)">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============ Quiz ============ */
+const QUIZ = [
+  {q:"What is a program?",
+   o:["A description of what you would like the computer to do","A complete list of exact steps the computer follows in order","A special file only experts can write","A question you ask the computer"],
+   a:1,
+   e:"Steps with no gaps, followed exactly, top to bottom. The machine never fills in the part you left out — because you cannot leave a part out."},
+  {q:"Why does print(\"Hello\") need quotes when print(7) does not?",
+   o:["Quotes make the output look nicer","Text is heavier to process than numbers","Quotes say: these characters are text to repeat, not a name to look up","Older Python needed quotes everywhere"],
+   a:2,
+   e:"Without quotes, Hello is a name Python should already know. With quotes it is simply text. Digits can never be mistaken for a name, so numbers go bare."},
+  {q:"What does print(\"2 + 3\") show?",
+   o:["5","2 + 3","An error","Nothing"],
+   a:1,
+   e:"Quoted means repeated. Python shows the characters 2 + 3 without doing the sum. Drop the quotes and it would work out 5."},
+  {q:"A red error report appears. What has actually happened?",
+   o:["The computer is damaged and needs restarting","Python stopped at a step it could not do, and is telling you where and why","Your earlier programs were deleted","Python is warning you not to try again"],
+   a:1,
+   e:"It is the machine talking to you: here is where I stopped, and here is what kind of stuck. Fix the line and run again — nothing else was harmed."},
+  {q:"Where in an error report is the most useful information?",
+   o:["The first line — always read top-down","The middle","The last line — it names the kind of error and the cause","The line numbers only"],
+   a:2,
+   e:"Reports print the place first and the diagnosis last. Read the last line first: it names SyntaxError or NameError and the cause. Then glance up for the where."},
+  {q:"After  name = input(\"Who? \")  runs and somebody types Ada, what is in the box?",
+   o:["The question \"Who? \"","The text Ada, exactly as typed","The number of letters typed","Nothing — input only shows a question"],
+   a:1,
+   e:"input() shows the question, waits, and hands back what was typed. The = stores it into the box. After that, the unquoted word name means the contents of that box."}
+];
+const quizBox = document.getElementById("quiz-box");
+const scoreEl = document.getElementById("quiz-score");
+let answered = 0, correct = 0;
+QUIZ.forEach((item,qi)=>{
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.innerHTML = "<div class='qq'>"+(qi+1)+". "+item.q+"</div>";
+  const opts = document.createElement("div");
+  opts.className = "opts";
+  item.o.forEach((text,oi)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = text;
+    b.addEventListener("click",()=>{
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      answered++;
+      if(oi === item.a) correct++;
+      [...opts.children].forEach((el,j)=>{
+        el.disabled = true;
+        if(j === item.a) el.classList.add("right");
+        else if(j === oi) el.classList.add("wrong");
+      });
+      const ex = document.createElement("div");
+      ex.className = "explain";
+      ex.innerHTML = (oi === item.a ? "<b>Correct.</b> " : "<b>Not quite.</b> ") + item.e;
+      card.appendChild(ex);
+      if(answered === QUIZ.length){
+        scoreEl.hidden = false;
+        scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
+          (correct === QUIZ.length ? " — every one. You have had your first real conversation with a machine."
+           : correct >= 4 ? " — solid. Read the ones you missed once more; they are all in 1.1 to 1.4."
+           : " — worth another pass through the practice above before Unit 2.");
+      }
+    });
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  quizBox.appendChild(card);
+});
+
+/* ============ Glossary ============ */
+const GLOSSARY = [
+  ["Program","A complete list of steps the computer follows exactly, top to bottom, with no gaps."],
+  ["Instruction","One step of a program — one thing the machine does, such as showing text on screen."],
+  ["Python","The language we write in. It reads almost like English, and most of the machine-learning world runs on it."],
+  ["print()","The instruction that shows things on screen. The brackets hold what to show."],
+  ["String","Text inside quotes — characters to repeat exactly, never treated as an instruction."],
+  ["Error message","Python telling you where it stopped and what kind of stuck it is. Read the last line first."],
+  ["SyntaxError","Could not even read that line — usually a missing quote or bracket."],
+  ["NameError","Read the line fine, but does not know that name — a misspelt instruction, or text without quotes."],
+  ["input()","Shows a question, waits until something is typed, and hands back what was typed — always as text."],
+  ["Variable","A labelled box that stores a value so you can use it later by writing its name. One box today; the full toolkit in Unit 2."]
+];
+document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
+  "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
+
+/* ============ Scrollspy ============ */
+const links = [...document.querySelectorAll(".rail a")];
+const targets = links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function syncRail(){
+  const line = window.innerHeight * 0.28;
+  let active = targets[0];
+  for(const t of targets){
+    if(t.getBoundingClientRect().top <= line) active = t;
+  }
+  if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 4){
+    active = targets[targets.length-1];
+  }
+  links.forEach(a=>a.classList.toggle("on", a.getAttribute("href") === "#"+active.id));
+}
+let ticking = false;
+addEventListener("scroll",()=>{
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{ syncRail(); ticking = false; });
+},{passive:true});
+addEventListener("resize", syncRail);
+syncRail();
+
+/* ============ collapsible contents rail ============ */
+const railT=document.querySelector(".rail-toggle");
+if(railT){
+  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
+    railT.textContent=min?"⟩":"⟨";
+    railT.title=min?"Show contents":"Collapse contents";
+    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
+  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
+  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
+}
+</script>
+<script src="../../assets/site-config.js"></script>
+<script src="../../assets/progress.js"></script>
+<script src="../../assets/pyrun.js"></script>
+<script src="../../assets/stepper.js"></script>
+<script src="../../assets/spark.js" defer></script>
+</body>
+</html>
