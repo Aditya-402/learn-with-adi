@@ -49,7 +49,6 @@ a.colab:hover{background:var(--panel)}
 
 <div class="shell">
   <nav class="rail" aria-label="Sections">
-    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
     <div class="rail-h">Contents</div>
     <a href="#s1" class="on">25.1 Tensors</a>
     <a href="#s2">25.2 requires_grad</a>
@@ -1006,19 +1005,10 @@ addEventListener("scroll",()=>{
 addEventListener("resize", syncRail);
 syncRail();
 
-/* ============ collapsible contents rail ============ */
-const railT=document.querySelector(".rail-toggle");
-if(railT){
-  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
-    railT.textContent=min?"⟩":"⟨";
-    railT.title=min?"Show contents":"Collapse contents";
-    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
-  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
-  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
-}
 </script>
 <script src="../../assets/site-config.js"></script>
 <script src="../../assets/progress.js"></script>
+<script src="../../assets/unitnav.js?v=1"></script>
 <script src="../../assets/pyrun.js"></script>
 <script src="../../assets/stepper.js"></script>
 <script src="../../assets/spark.js" defer></script>
