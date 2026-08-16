@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Iterators &amp; the Iteration Protocol — Learn with Adi</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
-<link rel="stylesheet" href="../../assets/site.css?v=3">
-<link rel="stylesheet" href="../../assets/unit.css?v=3">
+<link rel="stylesheet" href="../../assets/site.css?v=4">
+<link rel="stylesheet" href="../../assets/unit.css?v=4">
 </head>
 <body data-lwa-course="python-programming" data-lwa-chapter="u17" data-lwa-title="Unit 17 · Iterators &amp; the iteration protocol">
 <header class="masthead">
@@ -34,7 +34,6 @@
 
 <div class="shell">
   <nav class="rail" aria-label="Sections">
-    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
     <div class="rail-h">Contents</div>
     <a href="#s1" class="on">17.1 What for really does</a>
     <a href="#s2">17.2 Iterators are one-shot</a>
@@ -1001,19 +1000,10 @@ addEventListener("scroll",()=>{
 addEventListener("resize", syncRail);
 syncRail();
 
-/* ============ collapsible contents rail ============ */
-const railT=document.querySelector(".rail-toggle");
-if(railT){
-  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
-    railT.textContent=min?"⟩":"⟨";
-    railT.title=min?"Show contents":"Collapse contents";
-    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
-  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
-  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
-}
 </script>
 <script src="../../assets/site-config.js"></script>
 <script src="../../assets/progress.js"></script>
+<script src="../../assets/unitnav.js?v=1"></script>
 <script src="../../assets/pyrun.js"></script>
 <script src="../../assets/stepper.js"></script>
 <script src="../../assets/spark.js" defer></script>

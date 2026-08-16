@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Causal Masking, Dropout &amp; Multi-Head — Learn with Adi</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
-<link rel="stylesheet" href="../../assets/site.css?v=3">
+<link rel="stylesheet" href="../../assets/site.css?v=4">
 <style>
 :root{
   --ground:#f6f7fb; --panel:#ffffff; --subtle:#f0f1f7; --ink:#1f2733;
@@ -149,10 +149,6 @@ pre .kw{color:var(--accent);font-weight:600}
 .next{background:var(--accent-wash);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-lg);padding:22px 24px;max-width:66ch}
 .next .lbl{font-size:var(--fs-xs);letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:7px}
 .next h3{font-size:var(--fs-xl);margin:0 0 8px}
-.rail-toggle{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:3px 10px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:4px}
-.rail-toggle:hover{background:var(--accent-wash);color:var(--accent-deep)}
-body.rail-min .rail .rail-h,body.rail-min .rail a{display:none}
-body.rail-min .shell{grid-template-columns:44px minmax(0,1fr)}
 p{text-wrap:pretty}
 @media (max-width:940px){
   .shell{grid-template-columns:1fr;gap:26px;padding:30px 20px 70px}
@@ -160,10 +156,7 @@ p{text-wrap:pretty}
   .rail-h{display:none}
   .rail a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent}
   .rail a.on{border-left:none;border-bottom-color:var(--accent)}
-  .rail-toggle{display:none}
-  body.rail-min .rail .rail-h,body.rail-min .rail a{display:block}
-  body.rail-min .shell{grid-template-columns:1fr}
-  h1{font-size:2rem}
+        h1{font-size:2rem}
   .masthead-in{padding:18px 20px 0}
   .slider-row{grid-template-columns:112px minmax(0,1fr) 52px}
 }
@@ -196,7 +189,6 @@ p{text-wrap:pretty}
 
 <div class="shell">
   <nav class="rail" aria-label="Sections">
-    <button type="button" class="rail-toggle" title="Collapse contents" aria-label="Collapse contents">⟨</button>
     <div class="rail-h">Contents</div>
     <a href="#recap" class="on">Where we are</a>
     <a href="#s5">3.5 Hiding the future</a>
@@ -952,20 +944,11 @@ function syncRail(){
 let ticking=false;
 addEventListener("scroll",()=>{if(ticking)return;ticking=true;requestAnimationFrame(()=>{syncRail();ticking=false;});},{passive:true});
 addEventListener("resize",syncRail); syncRail();
-/* ============ collapsible contents rail ============ */
-const railT=document.querySelector(".rail-toggle");
-if(railT){
-  const applyRail=min=>{document.body.classList.toggle("rail-min",min);
-    railT.textContent=min?"⟩":"⟨";
-    railT.title=min?"Show contents":"Collapse contents";
-    try{localStorage.setItem("lwa-rail",min?"1":"0")}catch(e){}};
-  railT.addEventListener("click",()=>applyRail(!document.body.classList.contains("rail-min")));
-  try{if(localStorage.getItem("lwa-rail")==="1")applyRail(true)}catch(e){}
-}
 
 </script>
 <script src="../../assets/site-config.js"></script>
 <script src="../../assets/progress.js"></script>
+<script src="../../assets/unitnav.js?v=1"></script>
 <script src="../../assets/stepper.js"></script>
 <script src="../../assets/spark.js" defer></script>
 </body>
