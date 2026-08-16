@@ -475,9 +475,15 @@ ${relevantContext(question, highlight)}`;
     setState(""); sendBtn.disabled = false;
   }
 
+  function markOpen() {
+    // the page reserves space for the panel instead of letting it cover the text
+    const open = !!panel && panel.style.display !== "none";
+    document.body.classList.toggle("spark-open", open);
+  }
   function togglePanel() {
-    if (!panel) { buildPanel(); return; }
+    if (!panel) { buildPanel(); markOpen(); return; }
     panel.style.display = panel.style.display === "none" ? "" : "none";
+    markOpen();
   }
   btn.addEventListener("click", () => { hideAsk(); togglePanel(); });
 
@@ -500,6 +506,7 @@ ${relevantContext(question, highlight)}`;
         chipText = text.slice(0, 1500);
         hideAsk();
         if (!panel) buildPanel(); else panel.style.display = "";
+        markOpen();
         renderChip();
         const ta = panel.querySelector("textarea"); if (ta) { ta.placeholder = "What would you like to know about the highlighted part?"; ta.focus(); }
       };
