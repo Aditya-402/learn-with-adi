@@ -84,10 +84,10 @@ len(fruits)    # how many slots are there</div>
     <div class="listing">
       <div class="lh">Reading the slots — line by line, with the slot numbers named</div>
       <ol>
-        <li><code>fruits = ["apple", "banana", "cherry"]</code><span class="note">One box, three slots: <code>"apple"</code>, <code>"banana"</code>, <code>"cherry"</code>.</span></li>
-        <li><code>print(len(fruits))</code><span class="note"><code>len</code> counts the slots. Three of them.</span></li>
-        <li><code>print(fruits[0], fruits[2])</code><span class="note">Slot 0 and slot 2 — the first and the third.</span></li>
-        <li><code>print(fruits[-1])</code><span class="note">One step in from the back. The last slot.</span></li>
+        <li><code>fruits = ["apple", "banana", "cherry"]</code><span class="note">One box, three slots.</span></li>
+        <li><code>print(len(fruits))</code><span class="note"><code>len</code> counts the slots — three.</span></li>
+        <li><code>print(fruits[0], fruits[2])</code><span class="note">The first and the third.</span></li>
+        <li><code>print(fruits[-1])</code><span class="note">One step from the back.</span></li>
       </ol>
       <div class="yousee"><b>What you should see</b>3
 apple cherry
@@ -142,7 +142,7 @@ print("Last:", stations[-1])</textarea>
     <div class="practice">
       <div class="p-card">
         <div class="ph"><span class="pn">5.1 · P1</span><span class="pt">Build and read</span></div>
-        <p class="pd">Make a list <code>colors</code> — <code>red</code>, <code>green</code>, <code>blue</code>. Print the <i>second</i> colour, then the length.</p>
+        <p class="pd">Make <code>colors</code>: <code>red</code>, <code>green</code>, <code>blue</code>. Then two prints.</p>
         <div class="want">green
 3</div>
         <div class="pyrun" data-id="s1p1" data-expect="green\n3">
@@ -150,11 +150,11 @@ print("Last:", stations[-1])</textarea>
         </div>
         <details><summary>Show solution</summary><pre>colors = ["red", "green", "blue"]
 print(colors[1])
-print(len(colors))</pre><p>The second item is one step from the front, so slot 1.</p></details>
+print(len(colors))</pre><p>One step from the front is slot 1.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.1 · P2</span><span class="pt">Predict: three reads, one trap</span></div>
-        <p class="pd">Guess all three lines first, including whether each one runs. Then Run.</p>
+        <p class="pd">Guess all three lines first. Does each one even run?</p>
         <div class="pyrun" data-id="s1p2">
           <textarea spellcheck="false">letters = ["a", "b", "c", "d"]
 print(letters[1])
@@ -163,11 +163,11 @@ print(letters[4])</textarea>
         </div>
         <details><summary>Show what happens &amp; why</summary><pre>b
 d
-IndexError: list index out of range</pre><p>Four items means slots 0 to 3, so <code>letters[4]</code> is one past the end.</p></details>
+IndexError: list index out of range</pre><p>Slots run 0 to 3; <code>letters[4]</code> is past the end.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.1 · P3</span><span class="pt">Fix the off-by-one</span></div>
-        <p class="pd">Both slot numbers are wrong. One prints the wrong dish, one crashes.</p>
+        <p class="pd">Both slot numbers are wrong: one misprints, one crashes.</p>
         <div class="want">dosa
 vada</div>
         <div class="pyrun" data-id="s1p3" data-expect="dosa\nvada">
@@ -177,18 +177,18 @@ print(menu[3])</textarea>
         </div>
         <details><summary>Show solution</summary><pre>menu = ["dosa", "idli", "vada"]
 print(menu[0])
-print(menu[2])</pre><p>First is slot 0, third is slot 2 — human position minus one, always.</p></details>
+print(menu[2])</pre><p>Slot 0 is first, slot 2 is third — position minus one.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.1 · P4</span><span class="pt">Stretch — the middle item</span></div>
-        <p class="pd">Print the middle item without typing 2. Work the slot out from <code>len()</code> and <code>//</code>.</p>
+        <p class="pd">The middle item, without typing 2. Use <code>len()</code> and <code>//</code>.</p>
         <div class="want">yellow</div>
         <div class="pyrun" data-id="s1p4" data-expect="yellow">
           <textarea spellcheck="false">words = ["red", "orange", "yellow", "green", "blue"]
 </textarea>
         </div>
         <details><summary>Show solution</summary><pre>words = ["red", "orange", "yellow", "green", "blue"]
-print(words[len(words) // 2])</pre><p><code>len(words) // 2</code> is 2, the middle of five. Any expression is welcome inside the brackets.</p></details>
+print(words[len(words) // 2])</pre><p><code>len(words) // 2</code> is 2. Any expression works in the brackets.</p></details>
       </div>
     </div>
   </section>
@@ -229,11 +229,11 @@ done = tasks.pop(0)            # take slot 0 out, and keep the item</div>
     <div class="listing">
       <div class="lh">A morning's to-dos — what the box holds after each line</div>
       <ol>
-        <li><code>tasks = ["wash dishes"]</code><span class="note">One slot to begin with: <code>["wash dishes"]</code>.</span></li>
-        <li><code>tasks.append("study")</code><span class="note">A new slot at the end: <code>["wash dishes", "study"]</code>.</span></li>
-        <li><code>tasks.insert(0, "call home")</code><span class="note">Squeezed in at the front; everything else shifts right.</span></li>
-        <li><code>tasks.remove("wash dishes")</code><span class="note">That slot goes; the rest close ranks.</span></li>
-        <li><code>print(tasks)</code><span class="note">A whole list prints in Python's own notation.</span></li>
+        <li><code>tasks = ["wash dishes"]</code><span class="note">One slot to begin with.</span></li>
+        <li><code>tasks.append("study")</code><span class="note">A new slot at the end.</span></li>
+        <li><code>tasks.insert(0, "call home")</code><span class="note">Into the front; the rest shift right.</span></li>
+        <li><code>tasks.remove("wash dishes")</code><span class="note">It goes; the rest close ranks.</span></li>
+        <li><code>print(tasks)</code><span class="note">Python's own list notation.</span></li>
       </ol>
       <div class="yousee"><b>What you should see</b>['call home', 'study']</div>
     </div>
@@ -294,7 +294,7 @@ print(guests)</textarea>
     <div class="practice">
       <div class="p-card">
         <div class="ph"><span class="pn">5.2 · P1</span><span class="pt">Grow from nothing</span></div>
-        <p class="pd">Start empty, then <code>append</code> <code>pen</code>, <code>book</code>, <code>lamp</code> in order. One print at the end.</p>
+        <p class="pd">Start empty, then <code>append</code> <code>pen</code>, <code>book</code>, <code>lamp</code>. One print.</p>
         <div class="want">['pen', 'book', 'lamp']</div>
         <div class="pyrun" data-id="s2p1" data-expect="['pen', 'book', 'lamp']">
           <textarea spellcheck="false">items = []
@@ -304,11 +304,11 @@ print(guests)</textarea>
 items.append("pen")
 items.append("book")
 items.append("lamp")
-print(items)</pre><p>Empty box, three appends, each landing at the end. The commonest list pattern going.</p></details>
+print(items)</pre><p>Empty box, three appends. The commonest list pattern going.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.2 · P2</span><span class="pt">Predict: mutate vs replace</span></div>
-        <p class="pd">Two prints, two predictions. Line 2 changes a list; line 4 does something more drastic.</p>
+        <p class="pd">Two prints, two predictions. Line 4 is the drastic one.</p>
         <div class="pyrun" data-id="s2p2">
           <textarea spellcheck="false">nums = [1, 2, 3]
 nums.append(4)
@@ -317,11 +317,11 @@ nums = [9]
 print(nums)</textarea>
         </div>
         <details><summary>Show what happens &amp; why</summary><pre>[1, 2, 3, 4]
-[9]</pre><p><code>append</code> changed the box you already had. <code>nums = [9]</code> replaced its contents entirely.</p></details>
+[9]</pre><p><code>append</code> changed the box you had; <code>nums = [9]</code> replaced its contents.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.2 · P3</span><span class="pt">The queue at the counter</span></div>
-        <p class="pd">Ravi walks out — remove him <i>by name</i>. Then serve the front one <i>by slot</i> with <code>pop</code>.</p>
+        <p class="pd">Remove Ravi <i>by name</i>; <code>pop</code> the front one <i>by slot</i>.</p>
         <div class="want">Serving: Meena
 ['Sara', 'Vikram']</div>
         <div class="pyrun" data-id="s2p3" data-expect="Serving: Meena\n['Sara', 'Vikram']">
@@ -332,7 +332,7 @@ print(nums)</textarea>
 queue.remove("Ravi")
 served = queue.pop(0)
 print("Serving:", served)
-print(queue)</pre><p><code>remove</code> hunts by value. <code>pop(0)</code> takes the front slot and <i>hands the item over</i>.</p></details>
+print(queue)</pre><p><code>remove</code> hunts by value; <code>pop(0)</code> takes a slot and <i>hands it over</i>.</p></details>
       </div>
     </div>
   </section>
@@ -364,11 +364,11 @@ days[2:]         # to the very end
     <div class="listing">
       <div class="lh">Carving up the week</div>
       <ol>
-        <li><code>days = ["Mon", "Tue", "Wed", "Thu", "Fri"]</code><span class="note">Five slots, numbered 0 to 4.</span></li>
-        <li><code>print(days[1:3])</code><span class="note">Slots 1 and 2 — slot 3 is left out.</span></li>
-        <li><code>print(days[:2])</code><span class="note">From the front, stopping before slot 2.</span></li>
-        <li><code>print(days[2:])</code><span class="note">Slot 2 to the end. Lines 3 and 4 rebuild the week.</span></li>
-        <li><code>print("Wed" in days)</code><span class="note">Is <code>"Wed"</code> sitting in any slot? It is.</span></li>
+        <li><code>days = ["Mon", "Tue", "Wed", "Thu", "Fri"]</code><span class="note">Five slots, 0 to 4.</span></li>
+        <li><code>print(days[1:3])</code><span class="note">Slots 1 and 2 only.</span></li>
+        <li><code>print(days[:2])</code><span class="note">From the front, stopping before 2.</span></li>
+        <li><code>print(days[2:])</code><span class="note">Slot 2 onward; together, the week.</span></li>
+        <li><code>print("Wed" in days)</code><span class="note">Is <code>"Wed"</code> in any slot? Yes.</span></li>
       </ol>
       <div class="yousee"><b>What you should see</b>['Tue', 'Wed']
 ['Mon', 'Tue']
@@ -395,18 +395,18 @@ print("Ada" in runners, "Bob" in runners)</textarea>
     <div class="practice">
       <div class="p-card">
         <div class="ph"><span class="pn">5.3 · P1</span><span class="pt">The midweek slice</span></div>
-        <p class="pd">One slice, one print: <code>Tue</code> through <code>Thu</code>. Mind that excluded end.</p>
+        <p class="pd">One slice: <code>Tue</code> through <code>Thu</code>. Mind that excluded end.</p>
         <div class="want">['Tue', 'Wed', 'Thu']</div>
         <div class="pyrun" data-id="s3p1" data-expect="['Tue', 'Wed', 'Thu']">
           <textarea spellcheck="false">week = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 </textarea>
         </div>
         <details><summary>Show solution</summary><pre>week = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-print(week[1:4])</pre><p>Tue is slot 1 and Thu is slot 3, so the end has to be 4.</p></details>
+print(week[1:4])</pre><p>Tue is slot 1, Thu slot 3 — so the end is 4.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.3 · P2</span><span class="pt">Predict: four slices</span></div>
-        <p class="pd">Guess all four lines on paper. The last one is sneaky.</p>
+        <p class="pd">Guess all four lines. The last one is sneaky.</p>
         <div class="pyrun" data-id="s3p2">
           <textarea spellcheck="false">nums = [10, 20, 30, 40, 50]
 print(nums[1:3])
@@ -417,7 +417,7 @@ print(nums[1:1])</textarea>
         <details><summary>Show what happens &amp; why</summary><pre>[20, 30]
 [10]
 [40, 50]
-[]</pre><p>Start 1, stop 1 — zero items. An empty slice is perfectly legal, not an error.</p></details>
+[]</pre><p>Start 1, stop 1 — zero items. Empty slices are legal.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.3 · P3</span><span class="pt">Stretch — the guest check</span></div>
@@ -433,7 +433,7 @@ name = input("Name? ")
 if name in guests:
     print("Welcome in!")
 else:
-    print("Not on the list")</pre><p><code>in</code> produces a boolean, and a boolean is exactly what <code>if</code> feeds on.</p></details>
+    print("Not on the list")</pre><p><code>in</code> gives a boolean, and <code>if</code> feeds on booleans.</p></details>
       </div>
     </div>
   </section>
@@ -464,8 +464,8 @@ else:
       <div class="lh">A loop over a list — three slots, three passes</div>
       <ol>
         <li><code>prices = [40, 25, 30]</code><span class="note">Three slots in one box.</span></li>
-        <li><code>for price in prices:</code><span class="note"><code>price</code> takes each slot in turn. No numbers anywhere.</span></li>
-        <li><code>    print("Rs", price)</code><span class="note">Indented, so it runs once per slot.</span></li>
+        <li><code>for price in prices:</code><span class="note"><code>price</code> takes each slot in turn.</span></li>
+        <li><code>    print("Rs", price)</code><span class="note">Indented — once per slot.</span></li>
       </ol>
       <div class="yousee"><b>What you should see</b>Rs 40
 Rs 25
@@ -508,7 +508,7 @@ print("Scored 80+:", high)</textarea>
     <div class="practice">
       <div class="p-card">
         <div class="ph"><span class="pn">5.4 · P1</span><span class="pt">Greet the team</span></div>
-        <p class="pd">One loop, one print inside it. Greet every member on their own line.</p>
+        <p class="pd">One loop, one print inside it. Greet everyone by name.</p>
         <div class="want">Hello, Ada
 Hello, Alan
 Hello, Grace</div>
@@ -518,11 +518,11 @@ Hello, Grace</div>
         </div>
         <details><summary>Show solution</summary><pre>team = ["Ada", "Alan", "Grace"]
 for name in team:
-    print("Hello,", name)</pre><p>Three slots, three passes. Add a fourth teammate and the loop needs no editing.</p></details>
+    print("Hello,", name)</pre><p>Three slots, three passes. Add a fourth; nothing needs editing.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.4 · P2</span><span class="pt">A week of rain</span></div>
-        <p class="pd">Total the week's rainfall with an accumulator — by hand, no <code>sum()</code>. One f-string.</p>
+        <p class="pd">Total the rainfall with an accumulator, by hand. One f-string.</p>
         <div class="want">Total: 15 mm</div>
         <div class="pyrun" data-id="s4p2" data-expect="Total: 15 mm">
           <textarea spellcheck="false">rain = [2, 0, 5, 1, 0, 3, 4]
@@ -532,11 +532,11 @@ for name in team:
 total = 0
 for r in rain:
     total = total + r
-print(f"Total: {total} mm")</pre><p>Start at zero, add every slot, report after the loop. Then whisper <code>sum(rain)</code>.</p></details>
+print(f"Total: {total} mm")</pre><p>Zero, add every slot, report after. Then whisper <code>sum(rain)</code>.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.4 · P3</span><span class="pt">Stretch — numbers for humans</span></div>
-        <p class="pd">Number the menu <b>from 1</b> — nobody orders "dish zero". Keep a counter beside the loop.</p>
+        <p class="pd">Number the menu <b>from 1</b>, with a counter beside the loop.</p>
         <div class="want">1. dosa
 2. idli
 3. vada</div>
@@ -548,7 +548,7 @@ print(f"Total: {total} mm")</pre><p>Start at zero, add every slot, report after 
 n = 1
 for item in menu:
     print(f"{n}. {item}")
-    n = n + 1</pre><p>Python counts from 0, humans from 1. The counter translates, at the moment of printing.</p></details>
+    n = n + 1</pre><p>Python counts from 0, humans from 1. The counter translates.</p></details>
       </div>
     </div>
   </section>
@@ -567,7 +567,7 @@ for item in menu:
     <div class="practice">
       <div class="p-card">
         <div class="ph"><span class="pn">5.5 · P1</span><span class="pt">The to-do list</span></div>
-        <p class="pd">Follow the four numbered comments. Every piece of this came from 5.2 and 5.4.</p>
+        <p class="pd">Follow the four numbered comments. Nothing in them is new.</p>
         <div class="want">Add a task: buy milk
 Add a task: study Python
 Add a task: call home
@@ -602,11 +602,11 @@ print("Still to do:")
 n = 1
 for task in tasks:
     print(f"{n}. {task}")
-    n = n + 1</pre><p>Ask, append, number, remove, number again. The numbering block appears twice — Unit 7 fixes that.</p></details>
+    n = n + 1</pre><p>Ask, append, number, remove, number again. The repeat is Unit 7's job.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.5 · P2</span><span class="pt">The top scorer</span></div>
-        <p class="pd">Find the highest score by hand: a <code>best</code> box, a loop, a promoting <code>if</code>.</p>
+        <p class="pd">Highest score by hand: <code>best</code>, a loop, a promoting <code>if</code>.</p>
         <div class="want">Top score: 92</div>
         <div class="pyrun" data-id="s5p2" data-expect="Top score: 92">
           <textarea spellcheck="false">scores = [67, 92, 45, 88, 73]
@@ -617,7 +617,7 @@ best = scores[0]
 for s in scores:
     if s > best:
         best = s
-print("Top score:", best)</pre><p>Best so far — seed it, challenge it, keep the winner. <code>max(scores)</code> does exactly this.</p></details>
+print("Top score:", best)</pre><p>Seed it, challenge it, keep the winner. <code>max(scores)</code> does this.</p></details>
       </div>
     </div>
   </section>
@@ -633,7 +633,7 @@ print("Top score:", best)</pre><p>Best so far — seed it, challenge it, keep th
     <div class="practice">
       <div class="p-card">
         <div class="ph"><span class="pn">B1</span><span class="pt">Backwards</span></div>
-        <p class="pd">Print the three words in reverse, one per line. Negative indexes or a counting-down <code>while</code>.</p>
+        <p class="pd">Three words, reverse order. Negative indexes, or a counting-down <code>while</code>.</p>
         <div class="want">three
 two
 one</div>
@@ -645,11 +645,11 @@ one</div>
 i = len(words) - 1
 while i &gt;= 0:
     print(words[i])
-    i = i - 1</pre><p>Start at the last slot and step down to 0. Three negative-index prints also pass.</p></details>
+    i = i - 1</pre><p>Start at the last slot, step down to 0. Negative indexes also pass.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">B2</span><span class="pt">The shopping bill</span></div>
-        <p class="pd">Total the prices with an accumulator, then print with Unit 2's two-decimal money format.</p>
+        <p class="pd">Total the prices, then Unit 2's two-decimal money format.</p>
         <div class="want">Total: 198.75</div>
         <div class="pyrun" data-id="b2" data-expect="Total: 198.75">
           <textarea spellcheck="false">prices = [45.50, 120.00, 33.25]
@@ -675,11 +675,11 @@ item = input("Looking for? ")
 if item in stock:
     print(f"Yes, {item} is in stock")
 else:
-    print(f"Sorry, no {item} today")</pre><p>Membership feeds the <code>if</code>, and the f-string throws the customer's own word back.</p></details>
+    print(f"Sorry, no {item} today")</pre><p>Membership feeds the <code>if</code>; the f-string echoes the customer's word.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — the great divide</span></div>
-        <p class="pd">Split the numbers into two new lists. <code>n % 2 == 0</code> means even. Start empty and append, twice over.</p>
+        <p class="pd">Split into evens and odds. <code>n % 2 == 0</code> means even.</p>
         <div class="want">Evens: [2, 4, 10]
 Odds: [7, 9, 3]</div>
         <div class="pyrun" data-id="b4" data-expect="Evens: [2, 4, 10]\nOdds: [7, 9, 3]">
@@ -695,7 +695,7 @@ for n in nums:
     else:
         odds.append(n)
 print("Evens:", evens)
-print("Odds:", odds)</pre><p>One pass, two destinations. The loop reads, the <code>if</code> routes, the appends collect.</p></details>
+print("Odds:", odds)</pre><p>One pass, two destinations: loop reads, <code>if</code> routes, appends collect.</p></details>
       </div>
     </div>
   </section>
