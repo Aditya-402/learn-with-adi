@@ -21,7 +21,7 @@
     <div class="title-block">
       <div class="eyebrow">Python Programming · Beginner — Foundations · Unit 5</div>
       <h1>Many Things at Once — Lists</h1>
-      <p class="standfirst">Unit 4 taught your programs to repeat; this session gives them something worth repeating over. One box with numbered slots — a <b>list</b> — replaces an armful of variables, and by the end you've built version 1 of a to-do list that these notes will keep upgrading for units to come.</p>
+      <p class="standfirst">Unit 4 taught your programs to repeat. But repeat over what? Today you get one box with many numbered slots inside it. It replaces an armful of separate variables. And by the end you will have built version 1 of a to-do list that we keep coming back to.</p>
       <div class="facts">
         <div><b>One session</b>~45 min</div>
         <div><b>4 concepts + a build</b>each: short read + practice</div>
@@ -41,6 +41,7 @@
     <a href="#s4">5.4 Loops meet lists</a>
     <a href="#s5">5.5 Build: to-do list v1</a>
     <a href="#s6">5.6 Problem bank</a>
+    <a href="#cheat">Quick reference</a>
     <a href="#quiz">Check yourself</a>
     <a href="#gloss">Glossary</a>
   </nav>
@@ -50,39 +51,49 @@
   <!-- ============ 5.1 ============ -->
   <section id="s1">
     <div class="prereq">
-      <div class="pq"><b>You'll need Units 2–4</b>Labeled boxes and f-strings (U2), if/else (U3), for and while (U4). Lists lean on all three before this page is out.</div>
-      <div class="pq"><b>How this unit works</b>Same rhythm: each concept is a 3–4 minute read, then ~10 minutes of practice. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit5.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
-      <div class="pq"><b>A build that sticks around</b>The to-do list you write in 5.5 is version 1. Units 7, 9 and 10 will reorganise it, bulletproof it, and save it to disk — so build it plainly now and let future-you do the polishing.</div>
+      <div class="pq"><b>You'll need Units 2–4</b>Boxes and f-strings, if/else, for and while.</div>
+      <div class="pq"><b>How this unit works</b>A short read, then you practise. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit5.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
+      <div class="pq"><b>A build that stays with you</b>The to-do list in 5.5 is version 1. Units 7, 9 and 10 keep upgrading it.</div>
     </div>
     <div class="prose">
       <span class="sec-num">5.1</span>
       <h2>One box, many slots — your first list</h2>
-      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
-      <p><b>The problem.</b> Every box so far holds exactly one thing. Now try a shopping list: milk, eggs, bread, tea, sugar. Five boxes — <code>item1</code>, <code>item2</code>, <code>item3</code>… — five prints, and "add one more item" means editing the program itself. Boxes don't scale. A week needs seven, a class of marks needs sixty.</p>
-      <p><b>The idea, in plain words.</b> A <b>list</b> is one labeled box divided into <b>numbered slots</b>. Write the values between square brackets, commas between:</p>
-      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">fruits = ["apple", "banana", "cherry"]</p>
-      <p>One label, any number of values — and three moves to start with:</p>
-      <ul class="plain">
-        <li><b><code>len(fruits)</code> counts the slots</b> — here, <code>3</code>. (Yes, the same <code>len()</code> works on strings; it counts whatever the thing is made of.)</li>
-        <li><b><code>fruits[0]</code> reads a slot by number</b> — and the numbering starts at <b>zero</b>, because the slot number is really a distance: how many steps from the front. <code>fruits[0]</code> is at the front itself, zero steps in.</li>
-        <li><b>Negative numbers count from the back:</b> <code>fruits[-1]</code> is the last item, <code>fruits[-2]</code> second-to-last — no <code>len()</code> gymnastics needed.</li>
-      </ul>
-      <p>Ask for a slot that doesn't exist — <code>fruits[3]</code>, when the slots are 0, 1 and 2 — and Python stops with <code>IndexError: list index out of range</code>. Same drill as Unit 1: read the error report's last line first; an IndexError almost always means your slot arithmetic is off by one.</p>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p>Let's try to understand why one box per thing stops working.</p>
+      <p>Somebody sends you to the shop. Milk, eggs, bread, tea, sugar. Five separate slips of paper? Of course not. One slip, five lines.</p>
+      <p>But so far we have been writing <code>item1</code>, <code>item2</code>, <code>item3</code> — one box each. Add one item and you must edit the program.</p>
+      <p>That does not scale, right? A week needs seven boxes. A class of marks needs sixty.</p>
+      <p>So keep the shopping slip in your mind. It is one thing, with many lines inside it.</p>
+      <p>Python gives you exactly that: one labelled box with a row of numbered slots. Think of railway station lockers — one cupboard, many numbered doors.</p>
+      <p>That box with numbered slots is what we call a <b>list</b>.</p>
+      <p>Now the part that trips up everybody. Slot numbers start at <b>zero</b>. The number is not "which one" — it is <i>how far from the front</i>.</p>
+      <p>Negative numbers count from the other end. <code>fruits[-1]</code> is the last item, however long the list is. No counting on your part.</p>
+      <p>Ask for a slot that does not exist and Python stops with an <code>IndexError</code>. It almost always means your slot number is off by one.</p>
     </div>
-    <div class="trace">
-      <div class="dl">Trace it by hand — reading the slots</div>
-      <div class="m">fruits = ["apple", "banana", "cherry"]
-print(len(fruits))
-print(fruits[0], fruits[2])
-print(fruits[-1])</div>
-      <p><b>Line 1:</b> one box <code>fruits</code>, three slots: slot 0 holds <code>"apple"</code>, slot 1 <code>"banana"</code>, slot 2 <code>"cherry"</code>.</p>
-      <p><b>Line 2:</b> <code>len(fruits)</code> counts slots → 3.</p>
-      <p><b>Line 3:</b> slot 0 and slot 2, comma-printed with the usual single space.</p>
-      <p><b>Line 4:</b> <code>-1</code> steps in from the back → the last slot.</p>
-      <div class="m">3
+
+    <div class="syntax">
+      <div class="sl">The form</div>
+      <div class="form">fruits = ["apple", "banana", "cherry"]
+
+fruits[0]      # read one slot — counting starts at zero
+fruits[-1]     # the last slot, counting from the back
+len(fruits)    # how many slots are there</div>
+      <p>Square brackets to build the box. Square brackets again to open one slot.</p>
+    </div>
+
+    <div class="listing">
+      <div class="lh">Reading the slots — line by line, with the slot numbers named</div>
+      <ol>
+        <li><code>fruits = ["apple", "banana", "cherry"]</code><span class="note">One box, three slots: <code>"apple"</code>, <code>"banana"</code>, <code>"cherry"</code>.</span></li>
+        <li><code>print(len(fruits))</code><span class="note"><code>len</code> counts the slots. Three of them.</span></li>
+        <li><code>print(fruits[0], fruits[2])</code><span class="note">Slot 0 and slot 2 — the first and the third.</span></li>
+        <li><code>print(fruits[-1])</code><span class="note">One step in from the back. The last slot.</span></li>
+      </ol>
+      <div class="yousee"><b>What you should see</b>3
 apple cherry
 cherry</div>
     </div>
+
     <div class="fig">
       <svg viewBox="0 0 860 220" role="img" aria-label="A list box named fruits with three numbered slots, indexed 0 to 2 from the front and -1 to -3 from the back">
         <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">ONE BOX, NUMBERED SLOTS</text>
@@ -106,20 +117,20 @@ cherry</div>
         <text x="560" y="138" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#1d5654">fruits[-1] → "cherry"</text>
         <text x="560" y="164" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#a35a33">fruits[3]  → IndexError</text>
       </svg>
-      <div class="figcap">Fig. 1 — The list box. The slot number is a distance from the front, which is why the first item lives at 0 — and why <code>fruits[1]</code> is the <i>second</i> item, not the first.</div>
+      <div class="figcap">Fig. 1 — The list box. The slot number is a distance from the front. That is why the first item lives at 0, and why <code>fruits[1]</code> is the <i>second</i> item.</div>
     </div>
     <div class="confuse">
-      <div class="lbl">Common confusion</div>
-      <p>The number in the brackets is <b>not</b> "1st, 2nd, 3rd". It's steps from the front — so <code>fruits[1]</code> is one step in: the <b>second</b> item. Every programmer alive was bitten by this exactly once; make your bite a small one. When a program grabs the wrong item — or dies with an <code>IndexError</code> — check the slot number first and count from zero on your fingers.</p>
+      <div class="lbl">Careful here</div>
+      <p>The number in the brackets is steps from the front, not 1st, 2nd, 3rd. So <code>fruits[1]</code> is the <b>second</b> item. Everyone gets bitten by this once.</p>
     </div>
     <div class="keyidea">
       <div class="lbl">Key idea</div>
-      A list is one box with numbered slots. The number counts steps from the front — first item <code>[0]</code>, last item <code>[-1]</code> — and <code>len()</code> tells you how many slots there are.
+      A list is one box with numbered slots. The number counts steps from the front — first item <code>[0]</code>, last item <code>[-1]</code>. And <code>len()</code> tells you how many slots there are.
     </div>
 
     <div class="worked">
-      <div class="wl">Worked example</div>
-      <p><b>Task:</b> a metro line has four stations in a list — report how many stops there are, the terminus at each end. <b>Thinking:</b> count with <code>len()</code>, front with <code>[0]</code>, back with <code>[-1]</code> — no need to know the list is four long. Predict all three lines, then run.</p>
+      <div class="wl">Now you run it</div>
+      <p>A metro line, four stations. Count with <code>len()</code>, front with <code>[0]</code>, back with <code>[-1]</code>. Predict all three lines, then run.</p>
       <div class="pyrun" data-id="w1">
         <textarea spellcheck="false">stations = ["Central", "Park", "Lake", "Airport"]
 print("Stops:", len(stations))
@@ -131,7 +142,7 @@ print("Last:", stations[-1])</textarea>
     <div class="practice">
       <div class="p-card">
         <div class="ph"><span class="pn">5.1 · P1</span><span class="pt">Build and read</span></div>
-        <p class="pd">Make a list <code>colors</code> holding <code>red</code>, <code>green</code>, <code>blue</code> in that order. Print the <i>second</i> color, then the length — two prints, matching the goal.</p>
+        <p class="pd">Make a list <code>colors</code> — <code>red</code>, <code>green</code>, <code>blue</code>. Print the <i>second</i> colour, then the length.</p>
         <div class="want">green
 3</div>
         <div class="pyrun" data-id="s1p1" data-expect="green\n3">
@@ -139,11 +150,11 @@ print("Last:", stations[-1])</textarea>
         </div>
         <details><summary>Show solution</summary><pre>colors = ["red", "green", "blue"]
 print(colors[1])
-print(len(colors))</pre><p>The second item is one step from the front — slot 1. If you printed <code>red</code>, the confusion box above was written for this exact moment.</p></details>
+print(len(colors))</pre><p>The second item is one step from the front, so slot 1.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.1 · P2</span><span class="pt">Predict: three reads, one trap</span></div>
-        <p class="pd">Predict all three prints on paper — including whether each line runs at all. Then run and reconcile. (Remember from Unit 1: programs die mid-flight, so think about what appears <i>before</i> any crash.)</p>
+        <p class="pd">Guess all three lines first, including whether each one runs. Then Run.</p>
         <div class="pyrun" data-id="s1p2">
           <textarea spellcheck="false">letters = ["a", "b", "c", "d"]
 print(letters[1])
@@ -152,11 +163,11 @@ print(letters[4])</textarea>
         </div>
         <details><summary>Show what happens &amp; why</summary><pre>b
 d
-IndexError: list index out of range</pre><p>Four items means slots 0–3, so <code>letters[4]</code> is one past the end. Lines 2 and 3 printed before the crash — the first two reads were fine.</p></details>
+IndexError: list index out of range</pre><p>Four items means slots 0 to 3, so <code>letters[4]</code> is one past the end.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.1 · P3</span><span class="pt">Fix the off-by-one</span></div>
-        <p class="pd">This wants to print the first and third dishes. Both slot numbers are wrong — one prints the wrong dish, one crashes. Fix both to match the goal.</p>
+        <p class="pd">Both slot numbers are wrong. One prints the wrong dish, one crashes.</p>
         <div class="want">dosa
 vada</div>
         <div class="pyrun" data-id="s1p3" data-expect="dosa\nvada">
@@ -166,18 +177,18 @@ print(menu[3])</textarea>
         </div>
         <details><summary>Show solution</summary><pre>menu = ["dosa", "idli", "vada"]
 print(menu[0])
-print(menu[2])</pre><p>First is slot 0, third is slot 2 — the human position minus one, always.</p></details>
+print(menu[2])</pre><p>First is slot 0, third is slot 2 — human position minus one, always.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.1 · P4</span><span class="pt">Stretch — the middle item</span></div>
-        <p class="pd">Print the middle item of this five-item list — but compute the slot from <code>len()</code> with <code>//</code> (Unit 2's floor division), so your line still works if the list grows to seven or nine items.</p>
+        <p class="pd">Print the middle item without typing 2. Work the slot out from <code>len()</code> and <code>//</code>.</p>
         <div class="want">yellow</div>
         <div class="pyrun" data-id="s1p4" data-expect="yellow">
           <textarea spellcheck="false">words = ["red", "orange", "yellow", "green", "blue"]
 </textarea>
         </div>
         <details><summary>Show solution</summary><pre>words = ["red", "orange", "yellow", "green", "blue"]
-print(words[len(words) // 2])</pre><p><code>len(words) // 2</code> → 5 // 2 → 2, and slot 2 is the middle of five. Expressions are welcome inside the brackets — Python computes the number first, then reads the slot.</p></details>
+print(words[len(words) // 2])</pre><p><code>len(words) // 2</code> is 2, the middle of five. Any expression is welcome inside the brackets.</p></details>
       </div>
     </div>
   </section>
@@ -187,9 +198,11 @@ print(words[len(words) // 2])</pre><p><code>len(words) // 2</code> → 5 // 2 �
     <div class="prose">
       <span class="sec-num">5.2</span>
       <h2>Changing a list — append, insert, remove, pop</h2>
-      <span class="rtag"><span>Read · ~4 min</span><span class="pr">Practice · ~10 min</span></span>
-      <p><b>The problem.</b> A real list never sits still. You buy the milk and cross it off; a new task lands on top of the day. If lists were frozen at birth you'd have to rebuild the whole box for every change. They aren't — lists come with handles for changing the contents <i>in place</i>.</p>
-      <p><b>The idea, in plain words.</b> A list carries its own toolkit, reached with a dot: <code>tasks.append(…)</code> means "tasks, do your append thing". Four tools cover almost everything:</p>
+      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p>Now let's try to understand what happens when the list has to change.</p>
+      <p>Go back to that shopping slip. You buy the milk, so you strike it off. Somebody calls and says add rice, so you write rice at the bottom. The slip does not become a new slip. It is the same paper, with different lines on it.</p>
+      <p>A Python list behaves the same way. It carries its own little toolkit, and you reach for a tool with a dot. <code>tasks.append("study")</code> means "tasks, do your append thing".</p>
+      <p>Four tools cover almost everything you will need today.</p>
       <div class="fig" style="max-width:66ch;padding:6px 18px">
       <table>
         <tr><th>tool</th><th>does</th><th>example</th></tr>
@@ -199,22 +212,32 @@ print(words[len(words) // 2])</pre><p><code>len(words) // 2</code> → 5 // 2 �
         <tr><td><code>.pop(i)</code></td><td>take out <b>slot</b> <code>i</code> and hand you the item; <code>.pop()</code> alone takes the last</td><td><code>done = tasks.pop(0)</code></td></tr>
       </table>
       </div>
-      <p>Note the split: <code>remove</code> works by <i>value</i> ("delete the milk, wherever it is"), <code>pop</code> works by <i>slot</i> ("take out whatever is at the front — and give it to me"). After any removal, the slots renumber so there are never gaps.</p>
+      <p>Notice the split there. <code>remove</code> works by <i>value</i> — delete the milk, wherever it is sitting. <code>pop</code> works by <i>slot</i> — take out whoever is standing at the front, and hand him to me.</p>
+      <p>After any removal the slots renumber themselves. There are never gaps.</p>
+      <p>Changing a box's contents in place like this has a name. We call it <b>mutation</b>.</p>
     </div>
-    <div class="trace">
-      <div class="dl">Trace it by hand — a morning's to-dos</div>
-      <div class="m">tasks = ["wash dishes"]
-tasks.append("study")
-tasks.insert(0, "call home")
-tasks.remove("wash dishes")
-print(tasks)</div>
-      <p><b>Line 1:</b> one slot: <code>["wash dishes"]</code>.</p>
-      <p><b>Line 2:</b> new slot at the end: <code>["wash dishes", "study"]</code>.</p>
-      <p><b>Line 3:</b> squeezed in at slot 0, everything shifts right: <code>["call home", "wash dishes", "study"]</code>.</p>
-      <p><b>Line 4:</b> the slot holding <code>"wash dishes"</code> is deleted; the rest close ranks: <code>["call home", "study"]</code>.</p>
-      <p><b>Line 5:</b> printing a whole list shows Python's own notation — brackets, quotes, commas:</p>
-      <div class="m">['call home', 'study']</div>
+
+    <div class="syntax">
+      <div class="sl">The form</div>
+      <div class="form">tasks.append("study")          # add one slot at the end
+tasks.insert(0, "call home")   # squeeze in at slot 0
+tasks.remove("study")          # delete by value
+done = tasks.pop(0)            # take slot 0 out, and keep the item</div>
+      <p>Read the dot as "do your … thing". The list on the left, the tool on the right.</p>
     </div>
+
+    <div class="listing">
+      <div class="lh">A morning's to-dos — what the box holds after each line</div>
+      <ol>
+        <li><code>tasks = ["wash dishes"]</code><span class="note">One slot to begin with: <code>["wash dishes"]</code>.</span></li>
+        <li><code>tasks.append("study")</code><span class="note">A new slot at the end: <code>["wash dishes", "study"]</code>.</span></li>
+        <li><code>tasks.insert(0, "call home")</code><span class="note">Squeezed in at the front; everything else shifts right.</span></li>
+        <li><code>tasks.remove("wash dishes")</code><span class="note">That slot goes; the rest close ranks.</span></li>
+        <li><code>print(tasks)</code><span class="note">A whole list prints in Python's own notation.</span></li>
+      </ol>
+      <div class="yousee"><b>What you should see</b>['call home', 'study']</div>
+    </div>
+
     <div class="fig">
       <svg viewBox="0 0 860 250" role="img" aria-label="Three snapshots of the tasks list: one slot, then three after append and insert, then two after remove, with slots renumbered">
         <text x="16" y="26" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">SAME BOX, CHANGING CONTENTS</text>
@@ -245,16 +268,17 @@ print(tasks)</div>
         <text x="715" y="196" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#a35a33">slots renumber — "study" moved from 2 to 1</text>
         <text x="430" y="234" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-size="11.5" fill="#1d5654">one box the whole time — the label never moved; only the contents changed</text>
       </svg>
-      <div class="figcap">Fig. 2 — The state of memory across the trace. <code>append</code>, <code>insert</code> and <code>remove</code> all reached into the <i>same</i> box; nothing was reassigned.</div>
+      <div class="figcap">Fig. 2 — What memory holds after each line. <code>append</code>, <code>insert</code> and <code>remove</code> all reached into the <i>same</i> box. Nothing was ever replaced.</div>
     </div>
     <div class="confuse">
-      <div class="lbl">Common confusion</div>
-      <p><code>tasks.append("rest")</code> and <code>tasks = ["rest"]</code> look like cousins and are opposites. The first reaches into the existing box and adds a slot — same box, changed contents (that's <b>mutation</b>). The second builds a brand-new one-slot list and stores it into the box, and Unit 2's rule fires: a box holds one thing, so everything that was there is <b>gone</b>. Related trap: <code>tasks = tasks.append("rest")</code> leaves <code>tasks</code> holding <code>None</code> — append changes the box and hands back nothing, so never store its answer.</p>
+      <div class="lbl">Careful here</div>
+      <p><code>tasks.append("rest")</code> and <code>tasks = ["rest"]</code> look like cousins. They are opposites. The first reaches into the box you already have and adds one slot. The second builds a brand new one-slot list and stores it into the box. Then Unit 2's rule fires: a box holds one thing, so whatever was there is gone.</p>
+      <p>One more trap. <code>tasks = tasks.append("rest")</code> leaves <code>tasks</code> holding <code>None</code>. Append changes the box and hands back nothing. So never store its answer.</p>
     </div>
 
     <div class="worked">
-      <div class="wl">Worked example</div>
-      <p><b>Task:</b> run a party guest list: Alan RSVPs, Edsger must sit second, then Ada leaves early. Print the list at each stage and see the slots shuffle. <b>Thinking:</b> add-at-end is <code>append</code>, add-at-a-slot is <code>insert</code>, take-from-a-slot-and-keep is <code>pop</code>. Predict each printed list before running.</p>
+      <div class="wl">Now you run it</div>
+      <p>A party guest list. Alan says yes, Edsger must be seated second, then Ada leaves early. Add at the end is <code>append</code>, add at a slot is <code>insert</code>, take out and keep is <code>pop</code>. Predict each printed list before you Run.</p>
       <div class="pyrun" data-id="w2">
         <textarea spellcheck="false">guests = ["Ada", "Grace"]
 guests.append("Alan")
@@ -270,7 +294,7 @@ print(guests)</textarea>
     <div class="practice">
       <div class="p-card">
         <div class="ph"><span class="pn">5.2 · P1</span><span class="pt">Grow from nothing</span></div>
-        <p class="pd">Start with an <i>empty</i> list — <code>items = []</code> — then <code>append</code> three things: <code>pen</code>, <code>book</code>, <code>lamp</code>, in that order. Print the list once at the end. (Note the goal shows Python's list notation — that's what printing a whole list looks like.)</p>
+        <p class="pd">Start empty, then <code>append</code> <code>pen</code>, <code>book</code>, <code>lamp</code> in order. One print at the end.</p>
         <div class="want">['pen', 'book', 'lamp']</div>
         <div class="pyrun" data-id="s2p1" data-expect="['pen', 'book', 'lamp']">
           <textarea spellcheck="false">items = []
@@ -280,11 +304,11 @@ print(guests)</textarea>
 items.append("pen")
 items.append("book")
 items.append("lamp")
-print(items)</pre><p>Empty box, three appends, each landing at the end. Start-empty-and-append is the single most common list pattern in real programs — the build in 5.5 runs on it.</p></details>
+print(items)</pre><p>Empty box, three appends, each landing at the end. The commonest list pattern going.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.2 · P2</span><span class="pt">Predict: mutate vs replace</span></div>
-        <p class="pd">Two prints, two predictions. The first line changes a list; the fourth line does something much more drastic. Say both outputs aloud before running.</p>
+        <p class="pd">Two prints, two predictions. Line 2 changes a list; line 4 does something more drastic.</p>
         <div class="pyrun" data-id="s2p2">
           <textarea spellcheck="false">nums = [1, 2, 3]
 nums.append(4)
@@ -293,11 +317,11 @@ nums = [9]
 print(nums)</textarea>
         </div>
         <details><summary>Show what happens &amp; why</summary><pre>[1, 2, 3, 4]
-[9]</pre><p><code>append</code> changed the contents of the existing box. <code>nums = [9]</code> replaced them wholesale — a new list stored into the box, the old four values gone without ceremony.</p></details>
+[9]</pre><p><code>append</code> changed the box you already had. <code>nums = [9]</code> replaced its contents entirely.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.2 · P3</span><span class="pt">The queue at the counter</span></div>
-        <p class="pd">Ravi gives up and leaves the queue (remove him <i>by name</i>). Then the person at the front is served — take them out <i>by slot</i> with <code>pop</code>, print <code>Serving:</code> and their name, and print the remaining queue.</p>
+        <p class="pd">Ravi walks out — remove him <i>by name</i>. Then serve the front one <i>by slot</i> with <code>pop</code>.</p>
         <div class="want">Serving: Meena
 ['Sara', 'Vikram']</div>
         <div class="pyrun" data-id="s2p3" data-expect="Serving: Meena\n['Sara', 'Vikram']">
@@ -308,7 +332,7 @@ print(nums)</textarea>
 queue.remove("Ravi")
 served = queue.pop(0)
 print("Serving:", served)
-print(queue)</pre><p><code>remove</code> hunts by value; <code>pop(0)</code> takes the front slot <i>and hands the item over</i> so you can still use it after it's out of the list.</p></details>
+print(queue)</pre><p><code>remove</code> hunts by value. <code>pop(0)</code> takes the front slot and <i>hands the item over</i>.</p></details>
       </div>
     </div>
   </section>
@@ -318,35 +342,48 @@ print(queue)</pre><p><code>remove</code> hunts by value; <code>pop(0)</code> tak
     <div class="prose">
       <span class="sec-num">5.3</span>
       <h2>Slices &amp; membership — chunks and questions</h2>
-      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~8 min</span></span>
-      <p><b>The problem.</b> Sometimes you don't want one slot — you want a chunk: the top three from a leaderboard, everyone except the first, the weekend from the week. And sometimes you don't want any slot at all, just an answer: <i>is milk already on the list?</i></p>
-      <p><b>The idea, in plain words.</b> A <b>slice</b> reads a range of slots in one go: <code>days[1:3]</code> means "from slot 1 up to <i>but not including</i> slot 3" — start included, end excluded. Leave an end blank and it means "from the very front" or "to the very end": <code>days[:2]</code> is the first two, <code>days[2:]</code> is everything from slot 2 on. A slice hands you a <b>new</b> list — the original is untouched, which makes slicing the safe way to work with part of a list.</p>
-      <p>The other tool is a question: <code>"Wed" in days</code> asks whether any slot holds that value and answers <code>True</code> or <code>False</code> — the same booleans Unit 3 runs on, so the answer drops straight into an <code>if</code>. <code>not in</code> asks the opposite. (Bonus: both tricks work on strings too — <code>"Python"[0:2]</code> is <code>"Py"</code>, and <code>"y" in "Python"</code> is <code>True</code>.)</p>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~8 min</span></span>
+      <p>Sometimes you do not want one slot. You want a chunk of them.</p>
+      <p>Think of a row of seats in a cinema. Your friends are in seats two, three and four. You do not point at each seat separately, right? You say "that row, from here to here". Python has the same move.</p>
+      <p><code>days[1:3]</code> means: start at slot 1, and stop before slot 3. Leave one side blank and Python fills it in for you. <code>days[:2]</code> is from the very front. <code>days[2:]</code> is to the very end.</p>
+      <p>And what you get back is a <b>new</b> list. The original box is untouched. That is what makes this a safe thing to do.</p>
+      <p>A chunk of a list, taken like this, is what we call a <b>slice</b>.</p>
+      <p>The second tool today is not a chunk at all. It is a question. <code>"Wed" in days</code> asks whether any slot holds that value, and answers <code>True</code> or <code>False</code>. Those are Unit 3's booleans, so the answer drops straight into an <code>if</code>. <code>not in</code> asks the opposite.</p>
+      <p>A small bonus. Both tricks work on strings too. <code>"Python"[0:2]</code> is <code>"Py"</code>, and <code>"y" in "Python"</code> is <code>True</code>.</p>
     </div>
-    <div class="trace">
-      <div class="dl">Trace it by hand — carving the week</div>
-      <div class="m">days = ["Mon", "Tue", "Wed", "Thu", "Fri"]
-print(days[1:3])
-print(days[:2])
-print(days[2:])
-print("Wed" in days)</div>
-      <p><b>Line 2:</b> slots 1 and 2 — slot 3 is excluded. Two items, not three.</p>
-      <p><b>Line 3:</b> from the front up to (not including) slot 2.</p>
-      <p><b>Line 4:</b> slot 2 to the end. Notice lines 3 and 4 together rebuild the whole week — the 2 is excluded on one side and included on the other, so nothing is doubled and nothing is lost.</p>
-      <p><b>Line 5:</b> is <code>"Wed"</code> in any slot? It is.</p>
-      <div class="m">['Tue', 'Wed']
+
+    <div class="syntax">
+      <div class="sl">The form</div>
+      <div class="form">days[1:3]        # slots 1 and 2 — start in, end out
+days[:2]         # from the very front
+days[2:]         # to the very end
+"Wed" in days    # a question — True or False</div>
+      <p>A colon inside the brackets means a range, not one slot.</p>
+    </div>
+
+    <div class="listing">
+      <div class="lh">Carving up the week</div>
+      <ol>
+        <li><code>days = ["Mon", "Tue", "Wed", "Thu", "Fri"]</code><span class="note">Five slots, numbered 0 to 4.</span></li>
+        <li><code>print(days[1:3])</code><span class="note">Slots 1 and 2 — slot 3 is left out.</span></li>
+        <li><code>print(days[:2])</code><span class="note">From the front, stopping before slot 2.</span></li>
+        <li><code>print(days[2:])</code><span class="note">Slot 2 to the end. Lines 3 and 4 rebuild the week.</span></li>
+        <li><code>print("Wed" in days)</code><span class="note">Is <code>"Wed"</code> sitting in any slot? It is.</span></li>
+      </ol>
+      <div class="yousee"><b>What you should see</b>['Tue', 'Wed']
 ['Mon', 'Tue']
 ['Wed', 'Thu', 'Fri']
 True</div>
     </div>
+
     <div class="confuse">
-      <div class="lbl">Common confusion</div>
-      <p><code>days[1:3]</code> gives <b>two</b> items, not three — the end slot is left out. It feels stingy until you see the gift: the count is always <code>stop − start</code> (3 − 1 = 2), and <code>days[:k]</code> + <code>days[k:]</code> always seams back into the whole list with no overlap. Python chose the convention that makes the arithmetic clean; trust it, and when a slice comes up short by one, look at the end number.</p>
+      <div class="lbl">Careful here</div>
+      <p>Start included, end excluded. So <code>days[1:3]</code> gives you <b>two</b> items, not three. It feels stingy until you see the gift. The count is always end minus start. And <code>days[:k]</code> with <code>days[k:]</code> joins straight back into the whole list, with nothing doubled.</p>
     </div>
 
     <div class="worked">
-      <div class="wl">Worked example</div>
-      <p><b>Task:</b> from a race's finishing order, print the podium (first three), the rest of the field, and answer two "did they even run?" questions. <b>Thinking:</b> "first three" is <code>[:3]</code>, "the rest" is <code>[3:]</code>, and the questions are <code>in</code>.</p>
+      <div class="wl">Now you run it</div>
+      <p>A race has finished. Print the podium, then the rest of the field, then answer two "did they even run?" questions. First three is <code>[:3]</code>, the rest is <code>[3:]</code>, and the questions are <code>in</code>.</p>
       <div class="pyrun" data-id="w3">
         <textarea spellcheck="false">runners = ["Kiran", "Ada", "Meera", "John", "Zara"]
 print("Podium:", runners[:3])
@@ -358,18 +395,18 @@ print("Ada" in runners, "Bob" in runners)</textarea>
     <div class="practice">
       <div class="p-card">
         <div class="ph"><span class="pn">5.3 · P1</span><span class="pt">The midweek slice</span></div>
-        <p class="pd">One print, one slice: pull <code>Tue</code> through <code>Thu</code> out of the week. Mind the excluded end.</p>
+        <p class="pd">One slice, one print: <code>Tue</code> through <code>Thu</code>. Mind that excluded end.</p>
         <div class="want">['Tue', 'Wed', 'Thu']</div>
         <div class="pyrun" data-id="s3p1" data-expect="['Tue', 'Wed', 'Thu']">
           <textarea spellcheck="false">week = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 </textarea>
         </div>
         <details><summary>Show solution</summary><pre>week = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-print(week[1:4])</pre><p>Tue is slot 1; Thu is slot 3, so the end must be 4. Three items — and 4 − 1 = 3 confirms it.</p></details>
+print(week[1:4])</pre><p>Tue is slot 1 and Thu is slot 3, so the end has to be 4.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.3 · P2</span><span class="pt">Predict: four slices</span></div>
-        <p class="pd">Predict all four lines — the last one is the sneaky one. Then run.</p>
+        <p class="pd">Guess all four lines on paper. The last one is sneaky.</p>
         <div class="pyrun" data-id="s3p2">
           <textarea spellcheck="false">nums = [10, 20, 30, 40, 50]
 print(nums[1:3])
@@ -380,11 +417,11 @@ print(nums[1:1])</textarea>
         <details><summary>Show what happens &amp; why</summary><pre>[20, 30]
 [10]
 [40, 50]
-[]</pre><p>The last is an <i>empty list</i>: start 1, stop 1, count = 1 − 1 = 0 items. A slice can be empty and that's legal — no error, just <code>[]</code>.</p></details>
+[]</pre><p>Start 1, stop 1 — zero items. An empty slice is perfectly legal, not an error.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.3 · P3</span><span class="pt">Stretch — the guest check</span></div>
-        <p class="pd">Ask <code>Name? </code> and use <code>in</code> with Unit 3's <code>if</code>/<code>else</code>: print <code>Welcome in!</code> if the name is on the list, <code>Not on the list</code> otherwise. Input fixed to <code>Grace</code> — but write both branches; the bouncer meets all kinds.</p>
+        <p class="pd">Ask <code>Name? </code>, then branch on <code>in</code>: <code>Welcome in!</code> or <code>Not on the list</code>.</p>
         <div class="want">Name? Grace
 Welcome in!</div>
         <div class="pyrun" data-id="s3p3" data-stdin="Grace" data-stdin-lock data-expect="Name? Grace\nWelcome in!">
@@ -396,7 +433,7 @@ name = input("Name? ")
 if name in guests:
     print("Welcome in!")
 else:
-    print("Not on the list")</pre><p><code>in</code> produces a boolean, and booleans are exactly what <code>if</code> eats. This three-unit handshake — input (U1), membership (U5), branching (U3) — is half of every login screen you've ever seen.</p></details>
+    print("Not on the list")</pre><p><code>in</code> produces a boolean, and a boolean is exactly what <code>if</code> feeds on.</p></details>
       </div>
     </div>
   </section>
@@ -406,33 +443,57 @@ else:
     <div class="prose">
       <span class="sec-num">5.4</span>
       <h2>Loops meet lists — the payoff</h2>
-      <span class="rtag"><span>Read · ~3 min</span><span class="pr">Practice · ~10 min</span></span>
-      <p><b>The problem.</b> Unit 4's loops counted numbers. But the things worth repeating over are almost always <i>in a list</i>: print every task, add up every price, count every high score. Writing <code>prices[0]</code>, <code>prices[1]</code>, <code>prices[2]</code> by hand is the five-boxes problem sneaking back in through the window.</p>
-      <p><b>The idea, in plain words.</b> <code>for</code> walks a list directly:</p>
-      <p style="font-family:var(--mono);font-size:var(--fs-cap);background:var(--subtle);border-radius:8px;padding:12px 16px">for price in prices:<br>&nbsp;&nbsp;&nbsp;&nbsp;print(price)</p>
-      <p>Each pass, Python refills the loop box — here <code>price</code> — with the next slot's contents, front to back, and runs the indented body once per slot. No slot numbers, no <code>len()</code>, no way to fall off the end. Name the loop box after <i>one</i> of the things (<code>price</code>, <code>task</code>, <code>mark</code>) and the code reads like English.</p>
-      <p>Bolt this onto Unit 4's accumulator pattern and averages fall out: a running-total box, add each item, divide by <code>len()</code> at the end. And once you've built that with your own hands, a confession: Python ships <code>sum(prices)</code> ready-made, so the average is just <code>sum(prices) / len(prices)</code>. These notes made you earn it first — built-ins mean more when you know what they're quietly doing.</p>
+      <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~10 min</span></span>
+      <p>Now Unit 4's loop finally gets something worth looping over.</p>
+      <p>Let us be honest about last unit. The loops you wrote there counted numbers, and counting numbers is not very thrilling. But the things actually worth repeating over are nearly always sitting in a list. Every task on the slip. Every price on the bill. Every mark in the class.</p>
+      <p>And <code>for</code> can walk a list straight away. No slot numbers at all.</p>
+      <p>Each pass, Python refills the loop box — here <code>price</code> — with the next slot's contents, front to back. Then it runs the indented body once. When the slots finish, the loop stops. You cannot fall off the end, because you never touched a slot number.</p>
+      <p>One small habit. Name the loop box after <i>one</i> of the things: <code>price</code>, <code>task</code>, <code>mark</code>. Then the line reads like plain English.</p>
+      <p>Bolt this onto Unit 4's accumulator and averages fall out. A running-total box, add each item, divide by <code>len()</code> at the end.</p>
+      <p>Now a small confession. Python ships <code>sum(prices)</code> ready-made, so the average is only <code>sum(prices) / len(prices)</code>. I made you build it by hand first on purpose. A built-in means much more once you know what it is quietly doing.</p>
     </div>
+
+    <div class="syntax">
+      <div class="sl">The form</div>
+      <div class="form">for price in prices:
+    print(price)</div>
+      <p>Read it as: for each thing in that box, do this. The loop box takes one slot's contents at a time.</p>
+    </div>
+
+    <div class="listing">
+      <div class="lh">A loop over a list — three slots, three passes</div>
+      <ol>
+        <li><code>prices = [40, 25, 30]</code><span class="note">Three slots in one box.</span></li>
+        <li><code>for price in prices:</code><span class="note"><code>price</code> takes each slot in turn. No numbers anywhere.</span></li>
+        <li><code>    print("Rs", price)</code><span class="note">Indented, so it runs once per slot.</span></li>
+      </ol>
+      <div class="yousee"><b>What you should see</b>Rs 40
+Rs 25
+Rs 30</div>
+    </div>
+
     <div class="trace">
-      <div class="dl">Trace it by hand — the accumulator walks a list</div>
+      <div class="dl">Trace it by hand — the accumulator walking a list</div>
       <div class="m">prices = [40, 25, 30]
 total = 0
 for p in prices:
     total = total + p
 print("Total:", total)</div>
-      <p><b>Setup:</b> <code>total</code> starts at 0.</p>
-      <p><b>Pass 1:</b> <code>p</code> holds 40 → <code>total</code> becomes 40. <b>Pass 2:</b> <code>p</code> refilled with 25 → 65. <b>Pass 3:</b> <code>p</code> refilled with 30 → 95.</p>
-      <p><b>After the loop:</b> the list is walked out, and the print runs once:</p>
+      <p><b>Before the loop:</b> <code>total</code> holds 0.</p>
+      <p><b>Pass 1:</b> <code>p</code> holds 40, so <code>total</code> becomes 40.</p>
+      <p><b>Pass 2:</b> <code>p</code> is refilled with 25, so <code>total</code> becomes 65.</p>
+      <p><b>Pass 3:</b> <code>p</code> is refilled with 30, so <code>total</code> becomes 95.</p>
+      <p><b>After the loop:</b> the slots are finished, and the print runs once.</p>
       <div class="m">Total: 95</div>
     </div>
     <div class="keyidea">
       <div class="lbl">Key idea</div>
-      <code>for item in my_list:</code> hands you each slot's contents in order, no indexes needed. Pair it with an accumulator for totals and averages, an <code>if</code> for counting matches — and then let <code>sum()</code>, <code>len()</code> and friends do the routine cases.
+      <code>for item in my_list:</code> hands you each slot's contents in order, with no slot numbers needed. Pair it with an accumulator for totals, or with an <code>if</code> for counting matches. Then let <code>sum()</code> and <code>len()</code> handle the routine cases.
     </div>
 
     <div class="worked">
-      <div class="wl">Worked example</div>
-      <p><b>Task:</b> from a list of marks, print the class average and how many scored 80 or above. <b>Thinking:</b> the average is the <code>sum/len</code> one-liner; the count is Unit 3's <code>if</code> inside the loop, ticking a counter only when the test passes. Predict both numbers first — there are five marks.</p>
+      <div class="wl">Now you run it</div>
+      <p>From a list of marks, print the class average and how many scored 80 or above. The average is the <code>sum</code> over <code>len</code> one-liner. The count is Unit 3's <code>if</code> sitting inside the loop, ticking a counter only when the test passes. Five marks — predict both numbers first.</p>
       <div class="pyrun" data-id="w4">
         <textarea spellcheck="false">marks = [72, 85, 90, 66, 88]
 print("Average:", sum(marks) / len(marks))
@@ -447,7 +508,7 @@ print("Scored 80+:", high)</textarea>
     <div class="practice">
       <div class="p-card">
         <div class="ph"><span class="pn">5.4 · P1</span><span class="pt">Greet the team</span></div>
-        <p class="pd">One loop, one print inside it: greet every member on their own line, matching the goal exactly (comma-print does the spacing).</p>
+        <p class="pd">One loop, one print inside it. Greet every member on their own line.</p>
         <div class="want">Hello, Ada
 Hello, Alan
 Hello, Grace</div>
@@ -457,11 +518,11 @@ Hello, Grace</div>
         </div>
         <details><summary>Show solution</summary><pre>team = ["Ada", "Alan", "Grace"]
 for name in team:
-    print("Hello,", name)</pre><p>Three slots, three passes, three greetings. Add a fourth teammate to the list and the loop needs no editing — that's the whole point.</p></details>
+    print("Hello,", name)</pre><p>Three slots, three passes. Add a fourth teammate and the loop needs no editing.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.4 · P2</span><span class="pt">A week of rain</span></div>
-        <p class="pd">Total the week's rainfall with the accumulator pattern — by hand, no <code>sum()</code> this once — and report it in one f-string to match the goal.</p>
+        <p class="pd">Total the week's rainfall with an accumulator — by hand, no <code>sum()</code>. One f-string.</p>
         <div class="want">Total: 15 mm</div>
         <div class="pyrun" data-id="s4p2" data-expect="Total: 15 mm">
           <textarea spellcheck="false">rain = [2, 0, 5, 1, 0, 3, 4]
@@ -471,11 +532,11 @@ for name in team:
 total = 0
 for r in rain:
     total = total + r
-print(f"Total: {total} mm")</pre><p>Start at zero, add every slot, report once after the loop. (Then whisper <code>sum(rain)</code> to yourself and move on.)</p></details>
+print(f"Total: {total} mm")</pre><p>Start at zero, add every slot, report after the loop. Then whisper <code>sum(rain)</code>.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.4 · P3</span><span class="pt">Stretch — numbers for humans</span></div>
-        <p class="pd">Print the menu numbered <b>from 1</b> — people don't order "dish zero". Keep a counter box beside the loop: start it at 1, use it in an f-string, raise it each pass. (This exact pattern powers the build below.)</p>
+        <p class="pd">Number the menu <b>from 1</b> — nobody orders "dish zero". Keep a counter beside the loop.</p>
         <div class="want">1. dosa
 2. idli
 3. vada</div>
@@ -487,7 +548,7 @@ print(f"Total: {total} mm")</pre><p>Start at zero, add every slot, report once a
 n = 1
 for item in menu:
     print(f"{n}. {item}")
-    n = n + 1</pre><p>Python counts slots from 0; humans count from 1. The counter box translates between the two worlds at the print — the display changes, the list doesn't.</p></details>
+    n = n + 1</pre><p>Python counts from 0, humans from 1. The counter translates, at the moment of printing.</p></details>
       </div>
     </div>
   </section>
@@ -498,12 +559,15 @@ for item in menu:
       <span class="sec-num">5.5</span>
       <h2>Your build — to-do list, version 1</h2>
       <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~12 min</span></span>
-      <p>Two builds, everything from this session in play. First, the <b>to-do list</b>: read three tasks from the keyboard, show them numbered like a human list, cross one off by name, show the list again. That's start-empty-and-append, the numbered-print pattern, and <code>remove</code> — nothing you haven't done above, now in one program. Keep your version somewhere: Unit 7 reorganises it into functions, Unit 9 bulletproofs it, Unit 10 saves it to disk. Second, the <b>top scorer</b>: find the biggest number in a list the honest way, before learning the shortcut.</p>
+      <p>Two builds now, with everything from today in play.</p>
+      <p>First, the <b>to-do list</b>. Read three tasks from the keyboard. Show them numbered, the way a human writes a list. Cross one off by name, then show what is left. Nothing new in any of it — start empty and append, the numbered print, and <code>remove</code>. Only now all in one program.</p>
+      <p>Keep your version somewhere safe. This same to-do list comes back three more times in these notes. Unit 7 folds it into functions. Unit 9 makes it survive bad input. Unit 10 saves it to a file. So build it plainly today and let future-you do the polishing.</p>
+      <p>Second, the <b>top scorer</b>. Find the biggest number in a list the honest way, before you are allowed the shortcut.</p>
     </div>
     <div class="practice">
       <div class="p-card">
         <div class="ph"><span class="pn">5.5 · P1</span><span class="pt">The to-do list</span></div>
-        <p class="pd">Follow the numbered comments: read 3 tasks with a <code>for</code> loop (Unit 4's <code>range(3)</code>), appending each; print <code>Your list:</code> then the tasks numbered from 1; ask <code>Which task is done? </code> and <code>remove</code> that task; print <code>Still to do:</code> and the renumbered list. Inputs fixed: three tasks, then the one to cross off.</p>
+        <p class="pd">Follow the four numbered comments. Every piece of this came from 5.2 and 5.4.</p>
         <div class="want">Add a task: buy milk
 Add a task: study Python
 Add a task: call home
@@ -538,11 +602,11 @@ print("Still to do:")
 n = 1
 for task in tasks:
     print(f"{n}. {task}")
-    n = n + 1</pre><p>Ask → append → number → remove → number again. Notice the numbering block appears twice, copy-pasted — feel that itch; Unit 7 exists to scratch it (you'll fold it into a function and call it twice).</p></details>
+    n = n + 1</pre><p>Ask, append, number, remove, number again. The numbering block appears twice — Unit 7 fixes that.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">5.5 · P2</span><span class="pt">The top scorer</span></div>
-        <p class="pd">Find the highest score the manual way: a <code>best</code> box starting at the first score, a loop over the list, and an <code>if</code> that promotes any score that beats the current best. Print <code>Top score:</code> and the winner. No shortcuts — build the machine once.</p>
+        <p class="pd">Find the highest score by hand: a <code>best</code> box, a loop, a promoting <code>if</code>.</p>
         <div class="want">Top score: 92</div>
         <div class="pyrun" data-id="s5p2" data-expect="Top score: 92">
           <textarea spellcheck="false">scores = [67, 92, 45, 88, 73]
@@ -553,7 +617,7 @@ best = scores[0]
 for s in scores:
     if s > best:
         best = s
-print("Top score:", best)</pre><p>The "best-so-far" pattern: seed with the first item, challenge it with every item, keep the winner. And now the confession: <code>max(scores)</code> does exactly this in one call (<code>min()</code> is its twin). You were allowed the shortcut the moment you could build it yourself — that trade is how these notes work.</p></details>
+print("Top score:", best)</pre><p>Best so far — seed it, challenge it, keep the winner. <code>max(scores)</code> does exactly this.</p></details>
       </div>
     </div>
   </section>
@@ -564,12 +628,12 @@ print("Top score:", best)</pre><p>The "best-so-far" pattern: seed with the first
       <span class="sec-num">5.6</span>
       <h2>Problem bank — everything at once</h2>
       <span class="rtag"><span class="pr">Practice · ~12 min</span></span>
-      <p>The mixed set. Slots, mutation, slices, membership, loops — plus arithmetic from Unit 2 and branching from Unit 3. In order; they get meaner.</p>
+      <p>Nothing new here. Slots, mutation, slices, membership and loops, all mixed together — with arithmetic from Unit 2 and ifs from Unit 3. Do them in order. They get meaner.</p>
     </div>
     <div class="practice">
       <div class="p-card">
         <div class="ph"><span class="pn">B1</span><span class="pt">Backwards</span></div>
-        <p class="pd">Print the three words in reverse order, one per line. Two honest routes: negative indexes (5.1), or a <code>while</code> loop counting a slot number down from <code>len(words) - 1</code> (Unit 4). Take either.</p>
+        <p class="pd">Print the three words in reverse, one per line. Negative indexes or a counting-down <code>while</code>.</p>
         <div class="want">three
 two
 one</div>
@@ -581,11 +645,11 @@ one</div>
 i = len(words) - 1
 while i &gt;= 0:
     print(words[i])
-    i = i - 1</pre><p>Start at the last slot, step down to 0. (For three items, three prints with <code>[-1]</code>, <code>[-2]</code>, <code>[-3]</code> also pass — and for the curious, Python has a party trick: the slice <code>words[::-1]</code> is the whole list reversed. File it away.)</p></details>
+    i = i - 1</pre><p>Start at the last slot and step down to 0. Three negative-index prints also pass.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">B2</span><span class="pt">The shopping bill</span></div>
-        <p class="pd">Total the prices with a loop and an accumulator, and print it with Unit 2's money formatting — two decimals, exactly as the goal shows.</p>
+        <p class="pd">Total the prices with an accumulator, then print with Unit 2's two-decimal money format.</p>
         <div class="want">Total: 198.75</div>
         <div class="pyrun" data-id="b2" data-expect="Total: 198.75">
           <textarea spellcheck="false">prices = [45.50, 120.00, 33.25]
@@ -595,11 +659,11 @@ while i &gt;= 0:
 total = 0
 for p in prices:
     total = total + p
-print(f"Total: {total:.2f}")</pre><p>Accumulator plus <code>:.2f</code> — format at the exit, as always. (<code>sum(prices)</code> earns full marks too.)</p></details>
+print(f"Total: {total:.2f}")</pre><p>Accumulator, then <code>:.2f</code>. Format at the exit, as always.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">B3</span><span class="pt">Is it in stock?</span></div>
-        <p class="pd">Ask <code>Looking for? </code> and answer with an f-string either way: <code>Yes, &lt;item&gt; is in stock</code> or <code>Sorry, no &lt;item&gt; today</code>. Input fixed to <code>tea</code> — write both branches anyway; shops run out.</p>
+        <p class="pd">Ask <code>Looking for? </code>, then answer <code>Yes, &lt;item&gt; is in stock</code> or <code>Sorry, no &lt;item&gt; today</code>.</p>
         <div class="want">Looking for? tea
 Yes, tea is in stock</div>
         <div class="pyrun" data-id="b3" data-stdin="tea" data-stdin-lock data-expect="Looking for? tea\nYes, tea is in stock">
@@ -611,11 +675,11 @@ item = input("Looking for? ")
 if item in stock:
     print(f"Yes, {item} is in stock")
 else:
-    print(f"Sorry, no {item} today")</pre><p>Membership feeds the <code>if</code>; the f-string reuses the customer's own word in the reply. Four units in one screenful.</p></details>
+    print(f"Sorry, no {item} today")</pre><p>Membership feeds the <code>if</code>, and the f-string throws the customer's own word back.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">B4</span><span class="pt">Stretch — the great divide</span></div>
-        <p class="pd">Split the numbers into two new lists — evens and odds — using Unit 2's <code>%</code> to test each one (<code>n % 2 == 0</code> means even), and print both lists to match the goal. Start-empty-and-append, twice over.</p>
+        <p class="pd">Split the numbers into two new lists. <code>n % 2 == 0</code> means even. Start empty and append, twice over.</p>
         <div class="want">Evens: [2, 4, 10]
 Odds: [7, 9, 3]</div>
         <div class="pyrun" data-id="b4" data-expect="Evens: [2, 4, 10]\nOdds: [7, 9, 3]">
@@ -631,8 +695,49 @@ for n in nums:
     else:
         odds.append(n)
 print("Evens:", evens)
-print("Odds:", odds)</pre><p>One pass, two destinations — the loop reads, the <code>if</code> routes, the appends collect. Sorting things into buckets like this is a shape you'll reuse constantly, all the way into the ML stage.</p></details>
+print("Odds:", odds)</pre><p>One pass, two destinations. The loop reads, the <code>if</code> routes, the appends collect.</p></details>
       </div>
+    </div>
+  </section>
+
+  <!-- ============ QUICK REFERENCE ============ -->
+  <section id="cheat">
+    <div class="prose">
+      <h2>Quick reference</h2>
+      <p>Everything from today, on one screen. Come back to this page for this box alone.</p>
+    </div>
+    <div class="cheat">
+      <h4>Making one, reading one</h4>
+      <table>
+        <tr><td><code>nums = [4, 8, 15]</code></td><td>one box, three numbered slots</td></tr>
+        <tr><td><code>nums[0]</code></td><td>the first slot — counting starts at zero</td></tr>
+        <tr><td><code>nums[-1]</code></td><td>the last slot, counting from the back</td></tr>
+        <tr><td><code>len(nums)</code></td><td>how many slots there are</td></tr>
+      </table>
+      <h4>Changing it</h4>
+      <table>
+        <tr><td><code>nums.append(20)</code></td><td>add one slot at the end</td></tr>
+        <tr><td><code>nums.insert(0, 1)</code></td><td>squeeze in at slot 0; the rest shift right</td></tr>
+        <tr><td><code>nums.remove(8)</code></td><td>delete by value — the first match only</td></tr>
+        <tr><td><code>x = nums.pop(0)</code></td><td>take slot 0 out and hand you the item</td></tr>
+      </table>
+      <h4>Chunks and questions</h4>
+      <table>
+        <tr><td><code>nums[1:3]</code></td><td>slots 1 and 2 — start in, end out</td></tr>
+        <tr><td><code>nums[:2]</code> / <code>nums[2:]</code></td><td>from the front / to the end</td></tr>
+        <tr><td><code>8 in nums</code></td><td>True or False — ready for an <code>if</code></td></tr>
+      </table>
+      <h4>Walking it</h4>
+      <table>
+        <tr><td><code>for n in nums:</code></td><td>each slot's contents in turn, no numbers needed</td></tr>
+        <tr><td><code>sum(nums)</code></td><td>the total, ready-made</td></tr>
+        <tr><td><code>max(nums)</code> / <code>min(nums)</code></td><td>the biggest / the smallest</td></tr>
+      </table>
+      <h4>When it breaks</h4>
+      <table>
+        <tr><td><code>IndexError</code></td><td>no such slot — recount from zero</td></tr>
+        <tr><td><code>nums = nums.append(9)</code></td><td>never do this — append hands back <code>None</code></td></tr>
+      </table>
     </div>
   </section>
 
@@ -640,7 +745,7 @@ print("Odds:", odds)</pre><p>One pass, two destinations — the loop reads, the 
   <section id="quiz">
     <div class="prose">
       <h2>Check yourself</h2>
-      <p>Six questions on the ideas that matter most. Wrong answers are worth more than right ones here — read the explanation either way.</p>
+      <p>Six questions. A wrong answer here is worth more than a right one — read the explanation either way.</p>
     </div>
     <div class="stack" id="quiz-box"></div>
     <div class="score" id="quiz-score" hidden></div>
@@ -650,7 +755,7 @@ print("Odds:", odds)</pre><p>One pass, two destinations — the loop reads, the 
   <section id="gloss">
     <div class="prose">
       <h2>Glossary</h2>
-      <p>Every term from this unit you'll need again later.</p>
+      <p>Every word from today that you will need again.</p>
     </div>
     <dl class="gloss" id="gloss-list"></dl>
   </section>
@@ -658,9 +763,11 @@ print("Odds:", odds)</pre><p>One pass, two destinations — the loop reads, the 
   <!-- ============ NEXT ============ -->
   <section>
     <div class="next">
-      <div class="lbl">Coming next</div>
-      <h3>Unit 6 · Labeled data — dictionaries, tuples &amp; sets</h3>
-      <p style="font-size:var(--fs-cap);color:var(--slate)">Numbered slots are wonderful — until the number stops meaning anything. "Ada's phone number is in slot 3" is one shuffle away from a wrong call. Unit 6 swaps positions for labels: ask for <code>"Ada"</code>, get her number, no counting. That's a <b>dictionary</b> — and alongside it, two cousins with strong opinions: tuples, which refuse to change, and sets, which refuse to repeat.</p>
+      <div class="lbl">Before you go to Unit 6</div>
+      <h3>Go and grow your to-do list</h3>
+      <p style="font-size:var(--fs-cap);color:var(--slate)">Take the to-do list from 5.5 and make it yours. Read five tasks instead of three. Print how many are left after the removal. Then remove a task that was never on the list, and see what Python says. Read that last line. Break it on purpose. You learn far more from ten broken programs than from ten copied ones. Come back with your questions.</p>
+      <p style="font-size:var(--fs-cap);color:var(--slate);margin-top:10px">Then in <b>Unit 6</b> we meet the day numbered slots stop being enough. "Ada's phone number is in slot 3" is one shuffle away from a wrong call. So we swap positions for labels — ask for <code>"Ada"</code>, get her number, no counting. That is a <b>dictionary</b>. Two cousins come along with it: tuples, which refuse to change, and sets, which refuse to repeat.</p>
+      <p style="font-size:var(--fs-cap);color:var(--slate);margin-top:10px"><i>One question before that. Your to-do list held tasks in the order you typed them. Now suppose each task also had a deadline. Where would you keep that?</i></p>
     </div>
   </section>
 
@@ -668,7 +775,7 @@ print("Odds:", odds)</pre><p>One pass, two destinations — the loop reads, the 
   <section class="lwa-refs" id="refs">
     <div class="prose">
       <h2>References</h2>
-      <p>Where to read more on this unit's ground, in order of usefulness right now.</p>
+      <p>Where to read more on today's ground, in the order I would read them.</p>
     </div>
     <ol>
       <li><b>The Python Tutorial</b> — <i>§3.1.3 Lists</i>. <span class="why">The official first look at lists — literals, indexing, slicing, append — the same ground as 5.1–5.3.</span> <a href="https://docs.python.org/3/tutorial/introduction.html#lists" rel="noopener">docs.python.org</a></li>
@@ -701,27 +808,27 @@ const QUIZ = [
   {q:"fruits = [\"apple\", \"banana\", \"cherry\"] — what is fruits[1]?",
    o:["\"apple\"","\"banana\"","\"cherry\"","An IndexError"],
    a:1,
-   e:"The slot number counts steps from the front, so slot 1 is one step in — the SECOND item, \"banana\". The first item is fruits[0]."},
+   e:"The slot number counts steps from the front. Slot 1 is one step in, so it is the SECOND item, \"banana\". The first item is fruits[0]."},
   {q:"Which expression reads the LAST item of a list called scores, however long it is?",
    o:["scores[len(scores)]","scores[-1]","scores[last]","scores[end]"],
    a:1,
-   e:"Negative indexes count from the back: -1 is the last slot. scores[len(scores)] looks right but is one past the end — an IndexError (the last slot by length is len(scores) - 1)."},
-  {q:"What's the difference between  tasks.append(\"rest\")  and  tasks = [\"rest\"] ?",
-   o:["Nothing — both add an item to the list","append adds a slot to the existing list; = throws the old contents away and stores a new one-slot list","append is only for strings; = works for anything","= is faster, but otherwise they're identical"],
+   e:"Negative numbers count from the back, so -1 is the last slot. scores[len(scores)] looks right but lands one past the end — an IndexError. The last slot by length is len(scores) - 1."},
+  {q:"What is the difference between  tasks.append(\"rest\")  and  tasks = [\"rest\"] ?",
+   o:["Nothing — both add an item to the list","append adds a slot to the existing list; = throws the old contents away and stores a new one-slot list","append is only for strings; = works for anything","= is faster, but otherwise they are identical"],
    a:1,
-   e:"append is mutation — it reaches into the existing box and changes its contents. Assignment replaces the box's contents wholesale: whatever list was there is gone, replaced by a brand-new [\"rest\"]."},
+   e:"append is mutation. It reaches into the box you already have and adds a slot. Assignment replaces the contents completely: whatever list was there is gone, and a brand new [\"rest\"] takes its place."},
   {q:"nums = [10, 20, 30, 40] — what is nums[1:3]?",
    o:["[20, 30]","[20, 30, 40]","[10, 20, 30]","[30, 40]"],
    a:0,
-   e:"Start included, end excluded: slots 1 and 2, so [20, 30]. The count is always stop − start — here 3 − 1 = 2 items."},
+   e:"Start included, end excluded. So slots 1 and 2, which is [20, 30]. The count is always end minus start — here 3 minus 1, two items."},
   {q:"What does  \"milk\" in [\"milk\", \"eggs\"]  give?",
    o:["\"milk\"","True","1","The slot number, 0"],
    a:1,
-   e:"Membership is a question with a boolean answer: True here, False if no slot holds the value. That's why it drops straight into an if — booleans are what if runs on."},
+   e:"Membership is a question, and its answer is a boolean. True here, False if no slot holds that value. That is why it drops straight into an if — a boolean is what if runs on."},
   {q:"letters = [\"a\", \"b\", \"c\"] — what does letters[3] do?",
    o:["Prints \"c\"","Gives an empty string","Stops with IndexError — the slots are 0, 1 and 2; there is no 3","Wraps around to the start and gives \"a\""],
    a:2,
-   e:"Three items live in slots 0–2, so 3 is one past the end and Python stops with IndexError: list index out of range. Read the last line of the report first, then recount your slots from zero."}
+   e:"Three items live in slots 0, 1 and 2. So 3 is one past the end, and Python stops with IndexError: list index out of range. Read the last line of the report first, then recount your slots from zero."}
 ];
 const quizBox = document.getElementById("quiz-box");
 const scoreEl = document.getElementById("quiz-score");
@@ -752,8 +859,8 @@ QUIZ.forEach((item,qi)=>{
       if(answered === QUIZ.length){
         scoreEl.hidden = false;
         scoreEl.textContent = "You scored "+correct+" out of "+QUIZ.length+
-          (correct === QUIZ.length ? " — every one. Numbered slots hold no mysteries for you."
-           : correct >= 4 ? " — solid. Reread the ones you missed; 5.1 and 5.2 carry the load."
+          (correct === QUIZ.length ? " — every one. Numbered slots hold no mysteries for you now."
+           : correct >= 4 ? " — solid. Read the ones you missed once more; 5.1 and 5.2 carry the load."
            : " — worth another pass through the practice above before Unit 6.");
       }
     });
@@ -765,18 +872,18 @@ QUIZ.forEach((item,qi)=>{
 
 /* ============ Glossary ============ */
 const GLOSSARY = [
-  ["List","One labeled box with numbered slots, written in square brackets: [\"a\", \"b\"]. Holds any number of values, in order, and can grow and shrink."],
-  ["Index","A slot number — really a distance from the front, which is why the first item is [0]. Written in square brackets after the list's name."],
-  ["Negative index","Counting from the back: [-1] is the last item, [-2] second-to-last. No len() needed."],
-  ["len()","Counts a list's slots (or a string's characters): len([\"a\", \"b\"]) → 2."],
-  ["IndexError","Python stopping because you asked for a slot that doesn't exist. Almost always an off-by-one — recount from zero."],
-  [".append(x)","Adds x in a new slot at the end of the existing list. Changes the list in place and hands back nothing — never store its answer."],
-  [".insert(i, x)","Squeezes x in at slot i; everything from there on shifts one slot right."],
-  [".remove(x) / .pop(i)","Two ways out: remove deletes the first slot holding the value x; pop takes out slot i and hands you the item (pop() alone takes the last). Slots renumber afterwards."],
-  ["Mutation","Changing a box's contents in place (append, insert, remove, pop) — as opposed to assignment, which replaces the contents wholesale."],
-  ["Slice","A copy of a range of slots: days[1:3] is slots 1 and 2 — start included, end excluded. Omit an end to mean 'from the front' or 'to the back'. The original list is untouched."],
-  ["in / not in","Membership questions: \"Wed\" in days answers True or False — ready to feed straight into an if."],
-  ["sum() / max() / min()","Built-in shortcuts over a whole list: the total, the biggest, the smallest. Earned in this unit by building each by hand first."]
+  ["List","One labelled box with numbered slots inside it, written in square brackets: [\"a\", \"b\"]. Holds any number of values, in order, and can grow or shrink."],
+  ["Index","A slot number. Really a distance from the front, which is why the first item is [0]. Written in square brackets after the list's name."],
+  ["Negative index","Counting from the back. [-1] is the last item, [-2] the one before it. No len() needed."],
+  ["len()","Counts a list's slots, or a string's characters. len([\"a\", \"b\"]) gives 2."],
+  ["IndexError","Python stopping because you asked for a slot that does not exist. Almost always off by one — recount from zero."],
+  [".append(x)","Adds x in a new slot at the end of the list you already have. It changes the list and hands back nothing, so never store its answer."],
+  [".insert(i, x)","Squeezes x in at slot i. Everything from there on shifts one slot right."],
+  [".remove(x) / .pop(i)","Two ways out. remove deletes the first slot holding the value x. pop takes out slot i and hands you the item; pop() alone takes the last. Slots renumber afterwards."],
+  ["Mutation","Changing a box's contents in place — append, insert, remove, pop. Assignment is the opposite: it replaces the contents completely."],
+  ["Slice","A copy of a range of slots. days[1:3] is slots 1 and 2 — start included, end excluded. Leave a side blank for 'from the front' or 'to the back'. The original list is untouched."],
+  ["in / not in","A membership question. \"Wed\" in days answers True or False, ready to feed straight into an if."],
+  ["sum() / max() / min()","Ready-made shortcuts over a whole list: the total, the biggest, the smallest. You earned them today by building each one by hand first."]
 ];
 document.getElementById("gloss-list").innerHTML = GLOSSARY.map(([t,d])=>
   "<div class='gcard'><dt>"+t+"</dt><dd>"+d+"</dd></div>").join("");
