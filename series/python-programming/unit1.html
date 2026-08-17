@@ -50,9 +50,9 @@
   <!-- ============ 1.1 ============ -->
   <section id="s1">
     <div class="prereq">
-      <div class="pq"><b>Nothing is assumed</b>Never written a line of code? You are exactly the person these notes are written for.</div>
-      <div class="pq"><b>How each idea works</b>A short read, then you practise. The practice is the point. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit1.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer a notebook.</div>
-      <div class="pq"><b>Progress is optional</b>Sign in (top right) and your journey follows you across devices. Everything works without an account too.</div>
+      <div class="pq"><b>Nothing is assumed</b>Never written a line of code? You are exactly who these notes are for.</div>
+      <div class="pq"><b>How each idea works</b>A short read, then you practise. The practice is the point. <a href="https://colab.research.google.com/github/Aditya-402/learn-with-adi/blob/main/notebooks/python-programming/unit1.ipynb" rel="noopener">▶ Run this unit in Colab</a> if you prefer.</div>
+      <div class="pq"><b>Progress is optional</b>Sign in (top right) and your journey follows you across devices. Works without an account too.</div>
     </div>
     <div class="prose">
       <span class="sec-num">1.1</span>
@@ -62,26 +62,28 @@
       <p>You have made tea, or at least watched someone make it, right? Now suppose you write the steps down for a friend who has never entered a kitchen. You write "add sugar to taste". He stops there. Whose taste? How much?</p>
       <p>A computer is that friend. Very fast, never tired, zero imagination. It does exactly what you write — nothing more, nothing less.</p>
       <p>So the job is easy to say and takes practice to learn: <b>write every step, in order, leaving no gap.</b></p>
-      <p>That written-down list of steps is what we call a <b>program</b>. Each line in it is an <b>instruction</b>.</p>
-      <p>We write ours in <b>Python</b>. It reads almost like English, and it is the language most of the machine-learning world runs on. That is why our journey starts here.</p>
+      <p>That written-down list of steps is what we call a <b>program</b>. Each line is an <b>instruction</b>.</p>
+      <p>We write ours in <b>Python</b>. It reads almost like English, and it is the language the machine-learning world runs on. That is why we start here.</p>
+      <p>Now we can write the steps down. But the computer has to tell us something back, right? For that it needs a mouthpiece.</p>
+      <p>Not speech, though. Think of someone who cannot speak. How does he tell you something? He writes it down.</p>
+      <p>That is exactly what the machine needs — a way to write to us. We call it <b>print</b>. Nothing to do with paper: it means <i>write it on the screen</i>.</p>
     </div>
 
     <div class="syntax">
       <div class="sl">The form</div>
       <div class="form">print("anything you want on the screen")</div>
-      <p><code>print</code> has nothing to do with paper. It means: <i>show this on the screen.</i></p>
     </div>
 
     <div class="listing">
       <div class="lh">Your first program — one line, read it with me</div>
       <ol>
-        <li><code>print("Hello, world")</code><span class="note"><code>print</code> — show something. The brackets hold <i>what</i> to show. The quotes hold the exact words.</span></li>
+        <li><code>print("Hello, world")</code><span class="note">The brackets hold <i>what</i> to show. The quotes hold the exact words.</span></li>
       </ol>
       <div class="yousee"><b>What you should see</b>Hello, world</div>
     </div>
 
     <div class="prose">
-      <p>One instruction in, one action out. Every program you will ever write is just more of these, one after another.</p>
+      <p>One instruction in, one action out. Every program is just more of these, one after another.</p>
     </div>
 
     <div class="fig">
@@ -105,12 +107,12 @@
         <text x="795" y="90" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#e8eaf0">Hello,</text>
         <text x="795" y="108" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="11.5" fill="#e8eaf0">world</text>
       </svg>
-      <div class="figcap">Fig. 1 — You write the steps, Python follows them to the letter, the screen shows the result. Nowhere in this picture does the machine guess.</div>
+      <div class="figcap">Fig. 1 — You write the steps, Python follows them exactly, the screen shows the result. The machine never guesses.</div>
     </div>
 
     <div class="worked">
       <div class="wl">Now you run it</div>
-      <p>Press <b>▶ Run</b> and watch the panel answer. Then change the words inside the quotes and run it again. It obeys <i>you</i> now.</p>
+      <p>Press <b>▶ Run</b>. Then change the words in the quotes and run again. It obeys <i>you</i> now.</p>
       <div class="pyrun" data-id="w1">
         <textarea spellcheck="false">print("Hello, world")</textarea>
       </div>
@@ -119,15 +121,15 @@
     <div class="practice">
       <div class="p-card">
         <div class="ph"><span class="pn">1.1 · P1</span><span class="pt">Change the message</span></div>
-        <p class="pd">Make it print exactly <code>Hello, Python!</code> — capital H, capital P, exclamation mark. Then press <b>✓ Check</b>.</p>
+        <p class="pd">Print exactly <code>Hello, Python!</code> — capital H, capital P, exclamation mark.</p>
         <div class="pyrun" data-id="s1p1" data-expect="Hello, Python!">
           <textarea spellcheck="false">print("Hello, world")</textarea>
         </div>
-        <details><summary>Show solution</summary><pre>print("Hello, Python!")</pre><p>Only the words inside the quotes change. The instruction around them stays the same.</p></details>
+        <details><summary>Show solution</summary><pre>print("Hello, Python!")</pre><p>Only the words inside the quotes change.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">1.1 · P2</span><span class="pt">Order matters</span></div>
-        <p class="pd">Python runs lines top to bottom, one at a time. Add a third line so <code>Third</code> comes after the other two.</p>
+        <p class="pd">Python runs lines top to bottom. Add a third line so <code>Third</code> comes last.</p>
         <div class="want">First
 Second
 Third</div>
@@ -137,11 +139,11 @@ print("Second")</textarea>
         </div>
         <details><summary>Show solution</summary><pre>print("First")
 print("Second")
-print("Third")</pre><p>Each <code>print</code> gets its own line on screen, in the order you wrote it.</p></details>
+print("Third")</pre><p>Each <code>print</code> gets its own line, in the order you wrote it.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">1.1 · P3</span><span class="pt">Make it yours</span></div>
-        <p class="pd">Three lines: your name, your city, and one thing you want to build some day. No check here — this one is yours.</p>
+        <p class="pd">Three lines: your name, your city, one thing you want to build. No check — this one is yours.</p>
         <div class="pyrun" data-id="s1p3">
           <textarea spellcheck="false">print("...")
 </textarea>
@@ -157,6 +159,9 @@ print("Third")</pre><p>Each <code>print</code> gets its own line on screen, in t
       <h2>Why the quotes?</h2>
       <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~10 min</span></span>
       <p>You have been typing quotes without asking why. Let's try to understand.</p>
+      <p>Whenever I have something to tell you, or to ask you, I need a medium. I speak, or I write. And every medium carries its own rules — English has its grammar, which you follow without thinking.</p>
+      <p>Python is a medium too, so it also has rules. Quotes, brackets, commas. That grammar is what we call <b>syntax</b>.</p>
+      <p>Start with the quotes.</p>
       <p>Suppose I tell you: <i>say your name.</i> You say "Aditya". Now I tell you: <i>say "your name".</i> You say the words <i>your name</i>.</p>
       <p>Same three words. The quotes changed the meaning completely, right?</p>
       <p>Python works the same way:</p>
@@ -165,9 +170,9 @@ print("Third")</pre><p>Each <code>print</code> gets its own line on screen, in t
         <li><b>Without quotes</b> — this is a name, I should already know it.</li>
       </ul>
       <p>So <code>print(Hello)</code> fails. Python looks for something called <code>Hello</code> and finds nothing.</p>
-      <p>Numbers are different. <code>print(2026)</code> is fine, because digits can never be mistaken for a name.</p>
-      <p>And a comma lets you print several things together. Python puts one space at each comma.</p>
-      <p>Text inside quotes has a name. We call it a <b>string</b> — a string of characters, like beads on a thread.</p>
+      <p>Numbers are different. <code>print(2026)</code> is fine — digits can never be mistaken for a name.</p>
+      <p>A comma lets you print several things together, one space at each comma.</p>
+      <p>Text inside quotes has a name. We call it a <b>string</b> — characters strung together, like beads.</p>
     </div>
 
     <div class="syntax">
@@ -191,12 +196,12 @@ Result: 5</div>
 
     <div class="confuse">
       <div class="lbl">Careful here</div>
-      <p><code>print("7")</code> and <code>print(7)</code> look the same on screen. They are not the same thing. One is the <i>character</i> 7, the other is the <i>number</i> 7. In Unit 2, when we start doing arithmetic, this difference will matter a lot.</p>
+      <p><code>print("7")</code> and <code>print(7)</code> look the same on screen. They are not. One is the <i>character</i> 7, the other is the <i>number</i> 7. In Unit 2, when we start doing arithmetic, that difference will matter.</p>
     </div>
 
     <div class="worked">
       <div class="wl">Watch one first</div>
-      <p>Print <code>I am 10 years old</code>, keeping 10 as a real number. Two pieces of text, one number, joined by commas.</p>
+      <p>Print <code>I am 10 years old</code>, keeping 10 as a real number. Commas do the joining.</p>
       <div class="pyrun" data-id="w2">
         <textarea spellcheck="false">print("I am", 10, "years old")</textarea>
       </div>
@@ -205,20 +210,20 @@ Result: 5</div>
     <div class="practice">
       <div class="p-card">
         <div class="ph"><span class="pn">1.2 · P1</span><span class="pt">The missing quotes</span></div>
-        <p class="pd">This wants to print <code>Hello</code> but the author forgot the rule. Fix it, Run, then Check.</p>
+        <p class="pd">This wants to print <code>Hello</code> but breaks the rule. Fix it.</p>
         <div class="pyrun" data-id="s2p1" data-expect="Hello">
           <textarea spellcheck="false">print(Hello)</textarea>
         </div>
-        <details><summary>Show solution</summary><pre>print("Hello")</pre><p>Without quotes Python hunts for a name called <code>Hello</code>. With quotes it is simply text.</p></details>
+        <details><summary>Show solution</summary><pre>print("Hello")</pre><p>Without quotes Python hunts for a name called <code>Hello</code>. With quotes it is text.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">1.2 · P2</span><span class="pt">Commas do the joining</span></div>
-        <p class="pd">One <code>print</code> line. Use commas, and keep <code>3</code> as a number without quotes.</p>
+        <p class="pd">One <code>print</code> line. Use commas, and keep <code>3</code> as a number.</p>
         <div class="want">I have 3 dosas</div>
         <div class="pyrun" data-id="s2p2" data-expect="I have 3 dosas">
           <textarea spellcheck="false">print("...")</textarea>
         </div>
-        <details><summary>Show solution</summary><pre>print("I have", 3, "dosas")</pre><p>Each comma becomes one space, so the text pieces do not need spaces of their own.</p></details>
+        <details><summary>Show solution</summary><pre>print("I have", 3, "dosas")</pre><p>Each comma becomes one space of its own.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">1.2 · P3</span><span class="pt">A small shopping list</span></div>
@@ -231,11 +236,11 @@ Result: 5</div>
         </div>
         <details><summary>Show solution</summary><pre>print("Shopping list:")
 print("- milk")
-print("- eggs")</pre><p>The dash and the space are just characters inside the quotes. Python repeats them like any other.</p></details>
+print("- eggs")</pre><p>The dash and the space are characters inside the quotes, like any other.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">1.2 · P4</span><span class="pt">Predict, then run</span></div>
-        <p class="pd">Write your three guesses on paper first. Then Run and compare. The code is correct as it is — fix your guess, not the code.</p>
+        <p class="pd">Write your three guesses on paper. Then Run and compare. The code is correct — fix your guess, not the code.</p>
         <div class="pyrun" data-id="s2p4">
           <textarea spellcheck="false">print("10 + 5")
 print(10 + 5)
@@ -254,10 +259,12 @@ total: 15</pre><p>Quoted is repeated. Unquoted is worked out. The comma joins bo
       <span class="sec-num">1.3</span>
       <h2>Errors are messages, not scoldings</h2>
       <span class="rtag"><span>Read · ~2 min</span><span class="pr">Practice · ~8 min</span></span>
-      <p>Some time in the next ten minutes you will type something Python cannot follow. Everybody does. So let's understand what actually happens.</p>
-      <p>Go back to our friend in the kitchen. He does not throw the vessel and walk out. He stops and says: <i>I am stuck at this step, and this is what I could not do.</i></p>
-      <p>Python does exactly that. The red text is not scolding you. It is the machine telling you where it stopped and why.</p>
-      <p>Now one habit, and please make it a habit from today: <b>read the last line first.</b> The last line tells you what kind of problem it is. The lines above it only tell you where.</p>
+      <p>Some time in the next ten minutes you will type something Python cannot follow. Everybody does. Let's understand what happens.</p>
+      <p>In 1.2 we said Python is a medium, and every medium has its grammar. An error is you breaking that grammar.</p>
+      <p>Say I ask you: <i>get me water.</i> You understand me. Now I say: <i>water get me.</i> Same three words, but the meaning and the intent have gone wrong.</p>
+      <p>You would still guess what I meant. The machine will not. It stops and tells you where it got stuck.</p>
+      <p>So the red text is not a scolding. It is the machine telling you where it stopped, and why.</p>
+      <p>One habit, from today: <b>read the last line first.</b> It tells you what kind of problem it is. The lines above only tell you where.</p>
       <p>Two kinds will meet you today:</p>
       <ul class="plain">
         <li>Punctuation broken — a missing quote or bracket — so Python could not even read the line. We call that a <b>SyntaxError</b>.</li>
@@ -268,7 +275,7 @@ total: 15</pre><p>Quoted is repeated. Unquoted is worked out. The comma joins bo
     <div class="listing">
       <div class="lh">One broken line, and what Python says back</div>
       <ol>
-        <li><code>print("Bye)</code><span class="note">A quote opens, and the line ends before another quote closes it. Python cannot finish reading it.</span></li>
+        <li><code>print("Bye)</code><span class="note">A quote opens and never closes. Python cannot finish reading the line.</span></li>
       </ol>
       <div class="yousee"><b>What you should see</b>  print("Bye)
         ^
@@ -276,17 +283,17 @@ SyntaxError: unterminated string literal</div>
     </div>
 
     <div class="prose">
-      <p>Read it from the bottom. <i>SyntaxError</i> — could not read the line. <i>unterminated string</i> — a quote opened and never closed. The little <code>^</code> points near the trouble. Now the fix is obvious: close the quote.</p>
+      <p>Read it from the bottom. <i>SyntaxError</i> — could not read the line. <i>unterminated string</i> — a quote opened and never closed. The <code>^</code> points near the trouble. Close the quote.</p>
     </div>
 
     <div class="confuse">
       <div class="lbl">Careful here</div>
-      <p>An error does not mean the computer is damaged, or your earlier work is lost, or that you are bad at this. The program simply stopped at the step it could not do. Fix the line, run again. The machine keeps no grudge.</p>
+      <p>An error does not mean the computer is damaged, or that you are bad at this. The program stopped at a step it could not do. Fix the line, run again. The machine keeps no grudge.</p>
     </div>
 
     <div class="worked">
       <div class="wl">Watch one first</div>
-      <p>This one is broken. Run it <i>before</i> fixing it — never fix blind. The last line says <code>NameError: name 'prnt' is not defined</code>. Python read the line, but knows nothing called <code>prnt</code>. Spelling. Correct it and run again.</p>
+      <p>This one is broken. Run it <i>before</i> fixing — never fix blind. The last line says <code>NameError: name 'prnt' is not defined</code>. Python read the line fine, but knows nothing called <code>prnt</code>. Spelling.</p>
       <div class="pyrun" data-id="w3">
         <textarea spellcheck="false">prnt("Good morning")</textarea>
       </div>
@@ -303,15 +310,15 @@ SyntaxError: unterminated string literal</div>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">1.3 · P2</span><span class="pt">A different complaint</span></div>
-        <p class="pd">Same drill — run, read, fix. Target: <code>Ready to learn</code>. Notice how this report differs from P1 before you touch anything.</p>
+        <p class="pd">Same drill — run, read, fix. Target: <code>Ready to learn</code>. Notice how this report differs from P1.</p>
         <div class="pyrun" data-id="s3p2" data-expect="Ready to learn">
           <textarea spellcheck="false">Print("Ready to learn")</textarea>
         </div>
-        <details><summary>Show solution</summary><pre>print("Ready to learn")</pre><p>NameError this time. Python is case-sensitive, so <code>Print</code> and <code>print</code> are two different names — and only the small one exists.</p></details>
+        <details><summary>Show solution</summary><pre>print("Ready to learn")</pre><p>NameError. Python is case-sensitive: <code>Print</code> and <code>print</code> are different names, and only the small one exists.</p></details>
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">1.3 · P3</span><span class="pt">Two bugs, one program</span></div>
-        <p class="pd">There are two problems here. Fix them one at a time, running in between, and watch the message change.</p>
+        <p class="pd">Two problems here. Fix them one at a time, running in between.</p>
         <div class="want">Step one done
 Step two done</div>
         <div class="pyrun" data-id="s3p3" data-expect="Step one done\nStep two done">
@@ -319,7 +326,7 @@ Step two done</div>
 print(Step two done)</textarea>
         </div>
         <details><summary>Show solution</summary><pre>print("Step one done")
-print("Step two done")</pre><p>Line 1 was missing its closing bracket, line 2 its quotes. Errors come one at a time — fixing the first reveals the second. That is normal, not a sign you are going backwards.</p></details>
+print("Step two done")</pre><p>Line 1 missing its closing bracket, line 2 its quotes. Errors come one at a time — fixing the first reveals the second.</p></details>
       </div>
     </div>
   </section>
@@ -348,21 +355,21 @@ print("Step two done")</pre><p>Line 1 was missing its closing bracket, line 2 it
     <div class="listing">
       <div class="lh">Ask, store, use — the shape of every interactive program</div>
       <ol>
-        <li><code>name = input("What is your name? ")</code><span class="note">Ask, wait, and keep the answer in a box called <code>name</code>. Say the person types Ada.</span></li>
+        <li><code>name = input("What is your name? ")</code><span class="note">Ask, wait, and keep the answer in a box called <code>name</code>. Say the person types Aditya.</span></li>
         <li><code>print("Hello,", name, "— welcome aboard!")</code><span class="note">Unquoted <code>name</code>, so Python opens the box and puts the contents in.</span></li>
       </ol>
-      <div class="yousee"><b>What you should see</b>What is your name? Ada
-Hello, Ada — welcome aboard!</div>
+      <div class="yousee"><b>What you should see</b>What is your name? Aditya
+Hello, Aditya — welcome aboard!</div>
     </div>
 
     <div class="fig">
-      <svg viewBox="0 0 860 210" role="img" aria-label="After line 1 the box name holds Ada; line 2 reads the box">
+      <svg viewBox="0 0 860 210" role="img" aria-label="After line 1 the box name holds Aditya; line 2 reads the box">
         <text x="16" y="28" font-family="Segoe UI,system-ui,sans-serif" font-size="13" font-weight="700" fill="#6b7585" letter-spacing="1.5">WHAT MEMORY LOOKS LIKE, LINE BY LINE</text>
         <rect x="16" y="52" width="390" height="130" rx="12" fill="#ffffff" stroke="#e3e6ee"/>
         <text x="34" y="80" font-family="Cascadia Mono,Consolas,monospace" font-size="12.5" fill="#3d3170">after line 1:  name = input(…)</text>
         <rect x="34" y="98" width="200" height="62" rx="9" fill="#ecebf6" stroke="#5b4b9e" stroke-width="1.5"/>
         <text x="134" y="122" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="13" font-weight="700" fill="#3d3170">name</text>
-        <text x="134" y="146" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="14" fill="#1f2733">"Ada"</text>
+        <text x="134" y="146" text-anchor="middle" font-family="Cascadia Mono,Consolas,monospace" font-size="14" fill="#1f2733">"Aditya"</text>
         <text x="256" y="126" font-family="Segoe UI,system-ui,sans-serif" font-size="12" fill="#6b7585">one labelled box,</text>
         <text x="256" y="144" font-family="Segoe UI,system-ui,sans-serif" font-size="12" fill="#6b7585">holding the answer</text>
         <line x1="418" y1="117" x2="452" y2="117" stroke="#6b7585" stroke-width="1.6" marker-end="url(#ar2)"/>
@@ -372,15 +379,15 @@ Hello, Ada — welcome aboard!</div>
         <text x="474" y="112" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#4a5a72">Python sees the unquoted word <tspan font-family="Cascadia Mono,Consolas,monospace" fill="#3d3170">name</tspan>,</text>
         <text x="474" y="132" font-family="Segoe UI,system-ui,sans-serif" font-size="12.5" fill="#4a5a72">opens the box, and puts the contents in:</text>
         <rect x="474" y="146" width="352" height="26" rx="6" fill="#23262e"/>
-        <text x="484" y="164" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#e8eaf0">Hello, Ada — welcome aboard!</text>
+        <text x="484" y="164" font-family="Cascadia Mono,Consolas,monospace" font-size="12" fill="#e8eaf0">Hello, Aditya — welcome aboard!</text>
       </svg>
       <div class="figcap">Fig. 2 — Ask, store, use. Which boxes exist, and what is inside each one after every line — that picture is the whole of Unit 2.</div>
     </div>
 
     <div class="worked">
       <div class="wl">Now you run it</div>
-      <p>The Program input field plays your keyboard, and it holds <code>Ada</code>. Run it. Then change that field to your own name and run again — same steps, different conversation.</p>
-      <div class="pyrun" data-id="w4" data-stdin="Ada">
+      <p>The Program input field plays your keyboard, and it holds <code>Aditya</code>. Run it. Then change that field to your own name and run again — same steps, different conversation.</p>
+      <div class="pyrun" data-id="w4" data-stdin="Aditya">
         <textarea spellcheck="false">name = input("What is your name? ")
 print("Hello,", name, "— welcome aboard!")</textarea>
       </div>
@@ -401,11 +408,11 @@ print(food, "sounds delicious!")</pre><p>The box is read back by writing its nam
       </div>
       <div class="p-card">
         <div class="ph"><span class="pn">1.4 · P2</span><span class="pt">Two questions, two boxes</span></div>
-        <p class="pd">Ask for a name, then a city, keep both, and combine them in one greeting using commas. Inputs are fixed to <code>Ada</code> then <code>Chennai</code>.</p>
-        <div class="want">What is your name? Ada
+        <p class="pd">Ask for a name, then a city, keep both, and combine them in one greeting using commas. Inputs are fixed to <code>Aditya</code> then <code>Chennai</code>.</p>
+        <div class="want">What is your name? Aditya
 Which city are you from? Chennai
-Hello, Ada from Chennai</div>
-        <div class="pyrun" data-id="s4p2" data-stdin="Ada\nChennai" data-stdin-lock data-expect="What is your name? Ada\nWhich city are you from? Chennai\nHello, Ada from Chennai">
+Hello, Aditya from Chennai</div>
+        <div class="pyrun" data-id="s4p2" data-stdin="Aditya\nChennai" data-stdin-lock data-expect="What is your name? Aditya\nWhich city are you from? Chennai\nHello, Aditya from Chennai">
           <textarea spellcheck="false">name = input("...")
 </textarea>
         </div>
@@ -416,7 +423,7 @@ print("Hello,", name, "from", city)</pre><p>Two boxes, both read back by name. W
       <div class="p-card">
         <div class="ph"><span class="pn">1.4 · P3</span><span class="pt">Your build — the greeter that answers back</span></div>
         <p class="pd">Now build your own: at least three questions, a reply after each answer, and a sign-off line at the end. Put your own answers in the Program input field, separated by <code>⏎</code>. No check — this one is yours. It is the first thing you have ever built. Keep it.</p>
-        <div class="pyrun" data-id="s4p3" data-stdin="Ada\nhappy\nlearn Python">
+        <div class="pyrun" data-id="s4p3" data-stdin="Aditya\nhappy\nlearn Python">
           <textarea spellcheck="false">name = input("What is your name? ")
 print("Hello,", name)
 </textarea>
@@ -476,11 +483,11 @@ print("Wow,", age, "is a great age!")</pre><p>Ask, store, use. The commas put on
       <div class="p-card">
         <div class="ph"><span class="pn">B4</span><span class="pt">The mini interview</span></div>
         <p class="pd">Three questions — <code>Name? </code>, <code>Favourite colour? </code>, <code>Tea or coffee? </code> — then one summary line built from all three boxes.</p>
-        <div class="want">Name? Ada
+        <div class="want">Name? Aditya
 Favourite colour? blue
 Tea or coffee? tea
-Ada likes blue and drinks tea</div>
-        <div class="pyrun" data-id="b4" data-stdin="Ada\nblue\ntea" data-stdin-lock data-expect="Name? Ada\nFavourite colour? blue\nTea or coffee? tea\nAda likes blue and drinks tea">
+Aditya likes blue and drinks tea</div>
+        <div class="pyrun" data-id="b4" data-stdin="Aditya\nblue\ntea" data-stdin-lock data-expect="Name? Aditya\nFavourite colour? blue\nTea or coffee? tea\nAditya likes blue and drinks tea">
           <textarea spellcheck="false"></textarea>
         </div>
         <details><summary>Show solution</summary><pre>name = input("Name? ")
@@ -601,8 +608,8 @@ const QUIZ = [
    o:["The first line — always read top-down","The middle","The last line — it names the kind of error and the cause","The line numbers only"],
    a:2,
    e:"Reports print the place first and the diagnosis last. Read the last line first: it names SyntaxError or NameError and the cause. Then glance up for the where."},
-  {q:"After  name = input(\"Who? \")  runs and somebody types Ada, what is in the box?",
-   o:["The question \"Who? \"","The text Ada, exactly as typed","The number of letters typed","Nothing — input only shows a question"],
+  {q:"After  name = input(\"Who? \")  runs and somebody types Aditya, what is in the box?",
+   o:["The question \"Who? \"","The text Aditya, exactly as typed","The number of letters typed","Nothing — input only shows a question"],
    a:1,
    e:"input() shows the question, waits, and hands back what was typed. The = stores it into the box. After that, the unquoted word name means the contents of that box."}
 ];
@@ -652,6 +659,7 @@ const GLOSSARY = [
   ["Instruction","One step of a program — one thing the machine does, such as showing text on screen."],
   ["Python","The language we write in. It reads almost like English, and most of the machine-learning world runs on it."],
   ["print()","The instruction that shows things on screen. The brackets hold what to show."],
+  ["Syntax","The rules of the language — grammar, in other words. Quotes, brackets and commas are all syntax."],
   ["String","Text inside quotes — characters to repeat exactly, never treated as an instruction."],
   ["Error message","Python telling you where it stopped and what kind of stuck it is. Read the last line first."],
   ["SyntaxError","Could not even read that line — usually a missing quote or bracket."],
